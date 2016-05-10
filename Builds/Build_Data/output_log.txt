@@ -1,0 +1,235 @@
+Initialize engine version: 5.3.4f1 (fdbb5133b820)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: AMD Radeon HD 6900M Series (ID=0x6720)
+    Vendor:   ATI
+    VRAM:     2035 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Photon3Unity3D.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Photon3Unity3D.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+- Completed reload, in  0.128 seconds
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+Initialize engine version: 5.3.4f1 (fdbb5133b820)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: AMD Radeon HD 6900M Series (ID=0x6720)
+    Vendor:   ATI
+    VRAM:     2035 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Photon3Unity3D.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\Photon3Unity3D.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+- Completed reload, in  0.121 seconds
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\Sebas\Desktop\HoverLike-Game\Builds\Build_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+UnloadTime: 1.659382 ms
+<RI> Initialized touch support.
+Operation failed: OperationResponse 225: ReturnCode: 32760 (No match found). Parameters: {}
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+JoinedFailed
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Exception: cannot serialize(): UnityEngine.Transform
+  at ExitGames.Client.Photon.Protocol.Serialize (System.IO.MemoryStream dout, System.Object serObject, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeObjectArray (System.IO.MemoryStream dout, System.Object[] objects, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.Serialize (System.IO.MemoryStream dout, System.Object serObject, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeObjectArray (System.IO.MemoryStream dout, System.Object[] objects, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.Serialize (System.IO.MemoryStream dout, System.Object serObject, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeParameterTable (System.IO.MemoryStream memStream, System.Collections.Generic.Dictionary`2 parameters) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeOperationRequest (System.IO.MemoryStream memStream, Byte operationCode, System.Collections.Generic.Dictionary`2 parameters, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.EnetPeer.SerializeOperationToMessage (Byte opc, System.Collections.Generic.Dictionary`2 parameters, EgMessageType messageType, Boolean encrypt) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.EnetPeer.EnqueueOperation (System.Collections.Generic.Dictionary`2 parameters, Byte opCode, Boolean sendReliable, Byte channelId, Boolean encrypt, EgMessageType messageType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.PeerBase.EnqueueOperation (System.Collections.Generic.Dictionary`2 parameters, Byte opCode, Boolean sendReliable, Byte channelId, Boolean encrypted) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.PhotonPeer.OpCustom (Byte customOpCode, System.Collections.Generic.Dictionary`2 customOpParameters, Boolean sendReliable, Byte channelId, Boolean encrypt) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.LoadbalancingPeer.OpRaiseEvent (Byte eventCode, System.Object customEventContent, Boolean sendReliable, .RaiseEventOptions raiseEventOptions) [0x00000] in <filename unknown>:0 
+  at NetworkingPeer.OpRaiseEvent (Byte eventCode, System.Object customEventContent, Boolean sendReliable, .RaiseEventOptions raiseEventOptions) [0x00000] in <filename unknown>:0 
+  at NetworkingPeer.RPC (.PhotonView view, System.String methodName, PhotonTargets target, Boolean encrypt, System.Object[] parameters) [0x00000] in <filename unknown>:0 
+  at PhotonNetwork.RPC (.PhotonView view, System.String methodName, PhotonTargets target, Boolean encrypt, System.Object[] parameters) [0x00000] in <filename unknown>:0 
+  at PhotonView.RPC (System.String methodName, PhotonTargets target, System.Object[] parameters) [0x00000] in <filename unknown>:0 
+  at PlayerController.Init (Int32 playerNumber, System.String name) [0x00000] in <filename unknown>:0 
+  at Matchmaker.OnJoinedRoom () [0x00000] in <filename unknown>:0 
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[])
+NetworkingPeer:OnEvent(EventData)
+ExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback(Byte[])
+ExitGames.Client.Photon.EnetPeer:DispatchIncomingCommands()
+ExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands()
+PhotonHandler:Update()
+ 
+(Filename:  Line: -1)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+UnloadTime: 1.105166 ms
+Exception: cannot serialize(): UnityEngine.Transform
+  at ExitGames.Client.Photon.Protocol.Serialize (System.IO.MemoryStream dout, System.Object serObject, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeObjectArray (System.IO.MemoryStream dout, System.Object[] objects, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.Serialize (System.IO.MemoryStream dout, System.Object serObject, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeObjectArray (System.IO.MemoryStream dout, System.Object[] objects, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.Serialize (System.IO.MemoryStream dout, System.Object serObject, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeParameterTable (System.IO.MemoryStream memStream, System.Collections.Generic.Dictionary`2 parameters) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.Protocol.SerializeOperationRequest (System.IO.MemoryStream memStream, Byte operationCode, System.Collections.Generic.Dictionary`2 parameters, Boolean setType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.EnetPeer.SerializeOperationToMessage (Byte opc, System.Collections.Generic.Dictionary`2 parameters, EgMessageType messageType, Boolean encrypt) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.EnetPeer.EnqueueOperation (System.Collections.Generic.Dictionary`2 parameters, Byte opCode, Boolean sendReliable, Byte channelId, Boolean encrypt, EgMessageType messageType) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.PeerBase.EnqueueOperation (System.Collections.Generic.Dictionary`2 parameters, Byte opCode, Boolean sendReliable, Byte channelId, Boolean encrypted) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.PhotonPeer.OpCustom (Byte customOpCode, System.Collections.Generic.Dictionary`2 customOpParameters, Boolean sendReliable, Byte channelId, Boolean encrypt) [0x00000] in <filename unknown>:0 
+  at ExitGames.Client.Photon.LoadbalancingPeer.OpRaiseEvent (Byte eventCode, System.Object customEventContent, Boolean sendReliable, .RaiseEventOptions raiseEventOptions) [0x00000] in <filename unknown>:0 
+  at NetworkingPeer.OpRaiseEvent (Byte eventCode, System.Object customEventContent, Boolean sendReliable, .RaiseEventOptions raiseEventOptions) [0x00000] in <filename unknown>:0 
+  at NetworkingPeer.RPC (.PhotonView view, System.String methodName, PhotonTargets target, Boolean encrypt, System.Object[] parameters) [0x00000] in <filename unknown>:0 
+  at PhotonNetwork.RPC (.PhotonView view, System.String methodName, PhotonTargets target, Boolean encrypt, System.Object[] parameters) [0x00000] in <filename unknown>:0 
+  at PhotonView.RPC (System.String methodName, PhotonTargets target, System.Object[] parameters) [0x00000] in <filename unknown>:0 
+  at PlayerController.Init (Int32 playerNumber, System.String name) [0x00000] in <filename unknown>:0 
+  at Matchmaker.OnJoinedRoom () [0x00000] in <filename unknown>:0 
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[])
+NetworkingPeer:OnEvent(EventData)
+ExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback(Byte[])
+ExitGames.Client.Photon.EnetPeer:DispatchIncomingCommands()
+ExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands()
+PhotonHandler:Update()
+ 
+(Filename:  Line: -1)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+PlayerEnter
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Detach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Detach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Attach
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+
+Detach
+ 
+(Filename: C:/buildslave/unDty/euicd/
+ rtif
+(Fts/gnanee: C:/buildslaruenunime/Ubuind/atyinfacts/generatines./genmon/ruLinti 37)
+ityEngineDebugBindings.gen.cpp Line: 37)
+
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 2504 -> priority: 1 
+  Thread -> id: 3de8 -> priority: 1 
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 3a68 -> priority: 1 
+  Thread -> id: 4984 -> priority: 1 
