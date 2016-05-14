@@ -40,7 +40,7 @@ public class RandomMatchmaker : Photon.PunBehaviour
 
         if (PhotonNetwork.connectionStateDetailed == PeerState.Joined)
         {
-            bool shoutMarco = MyGameLogic.playerWhoIsIt == PhotonNetwork.player.ID;
+            bool shoutMarco = GameLogic.playerWhoIsIt == PhotonNetwork.player.ID;
 
             if (shoutMarco && GUILayout.Button("Marco!"))
             {

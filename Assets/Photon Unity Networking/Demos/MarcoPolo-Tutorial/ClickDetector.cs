@@ -7,7 +7,7 @@ public class ClickDetector : MonoBehaviour
     public void Update()
     {
         // if this player is not "it", the player can't tag anyone, so don't do anything on collision
-        if (PhotonNetwork.player.ID != MyGameLogic.playerWhoIsIt)
+        if (PhotonNetwork.player.ID != GameLogic.playerWhoIsIt)
         {
             return;
         }
@@ -19,7 +19,7 @@ public class ClickDetector : MonoBehaviour
             if (goPointedAt != null && goPointedAt != this.gameObject && goPointedAt.name.Equals("monsterprefab(Clone)", StringComparison.OrdinalIgnoreCase))
             {
                 PhotonView rootView = goPointedAt.transform.root.GetComponent<PhotonView>();
-                MyGameLogic.TagPlayer(rootView.owner.ID);
+                GameLogic.TagPlayer(rootView.owner.ID);
             }
         }
     }

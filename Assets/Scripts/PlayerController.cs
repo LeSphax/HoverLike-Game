@@ -6,7 +6,7 @@ public class PlayerController : Photon.MonoBehaviour
     private GameObject target;
     PhotonTransformView rigidbodyView;
 
-    public Transform spawningPoint;
+    public Vector3 spawningPoint;
     public int playerNumber;
     public int teamNumber;
 
@@ -63,12 +63,12 @@ public class PlayerController : Photon.MonoBehaviour
    
     public void Init(int playerNumber, string name)
     {
-        spawningPoint = GameObject.FindGameObjectWithTag(Tags.Spawns).transform.GetChild(playerNumber - 1);
+        spawningPoint = GameObject.FindGameObjectWithTag(Tags.Spawns).transform.GetChild(playerNumber - 1).position;
         photonView.RPC("InitPlayer",PhotonTargets.AllBufferedViaServer,playerNumber,name,spawningPoint);
     }
 
     [PunRPC]
-    private void InitPlayer(int playerNumber, string name, Transform spawningPoint)
+    private void InitPlayer(int playerNumber, string name, Vector3 spawningPoint)
     {
         this.playerNumber = playerNumber;
         gameObject.name = name;

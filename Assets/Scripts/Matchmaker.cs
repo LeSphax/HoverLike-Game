@@ -31,6 +31,7 @@ public class Matchmaker : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
+        
         int numberPlayers = PhotonNetwork.playerList.Length;
         if (creator)
         {
@@ -42,6 +43,7 @@ public class Matchmaker : Photon.PunBehaviour
 
     public void OnGUI()
     {
+        Debug.Log(PhotonNetwork.GetPing());
         GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
     }
 }

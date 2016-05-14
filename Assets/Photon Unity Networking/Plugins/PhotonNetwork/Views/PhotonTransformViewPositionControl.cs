@@ -1,4 +1,14 @@
-﻿using UnityEngine;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="PhotonTransformViewPositionControl.cs" company="Exit Games GmbH">
+//   PhotonNetwork Framework for Unity - Copyright (C) 2016 Exit Games GmbH
+// </copyright>
+// <summary>
+//   Component to synchronize position via PUN PhotonView.
+// </summary>
+// <author>developer@exitgames.com</author>
+// ----------------------------------------------------------------------------
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -54,7 +64,8 @@ public class PhotonTransformViewPositionControl
     public Vector3 UpdatePosition( Vector3 currentPosition )
     {
         Vector3 targetPosition = GetNetworkPosition() + GetExtrapolatedPositionOffset();
-        switch ( m_Model.InterpolateOption )
+
+        switch( m_Model.InterpolateOption )
         {
             case PhotonTransformViewPositionModel.InterpolateOptions.Disabled:
                 if( m_UpdatedPositionAfterOnSerialize == false )
@@ -187,12 +198,10 @@ public class PhotonTransformViewPositionControl
         else
         {
             DeserializeData( stream, info );
-            
         }
 
         m_LastSerializeTime = PhotonNetwork.time;
         m_UpdatedPositionAfterOnSerialize = false;
-        
     }
 
     void SerializeData( Vector3 currentPosition, PhotonStream stream, PhotonMessageInfo info )
@@ -211,13 +220,13 @@ public class PhotonTransformViewPositionControl
     void DeserializeData( PhotonStream stream, PhotonMessageInfo info )
     {
         Vector3 readPosition = (Vector3)stream.ReceiveNext();
-        if ( m_Model.ExtrapolateOption == PhotonTransformViewPositionModel.ExtrapolateOptions.SynchronizeValues ||
+        if( m_Model.ExtrapolateOption == PhotonTransformViewPositionModel.ExtrapolateOptions.SynchronizeValues ||
             m_Model.InterpolateOption == PhotonTransformViewPositionModel.InterpolateOptions.SynchronizeValues )
         {
             m_SynchronizedSpeed = (Vector3)stream.ReceiveNext();
             m_SynchronizedTurnSpeed = (float)stream.ReceiveNext();
         }
-        
+
         if (m_OldNetworkPositions.Count == 0)
         {
             // if we don't have old positions yet, this is the very first update this client reads. let's use this as current AND old position.
@@ -229,7 +238,7 @@ public class PhotonTransformViewPositionControl
         m_NetworkPosition = readPosition;
 
         // reduce items in queue to defined number of stored positions.
-        while ( m_OldNetworkPositions.Count > m_Model.ExtrapolateNumberOfStoredPositions )
+        while( m_OldNetworkPositions.Count > m_Model.ExtrapolateNumberOfStoredPositions )
         {
             m_OldNetworkPositions.Dequeue();
         }

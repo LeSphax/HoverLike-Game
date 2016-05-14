@@ -1,4 +1,14 @@
-﻿using UnityEngine;
+﻿// ----------------------------------------------------------------------------
+// <copyright file="PhotonTransformView.cs" company="Exit Games GmbH">
+//   PhotonNetwork Framework for Unity - Copyright (C) 2016 Exit Games GmbH
+// </copyright>
+// <summary>
+//   Component to synchronize Transforms via PUN PhotonView.
+// </summary>
+// <author>developer@exitgames.com</author>
+// ----------------------------------------------------------------------------
+
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -9,7 +19,7 @@ using System.Collections;
 /// Simply add the component to your GameObject and make sure that
 /// the PhotonTransformView is added to the list of observed components
 /// </summary>
-[RequireComponent(typeof(PhotonView))]
+[RequireComponent( typeof( PhotonView ) )]
 [AddComponentMenu("Photon Networking/Photon Transform View")]
 public class PhotonTransformView : MonoBehaviour, IPunObservable
 {
@@ -39,14 +49,14 @@ public class PhotonTransformView : MonoBehaviour, IPunObservable
     {
         m_PhotonView = GetComponent<PhotonView>();
 
-        m_PositionControl = new PhotonTransformViewPositionControl(m_PositionModel);
-        m_RotationControl = new PhotonTransformViewRotationControl(m_RotationModel);
-        m_ScaleControl = new PhotonTransformViewScaleControl(m_ScaleModel);
+        m_PositionControl = new PhotonTransformViewPositionControl( m_PositionModel );
+        m_RotationControl = new PhotonTransformViewRotationControl( m_RotationModel );
+        m_ScaleControl = new PhotonTransformViewScaleControl( m_ScaleModel );
     }
 
     void Update()
     {
-        if (m_PhotonView == null || m_PhotonView.isMine == true || PhotonNetwork.connected == false)
+        if( m_PhotonView == null || m_PhotonView.isMine == true || PhotonNetwork.connected == false )
         {
             return;
         }
@@ -58,32 +68,32 @@ public class PhotonTransformView : MonoBehaviour, IPunObservable
 
     void UpdatePosition()
     {
-        if (m_PositionModel.SynchronizeEnabled == false || m_ReceivedNetworkUpdate == false)
+        if( m_PositionModel.SynchronizeEnabled == false || m_ReceivedNetworkUpdate == false )
         {
             return;
         }
 
-        transform.localPosition = m_PositionControl.UpdatePosition(transform.localPosition);
+        transform.localPosition = m_PositionControl.UpdatePosition( transform.localPosition );
     }
 
     void UpdateRotation()
     {
-        if (m_RotationModel.SynchronizeEnabled == false || m_ReceivedNetworkUpdate == false)
+        if( m_RotationModel.SynchronizeEnabled == false || m_ReceivedNetworkUpdate == false )
         {
             return;
         }
 
-        transform.localRotation = m_RotationControl.GetRotation(transform.localRotation);
+        transform.localRotation = m_RotationControl.GetRotation( transform.localRotation );
     }
 
     void UpdateScale()
     {
-        if (m_ScaleModel.SynchronizeEnabled == false || m_ReceivedNetworkUpdate == false)
+        if( m_ScaleModel.SynchronizeEnabled == false || m_ReceivedNetworkUpdate == false )
         {
             return;
         }
 
-        transform.localScale = m_ScaleControl.GetScale(transform.localScale);
+        transform.localScale = m_ScaleControl.GetScale( transform.localScale );
     }
 
     /// <summary>
@@ -94,29 +104,23 @@ public class PhotonTransformView : MonoBehaviour, IPunObservable
     /// </summary>
     /// <param name="speed">The current movement vector of the object in units/second.</param>
     /// <param name="turnSpeed">The current turn speed of the object in angles/second.</param>
-    public void SetSynchronizedValues(Vector3 speed, float turnSpeed)
+    public void SetSynchronizedValues( Vector3 speed, float turnSpeed )
     {
-        m_PositionControl.SetSynchronizedValues(speed, turnSpeed);
+        m_PositionControl.SetSynchronizedValues( speed, turnSpeed );
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void OnPhotonSerializeView( PhotonStream stream, PhotonMessageInfo info )
     {
-        if (stream.isReading == true)
-        {
-            if (gameObject.tag == Tags.Ball)
-                Debug.Log("Received Position" + stream.PeekNext());
-        }
-        m_PositionControl.OnPhotonSerializeView(transform.localPosition, stream, info);
-        
-        m_RotationControl.OnPhotonSerializeView(transform.localRotation, stream, info);
-        m_ScaleControl.OnPhotonSerializeView(transform.localScale, stream, info);
+        m_PositionControl.OnPhotonSerializeView( transform.localPosition, stream, info );
+        m_RotationControl.OnPhotonSerializeView( transform.localRotation, stream, info );
+        m_ScaleControl.OnPhotonSerializeView( transform.localScale, stream, info );
 
-        if (m_PhotonView.isMine == false && m_PositionModel.DrawErrorGizmo == true)
+        if( m_PhotonView.isMine == false && m_PositionModel.DrawErrorGizmo == true )
         {
             DoDrawEstimatedPositionError();
         }
 
-        if (stream.isReading == true)
+        if( stream.isReading == true )
         {
             m_ReceivedNetworkUpdate = true;
         }
@@ -137,9 +141,9 @@ public class PhotonTransformView : MonoBehaviour, IPunObservable
     {
         Vector3 targetPosition = m_PositionControl.GetNetworkPosition();
 
-        Debug.DrawLine(targetPosition, transform.position, Color.red, 2f);
-        Debug.DrawLine(transform.position, transform.position + Vector3.up, Color.green, 2f);
-        Debug.DrawLine(targetPosition, targetPosition + Vector3.up, Color.red, 2f);
+        Debug.DrawLine( targetPosition, transform.position, Color.red, 2f );
+        Debug.DrawLine( transform.position, transform.position + Vector3.up, Color.green, 2f );
+        Debug.DrawLine( targetPosition, targetPosition + Vector3.up, Color.red, 2f );
     }
 
     //void DoDrawNetworkPositionGizmo()
