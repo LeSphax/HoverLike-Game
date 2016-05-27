@@ -43,7 +43,6 @@ public class Matchmaker : Photon.PunBehaviour
 
     public void OnGUI()
     {
-        Debug.Log(PhotonNetwork.GetPing());
         GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
     }
 }

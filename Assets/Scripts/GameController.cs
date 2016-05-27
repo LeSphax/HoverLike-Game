@@ -15,12 +15,12 @@ public class GameController : MonoBehaviour
     {
         initialPosition = Camera.main.transform.localPosition;
         cameraPosition = Vector3.zero;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
 
     void Update()
     {
-        Cursor.lockState = CursorLockMode.Confined;
         if (Input.mousePosition.x < 5 && cameraPosition.x < MAX_CAMERA_OFFSET_X)
         {
             cameraPosition += Vector3.right * scrollingSpeed;
