@@ -13,7 +13,7 @@ class BallMovementPhotonView : Photon.MonoBehaviour
     public float speedDifference = 5;
     public float maxDistance = 5;
 
-    private float speed = 200;
+    private float MAX_SPEED = 200;
     private Color linesColor = Color.red;
 
     void Awake()
@@ -103,11 +103,18 @@ class BallMovementPhotonView : Photon.MonoBehaviour
         }
     }
 
-    public void Throw(Vector3 target)
+    public void Throw(Vector3 target, float power)
     {
         Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
-        myRigidbody.velocity += velocity * speed;
+        myRigidbody.velocity += velocity * MAX_SPEED * Mathf.Max(power,0.3f);
+        AttractionBall.activated = false;
+        Invoke("ReactivateAttraction", 0.5f);
+    }
+
+    private void ReactivateAttraction()
+    {
+        AttractionBall.activated = true;
     }
 }
 

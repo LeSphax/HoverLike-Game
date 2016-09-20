@@ -4,31 +4,36 @@ using UnityEngine;
 public class AttractionBall : MonoBehaviour
 {
 
-    public float speed = 2f;
+    public float power = 2f;
+    public static bool activated = true;
 
     List<GameObject> playersAttracting = new List<GameObject>();
 
     void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.tag == Tags.Player)
+        Debug.Log(Tags.IsPlayer(collider.gameObject.tag));
+        if (Tags.IsPlayer(collider.gameObject.tag))
             playersAttracting.Add(collider.gameObject);
     }
 
     void OnTriggerExit(Collider collider)
     {
-        if (collider.gameObject.tag == Tags.Player)
+        Debug.Log(Tags.IsPlayer(collider.gameObject.tag));
+        if (Tags.IsPlayer(collider.gameObject.tag))
+        {
             playersAttracting.Remove(collider.gameObject);
+        }
     }
 
     void Update()
     {
-        if (!BallState.IsAttached())
+        if (!BallState.IsAttached() && activated)
             foreach (GameObject player in playersAttracting)
             {
                 Vector3 target = player.transform.position;
                 Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
                 velocity.Normalize();
-                transform.parent.GetComponent<Rigidbody>().velocity += velocity * speed;
+                transform.parent.GetComponent<Rigidbody>().velocity += velocity * power;
             }
     }
 }

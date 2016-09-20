@@ -1,5 +1,4 @@
-﻿using System;
-using ExitGames.Client.Photon;
+﻿using ExitGames.Client.Photon;
 using UnityEngine;
 
 public class BallState : Photon.MonoBehaviour

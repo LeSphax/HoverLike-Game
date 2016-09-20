@@ -4,6 +4,7 @@ public class PlayerBallController : Photon.MonoBehaviour
 {
 
     private Vector3 ballHoldingPosition;
+    public PowerBar powerBar;
 
     private GameObject _ball;
     private GameObject ball
@@ -22,7 +23,7 @@ public class PlayerBallController : Photon.MonoBehaviour
     void Start()
     {
         Physics.IgnoreCollision(GetComponent<Collider>(), ball.GetComponent<Collider>(), true);
-
+        powerBar = GetComponent<PowerBar>();
         ballHoldingPosition = new Vector3(.5f, .5f, .5f);
 
     }
@@ -93,16 +94,24 @@ public class PlayerBallController : Photon.MonoBehaviour
         {
             if (BallState.GetAttachedPlayerID() == photonView.viewID)
             {
-                photonView.RPC("ThrowBall", PhotonTargets.AllViaServer, Functions.GetMouseWorldPosition());
+                powerBar.StartFilling();
+            }
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            if (BallState.GetAttachedPlayerID() == photonView.viewID)
+            {
+                photonView.RPC("ThrowBall", PhotonTargets.AllViaServer, Functions.GetMouseWorldPosition(), powerBar.powerValue);
+                powerBar.Hide();
             }
         }
     }
 
     [PunRPC]
-    private void ThrowBall(Vector3 target)
+    private void ThrowBall(Vector3 target, float power)
     {
         DetachBall();
-        SetBallSpeed(target);
+        SetBallSpeed(target,power);
         //if (PhotonNetwork.isMasterClient)
         //{
         //    DetachBall();
@@ -112,9 +121,9 @@ public class PlayerBallController : Photon.MonoBehaviour
 
     }
 
-    private void SetBallSpeed(Vector3 target)
+    private void SetBallSpeed(Vector3 target,float power)
     {
-        ball.SendMessage("Throw", target);
+        ball.GetComponent<BallMovementPhotonView>().Throw(target, power);
     }
 
     [PunRPC]

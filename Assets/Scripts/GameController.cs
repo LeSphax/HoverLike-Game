@@ -39,6 +39,8 @@ public class GameController : MonoBehaviour
         }
         Vector3 newPosition = initialPosition + Camera.main.transform.InverseTransformVector(cameraPosition);
         Camera.main.transform.localPosition = newPosition;
+        Cursor.lockState = CursorLockMode.Confined;
+
     }
 
 }
