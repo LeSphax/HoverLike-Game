@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class Tags : MonoBehaviour
 {
@@ -17,5 +19,12 @@ public class Tags : MonoBehaviour
     public static bool IsPlayer(string tag)
     {
         return tag == Player || tag == MyPlayer;
+    }
+
+    public static GameObject[] FindPlayers()
+    {
+        var players = GameObject.FindGameObjectsWithTag(Player);
+        var myPlayers = GameObject.FindGameObjectsWithTag(MyPlayer);
+        return ArrayExtensions.Concatenate(players, myPlayers);
     }
 }

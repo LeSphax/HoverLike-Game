@@ -22,7 +22,7 @@ class BallMovementPhotonView : Photon.MonoBehaviour
         myPhotonView = gameObject.GetPhotonView();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (myPhotonView == null || myPhotonView.isMine == true || PhotonNetwork.connected == false)
         {

@@ -8,10 +8,21 @@ using Random = UnityEngine.Random;
 // the Photon server assigns a ActorNumber (player.ID) to each player, beginning at 1
 // for this game, we don't mind the actual number
 // this game uses player 0 and 1, so clients need to figure out their number somehow
-
-
 public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 {
+
+	[SerializeField]
+	private RectTransform ConnectUiView;
+
+	[SerializeField]
+	private RectTransform GameUiView;
+
+	[SerializeField]
+	private CanvasGroup ButtonCanvasGroup;
+
+	[SerializeField]
+	private RectTransform TimerFillImage;
+
     [SerializeField]
     private Text TurnText;
 
@@ -62,8 +73,12 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
     private ResultType result;
 
     private PunTurnManager turnManager;
+
     public Hand randomHand;    // used to show remote player's "hand" while local player didn't select anything
 
+	// keep track of when we show the results to handle game logic.
+	private bool IsShowingResults;
+	
     public enum Hand
     {
         None = 0,
@@ -82,25 +97,21 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 
     public void Start()
     {
-        this.turnManager = this.gameObject.AddComponent<PunTurnManager>();
+		this.turnManager = this.gameObject.AddComponent<PunTurnManager>();
         this.turnManager.TurnManagerListener = this;
-        this.turnManager.TurnDuration = 5;
+        this.turnManager.TurnDuration = 5f;
         
 
         this.localSelectionImage.gameObject.SetActive(false);
         this.remoteSelectionImage.gameObject.SetActive(false);
         this.StartCoroutine("CycleRemoteHandCoroutine");
 
-        // when we play this scene in the editor (without the other scene), make sure we connect, too
-        if (!PhotonNetwork.connected && !PhotonNetwork.connecting)
-        {
-            RpsDemoConnect dc = gameObject.AddComponent<RpsDemoConnect>();
-            dc.ApplyUserIdAndConnect();
-        }
+		RefreshUIViews();
     }
 
     public void Update()
     {
+
         // for debugging, it's useful to have a few actions tied to keys:
         if (Input.GetKeyUp(KeyCode.L))
         {
@@ -112,75 +123,105 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
             PhotonHandler.StopFallbackSendAckThread();
         }
 
-        // disable the "reconnect panel" if PUN is connected or connecting
-        if (PhotonNetwork.connected && this.DisconnectedPanel.gameObject.GetActive())
+	
+        if ( ! PhotonNetwork.inRoom)
         {
-            this.DisconnectedPanel.gameObject.SetActive(false);
-        }
-        if (!PhotonNetwork.connected && !PhotonNetwork.connecting && !this.DisconnectedPanel.gameObject.GetActive())
-        {
-            this.DisconnectedPanel.gameObject.SetActive(true);
-        }
+			return;
+		}
 
-        if (PhotonNetwork.inRoom)
-        {
+		// disable the "reconnect panel" if PUN is connected or connecting
+		if (PhotonNetwork.connected && this.DisconnectedPanel.gameObject.GetActive())
+		{
+			this.DisconnectedPanel.gameObject.SetActive(false);
+		}
+		if (!PhotonNetwork.connected && !PhotonNetwork.connecting && !this.DisconnectedPanel.gameObject.GetActive())
+		{
+			this.DisconnectedPanel.gameObject.SetActive(true);
+		}
+
+
+		if (PhotonNetwork.room.playerCount>1)
+		{
+			if (this.turnManager.IsOver)
+			{
+				return;
+			}
+
+			/*
+			// check if we ran out of time, in which case we loose
+			if (turnEnd<0f && !IsShowingResults)
+			{
+					Debug.Log("Calling OnTurnCompleted with turnEnd ="+turnEnd);
+					OnTurnCompleted(-1);
+					return;
+			}
+		*/
+
             if (this.TurnText != null)
             {
                 this.TurnText.text = this.turnManager.Turn.ToString();
             }
-            if (this.turnManager.Turn > 0 && this.TimeText != null)
+
+			if (this.turnManager.Turn > 0 && this.TimeText != null && ! IsShowingResults)
             {
-                float turnEnd = this.turnManager.GetRemainingSeconds();
-                this.TimeText.text = turnEnd.ToString("F1") + " SECONDS";
+                
+				this.TimeText.text = this.turnManager.RemainingSecondsInTurn.ToString("F1") + " SECONDS";
+
+				TimerFillImage.anchorMax = new Vector2(1f- this.turnManager.RemainingSecondsInTurn/this.turnManager.TurnDuration,1f);
             }
-            this.UpdatePlayerTexts();
 
+            
+		}
 
-            // show local player's selected hand
-            Sprite selected = SelectionToSprite(this.localSelection);
+		this.UpdatePlayerTexts();
+
+        // show local player's selected hand
+        Sprite selected = SelectionToSprite(this.localSelection);
+        if (selected != null)
+        {
+            this.localSelectionImage.gameObject.SetActive(true);
+            this.localSelectionImage.sprite = selected;
+        }
+
+        // remote player's selection is only shown, when the turn is complete (finished by both)
+        if (this.turnManager.IsCompletedByAll)
+        {
+            selected = SelectionToSprite(this.remoteSelection);
             if (selected != null)
             {
-                this.localSelectionImage.gameObject.SetActive(true);
-                this.localSelectionImage.sprite = selected;
-            }
-
-            // remote player's selection is only shown, when the turn is complete (finished by both)
-            if (this.turnManager.IsCompletedByAll)
-            {
-                selected = SelectionToSprite(this.remoteSelection);
-                if (selected != null)
-                {
-                    this.remoteSelectionImage.color = new Color(1,1,1,1);
-                    this.remoteSelectionImage.sprite = selected;
-                }
-            }
-            else
-            {
-                if (PhotonNetwork.room.playerCount < 2)
-                {
-                    this.remoteSelectionImage.color = new Color(1, 1, 1, 0);
-                }
-
-                // if the turn is not completed by all, we use a random image for the remote hand
-                else if (this.turnManager.Turn > 0 && !this.turnManager.IsCompletedByAll)
-                {
-                    // alpha of the remote hand is used as indicator if the remote player "is active" and "made a turn"
-                    PhotonPlayer remote = PhotonNetwork.player.GetNext();
-                    float alpha = 0.5f;
-                    if (this.turnManager.GetPlayerFinishedTurn(remote))
-                    {
-                        alpha = 1;
-                    }
-                    if (remote != null && remote.isInactive)
-                    {
-                        alpha = 0.1f;
-                    }
-
-                    this.remoteSelectionImage.color = new Color(1, 1, 1, alpha);
-                    this.remoteSelectionImage.sprite = SelectionToSprite(randomHand);
-                }
+                this.remoteSelectionImage.color = new Color(1,1,1,1);
+                this.remoteSelectionImage.sprite = selected;
             }
         }
+        else
+        {
+			ButtonCanvasGroup.interactable = PhotonNetwork.room.playerCount > 1;
+
+            if (PhotonNetwork.room.playerCount < 2)
+            {
+                this.remoteSelectionImage.color = new Color(1, 1, 1, 0);
+            }
+
+            // if the turn is not completed by all, we use a random image for the remote hand
+            else if (this.turnManager.Turn > 0 && !this.turnManager.IsCompletedByAll)
+            {
+                // alpha of the remote hand is used as indicator if the remote player "is active" and "made a turn"
+                PhotonPlayer remote = PhotonNetwork.player.GetNext();
+                float alpha = 0.5f;
+                if (this.turnManager.GetPlayerFinishedTurn(remote))
+                {
+                    alpha = 1;
+                }
+                if (remote != null && remote.isInactive)
+                {
+                    alpha = 0.1f;
+                }
+
+                this.remoteSelectionImage.color = new Color(1, 1, 1, alpha);
+                this.remoteSelectionImage.sprite = SelectionToSprite(randomHand);
+            }
+        }
+
     }
 
     #region TurnManager Callbacks
@@ -196,6 +237,9 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 
         this.localSelectionImage.gameObject.SetActive(false);
         this.remoteSelectionImage.gameObject.SetActive(true);
+
+		IsShowingResults = false;
+		ButtonCanvasGroup.interactable = true;
     }
 
 
@@ -236,8 +280,12 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 
     public void OnTurnTimeEnds(int obj)
     {
-        Debug.Log("OnTurnTimeout");
-    }
+		if (!IsShowingResults)
+		{
+			Debug.Log("OnTurnTimeEnds: Calling OnTurnCompleted");
+			OnTurnCompleted(-1);
+		}
+	}
 
     private void UpdateScores()
     {
@@ -260,19 +308,12 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
             this.turnManager.BeginTurn();
         }
     }
-
-
+	
     public void MakeTurn(Hand selection)
     {
         this.turnManager.SendMove((byte)selection, true);
     }
-
-
-    public void OnReceivedTurn()
-    {
-    }
-
-
+	
     public void OnEndTurn()
     {
         this.StartCoroutine("ShowResultsBeginNextTurnCoroutine");
@@ -280,7 +321,9 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 
     public IEnumerator ShowResultsBeginNextTurnCoroutine()
     {
-        yield return new WaitForSeconds(1.5f);
+		ButtonCanvasGroup.interactable = false;
+		IsShowingResults = true;
+       // yield return new WaitForSeconds(1.5f);
 
         if (this.result == ResultType.Draw)
         {
@@ -293,12 +336,14 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
         this.WinOrLossImage.gameObject.SetActive(true);
 
         yield return new WaitForSeconds(2.0f);
+
         this.StartTurn();
     }
 
 
     public void EndGame()
     {
+		Debug.Log("EndGame");
     }
 
     private void CalculateWinAndLoss()
@@ -308,6 +353,17 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
         {
             return;
         }
+
+		if (this.localSelection == Hand.None)
+		{
+			this.result = ResultType.LocalLoss;
+			return;
+		}
+
+		if (this.remoteSelection == Hand.None)
+		{
+			this.result = ResultType.LocalWin;
+		}
         
         if (this.localSelection == Hand.Rock)
         {
@@ -353,6 +409,9 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
         }
         else
         {
+
+			TimerFillImage.anchorMax = new Vector2(0f,1f);
+			this.TimeText.text = "";
             this.RemotePlayerText.text = "waiting for another player        00";
         }
         
@@ -407,13 +466,30 @@ public class RpsCore : PunBehaviour, IPunTurnManagerCallbacks
 
     #endregion
 
+	void RefreshUIViews()
+	{
+		TimerFillImage.anchorMax = new Vector2(0f,1f);
+
+		ConnectUiView.gameObject.SetActive(!PhotonNetwork.inRoom);
+		GameUiView.gameObject.SetActive(PhotonNetwork.inRoom);
+
+		ButtonCanvasGroup.interactable = PhotonNetwork.room!=null?PhotonNetwork.room.playerCount > 1:false;
+	}
+
+
     public override void OnLeftRoom()
     {
         Debug.Log("OnLeftRoom()");
+
+
+
+		RefreshUIViews();
     }
 
     public override void OnJoinedRoom()
     {
+		RefreshUIViews();
+
         if (PhotonNetwork.room.playerCount == 2)
         {
             if (this.turnManager.Turn == 0)

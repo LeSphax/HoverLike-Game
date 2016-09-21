@@ -1,23 +1,34 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerMovementPhotonView))]
 public class PlayerController : Photon.MonoBehaviour
 {
     public GameObject targetPrefab;
-    private GameObject target;
+    private GameObject target
+    {
+        get
+        {
+            return movementManager.target;
+        }
+        set
+        {
+            movementManager.target = value;
+        }
+    }
     PhotonTransformView rigidbodyView;
+    PlayerMovementPhotonView movementManager;
 
     public Vector3 spawningPoint;
     public int playerNumber;
     public int teamNumber;
 
-    private Rigidbody m_rigidbody;
-
-    private const float MAX_VELOCITY = 100f;
+    private Rigidbody myRigidbody;
 
     void Start()
     {
-        m_rigidbody = GetComponent<Rigidbody>();
+        movementManager = GetComponent<PlayerMovementPhotonView>();
+        myRigidbody = GetComponent<Rigidbody>();
         target = null;
     }
 
@@ -44,38 +55,14 @@ public class PlayerController : Photon.MonoBehaviour
         Destroy(target);
     }
 
-    private void Shoot()
-    {
-
-    }
-
-    private void LoadShoot()
-    {
-    }
-
-    void FixedUpdate()
-    {
-        if (photonView.isMine)
-        {
-            if (target != null)
-            {
-                m_rigidbody.drag = 2;
-                transform.LookAt(target.transform.position + Vector3.up * transform.position.y);
-                Vector3 force = new Vector3(target.transform.position.x - transform.position.x, 0, target.transform.position.z - transform.position.z);
-                force.Normalize();
-                m_rigidbody.AddForce(force * 2, ForceMode.VelocityChange);
-            }
-            else
-            {
-                m_rigidbody.drag = 1;
-            }
-            GetComponent<Rigidbody>().velocity *= Mathf.Min(1.0f, MAX_VELOCITY / m_rigidbody.velocity.magnitude);
-        }
-    }
-
     public void CreateTarget()
     {
         Vector3 position = Functions.GetMouseWorldPosition();
+        photonView.RPC("_CreateTarget", PhotonTargets.AllBufferedViaServer, position);
+    }
+
+    public void _CreateTarget(Vector3 position)
+    {
         Destroy(target);
         target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
     }

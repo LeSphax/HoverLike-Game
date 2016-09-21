@@ -80,7 +80,7 @@ public class BallState : Photon.MonoBehaviour
 
     public static GameObject GetAttachedPlayer()
     {
-        foreach (GameObject player in GameObject.FindGameObjectsWithTag(Tags.Player))
+        foreach (GameObject player in Tags.FindPlayers())
         {
             if (player.GetPhotonView().viewID == GetAttachedPlayerID())
                 return player;

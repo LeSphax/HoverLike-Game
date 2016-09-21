@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(PowerBar))]
 public class PlayerBallController : Photon.MonoBehaviour
 {
 
     private Vector3 ballHoldingPosition;
-    public PowerBar powerBar;
+    private PowerBar powerBar;
 
     private GameObject _ball;
     private GameObject ball
@@ -32,7 +33,7 @@ public class PlayerBallController : Photon.MonoBehaviour
     {
         if (ball.GetPhotonView().isMine)
         {
-            if (collision.gameObject.tag == Tags.Player && BallState.GetAttachedPlayerID() != photonView.viewID && BallState.GetAttachedPlayerID() == collision.gameObject.GetPhotonView().viewID)
+            if (Tags.IsPlayer(collision.gameObject.tag) && BallState.GetAttachedPlayerID() != photonView.viewID && BallState.GetAttachedPlayerID() == collision.gameObject.GetPhotonView().viewID)
             {
                 Debug.Log("PlayerEnter");
                 if (BallState.IsTakeable())

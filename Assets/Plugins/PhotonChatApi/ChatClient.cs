@@ -126,7 +126,7 @@ namespace ExitGames.Client.Photon.Chat
             
 #if UNITY_WEBGL
             if (protocol == ConnectionProtocol.WebSocket || protocol == ConnectionProtocol.WebSocketSecure) {
-               // this.chatPeer.SocketImplementation = typeof(SocketWebTcp);
+                this.chatPeer.SocketImplementation = typeof(SocketWebTcp);
             }
 #endif
 
