@@ -8,6 +8,8 @@ public class Matchmaker : Photon.PunBehaviour
     // Use this for initialization
     public void Start()
     {
+        PhotonNetwork.sendRate = 60;
+        PhotonNetwork.sendRateOnSerialize = 60;
         PhotonNetwork.ConnectUsingSettings("0.1");
     }
 

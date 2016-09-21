@@ -5,15 +5,24 @@
 public class PlayerController : Photon.MonoBehaviour
 {
     public GameObject targetPrefab;
+    private GameObject _target;
     private GameObject target
     {
         get
         {
-            return movementManager.target;
+            return _target;
         }
         set
         {
-            movementManager.target = value;
+            if (value == null)
+            {
+                movementManager.targetPosition = null;
+            }
+            else
+            {
+                movementManager.targetPosition = value.transform.position;
+            }
+            _target = value;
         }
     }
     PhotonTransformView rigidbodyView;
@@ -58,7 +67,9 @@ public class PlayerController : Photon.MonoBehaviour
     public void CreateTarget()
     {
         Vector3 position = Functions.GetMouseWorldPosition();
-        photonView.RPC("_CreateTarget", PhotonTargets.AllBufferedViaServer, position);
+        Destroy(target);
+        target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
+        //photonView.RPC("_CreateTarget", PhotonTargets.AllBufferedViaServer, position);
     }
 
     [PunRPC]

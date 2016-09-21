@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [RequireComponent(typeof(CustomRigidbody))]
 class PlayerMovementPhotonView : Photon.MonoBehaviour
@@ -8,16 +9,20 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
     PhotonView myPhotonView;
     double myLastSerializeTime;
 
-    Vector3 myNetworkVelocity;
-    Vector3 myNetworkPosition;
-
     public float speedDifference = 5;
     public float maxDistance = 5;
 
     public float MAX_VELOCITY = 100f;
     public float ANGULAR_SPEED = 5.0f;
     private Color linesColor = Color.red;
-    public GameObject target;
+    public Vector3? targetPosition;
+    public float timeLastUpdate;
+
+    private const float FRAME_DURATION = 0.02f;
+
+    private int currentId = 0;
+
+    private PlayerPacket[] StateBuffer;
 
     void Awake()
     {
@@ -25,12 +30,17 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
         myPhotonView = gameObject.GetPhotonView();
     }
 
-    void Update()
+    void Start()
     {
-        if (target != null)
+        InvokeRepeating("CustomUpdate", 0f, FRAME_DURATION);
+    }
+
+    void CustomUpdate()
+    {
+        if (targetPosition != null)
         {
-            myRigidbody.drag = 5;
-            var lookPos = target.transform.position - transform.position;
+            myRigidbody.drag = 3;
+            var lookPos = targetPosition.Value - transform.position;
             lookPos.y = 0;
             var targetRotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * ANGULAR_SPEED);
@@ -41,46 +51,8 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
             myRigidbody.drag = 1;
         }
         GetComponent<CustomRigidbody>().velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
-
-        if (myPhotonView == null || myPhotonView.isMine == true || PhotonNetwork.connected == false)
-        {
-            return;
-        }
-        if (Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) > myRigidbody.velocity.magnitude * 0.2f)
-        {
-            myRigidbody.velocity = myNetworkVelocity;
-        }
-        // myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
-        transform.position = Vector3.Lerp(transform.position, myNetworkPosition, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
-        if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance * 10)
-        {
-            transform.position = GetExtrapolatedPosition();
-        }
-    }
-
-    public Vector3 GetExtrapolatedPosition()
-    {
-        float timePassed = (float)(PhotonNetwork.time - myLastSerializeTime);
-
-        timePassed += (float)PhotonNetwork.GetPing() / 1000f;
-
-        Vector3 extrapolatedPosition = myNetworkPosition + myNetworkVelocity * timePassed;
-
-        DrawGizmos(extrapolatedPosition);
-        return extrapolatedPosition;
-    }
-
-    private void DrawGizmos(Vector3 extrapolatedPosition)
-    {
-        if (linesColor == Color.red)
-        {
-            linesColor = Color.blue;
-        }
-        else
-        {
-            linesColor = Color.red;
-        }
-        Debug.DrawLine(transform.position, extrapolatedPosition, linesColor);
+        myRigidbody.CustomUpdate();
+        timeLastUpdate = Time.realtimeSinceStartup;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -89,14 +61,57 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
         {
             stream.SendNext(myRigidbody.velocity);
             stream.SendNext(transform.position);
+            stream.SendNext(targetPosition);
+            stream.SendNext(timeLastUpdate);
         }
 
         else if (stream.isReading)
         {
-            myNetworkVelocity = (Vector3)stream.ReceiveNext();
-            myNetworkPosition = (Vector3)stream.ReceiveNext();
+            StateBuffer[currentId] = new PlayerPacket();
+            StateBuffer[currentId].id = currentId;
+            StateBuffer[currentId].myNetworkVelocity = (Vector3)stream.ReceiveNext();
+            StateBuffer[currentId].myNetworkPosition = (Vector3)stream.ReceiveNext();
+            StateBuffer[currentId].myNetworkTarget = (Vector3?)stream.ReceiveNext();
+            StateBuffer[currentId].myNetworkLastUpdate = (float)stream.ReceiveNext();
             myLastSerializeTime = info.timestamp;
+            RefreshSimulation();
         }
     }
+
+    private void RefreshSimulation()
+    {
+        transform.position = myNetworkPosition;
+        myRigidbody.velocity = myNetworkVelocity;
+        targetPosition = myNetworkTarget;
+        float timePassed = PhotonNetwork.GetPing() / 1000f;
+        Simulate(timePassed);
+    }
+
+
+    /*
+     * Simulate the passaing of time seconds
+     */
+    public void Simulate(float time)
+    {
+        int numberFrames = (int)(time / FRAME_DURATION);
+        float residualTime = time % FRAME_DURATION;
+        for (int i = 0; i < numberFrames; i++)
+        {
+            CustomUpdate();
+        }
+        CancelInvoke("CustomUpdate");
+        InvokeRepeating("CustomUpdate", residualTime, FRAME_DURATION);
+    }
+}
+
+public struct PlayerPacket
+{
+    public int id;
+    public Vector3 myNetworkVelocity;
+    public Vector3 myNetworkPosition;
+    public Vector3? myNetworkTarget;
+    public float myNetworkLastUpdate;
+
+
 }
 
