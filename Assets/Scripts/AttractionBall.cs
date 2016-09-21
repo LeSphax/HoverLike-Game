@@ -11,14 +11,12 @@ public class AttractionBall : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        Debug.Log(Tags.IsPlayer(collider.gameObject.tag));
         if (Tags.IsPlayer(collider.gameObject.tag))
             playersAttracting.Add(collider.gameObject);
     }
 
     void OnTriggerExit(Collider collider)
     {
-        Debug.Log(Tags.IsPlayer(collider.gameObject.tag));
         if (Tags.IsPlayer(collider.gameObject.tag))
         {
             playersAttracting.Remove(collider.gameObject);

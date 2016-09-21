@@ -9,6 +9,6 @@ public class DashEffect : AbilityEffect
         target.transform.LookAt(position + Vector3.up * target.transform.position.y);
         Vector3 force = new Vector3(position.x - target.transform.position.x, 0, position.z - target.transform.position.z);
         force.Normalize();
-        target.GetComponent<Rigidbody>().AddForce(force * 100, ForceMode.VelocityChange);
+        target.GetComponent<CustomRigidbody>().AddForce(force * 100);
     }
 }

@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CustomRigidbody))]
 class PlayerMovementPhotonView : Photon.MonoBehaviour
 {
 
-    Rigidbody myRigidbody;
+    CustomRigidbody myRigidbody;
     PhotonView myPhotonView;
     double myLastSerializeTime;
 
@@ -21,7 +21,7 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
 
     void Awake()
     {
-        myRigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<CustomRigidbody>();
         myPhotonView = gameObject.GetPhotonView();
     }
 
@@ -29,18 +29,18 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
     {
         if (target != null)
         {
-            myRigidbody.drag = 2;
+            myRigidbody.drag = 5;
             var lookPos = target.transform.position - transform.position;
             lookPos.y = 0;
             var targetRotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * ANGULAR_SPEED);
-            myRigidbody.AddForce(transform.forward * 2, ForceMode.VelocityChange);
+            myRigidbody.AddForce(transform.forward * 2);
         }
         else
         {
             myRigidbody.drag = 1;
         }
-        GetComponent<Rigidbody>().velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
+        GetComponent<CustomRigidbody>().velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
 
         if (myPhotonView == null || myPhotonView.isMine == true || PhotonNetwork.connected == false)
         {

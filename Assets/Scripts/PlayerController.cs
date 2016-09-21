@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CustomRigidbody))]
 [RequireComponent(typeof(PlayerMovementPhotonView))]
 public class PlayerController : Photon.MonoBehaviour
 {
@@ -23,12 +23,12 @@ public class PlayerController : Photon.MonoBehaviour
     public int playerNumber;
     public int teamNumber;
 
-    private Rigidbody myRigidbody;
+    private CustomRigidbody myRigidbody;
 
     void Start()
     {
         movementManager = GetComponent<PlayerMovementPhotonView>();
-        myRigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<CustomRigidbody>();
         target = null;
     }
 
@@ -61,6 +61,7 @@ public class PlayerController : Photon.MonoBehaviour
         photonView.RPC("_CreateTarget", PhotonTargets.AllBufferedViaServer, position);
     }
 
+    [PunRPC]
     public void _CreateTarget(Vector3 position)
     {
         Destroy(target);
