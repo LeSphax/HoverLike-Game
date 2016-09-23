@@ -7,6 +7,8 @@ public class PlayerBallController : Photon.MonoBehaviour
     private Vector3 ballHoldingPosition;
     private PowerBar powerBar;
 
+    public bool stealing = false;
+
     private GameObject _ball;
     private GameObject ball
     {
@@ -31,41 +33,50 @@ public class PlayerBallController : Photon.MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (ball.GetPhotonView().isMine)
+        if (photonView.isMine)
         {
-            if (Tags.IsPlayer(collision.gameObject.tag) && BallState.GetAttachedPlayerID() != photonView.viewID && BallState.GetAttachedPlayerID() == collision.gameObject.GetPhotonView().viewID)
+            if (Tags.IsPlayer(collision.gameObject.tag) && BallState.GetAttachedPlayerID() == collision.gameObject.GetPhotonView().viewID)
             {
-                Debug.Log("PlayerEnter");
-                if (BallState.IsTakeable())
-                {
-                    AttachBall();
-                    photonView.RPC("AttachBall", PhotonTargets.Others);
-                }
+                if (stealing)
+                    photonView.RPC("StealBall", PhotonTargets.MasterClient, BallState.GetAttachedPlayerID());
             }
         }
     }
 
     void OnTriggerEnter(Collider collider)
     {
-        if (ball.GetPhotonView().isMine)
+        if (photonView.isMine)
         {
-            if (collider.gameObject.tag == Tags.CatchDetector && BallState.GetAttachedPlayerID() != photonView.viewID)
+            if (collider.gameObject.tag == Tags.CatchDetector && !BallState.IsAttached())
             {
-                if (BallState.IsCatchDetectorEnabled())
-                {
-                    AttachBall();
-                    photonView.RPC("AttachBall", PhotonTargets.Others);
-                }
+                photonView.RPC("PickUpBall", PhotonTargets.MasterClient);
             }
+        }
+    }
+
+    [PunRPC]
+    public void PickUpBall()
+    {
+        Debug.Log("PickUpBall " + gameObject.name);
+        if (!BallState.IsAttached())
+            BallState.SetAttached(photonView.viewID);
+        photonView.RPC("AttachBall", PhotonTargets.All);
+    }
+
+    [PunRPC]
+    public void StealBall(int victimId)
+    {
+        Debug.Log("StealBall " + victimId + "     " + photonView.viewID + "   " + gameObject.name);
+        if (BallState.GetAttachedPlayerID() == victimId)
+        {
+            BallState.SetAttached(photonView.viewID);
+            photonView.RPC("AttachBall", PhotonTargets.All);
         }
     }
 
     [PunRPC]
     public void AttachBall()
     {
-        Debug.Log("Attach");
-        if (ball.GetPhotonView().isMine)
-            BallState.SetAttached(photonView.viewID);
         ball.transform.SetParent(transform);
         ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
         ball.transform.localPosition = ballHoldingPosition;
@@ -74,7 +85,7 @@ public class PlayerBallController : Photon.MonoBehaviour
     [PunRPC]
     void DetachBall()
     {
-        Debug.Log("Detach");
+        Debug.Log("DetachBall " + gameObject.name);
         Physics.IgnoreCollision(ball.GetComponent<Collider>(), GetComponent<Collider>());
         BallState.Detach();
         ball.transform.SetParent(null);
@@ -112,7 +123,7 @@ public class PlayerBallController : Photon.MonoBehaviour
     private void ThrowBall(Vector3 target, float power)
     {
         DetachBall();
-        SetBallSpeed(target,power);
+        SetBallSpeed(target, power);
         //if (PhotonNetwork.isMasterClient)
         //{
         //    DetachBall();
@@ -122,20 +133,9 @@ public class PlayerBallController : Photon.MonoBehaviour
 
     }
 
-    private void SetBallSpeed(Vector3 target,float power)
+    private void SetBallSpeed(Vector3 target, float power)
     {
         ball.GetComponent<BallMovementPhotonView>().Throw(target, power);
-    }
-
-    [PunRPC]
-    public void RequestControlOfTheBall()
-    {
-        if (photonView.isMine)
-        {
-            Debug.Log("RequestOwnership");
-            ball.GetPhotonView().RequestOwnership();
-        }
-        Debug.Log(ball.GetPhotonView().isMine);
     }
 
 }

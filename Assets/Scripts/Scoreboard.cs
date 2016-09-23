@@ -1,10 +1,7 @@
-﻿using UnityEngine;
+﻿using ExitGames.Client.Photon;
+using UnityEngine;
 using UnityEngine.UI;
 public class Scoreboard : Photon.MonoBehaviour {
-
-
-    private static int scoreLeft = 0;
-    private static int scoreRight= 0;
 
     private static Text textScoreLeft;
     private static Text textScoreRight;
@@ -22,13 +19,14 @@ public class Scoreboard : Photon.MonoBehaviour {
 
     void Start()
     {
-        UpdateScoreBoard();
+        Matchmaker.connectedEvent += UpdateScoreBoard;
     }
 
-    private static void UpdateScoreBoard()
+    [PunRPC]
+    public void UpdateScoreBoard()
     {
-        textScoreLeft.text = "" + scoreLeft;
-        textScoreRight.text = "" + scoreRight;
+        textScoreLeft.text = "" + CustomProperties.GetProperty<int>(NetworkRoomKeys.TeamScore[0]);
+        textScoreRight.text = "" + CustomProperties.GetProperty<int>(NetworkRoomKeys.TeamScore[1]);
     }
 
     public static void incrementTeamScore(int teamNumber)
@@ -38,24 +36,14 @@ public class Scoreboard : Photon.MonoBehaviour {
             if (Time.realtimeSinceStartup - timeLastGoal > 1)
             {
                 timeLastGoal = Time.realtimeSinceStartup;
-                scoreboard.GetPhotonView().RPC("increment", PhotonTargets.All, teamNumber);
+                string key = NetworkRoomKeys.TeamScore[teamNumber];
+                int newScore = CustomProperties.GetProperty<int>(key)+1;
+                Hashtable someCustomPropertiesToSet = new Hashtable() { { key, newScore}};
+                PhotonNetwork.room.SetCustomProperties(someCustomPropertiesToSet);
+                scoreboard.GetPhotonView().RPC("UpdateScoreBoard", PhotonTargets.All);
             }
         }
 
-    }
-
-    [PunRPC]
-    private void increment(int teamNumber)
-    {
-        if (teamNumber == 2)
-        {
-            scoreRight++;
-        }
-        else
-        {
-            scoreLeft++;
-        }
-        UpdateScoreBoard();
     }
 
 }

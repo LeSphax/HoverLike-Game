@@ -7,8 +7,8 @@ public class GameController : MonoBehaviour
     public float scrollingSpeed;
     private Vector3 cameraPosition;
     private Vector3 initialPosition;
-    private const float MAX_CAMERA_OFFSET_X = 60;
-    private const float MAX_CAMERA_OFFSET_Z = 15;
+    private const float MAX_CAMERA_OFFSET_X = 120;
+    private const float MAX_CAMERA_OFFSET_Z = 30;
 
 
     void Start()

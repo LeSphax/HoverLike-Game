@@ -6,11 +6,11 @@ public class BrakeEffect : AbilityEffect
 
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
-        Vector3 currentVelocity = target.GetComponent<CustomRigidbody>().velocity;
+        Vector3 currentVelocity = target.GetComponent<Rigidbody>().velocity;
         if (currentVelocity.magnitude != 0)
         {
             float reduction = (currentVelocity.magnitude - BRAKE_AMOUNT * Time.deltaTime) / currentVelocity.magnitude;
-            target.GetComponent<CustomRigidbody>().velocity *= reduction;
+            target.GetComponent<Rigidbody>().velocity *= reduction;
             target.GetComponent<PlayerController>().DestroyTarget();
         }
     }

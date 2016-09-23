@@ -11,6 +11,7 @@ public class GameLogic : MonoBehaviour
     public void Start()
     {
         ScenePhotonView = this.GetComponent<PhotonView>();
+        Application.runInBackground = true;
     }
 
     public void OnJoinedRoom()

@@ -11,5 +11,7 @@ public class Goal : MonoBehaviour {
             Scoreboard.incrementTeamScore(teamNumber);
         }
     }
+
+
 	
 }

@@ -8,7 +8,7 @@ public class Ability : MonoBehaviour
 {
     private AbilityInput input;
     private AbilityTargeting targeting;
-    private AbilityEffect effect;
+    private AbilityEffect[] effects;
     private Image UI;
 
     public bool NoCooldown = false;
@@ -31,7 +31,7 @@ public class Ability : MonoBehaviour
         UI.fillAmount = 0;
         input = GetComponent<AbilityInput>();
         targeting = GetComponent<AbilityTargeting>();
-        effect = GetComponent<AbilityEffect>();
+        effects = GetComponents<AbilityEffect>();
     }
 
     // Update is called once per frame
@@ -69,7 +69,8 @@ public class Ability : MonoBehaviour
 
     private void CastOnTarget(GameObject target, Vector3 position)
     {
-        effect.ApplyOnTarget(target, position);
+        foreach (AbilityEffect effect in effects)
+            effect.ApplyOnTarget(target, position);
         currentCooldown = cooldownDuration;
         if (NoCooldown)
             state = State.READY;

@@ -123,13 +123,12 @@ namespace ExitGames.Client.Photon.Chat
             this.State = ChatState.Uninitialized;
 
             this.chatPeer = new ChatPeer(this, protocol);
-            
+
 #if UNITY_WEBGL
             if (protocol == ConnectionProtocol.WebSocket || protocol == ConnectionProtocol.WebSocketSecure) {
-                this.chatPeer.SocketImplementation = typeof(SocketWebTcp);
+                //this.chatPeer.SocketImplementation = typeof(SocketWebTcp);
             }
 #endif
-
             this.PublicChannels = new Dictionary<string, ChatChannel>();
             this.PrivateChannels = new Dictionary<string, ChatChannel>();
         }

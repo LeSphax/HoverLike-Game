@@ -1,9 +1,13 @@
 using UnityEngine;
 
+public delegate void ConnectedToRoom();
+
 public class Matchmaker : Photon.PunBehaviour
 {
     private PhotonView myPhotonView;
     private bool creator = false;
+
+    public static event ConnectedToRoom connectedEvent;
 
     // Use this for initialization
     public void Start()
@@ -11,6 +15,7 @@ public class Matchmaker : Photon.PunBehaviour
         PhotonNetwork.sendRate = 60;
         PhotonNetwork.sendRateOnSerialize = 60;
         PhotonNetwork.ConnectUsingSettings("0.1");
+        PhotonNetwork.OverrideBestCloudServer(CloudRegionCode.eu);
     }
 
     public override void OnJoinedLobby()
@@ -34,17 +39,22 @@ public class Matchmaker : Photon.PunBehaviour
     public override void OnJoinedRoom()
     {
         
-        int numberPlayers = PhotonNetwork.playerList.Length;
+        int numberPlayers = PhotonNetwork.playerList.Length-1;
         if (creator)
         {
             PhotonNetwork.Instantiate("Ball", new Vector3(10, 10, 10), Quaternion.identity, 0);
         }
         GameObject player = PhotonNetwork.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, 0);
-        player.GetComponent<PlayerController>().Init(numberPlayers, "Player" + numberPlayers);
+        player.GetComponent<PlayerController>().Init(numberPlayers%2, "Player" + numberPlayers);
+        if (connectedEvent != null)
+            connectedEvent.Invoke();
+        else
+            Debug.LogError("The connection event should be listened to " + connectedEvent);
     }
 
     public void OnGUI()
     {
         GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
+        GUILayout.Label(PhotonNetwork.GetPing()+"");
     }
 }
