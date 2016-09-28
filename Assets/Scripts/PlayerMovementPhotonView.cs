@@ -16,13 +16,7 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
     private int currentId = 0;
 
     private const float FRAME_DURATION = 0.02f;
-    private double CLIENT_DELAY
-    {
-        get
-        {
-            return 3* 1f/PhotonNetwork.sendRate + PhotonNetwork.GetPing()/1000f;
-        }
-    }
+
     private double simulationTime
     {
         get
@@ -33,7 +27,7 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
             }
             else
             {
-                return PhotonNetwork.time - CLIENT_DELAY;
+                return PhotonNetwork.time - ClientDelay.Delay;
             }
         }
     }
@@ -65,7 +59,7 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
     {
         float delay = 0f;
         if (!photonView.isMine)
-            delay = (float)CLIENT_DELAY;
+            delay = (float)ClientDelay.Delay;
         Invoke("StartUpdating", delay);
     }
 
@@ -83,7 +77,6 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
             }
             else
             {
-                Debug.Log(CLIENT_DELAY);
                 SimulationUpdate();
             }
         }

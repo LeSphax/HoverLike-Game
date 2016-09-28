@@ -27,7 +27,7 @@ public class PlayerBallController : Photon.MonoBehaviour
     {
         Physics.IgnoreCollision(GetComponent<Collider>(), ball.GetComponent<Collider>(), true);
         powerBar = GetComponent<PowerBar>();
-        ballHoldingPosition = new Vector3(.5f, .5f, .5f);
+        ballHoldingPosition = new Vector3(2f, 2f, 2f);
 
     }
 
@@ -37,6 +37,7 @@ public class PlayerBallController : Photon.MonoBehaviour
         {
             if (Tags.IsPlayer(collision.gameObject.tag) && BallState.GetAttachedPlayerID() == collision.gameObject.GetPhotonView().viewID)
             {
+                Debug.Log("Collision");
                 if (stealing)
                     photonView.RPC("StealBall", PhotonTargets.MasterClient, BallState.GetAttachedPlayerID());
             }

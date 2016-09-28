@@ -44,7 +44,9 @@ public class Matchmaker : Photon.PunBehaviour
         {
             PhotonNetwork.Instantiate("Ball", new Vector3(10, 10, 10), Quaternion.identity, 0);
         }
-        GameObject player = PhotonNetwork.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, 0);
+        GameObject player = PhotonNetwork.Instantiate("Player", new Vector3(0, 4.4f, 0), Quaternion.identity, 0);
+        Debug.Log(player);
+        Debug.Log(player.GetComponent<PlayerController>());
         player.GetComponent<PlayerController>().Init(numberPlayers%2, "Player" + numberPlayers);
         if (connectedEvent != null)
             connectedEvent.Invoke();
