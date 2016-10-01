@@ -9,7 +9,7 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
 
     private float speed = 70;
 
-    private float MAX_VELOCITY = 45;
+    public static float MAX_VELOCITY = 45;
     private float ANGULAR_SPEED = 400;
     public Vector3? targetPosition;
     public float timeLastUpdate;
@@ -90,10 +90,16 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
             lookPos.y = 0;
             var targetRotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, FRAME_DURATION * ANGULAR_SPEED);
-            myRigidbody.AddForce(transform.forward * speed* FRAME_DURATION, ForceMode.VelocityChange);
+            myRigidbody.AddForce(transform.forward * speed * FRAME_DURATION, ForceMode.VelocityChange);
+
+            ClampPlayerVelocity();
         }
-        myRigidbody.velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
         //myRigidbody.CustomUpdate();
+    }
+
+    public void ClampPlayerVelocity()
+    {
+        myRigidbody.velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
     }
 
     private void SimulationUpdate()
@@ -130,28 +136,33 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
     {
         if (stream.isWriting)
         {
+            stream.SendNext(currentId);
             stream.SendNext(myRigidbody.velocity);
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
             stream.SendNext(targetPosition);
-            stream.SendNext(currentId);
             currentId++;
         }
 
         else if (stream.isReading)
         {
             PlayerPacket newPacket = new PlayerPacket();
+            newPacket.id = (int)stream.ReceiveNext();
+            if (currentId > newPacket.id)
+            {
+                stream.
+            }
             newPacket.velocity = (Vector3)stream.ReceiveNext();
             newPacket.position = (Vector3)stream.ReceiveNext();
             newPacket.rotation = (Quaternion)stream.ReceiveNext();
             newPacket.target = (Vector3?)stream.ReceiveNext();
-            newPacket.id = (int)stream.ReceiveNext();
-            while (newPacket.id != currentId)
+            
+            while (newPacket.id > currentId)
             {
                 Debug.LogWarning("Lost Packet " + currentId);
                 currentId++;
             }
-           // Debug.Log("Received Packet " + currentId);
+            // Debug.Log("Received Packet " + currentId);
             currentId++;
             newPacket.timeSent = info.timestamp;
             StateBuffer.Enqueue(newPacket);
