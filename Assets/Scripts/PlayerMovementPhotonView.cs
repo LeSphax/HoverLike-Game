@@ -150,7 +150,8 @@ class PlayerMovementPhotonView : Photon.MonoBehaviour
             newPacket.id = (int)stream.ReceiveNext();
             if (currentId > newPacket.id)
             {
-                stream.
+                // TODO, put packet in buffer if the next packet wasn't used yet
+                return;
             }
             newPacket.velocity = (Vector3)stream.ReceiveNext();
             newPacket.position = (Vector3)stream.ReceiveNext();
