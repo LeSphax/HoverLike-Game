@@ -1,0 +1,3 @@
+﻿public delegate void EmptyEventHandler();
+
+

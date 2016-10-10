@@ -1,7 +1,6 @@
-﻿using ExitGames.Client.Photon;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-public class Scoreboard : Photon.MonoBehaviour {
+public class Scoreboard : SlideBall.MonoBehaviour {
 
     private static Text textScoreLeft;
     private static Text textScoreRight;
@@ -19,28 +18,27 @@ public class Scoreboard : Photon.MonoBehaviour {
 
     void Start()
     {
-        Matchmaker.connectedEvent += UpdateScoreBoard;
+        MyGameObjects.NetworkManagement.NewConnection += UpdateScoreBoard;
     }
 
-    [PunRPC]
+    [MyRPC]
     public void UpdateScoreBoard()
     {
-        textScoreLeft.text = "" + CustomProperties.GetProperty<int>(NetworkRoomKeys.TeamScore[0]);
-        textScoreRight.text = "" + CustomProperties.GetProperty<int>(NetworkRoomKeys.TeamScore[1]);
+        textScoreLeft.text = "" + MyGameObjects.Properties.GetProperty<int>(PropertiesKeys.TeamScore[0]);
+        textScoreRight.text = "" + MyGameObjects.Properties.GetProperty<int>(PropertiesKeys.TeamScore[1]);
     }
 
     public static void incrementTeamScore(int teamNumber)
     {
-        if (PhotonNetwork.isMasterClient)
+        if (MyGameObjects.NetworkManagement.isServer)
         {
             if (Time.realtimeSinceStartup - timeLastGoal > 1)
             {
                 timeLastGoal = Time.realtimeSinceStartup;
-                string key = NetworkRoomKeys.TeamScore[teamNumber];
-                int newScore = CustomProperties.GetProperty<int>(key)+1;
-                Hashtable someCustomPropertiesToSet = new Hashtable() { { key, newScore}};
-                PhotonNetwork.room.SetCustomProperties(someCustomPropertiesToSet);
-                scoreboard.GetPhotonView().RPC("UpdateScoreBoard", PhotonTargets.All);
+                string key = PropertiesKeys.TeamScore[teamNumber];
+                int newScore = MyGameObjects.Properties.GetProperty<int>(key)+1;
+                MyGameObjects.Properties.SetProperty(key, newScore);
+                scoreboard.GetNetworkView().RPC("UpdateScoreBoard",RPCTargets.All);
             }
         }
 

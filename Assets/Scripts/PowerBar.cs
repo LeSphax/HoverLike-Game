@@ -32,7 +32,7 @@ public class PowerBar : MonoBehaviour
                     break;
                 case State.FILLING:
                     slider = Instantiate(sliderPrefab).GetComponent<Slider>();
-                    slider.transform.SetParent(GameObjects.UI().transform, false);
+                    slider.transform.SetParent(MyGameObjects.UI().transform, false);
                     break;
             }
             _state = value;

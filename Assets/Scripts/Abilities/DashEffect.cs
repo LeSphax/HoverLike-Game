@@ -38,7 +38,7 @@ public class DashEffect : AbilityEffect
     private void StopDashing()
     {
         dashing = false;
-        target.GetComponent<PlayerMovementPhotonView>().ClampPlayerVelocity();
+        target.GetComponent<PlayerMovementView>().ClampPlayerVelocity();
     }
 
 }

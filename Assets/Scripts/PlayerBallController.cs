@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Assertions;
 
 [RequireComponent(typeof(PowerBar))]
-public class PlayerBallController : Photon.MonoBehaviour
+public class PlayerBallController : SlideBall.MonoBehaviour
 {
 
     private Vector3 ballHoldingPosition;
@@ -25,6 +26,7 @@ public class PlayerBallController : Photon.MonoBehaviour
 
     void Start()
     {
+        MyGameObjects.Properties.AddListener(PropertiesKeys.NamePlayerHoldingBall, AttachBall);
         Physics.IgnoreCollision(GetComponent<Collider>(), ball.GetComponent<Collider>(), true);
         powerBar = GetComponent<PowerBar>();
         ballHoldingPosition = new Vector3(.5f, .5f, .5f);
@@ -33,69 +35,83 @@ public class PlayerBallController : Photon.MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (photonView.isMine)
+        if (View.isMine)
         {
-            if (Tags.IsPlayer(collision.gameObject.tag) && BallState.GetAttachedPlayerID() == collision.gameObject.GetPhotonView().viewID)
+            if (Tags.IsPlayer(collision.gameObject.tag) && BallState.GetAttachedPlayerID() == collision.gameObject.GetNetworkView().viewId)
             {
                 Debug.Log("Collision");
                 if (stealing)
-                    photonView.RPC("StealBall", PhotonTargets.MasterClient, BallState.GetAttachedPlayerID());
+                    View.RPC("StealBall", RPCTargets.Server, BallState.GetAttachedPlayerID());
             }
         }
     }
 
     void OnTriggerEnter(Collider collider)
     {
-        if (photonView.isMine)
+        if (View.isMine)
         {
             if (collider.gameObject.tag == Tags.CatchDetector && !BallState.IsAttached())
             {
-                photonView.RPC("PickUpBall", PhotonTargets.MasterClient);
+                View.RPC("PickUpBall", RPCTargets.Server);
             }
         }
     }
 
-    [PunRPC]
+    [MyRPC]
     public void PickUpBall()
     {
-        Debug.Log("PickUpBall " + gameObject.name);
+        Debug.Log("PickUpBall " + gameObject.name + "   " + BallState.IsAttached());
+        Assert.IsTrue(MyGameObjects.NetworkManagement.isServer);
         if (!BallState.IsAttached())
-            BallState.SetAttached(photonView.viewID);
-        photonView.RPC("AttachBall", PhotonTargets.All);
+            BallState.SetAttached(View.viewId);
     }
 
-    [PunRPC]
-    public void StealBall(int victimId)
+    [MyRPC]
+    private void StealBall(int victimId)
     {
-        Debug.Log("StealBall " + victimId + "     " + photonView.viewID + "   " + gameObject.name);
+        Debug.Log("StealBall " + victimId + "     " + View.viewId + "   " + gameObject.name);
+        Assert.IsTrue(MyGameObjects.NetworkManagement.isServer);
         if (BallState.GetAttachedPlayerID() == victimId)
         {
-            BallState.SetAttached(photonView.viewID);
-            photonView.RPC("AttachBall", PhotonTargets.All);
+            BallState.SetAttached(View.viewId);
         }
     }
 
-    [PunRPC]
-    public void AttachBall()
+    public void AttachBall(object previousPlayer, object newPlayer)
     {
-        ball.transform.SetParent(transform);
-        ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
-        ball.transform.localPosition = ballHoldingPosition;
+        int newPlayerId = newPlayer == null ? 0 : (int)newPlayer;
+        int previousPlayerId = previousPlayer == null ? 0 : (int)previousPlayer;
+        bool attach = newPlayerId == View.viewId && previousPlayerId != View.viewId;
+        bool detach = previousPlayerId == View.viewId && newPlayerId != View.viewId;
+        if (attach)
+        {
+            AttachBall(true);
+        }
+        else if (detach)
+        {
+            AttachBall(false);
+        }
     }
 
-    [PunRPC]
-    void DetachBall()
+    public void AttachBall(bool attach)
     {
-        Debug.Log("DetachBall " + gameObject.name);
-        Physics.IgnoreCollision(ball.GetComponent<Collider>(), GetComponent<Collider>());
-        BallState.Detach();
-        ball.transform.SetParent(null);
-        ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        if (attach)
+        {
+            ball.transform.SetParent(transform);
+            ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            ball.transform.localPosition = ballHoldingPosition;
+        }
+        else
+        {
+            Physics.IgnoreCollision(ball.GetComponent<Collider>(), GetComponent<Collider>());
+            ball.transform.SetParent(null);
+            ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        }
     }
 
     void Update()
     {
-        if (photonView.isMine)
+        if (View.isMine)
         {
             UpdateThrow();
         }
@@ -105,34 +121,40 @@ public class PlayerBallController : Photon.MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (BallState.GetAttachedPlayerID() == photonView.viewID)
+            if (BallState.GetAttachedPlayerID() == View.viewId)
             {
                 powerBar.StartFilling();
             }
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            if (BallState.GetAttachedPlayerID() == photonView.viewID)
+            if (BallState.GetAttachedPlayerID() == View.viewId)
             {
-                photonView.RPC("ThrowBall", PhotonTargets.AllViaServer, Functions.GetMouseWorldPosition(), powerBar.powerValue);
+                ClientThrowBall(Functions.GetMouseWorldPosition(), powerBar.powerValue);
                 powerBar.Hide();
             }
         }
     }
 
-    [PunRPC]
-    private void ThrowBall(Vector3 target, float power)
+    private void ClientThrowBall(Vector3 target, float power)
     {
-        DetachBall();
+        AttachBall(false);
         SetBallSpeed(target, power);
-        //if (PhotonNetwork.isMasterClient)
-        //{
-        //    DetachBall();
-        //    SetBallSpeed(target);
-        //    photonView.RPC("DetachBall", PhotonTargets.Others);
-        //}
-
+        BallState.ListenToServer = false;
+        View.RPC("ServerThrowBall", RPCTargets.Server, View.viewId, target, power);
     }
+
+    [MyRPC]
+    private void ServerThrowBall(int throwerId, Vector3 target, float power)
+    {
+        Debug.Log("We should extrapolate the position of the ball considering the time needed for the packet to arrive");
+        //Check if ClientThrowBall was already called to avoid setting ball speed twice
+        if (BallState.ListenToServer)
+            SetBallSpeed(target, power);
+        if (throwerId == BallState.GetAttachedPlayerID())
+            BallState.SetAttached(-1);
+    }
+
 
     private void SetBallSpeed(Vector3 target, float power)
     {

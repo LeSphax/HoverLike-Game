@@ -1,62 +1,30 @@
-﻿using UnityEngine;
+﻿using System;
+using Byn.Net;
+using UnityEngine;
 
-class BallMovementPhotonView : Photon.MonoBehaviour
+class BallMovementPhotonView : ObservedComponent
 {
 
     Rigidbody myRigidbody;
-    PhotonView myPhotonView;
-    double myLastSerializeTime;
 
-    Vector3 myNetworkVelocity;
-    Vector3 myNetworkPosition;
+    BallPacket currentPacket;
 
     public float speedDifference = 5;
     public float maxDistance = 5;
 
     private float MAX_SPEED = 200;
-    private Color linesColor = Color.red;
 
-    void Awake()
+   protected override void Awake()
     {
+        base.Awake();
         myRigidbody = GetComponent<Rigidbody>();
-        myPhotonView = gameObject.GetPhotonView();
-    }
-
-    void FixedUpdate()
-    {
-        if (myPhotonView == null || myPhotonView.isMine == true || PhotonNetwork.connected == false)
-        {
-            return;
-        }
-        if (BallState.IsAttached())
-        {
-            myRigidbody.velocity = Vector3.zero;
-            transform.localPosition = Vector3.one * 0.5f;
-            return;
-        }
-        else
-        {
-            if (Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) > myRigidbody.velocity.magnitude * 0.2f)
-            {
-                myRigidbody.velocity = myNetworkVelocity;
-            }
-            // myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
-            transform.position = Vector3.Lerp(transform.position, myNetworkPosition, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
-            if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance * 10)
-            {
-                transform.position = GetExtrapolatedPosition();
-            }
-        }
-        //transform.position = Vector3.Lerp(transform.position, GetExtrapolatedPosition(), Vector3.Distance(GetExtrapolatedPosition(), transform.position)/maxDistance);
     }
 
     public Vector3 GetExtrapolatedPosition()
     {
-        float timePassed = (float)(PhotonNetwork.time - myLastSerializeTime);
+        float timePassed = (float)(TimeNetwork.Time - currentPacket.timeSent);
 
-        timePassed += (float)PhotonNetwork.GetPing() / 1000f;
-
-        Vector3 extrapolatedPosition = myNetworkPosition + myNetworkVelocity * timePassed;
+        Vector3 extrapolatedPosition = currentPacket.position + currentPacket.velocity * timePassed;
 
         //RaycastHit hit;
 
@@ -70,44 +38,15 @@ class BallMovementPhotonView : Photon.MonoBehaviour
         //        //extrapolatedPosition = GetExtrapolatedPosition();
         //    }
         //}
-        DrawGizmos(extrapolatedPosition);
         return extrapolatedPosition;
-    }
-
-    private void DrawGizmos(Vector3 extrapolatedPosition)
-    {
-        if (linesColor == Color.red)
-        {
-            linesColor = Color.blue;
-        }
-        else
-        {
-            linesColor = Color.red;
-        }
-        Debug.DrawLine(transform.position, extrapolatedPosition, linesColor);
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.isWriting)
-        {
-            stream.SendNext(myRigidbody.velocity);
-            stream.SendNext(transform.position);
-        }
-
-        else if (stream.isReading)
-        {
-            myNetworkVelocity = (Vector3)stream.ReceiveNext();
-            myNetworkPosition = (Vector3)stream.ReceiveNext();
-            myLastSerializeTime = info.timestamp;
-        }
     }
 
     public void Throw(Vector3 target, float power)
     {
         Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
-        myRigidbody.velocity += velocity * MAX_SPEED * Mathf.Max(power,0.3f);
+        myRigidbody.velocity += velocity * MAX_SPEED * Mathf.Max(power, 0.3f);
+        Debug.Log("Need to check the functionnement of AttractionBall");
         AttractionBall.activated = false;
         Invoke("ReactivateAttraction", 0.5f);
     }
@@ -115,6 +54,70 @@ class BallMovementPhotonView : Photon.MonoBehaviour
     private void ReactivateAttraction()
     {
         AttractionBall.activated = true;
+    }
+
+    protected override void OwnerUpdate()
+    {
+        //DoNothing, the physics simulations are sufficient
+    }
+
+    protected override void SimulationUpdate()
+    {
+        if (BallState.ListenToServer)
+        {
+            if (BallState.IsAttached())
+            {
+                myRigidbody.velocity = Vector3.zero;
+                transform.localPosition = Vector3.one * 0.5f;
+                return;
+            }
+            else
+            {
+                if (Vector3.Distance(myRigidbody.velocity, currentPacket.velocity) > myRigidbody.velocity.magnitude * 0.2f)
+                {
+                    myRigidbody.velocity = currentPacket.velocity;
+                }
+                // myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
+                transform.position = Vector3.Lerp(transform.position, currentPacket.position, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
+                if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance * 10)
+                {
+                    transform.position = GetExtrapolatedPosition();
+                }
+            }
+            //transform.position = Vector3.Lerp(transform.position, GetExtrapolatedPosition(), Vector3.Distance(GetExtrapolatedPosition(), transform.position)/maxDistance);
+        }
+    }
+
+    protected override byte[] CreatePacket(long sendId)
+    {
+        return new BallPacket(sendId, myRigidbody.velocity, transform.position, TimeNetwork.Time).Serialize();
+    }
+
+    public override void PacketReceived(ConnectionId id, byte[] data)
+    {
+        currentPacket = NetworkExtensions.Deserialize<BallPacket>(data);
+    }
+
+    protected override bool IsSendingPackets()
+    {
+        return View.isMine;
+    }
+
+    [Serializable]
+    public struct BallPacket
+    {
+        public Vector3 velocity;
+        public Vector3 position;
+        public float timeSent;
+        public long id;
+
+        public BallPacket(long sendId, Vector3 velocity, Vector3 position, float time) : this()
+        {
+            this.id = sendId;
+            this.velocity = velocity;
+            this.position = position;
+            this.timeSent = time;
+        }
     }
 }
 

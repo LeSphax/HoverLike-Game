@@ -1,60 +1,73 @@
+﻿using System;
+using Byn.Net;
 using UnityEngine;
+using UnityEngine.Assertions;
 
-public delegate void ConnectedToRoom();
-
-public class Matchmaker : Photon.PunBehaviour
+public class MatchMaker : ANetworkView
 {
-    private PhotonView myPhotonView;
-    private bool creator = false;
+    bool started = false;
 
-    public static event ConnectedToRoom connectedEvent;
+    public event EmptyEventHandler GameStarted;
 
-    // Use this for initialization
-    public void Start()
+    public void AddGameStartedListener(EmptyEventHandler handler)
     {
-        PhotonNetwork.sendRate = 60;
-        PhotonNetwork.sendRateOnSerialize = 60;
-        PhotonNetwork.ConnectUsingSettings("0.1");
-        PhotonNetwork.OverrideBestCloudServer(CloudRegionCode.eu);
-    }
-
-    public override void OnJoinedLobby()
-    {
-        PhotonNetwork.JoinRandomRoom();
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        // when AutoJoinLobby is off, this method gets called when PUN finished the connection (instead of OnJoinedLobby())
-        PhotonNetwork.JoinRandomRoom();
-    }
-
-    public void OnPhotonRandomJoinFailed()
-    {
-        PhotonNetwork.CreateRoom(null);
-        creator = true;
-        Debug.Log("JoinedFailed");
-    }
-
-    public override void OnJoinedRoom()
-    {
-        
-        int numberPlayers = PhotonNetwork.playerList.Length-1;
-        if (creator)
-        {
-            PhotonNetwork.Instantiate("Ball", new Vector3(10, 10, 10), Quaternion.identity, 0);
-        }
-        GameObject player = PhotonNetwork.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, 0);
-        player.GetComponent<PlayerController>().Init(numberPlayers%2, "Player" + numberPlayers);
-        if (connectedEvent != null)
-            connectedEvent.Invoke();
+        if (started)
+            handler.Invoke();
         else
-            Debug.LogError("The connection event should be listened to " + connectedEvent);
+            GameStarted += handler;
     }
 
-    public void OnGUI()
+    void Awake()
     {
-        GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
-        GUILayout.Label(PhotonNetwork.GetPing()+"");
+        MyGameObjects.NetworkManagement.ServerCreated += ServerStartGame;
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            MyGameObjects.NetworkManagement.PrintViews();
+        }
+    }
+
+    void ServerStartGame()
+    {
+        Debug.Log("ServerStart");
+        if (MyGameObjects.NetworkManagement.isServer)
+        {
+            MyNetworkView.Instantiate("Ball", new Vector3(10, 10, 10), Quaternion.identity);
+        }
+        StartGame();
+    }
+
+    private void StartGame()
+    {
+        if (!started)
+        {
+            started = true;
+            GameObject player = MyNetworkView.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity);
+            int numberPlayer = MyGameObjects.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) - 1;
+            player.GetComponent<PlayerController>().Init(numberPlayer % 2, "Player" + numberPlayer);
+            Debug.Log("StartGame");
+            GameStarted.Invoke();
+        }
+    }
+
+    void ClientStartGame()
+    {
+        if (MyGameObjects.NetworkManagement.IsConnected)
+        {
+            StartGame();
+        }
+        else
+        {
+            Debug.LogError("The properties were updated before a new connection was made");
+        }
+    }
+
+    public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
+    {
+        Assert.IsTrue(message.type == MessageType.StartGame, "Received a "+ message.type +" message on MatchMaker");
+        StartGame();
     }
 }

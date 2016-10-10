@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(PlayerMovementPhotonView))]
-public class PlayerController : Photon.MonoBehaviour
+[RequireComponent(typeof(PlayerMovementView))]
+public class PlayerController : SlideBall.MonoBehaviour
 {
     public GameObject targetPrefab;
     private GameObject _target;
@@ -25,25 +25,22 @@ public class PlayerController : Photon.MonoBehaviour
             _target = value;
         }
     }
-    PhotonTransformView rigidbodyView;
-    PlayerMovementPhotonView movementManager;
+    PlayerMovementView movementManager;
 
     public Vector3 spawningPoint;
     public int playerNumber;
     public int teamNumber;
 
-    private Rigidbody myRigidbody;
 
     void Start()
     {
-        movementManager = GetComponent<PlayerMovementPhotonView>();
-        myRigidbody = GetComponent<Rigidbody>();
+        movementManager = GetComponent<PlayerMovementView>();
         target = null;
     }
 
     void Update()
     {
-        if (photonView.isMine)
+        if (View.isMine)
         {
             if (Input.GetMouseButton(1))
             {
@@ -87,14 +84,16 @@ public class PlayerController : Photon.MonoBehaviour
 
     public void Init(int teamNumber, string name)
     {
+        Debug.Log("Init " + teamNumber);
         spawningPoint = GameObject.FindGameObjectWithTag(Tags.Spawns).transform.GetChild(teamNumber).position;
-        photonView.RPC("InitPlayer", PhotonTargets.AllBufferedViaServer, teamNumber, name, spawningPoint);
+        View.RPC("InitPlayer", RPCTargets.AllBuffered, teamNumber, name, spawningPoint);
     }
 
-    [PunRPC]
+    [MyRPC]
     private void InitPlayer(int teamNumber, string name, Vector3 spawningPoint)
     {
-        if (photonView.isMine)
+        Debug.Log("InitPlayer");
+        if (View.isMine)
         {
             tag = Tags.MyPlayer;
         }
