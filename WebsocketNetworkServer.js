@@ -6,11 +6,6 @@ var WebsocketNetworkServer = (function () {
     }
     WebsocketNetworkServer.prototype.onConnection = function (socket, appname) {
         console.log("WebsocketNetworkServer OnConnection " + socket + "    " + appname);
-        setInterval(() => {
-          wss.clients.forEach((client) => {
-            client.send(new Date().toTimeString());
-        });
-      }, 1000);
         this.mPool[appname].add(socket);
     };
     WebsocketNetworkServer.prototype.addSocketServer = function (websocketServer, appConfig) {
@@ -55,7 +50,7 @@ var PeerPool = (function () {
 
     PeerPool.prototype.getRooms = function () {
         var rooms = new Array();
-        for (var key in arr_jq_TabContents) {
+        for (var key in this.mServers) {
             console.log(key);
             rooms.push(key);
         }
@@ -161,17 +156,16 @@ SignalingPeer.prototype.Cleanup = function () {
 };
 SignalingPeer.prototype.handleIncomingEvent = function (evt) {
     console.log(evt.Type);
+    var address = evt.Info;
+    var newConnectionId = evt.ConnectionId;
     if (evt.Type == inet.NetEventType.NewConnection) {
         console.log("NewConnection "+evt.Info);
         if (evt.Info == "GetRooms"){
             console.log("GetRooms "+ evt.ConnectionId);
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ReliableMessageReceived, newConnectionId, mConnectionPool.getRooms()));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ReliableMessageReceived, newConnectionId, this.mConnectionPool.getRooms()));
             this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ConnectionFailed, newConnectionId, null));
-
         }
         else{
-            var address = evt.Info;
-            var newConnectionId = evt.ConnectionId;
             this.connect(address, newConnectionId);
         }
     }
