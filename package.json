@@ -1,21 +1,12 @@
 {
-  "name": "websockets-vanilla",
-  "version": "1.0.0",
-  "engines": {
-    "node": "6.2.0"
+  "name": "websocket-signaling",
+  "version": "0.96.0",
+  "description": "A websocket signaling server for use with WebRTC Network and Video Chat assets for Unity.",
+  "main": "server.js",
+  "author": {
+    "name": "Christoph Kutza",
+    "email": "contact@because-why-not.com"
   },
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "bufferutil": "1.2.1",
-    "express": "4.13.4",
-    "utf-8-validate": "1.2.1",
-    "ws": "1.1.0"
   }
 }
