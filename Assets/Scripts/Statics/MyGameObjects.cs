@@ -15,16 +15,68 @@ public static class MyGameObjects
         }
     }
 
-    private static GameObject world;
-    public static GameObject World
+    private static LobbyManager lobbyManager;
+    public static LobbyManager LobbyManager
     {
         get
         {
-            if (world == null)
+            if (lobbyManager == null)
             {
-                world = GameObject.FindGameObjectWithTag(Tags.World);
+                lobbyManager = GameObject.FindGameObjectWithTag(Tags.LobbyManager).GetComponent<LobbyManager>();
             }
-            return world;
+            return lobbyManager;
+        }
+    }
+
+    private static NetworkViewsManagement networkViewsManagement;
+    public static NetworkViewsManagement NetworkViewsManagement
+    {
+        get
+        {
+            if (networkViewsManagement == null)
+            {
+                networkViewsManagement = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<NetworkViewsManagement>();
+            }
+            return networkViewsManagement;
+        }
+    }
+
+    private static GameObject room;
+    public static GameObject Room
+    {
+        get
+        {
+            if (room == null)
+            {
+                room = GameObject.FindGameObjectWithTag(Tags.Room);
+            }
+            return room;
+        }
+    }
+
+    private static GameObject roomActivation;
+    public static GameObject RoomActivation
+    {
+        get
+        {
+            if (roomActivation == null)
+            {
+                roomActivation = Room.transform.FindChild("Activated").gameObject;
+            }
+            return roomActivation;
+        }
+    }
+
+    private static GameObject scene;
+    public static GameObject Scene
+    {
+        get
+        {
+            if (scene == null)
+            {
+                scene = GameObject.FindGameObjectWithTag(Tags.Scene);
+            }
+            return scene;
         }
     }
 
@@ -35,22 +87,22 @@ public static class MyGameObjects
         {
             if (properties == null)
             {
-                properties = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<NetworkProperties>();
+                properties = GameObject.FindGameObjectWithTag(Tags.RoomScripts).GetComponent<NetworkProperties>();
             }
             return properties;
         }
     }
 
-    private static MatchMaker matchMaker;
-    public static MatchMaker MatchMaker
+    private static RoomManager roomManager;
+    public static RoomManager RoomManager
     {
         get
         {
-            if (matchMaker == null)
+            if (roomManager == null)
             {
-                matchMaker = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<MatchMaker>();
+                roomManager = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<RoomManager>();
             }
-            return matchMaker;
+            return roomManager;
         }
     }
 

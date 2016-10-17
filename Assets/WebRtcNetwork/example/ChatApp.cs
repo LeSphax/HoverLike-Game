@@ -132,6 +132,7 @@ public class ChatApp : MonoBehaviour
             Append("WebRtcNetworkFactory created");
 
     }
+
     private void OnLog(object msg, string[] tags)
     {
         StringBuilder builder = new StringBuilder();

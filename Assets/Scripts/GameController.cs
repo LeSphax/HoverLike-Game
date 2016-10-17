@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     private const float MAX_CAMERA_OFFSET_X = 120;
     private const float MAX_CAMERA_OFFSET_Z = 30;
 
+    private bool activated = true;
 
     void Start()
     {
@@ -21,30 +22,40 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        if (Input.mousePosition.x < 5 && cameraPosition.x < MAX_CAMERA_OFFSET_X)
+        if (activated)
         {
-            cameraPosition += Vector3.right * scrollingSpeed;
+            if (Input.mousePosition.x < 5 && cameraPosition.x < MAX_CAMERA_OFFSET_X)
+            {
+                cameraPosition += Vector3.right * scrollingSpeed;
+            }
+            else if (Input.mousePosition.x > Screen.width - 5 && cameraPosition.x > -MAX_CAMERA_OFFSET_X)
+            {
+                cameraPosition += Vector3.left * scrollingSpeed;
+            }
+            else if (Input.mousePosition.y < 5 && cameraPosition.z < MAX_CAMERA_OFFSET_Z)
+            {
+                cameraPosition += Vector3.forward * scrollingSpeed;
+            }
+            else if (Input.mousePosition.y > Screen.height - 5 && cameraPosition.z > -MAX_CAMERA_OFFSET_Z)
+            {
+                cameraPosition += Vector3.back * scrollingSpeed;
+            }
+            Vector3 newPosition = initialPosition + Camera.main.transform.InverseTransformVector(cameraPosition);
+            Camera.main.transform.localPosition = newPosition;
+            if (Input.GetKeyDown(KeyCode.F4))
+            {
+                Cursor.lockState = CursorLockMode.Confined;
+                Screen.fullScreen = true;
+            }
         }
-        else if (Input.mousePosition.x > Screen.width - 5 && cameraPosition.x > -MAX_CAMERA_OFFSET_X)
-        {
-            cameraPosition += Vector3.left * scrollingSpeed;
-        }
-        else if (Input.mousePosition.y < 5 && cameraPosition.z < MAX_CAMERA_OFFSET_Z)
-        {
-            cameraPosition += Vector3.forward * scrollingSpeed;
-        }
-        else if (Input.mousePosition.y > Screen.height - 5 && cameraPosition.z > -MAX_CAMERA_OFFSET_Z)
-        {
-            cameraPosition += Vector3.back * scrollingSpeed;
-        }
-        Vector3 newPosition = initialPosition + Camera.main.transform.InverseTransformVector(cameraPosition);
-        Camera.main.transform.localPosition = newPosition;
-        if (Input.GetKeyDown(KeyCode.F4))
-        {
-            Cursor.lockState = CursorLockMode.Confined;
-            Screen.fullScreen = true;
-        }
+        DesactivateOnXPressed();
+    }
 
+    void DesactivateOnXPressed()
+    {
+        if (Input.GetKeyDown(KeyCode.X)){
+            activated = !activated;
+        }
     }
 
 }

@@ -16,7 +16,11 @@ public class Tags : MonoBehaviour
     public const string MyPlayer = "MyPlayer";
     public const string UI = "UI";
     public const string NetworkScripts = "NetworkScripts";
-    public const string World = "World";
+    public const string Room = "Room";
+    public const string Scene = "Scene";
+    public const string RoomScripts = "RoomScripts";
+
+    public const string LobbyManager = "LobbyManager";
 
     public static bool IsPlayer(string tag)
     {

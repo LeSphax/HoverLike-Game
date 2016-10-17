@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class PowerBar : MonoBehaviour
@@ -31,6 +32,7 @@ public class PowerBar : MonoBehaviour
                         Destroy(slider.gameObject);
                     break;
                 case State.FILLING:
+                    powerValue = 0f;
                     slider = Instantiate(sliderPrefab).GetComponent<Slider>();
                     slider.transform.SetParent(MyGameObjects.UI().transform, false);
                     break;
@@ -68,5 +70,10 @@ public class PowerBar : MonoBehaviour
     public void Hide()
     {
         state = State.HIDDEN;
+    }
+
+    public bool IsFilling()
+    {
+        return state == State.FILLING;
     }
 }

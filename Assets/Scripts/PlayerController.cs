@@ -84,7 +84,6 @@ public class PlayerController : SlideBall.MonoBehaviour
 
     public void Init(int teamNumber, string name)
     {
-        Debug.Log("Init " + teamNumber);
         spawningPoint = GameObject.FindGameObjectWithTag(Tags.Spawns).transform.GetChild(teamNumber).position;
         View.RPC("InitPlayer", RPCTargets.AllBuffered, teamNumber, name, spawningPoint);
     }
@@ -92,7 +91,6 @@ public class PlayerController : SlideBall.MonoBehaviour
     [MyRPC]
     private void InitPlayer(int teamNumber, string name, Vector3 spawningPoint)
     {
-        Debug.Log("InitPlayer");
         if (View.isMine)
         {
             tag = Tags.MyPlayer;
