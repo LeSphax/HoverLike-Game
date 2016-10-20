@@ -25,7 +25,7 @@
             Stores the id as a short.
             </summary>
         </member>
-        <member name="M:Byn.Net.ConnectionId.#ctor(System.Int16)">
+        <member name="M:Byn.Net.ConnectionId.#ctor(System.short)">
             <summary>
             Creates a new id. Only for internal use.
             </summary>

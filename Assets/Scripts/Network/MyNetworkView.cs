@@ -29,7 +29,7 @@ public class MyNetworkView : ANetworkView
                 rpcs.Add(methods[i].Name, new RPCHandler(component, methods[i]));
             }
         }
-        for (int i = 0; i < observedComponents.Count; i++)
+        for (short i = 0; i < observedComponents.Count; i++)
         {
             observedComponents[i].observedId = i;
         }
@@ -41,6 +41,21 @@ public class MyNetworkView : ANetworkView
         for (int i = 0; i < observedComponents.Count; i++)
         {
             observedComponents[i].StartUpdating();
+        }
+    }
+
+    void FixedUpdate()
+    {
+        foreach (ObservedComponent component in observedComponents)
+        {
+            if (isMine)
+            {
+                component.OwnerUpdate();
+            }
+            else
+            {
+                component.SimulationUpdate();
+            }
         }
     }
 
@@ -80,14 +95,19 @@ public class MyNetworkView : ANetworkView
 
     public void RPC(string methodName, ConnectionId id, params object[] parameters)
     {
-        Debug.Log("Call RPC : " + methodName);
-        NetworkMessage message = new NetworkMessage(ViewId, 0, RPCTargets.Specified, new RPCCall(methodName, parameters).Serialize());
-        MyGameObjects.NetworkManagement.SendData(message, id);
+        Debug.Log(this + "Call RPC : " + methodName + " on Id : " + id);
+        if (id == ConnectionId.INVALID)
+            RPC(methodName, RPCTargets.Server, parameters);
+        else
+        {
+            NetworkMessage message = new NetworkMessage(ViewId, 0, RPCTargets.Specified, new RPCCall(methodName, parameters).Serialize());
+            MyGameObjects.NetworkManagement.SendData(message, id);
+        }
     }
 
     public void RPC(string methodName, RPCTargets targets, params object[] parameters)
     {
-        Debug.Log("Call RPC : " + methodName);
+        Debug.Log(this + " : Call RPC : " + methodName);
         NetworkMessage message = new NetworkMessage(ViewId, 0, targets, new RPCCall(methodName, parameters).Serialize());
         //
         if (targets.IsSent())
@@ -102,7 +122,11 @@ public class MyNetworkView : ANetworkView
     protected void RPCCallReceived(NetworkMessage message, ConnectionId connectionId)
     {
         RPCCall call = NetworkExtensions.Deserialize<RPCCall>(message.data);
-        Debug.Log("RPCCallReceived " + call.methodName);
+        if (call.parameters == null)
+        {
+            call.parameters = new object[0];
+        }
+        Debug.Log(this + ": RPCCallReceived " + call.methodName);
         RPCHandler handler;
         if (rpcs.TryGetValue(call.methodName, out handler))
         {
@@ -128,7 +152,6 @@ public class MyNetworkView : ANetworkView
             }
             if (CheckTypeMatch(handler.methodInfo.GetParameters(), argTypes))
             {
-                Debug.Log(HasSenderIdParameter(handler.methodInfo.GetParameters(), argTypes));
                 if (HasSenderIdParameter(handler.methodInfo.GetParameters(), argTypes))
                     handler.Invoke(ArrayExtensions.Concatenate(call.parameters, new object[1] { connectionId }));
                 else
@@ -141,15 +164,15 @@ public class MyNetworkView : ANetworkView
         }
     }
 
-    private bool CheckTypeMatch(ParameterInfo[] methodParameters, Type[] callParameterTypes)
+    private bool CheckTypeMatch(ParameterInfo[] localParameters, Type[] callParameters)
     {
-        if (methodParameters.Length < callParameterTypes.Length || methodParameters.Length > callParameterTypes.Length && !!HasSenderIdParameter(methodParameters, callParameterTypes))
+        if (localParameters.Length < callParameters.Length || (localParameters.Length > callParameters.Length && !HasSenderIdParameter(localParameters, callParameters)))
         {
-            Debug.LogError("RPCCallReceived but the arguments length don't match : (Received)" + methodParameters.Length + " vs (Local)" + callParameterTypes.Length);
+            Debug.LogError("RPCCallReceived but the arguments length don't match : (Local)" + localParameters.Length + " vs (Received)" + callParameters.Length);
             return false;
         }
 
-        for (int index = 0; index < callParameterTypes.Length; index++)
+        for (int index = 0; index < callParameters.Length; index++)
         {
 #if NETFX_CORE
             TypeInfo methodParamTI = methodParameters[index].ParameterType.GetTypeInfo();
@@ -161,10 +184,10 @@ public class MyNetworkView : ANetworkView
                 return false;
             }
 #else
-            Type type = methodParameters[index].ParameterType;
-            if (callParameterTypes[index] != null && !type.IsAssignableFrom(callParameterTypes[index]) && !(type.IsEnum && System.Enum.GetUnderlyingType(type).IsAssignableFrom(callParameterTypes[index])))
+            Type type = localParameters[index].ParameterType;
+            if (callParameters[index] != null && !type.IsAssignableFrom(callParameters[index]) && !(type.IsEnum && System.Enum.GetUnderlyingType(type).IsAssignableFrom(callParameters[index])))
             {
-                Debug.LogError("RPCCallReceived but the arguments types don't match : (Received)" + type + " vs (Local)" + callParameterTypes[index]);
+                Debug.LogError("RPCCallReceived but the arguments types don't match : (Received)" + type + " vs (Local)" + callParameters[index]);
                 return false;
             }
 #endif
@@ -175,7 +198,10 @@ public class MyNetworkView : ANetworkView
 
     private bool HasSenderIdParameter(ParameterInfo[] methodParameters, Type[] callParameterTypes)
     {
-        return (methodParameters[methodParameters.Length - 1].Name == "RPCSenderId" && methodParameters[methodParameters.Length - 1].ParameterType != typeof(ConnectionId));
+        //Debug.Log((methodParameters.Length == 0) + "  " + (callParameterTypes.Length == (methodParameters.Length - 1)) + "   " + (methodParameters[methodParameters.Length - 1].Name == "RPCSenderId") + " " + (methodParameters[methodParameters.Length - 1].ParameterType != typeof(ConnectionId)));
+        if (methodParameters.Length == 0)
+            return false;
+        return (callParameterTypes.Length == methodParameters.Length - 1 && methodParameters[methodParameters.Length - 1].Name == "RPCSenderId" && methodParameters[methodParameters.Length - 1].ParameterType == typeof(ConnectionId));
     }
 
     private struct RPCHandler

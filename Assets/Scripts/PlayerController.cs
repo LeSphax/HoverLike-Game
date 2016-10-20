@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Byn.Net;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerMovementView))]
-public class PlayerController : SlideBall.MonoBehaviour
+public class PlayerController : PlayerView
 {
     public GameObject targetPrefab;
     private GameObject _target;
@@ -29,7 +30,7 @@ public class PlayerController : SlideBall.MonoBehaviour
 
     public Vector3 spawningPoint;
     public int playerNumber;
-    public int teamNumber;
+    public Team teamNumber;
 
 
     void Start()
@@ -82,23 +83,21 @@ public class PlayerController : SlideBall.MonoBehaviour
         }
     }
 
-    public void Init(int teamNumber, string name)
+    public void Init(ConnectionId id, int teamNumber, string name)
     {
-        spawningPoint = GameObject.FindGameObjectWithTag(Tags.Spawns).transform.GetChild(teamNumber).position;
-        View.RPC("InitPlayer", RPCTargets.AllBuffered, teamNumber, name, spawningPoint);
+        View.RPC("InitPlayer", RPCTargets.AllBuffered,id);
     }
 
     [MyRPC]
-    private void InitPlayer(int teamNumber, string name, Vector3 spawningPoint)
+    private void InitPlayer(ConnectionId id)
     {
         if (View.isMine)
         {
             tag = Tags.MyPlayer;
         }
-        this.teamNumber = teamNumber;
-        gameObject.name = name;
-        this.spawningPoint = spawningPoint;
-        transform.position = spawningPoint;
+        connectionId = id;
+        gameObject.name = Player.Nickname;
+        transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team,Player.SpawningPoint).transform.position;
         transform.LookAt(Vector3.zero);
 
         if (teamNumber == 0)
@@ -109,7 +108,7 @@ public class PlayerController : SlideBall.MonoBehaviour
         {
             foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material = ResourcesGetter.RedMaterial(); }
         }
-        gameObject.layer = LayersGetter.players[teamNumber];
-        foreach (Transform go in transform) { go.gameObject.layer = LayersGetter.players[teamNumber]; };
+        gameObject.layer = LayersGetter.players[(int)teamNumber];
+        foreach (Transform go in transform) { go.gameObject.layer = LayersGetter.players[(int)teamNumber]; };
     }
 }

@@ -28,6 +28,7 @@ public class ClientTimeStrategy : TimeStrategy
         if (otherId == ConnectionId.INVALID)
         {
             otherId = id;
+            InvokeNewConnection(id);
         }
         Assert.IsTrue(id == otherId);
         ServerTimePacket packet = NetworkExtensions.Deserialize<ServerTimePacket>(data);
@@ -39,6 +40,12 @@ public class ClientTimeStrategy : TimeStrategy
     public override float GetLatency(ConnectionId id)
     {
         Assert.IsTrue(id ==  otherId);
+        Debug.LogError("Shouldn't be called on a client");
+        return latency;
+    }
+
+    public override float GetMyLatency()
+    {
         return latency;
     }
 

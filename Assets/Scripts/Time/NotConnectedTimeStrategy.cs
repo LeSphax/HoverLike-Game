@@ -29,6 +29,11 @@ public class NotConnectedTimeStrategy : TimeStrategy
         throw new NotImplementedException();
     }
 
+    public override float GetMyLatency()
+    {
+        throw new NotImplementedException();
+    }
+
     internal override float GetNetworkTime()
     {
         return 0;

@@ -15,6 +15,32 @@ public static class MyGameObjects
         }
     }
 
+    private static Players players;
+    public static Players Players
+    {
+        get
+        {
+            if (players == null)
+            {
+                players = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<Players>();
+            }
+            return players;
+        }
+    }
+
+    private static TimeManagement timeManagement;
+    public static TimeManagement TimeManagement
+    {
+        get
+        {
+            if (timeManagement == null)
+            {
+                timeManagement = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<TimeManagement>();
+            }
+            return timeManagement;
+        }
+    }
+
     private static LobbyManager lobbyManager;
     public static LobbyManager LobbyManager
     {
@@ -41,45 +67,6 @@ public static class MyGameObjects
         }
     }
 
-    private static GameObject room;
-    public static GameObject Room
-    {
-        get
-        {
-            if (room == null)
-            {
-                room = GameObject.FindGameObjectWithTag(Tags.Room);
-            }
-            return room;
-        }
-    }
-
-    private static GameObject roomActivation;
-    public static GameObject RoomActivation
-    {
-        get
-        {
-            if (roomActivation == null)
-            {
-                roomActivation = Room.transform.FindChild("Activated").gameObject;
-            }
-            return roomActivation;
-        }
-    }
-
-    private static GameObject scene;
-    public static GameObject Scene
-    {
-        get
-        {
-            if (scene == null)
-            {
-                scene = GameObject.FindGameObjectWithTag(Tags.Scene);
-            }
-            return scene;
-        }
-    }
-
     private static NetworkProperties properties;
     public static NetworkProperties Properties
     {
@@ -87,7 +74,7 @@ public static class MyGameObjects
         {
             if (properties == null)
             {
-                properties = GameObject.FindGameObjectWithTag(Tags.RoomScripts).GetComponent<NetworkProperties>();
+                properties = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<NetworkProperties>();
             }
             return properties;
         }
@@ -100,9 +87,35 @@ public static class MyGameObjects
         {
             if (roomManager == null)
             {
-                roomManager = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<RoomManager>();
+                roomManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
             }
             return roomManager;
+        }
+    }
+
+    private static GameInitialization gameInitialization;
+    public static GameInitialization GameInitialization
+    {
+        get
+        {
+            if (gameInitialization == null)
+            {
+                gameInitialization = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<GameInitialization>();
+            }
+            return gameInitialization;
+        }
+    }
+
+    private static Spawns spawns;
+    public static Spawns Spawns
+    {
+        get
+        {
+            if (spawns == null)
+            {
+                spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
+            }
+            return spawns;
         }
     }
 

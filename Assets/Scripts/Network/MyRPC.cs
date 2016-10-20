@@ -14,7 +14,7 @@ public enum RPCTargets
     Others,
     /// <summary>Sends the RPC to a specific player. This client does not execute the RPC. Player who join later will not execute this RPC.</summary>
     Specified,
-    /// <summary>Sends the RPC to MasterClient only. Careful: The MasterClient might disconnect before it executes the RPC and that might cause dropped RPCs.</summary>
+    /// <summary>Sends the RPC to MasterClient only. Careful: The MasterClient might disconnect before it executes the RPC and that might cause dropped RPCs. If the sender is the server the RPC will be executed in place</summary>
     Server,
     /// <summary>Sends the RPC to everyone else and executes it immediately on this client. New players get the RPC when they join as it's buffered (until this client leaves).</summary>
     AllBuffered,
@@ -31,7 +31,7 @@ public enum RPCTargets
     /// This client executes the RPC like any other when it received it from the server.
     /// Benefit: The server's order of sending the RPCs is the same on all clients.
     /// </remarks>
-    AllBufferedViaServer
+    AllBufferedViaServer,
 }
 
 public static class RPCTargetsMethods

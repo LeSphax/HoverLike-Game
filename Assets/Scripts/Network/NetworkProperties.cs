@@ -51,13 +51,23 @@ public class NetworkProperties : ANetworkView
         properties.TryGetValue(key, out previousValue);
 
         properties[key] = property;
+        PropertyChanged(key, property, previousValue);
+    }
+
+    public void PropertyChanged(string key)
+    {
+        PropertyChanged(key, properties[key], null);
+    }
+
+    private void PropertyChanged(string key, object property, object previousValue)
+    {
         MyGameObjects.NetworkManagement.SendData(ViewId, MessageType.Properties, new PropertiesPacket(key, property).Serialize());
         NotifiyListeners(key, previousValue, property);
     }
 
     public void SendProperties()
     {
-        Debug.LogError("SendProperties");
+        Debug.Log("SendProperties");
         MyGameObjects.NetworkManagement.SendData(ViewId, MessageType.Properties, new PropertiesPacket(properties.Keys.ToArray(), properties.Values.ToArray()).Serialize());
     }
 
@@ -65,13 +75,11 @@ public class NetworkProperties : ANetworkView
     {
         Assert.IsTrue(message.type == MessageType.Properties);
         PropertiesPacket packet = NetworkExtensions.Deserialize<PropertiesPacket>(message.data);
-        Debug.LogError("Properties received " + packet.keys.Length );
-
         for (int i = 0; i < packet.keys.Length; i++)
         {
             string key = packet.keys[i];
             object value = packet.properties[i];
-            Debug.LogError("Properties packet " + key + "   " + value);
+            Debug.Log("Properties packet " + key + "   " + value);
             object previousValue = null;
             properties.TryGetValue(key, out previousValue);
             properties[key] = value;

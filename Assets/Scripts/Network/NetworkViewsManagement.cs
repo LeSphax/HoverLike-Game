@@ -3,18 +3,64 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public class NetworkViewsManagement : SlideBall.MonoBehaviour
 {
     private Dictionary<int, ANetworkView> networkViews = new Dictionary<int, ANetworkView>();
+    private const short INSTANCIATION_INTERVAL = 10;
 
-    public int NextViewId
+    public event EmptyEventHandler ReadyToInstantiate;
+
+    private short nextViewId = -1;
+    public short NextViewId
     {
-        get;
-        set;
+        get
+        {
+            if (nextViewId == -1)
+            {
+                if (MyGameObjects.NetworkManagement.isServer)
+                {
+                    nextViewId = Settings.GetNextViewId();
+                    nextClientViewId = (short)(nextViewId + INSTANCIATION_INTERVAL);
+                }
+                else
+                {
+                    Debug.LogError("Call to nextViewId before it was set");
+                }
+            }
+            return nextViewId;
+        }
     }
 
-    public GameObject Instantiate(string path, Vector3 position, Quaternion rotation)
+    public void IncrementNextViewId()
+    {
+        nextViewId++;
+    }
+
+    private short nextClientViewId = -1;
+
+    void Awake()
+    {
+        MyGameObjects.NetworkManagement.NewPlayerConnectedToRoom += SendClientInstanciationInterval;
+    }
+
+    private void SendClientInstanciationInterval(ConnectionId id)
+    {
+        Assert.IsFalse(nextClientViewId == -1);
+        View.RPC("SetInstanciationInterval", id, nextClientViewId);
+        nextClientViewId += INSTANCIATION_INTERVAL;
+    }
+
+    [MyRPC]
+    private void SetInstanciationInterval(short nextViewId)
+    {
+        this.nextViewId = nextViewId;
+        if (ReadyToInstantiate != null)
+            ReadyToInstantiate.Invoke();
+    }
+
+    public GameObject Instantiate(string path, Vector3 position, Quaternion rotation, params object[] initialisationParameters)
     {
         GameObject prefabGo;
 
@@ -37,75 +83,38 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         newView.ViewId = NextViewId;
         newView.isMine = true;
         Debug.Log("Instantiate " + newView.ViewId);
-        InstantiationMessage content = new InstantiationMessage(newView.ViewId, path, position, rotation);
+        InstantiationMessage content = new InstantiationMessage(newView.ViewId, path, position, rotation, initialisationParameters);
         View.RPC("RemoteInstantiate", RPCTargets.OthersBuffered, content);
-        NextViewId++;
-
+        IncrementNextViewId();
+        InitializeNewObject(initialisationParameters, go);
         return go;
     }
 
     [MyRPC]
-    private void RemoteInstantiate(InstantiationMessage message)
+    private void RemoteInstantiate(InstantiationMessage message, ConnectionId RPCSenderId)
     {
-        //Making sure the views will have the same id on both sides
         MyNetworkView newView = MonoBehaviourExtensions.InstantiateFromMessage(this, message).GetComponent<MyNetworkView>();
-        int newViewId;
-        Debug.LogError("Received Instantiate " + message.newViewId + "   " + NextViewId);
-        //We don't have a view with this id yet so we can just add it
-        if (!networkViews.ContainsKey(message.newViewId))
-        {
-            newViewId = message.newViewId;
-            NextViewId = newViewId + 1;
-        }
-        //The new id is inferior and we already have a view with this id. This means that two instantiations happened at the same time before they were synchronised
-        else if (message.newViewId < NextViewId)
-        {
-            // I am the server, I change the id to the next id that I would have assigned
-            if (MyGameObjects.NetworkManagement.isServer)
-            {
-                Debug.LogWarning("Instantiation already happened, dump received id :" + message.newViewId + " -> " + NextViewId);
-                newViewId = NextViewId;
-                NextViewId = newViewId + 1;
-            }
-            //I am a client, all the ids of the views that came after mine were changed by the server
-            // Shift right them and add the new view.
-            else
-            {
-                for (int i = NextViewId; i >= message.newViewId; i--)
-                {
-                    if (networkViews.ContainsKey(i))
-                    {
-                        if (networkViews.ContainsKey(i + 1))
-                            networkViews[i + 1] = networkViews[i];
-                        else
-                            networkViews.Add(i + 1, networkViews[i]);
-                    }
-                    else
-                        networkViews.Remove(i + 1);
-                }
-                newViewId = message.newViewId;
-            }
-            NextViewId += 1;
-        }
-        else
-        {
-            //If the ids are equal it is normal, we can use the received view id
-            //If the new id is superior, there is an instantiation message that we didn't receive yet. We can also use the new id and wait for the next message
-            //If it is inferior but we don't yet have a view for this id then it is probably the instantiation message that we received late. Then we can also add it at the received id.
-            newViewId = -1;
-            Debug.LogError("This should never happen, we have to review our assumptions");
-        }
-        //Debug.Log("NetworkM - New Instantiate Id " + newViewId);
-        networkViews.Add(newViewId, newView);
-        newView.ViewId = newViewId;
+        networkViews.Add(message.newViewId, newView);
+        newView.ViewId = message.newViewId;
         newView.registered = true;
         newView.isMine = false;
+
+        InitializeNewObject(message.initialisationParameters, newView.gameObject);
+    }
+
+    private static void InitializeNewObject(object[] initialisationParameters, GameObject go)
+    {
+        if (initialisationParameters != null && initialisationParameters.Length > 0)
+            go.SendMessage("InitView", initialisationParameters);
     }
 
     internal void DistributeMessage(ConnectionId connectionId, NetworkMessage message)
     {
-        Assert.IsTrue(networkViews.ContainsKey(message.viewId), "No view was registered with this Id " + message.viewId);
-        networkViews[message.viewId].ReceiveNetworkMessage(connectionId, message);
+        if (networkViews.ContainsKey(message.viewId))
+            networkViews[message.viewId].ReceiveNetworkMessage(connectionId, message);
+        else
+            return;// Debug.Log("No view was registered with this Id " + message.viewId);
+
 
     }
 
@@ -113,11 +122,13 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     {
         if (networkViews.ContainsKey(view.ViewId))
         {
-            Assert.IsFalse(networkViews.ContainsKey(view.ViewId), "This viewid is already used " + view.ViewId + "  : " + view + "  " + networkViews.Count + "   " + networkViews[view.ViewId]);
+            Debug.LogError("This viewid (" + view.ViewId + ") is already used by " + networkViews[view.ViewId] + "- The view :" + view + " - View count : " + networkViews.Count);
         }
-        networkViews.Add(view.ViewId, view);
-        view.registered = true;
-        NextViewId = networkViews.Count;
+        else
+        {
+            networkViews.Add(view.ViewId, view);
+            view.registered = true;
+        }
     }
 
 
@@ -142,16 +153,18 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 [Serializable]
 public struct InstantiationMessage
 {
-    public int newViewId;
+    public short newViewId;
     public string path;
     public Vector3 position;
     public Quaternion rotation;
+    public object[] initialisationParameters;
 
-    public InstantiationMessage(int id, string path, Vector3 position, Quaternion rotation)
+    public InstantiationMessage(short id, string path, Vector3 position, Quaternion rotation, object[] initialisationParameters)
     {
         this.newViewId = id;
         this.path = path;
         this.position = position;
         this.rotation = rotation;
+        this.initialisationParameters = initialisationParameters;
     }
 }

@@ -16,9 +16,16 @@ public class ServerTimeStrategy : TimeStrategy
         return latencies[id];
     }
 
+    public override float GetMyLatency()
+    {
+        return 0;
+    }
+
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
         ClientTimePacket packet = NetworkExtensions.Deserialize<ClientTimePacket>(data);
+        if (!latencies.ContainsKey(id))
+            InvokeNewConnection(id);
         latencies[id] = packet.latency;
         management.SetLatency(id, packet.latency);
         management.View.SendData(management.observedId, MessageType.ViewPacket, new ServerTimePacket(GetNetworkTime(), packet.time).Serialize(), id);

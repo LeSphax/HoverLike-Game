@@ -45,16 +45,15 @@ class BallMovementView : ObservedComponent
         Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
         myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, 0.3f);
-        Debug.Log(velocity + "  vs  " + myRigidbody.velocity + "   vs  " + velocity * MAX_SPEED * Mathf.Max(power, 0.3f));
         Debug.Log("Need to check the functionnement of AttractionBall");
     }
 
-    protected override void OwnerUpdate()
+    public override void OwnerUpdate()
     {
         //DoNothing, the physics simulations are sufficient
     }
 
-    protected override void SimulationUpdate()
+    public override void SimulationUpdate()
     {
         //Debug.Log(currentPacket.position + "   " + BallState.ListenToServer + "   " + BallState.IsAttached());
         if (BallState.ListenToServer)

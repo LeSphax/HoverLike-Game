@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class ANetworkView : MonoBehaviour
 {
     [SerializeField]
-    private int viewId;
-    public int ViewId
+    private short viewId;
+    public short ViewId
     {
         get
         {

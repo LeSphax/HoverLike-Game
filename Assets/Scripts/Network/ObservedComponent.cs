@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class ObservedComponent : SlideBall.MonoBehaviour
 {
     [NonSerialized]
-    public int observedId;
+    public short observedId;
 
     public int sendRate = 60;
 
@@ -16,18 +16,6 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     public void StartUpdating()
     {
         InvokeRepeating("SendPacket", 0, 1f / sendRate);
-    }
-
-    void FixedUpdate()
-    {
-        if (View.isMine)
-        {
-            OwnerUpdate();
-        }
-        else
-        {
-            SimulationUpdate();
-        }
     }
 
     protected virtual void SendPacket()
@@ -47,8 +35,8 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
 
     protected abstract bool IsSendingPackets();
 
-    protected abstract void OwnerUpdate();
-    protected abstract void SimulationUpdate();
+    public abstract void OwnerUpdate();
+    public abstract void SimulationUpdate();
 
     protected abstract byte[] CreatePacket(long sendId);
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 [RequireComponent(typeof(PowerBar))]
@@ -8,7 +9,21 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     private PowerBar powerBar;
     private bool tryingToCatchBall = true;
 
-    public bool stealing = false;
+    private List<int> idsPlayerInContact = new List<int>();
+
+    private bool stealing;
+    public bool Stealing
+    {
+        get
+        {
+            return stealing;
+        }
+        set
+        {
+            stealing = value;
+            TryStealing();
+        }
+    }
 
     private GameObject ball
     {
@@ -27,15 +42,41 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
     }
 
+    private void TryStealing()
+    {
+        if (stealing)
+            foreach (int id in idsPlayerInContact)
+            {
+                if (id == BallState.GetIdOfPlayerOwningBall())
+                {
+                    View.RPC("StealBall", RPCTargets.Server, BallState.GetIdOfPlayerOwningBall());
+                    stealing = false;
+                    break;
+                }
+            }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         if (View.isMine)
         {
-            if (Tags.IsPlayer(collision.gameObject.tag) && BallState.GetAttachedPlayerID() == collision.gameObject.GetNetworkView().ViewId)
+            if (Tags.IsPlayer(collision.gameObject.tag))
             {
-                Debug.Log("Collision");
-                if (stealing)
-                    View.RPC("StealBall", RPCTargets.Server, BallState.GetAttachedPlayerID());
+                idsPlayerInContact.Add(collision.gameObject.GetNetworkView().ViewId);
+                TryStealing();
+                Debug.Log("CollisionEnter");
+            }
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (View.isMine)
+        {
+            if (Tags.IsPlayer(collision.gameObject.tag))
+            {
+                idsPlayerInContact.Remove(collision.gameObject.GetNetworkView().ViewId);
+                Debug.Log("CollisionExit");
             }
         }
     }
@@ -79,7 +120,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     {
         Debug.Log("StealBall " + victimId + "     " + View.ViewId + "   " + gameObject.name);
         Assert.IsTrue(MyGameObjects.NetworkManagement.isServer);
-        if (BallState.GetAttachedPlayerID() == victimId)
+        if (BallState.GetIdOfPlayerOwningBall() == victimId)
         {
             Debug.LogWarning("SetAttached " + View.ViewId);
             BallState.SetAttached(View.ViewId);
@@ -92,7 +133,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
         int previousPlayerId = previousPlayer == null ? -1 : (int)previousPlayer;
 
         bool attach = newPlayerId == View.ViewId && previousPlayerId != View.ViewId;
-        bool detach = previousPlayerId == View.ViewId && newPlayerId != View.ViewId;
+        bool detach = previousPlayerId == View.ViewId && newPlayerId == -1;
 
         Assert.IsFalse(attach && detach);
 
@@ -118,14 +159,14 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (BallState.GetAttachedPlayerID() == View.ViewId)
+            if (BallState.GetIdOfPlayerOwningBall() == View.ViewId)
             {
                 powerBar.StartFilling();
             }
         }
         else if (Input.GetMouseButtonUp(0) && powerBar.IsFilling())
         {
-            if (BallState.GetAttachedPlayerID() == View.ViewId)
+            if (BallState.GetIdOfPlayerOwningBall() == View.ViewId)
             {
                 ClientThrowBall(Functions.GetMouseWorldPosition(), powerBar.powerValue);
                 powerBar.Hide();
@@ -150,7 +191,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     {
         Debug.Log("We should extrapolate the position of the ball considering the time needed for the packet to arrive");
         //Check if ClientThrowBall was already called to avoid setting ball speed twice
-        if (throwerId == BallState.GetAttachedPlayerID())
+        if (throwerId == BallState.GetIdOfPlayerOwningBall())
         {
             BallState.SetAttached(-1);
             if (BallState.ListenToServer)

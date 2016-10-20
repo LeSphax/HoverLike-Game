@@ -4,7 +4,7 @@
 [Serializable]
 public class NetworkMessage
 {
-    private const int MAX_NUMBER_VIEWS = 1000;
+    private const int MAX_NUMBER_VIEWS = Int16.MaxValue;
     private int id;
     public int viewId
     {

@@ -11,17 +11,6 @@ namespace Navigation
         AsyncOperation async;
         bool fading = false;
 
-        void OnEnable()
-        {
-            SceneManager.sceneLoaded += LevelLoaded;
-        }
-
-        void OnDisable()
-        {
-            SceneManager.sceneLoaded -= LevelLoaded;
-
-        }
-
         public void StartLoading(string levelName)
         {
             this.levelName = levelName;
@@ -33,6 +22,7 @@ namespace Navigation
             Debug.LogWarning("ASYNC LOAD STARTED FOR SCENE :  " + levelName +
                " - DO NOT EXIT PLAY MODE UNTIL SCENE LOADS... UNITY WILL CRASH");
             async = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
+            SceneManager.sceneLoaded += LevelLoaded;
             async.allowSceneActivation = false;
             fading = false;
             yield return async;
@@ -66,6 +56,7 @@ namespace Navigation
                 FinishedLoading.Invoke();
             CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
             async = null;
+            SceneManager.sceneLoaded -= LevelLoaded;
         }
 
         private static Camera GetMainCamera()

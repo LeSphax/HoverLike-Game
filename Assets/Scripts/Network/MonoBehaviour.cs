@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SlideBall
 {
+    [RequireComponent(typeof(MyNetworkView))]
     public class MonoBehaviour : UnityEngine.MonoBehaviour
     {
         private MyNetworkView view;

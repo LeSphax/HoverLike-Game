@@ -1,19 +1,25 @@
 ﻿// C# example.
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class SpecialBuild
 {
+    private static short nextViewId = 0;
     private const string path = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/PC/Build.exe";
+
+    private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
 
     private static float startWaitingTime = -1;
 
+    private static List<System.Diagnostics.Process> processes = new List<System.Diagnostics.Process>();
+
     [MenuItem("MyTools/EditorAsServer %g")]
-    public static void EditorAsServer()
+    public static void BuildWithLobby()
     {
-        BuildGame();
+        BuildOnly();
         RunGame();
 
         ChangeScene(Paths.SCENE_LOBBY);
@@ -24,11 +30,16 @@ public class SpecialBuild
     }
 
     [MenuItem("MyTools/EditorAsClient %h")]
-    public static void EditorAsClient()
+    public static void BuildWithoutLobby()
     {
-        BuildGame();
+        //BuildGame(new string[] { Paths.SCENE_MAIN });
+        BuildOnly();
         RunGame();
 
+        ChangeScene(Paths.SCENE_LOBBY);
+
+        //ChangeScene(Paths.SCENE_MAIN);
+        //EditorApplication.isPlaying = true;
         //startWaitingTime = Time.realtimeSinceStartup;
         //EditorApplication.update += OnEditorUpdate;
 
@@ -38,7 +49,7 @@ public class SpecialBuild
     [MenuItem("MyTools/Build Only %j")]
     public static void BuildOnly()
     {
-        BuildGame();
+        BuildGame(levels);
 
 
         //startWaitingTime = Time.realtimeSinceStartup;
@@ -58,13 +69,14 @@ public class SpecialBuild
 
     }
 
-    private static void BuildGame()
+    private static void BuildGame(string[] levels)
     {
+        KillGames();
+        EditorApplication.isPlaying = false;
         MakeViewIds();
 
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
-        string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
 
 #if UNITY_WEBGL
         Debug.Log(BuildPipeline.BuildPlayer(levels, path, BuildTarget.WebGL, BuildOptions.None));
@@ -77,34 +89,65 @@ public class SpecialBuild
     [MenuItem("MyTools/MakeViewIds %e")]
     public static void MakeViewIds()
     {
-        ChangeScene(Paths.SCENE_MAIN);
-        //MyGameObjects.RoomActivation.SetActive(true);
-        Debug.ClearDeveloperConsole();
-        MyGameObjects.NetworkViewsManagement.NextViewId = 0;
-        foreach (ANetworkView view in MyGameObjects.Scene.GetComponentsInChildren<ANetworkView>())
+        nextViewId = 0;
+        MakeViewIds(Paths.SCENE_LOBBY);
+        MakeViewIds(Paths.SCENE_MAIN);
+        if (!Settings.Data.ContainsKey(Settings.NEXT_VIEW_ID))
+            Settings.Data.Add(Settings.NEXT_VIEW_ID, "" + nextViewId);
+        else
+            Settings.Data[Settings.NEXT_VIEW_ID] = "" + nextViewId;
+        Settings.SaveSettings();
+    }
+
+    public static void MakeViewIds(string scene)
+    {
+        ChangeScene(scene);
+        foreach (ANetworkView view in GameObject.FindObjectsOfType(typeof(ANetworkView)))
         {
 
-            view.ViewId = MyGameObjects.NetworkViewsManagement.NextViewId;
+            view.ViewId = nextViewId;
             Debug.Log(view + "   " + view.ViewId);
-            MyGameObjects.NetworkViewsManagement.NextViewId++;
+            nextViewId++;
+            //EditorSceneManager.SaveOpenScenes();
         }
-        //MyGameObjects.RoomActivation.SetActive(false);
+        EditorSceneManager.SaveScene(EditorSceneManager.GetSceneByPath(scene));
     }
+
+
 
     [MenuItem("MyTools/RunGame %q")]
     private static void RunGame()
     {
         var proc = new System.Diagnostics.Process();
+        processes.Add(proc);
         proc.StartInfo.FileName = path;
         proc.Start();
     }
+
+    [MenuItem("MyTools/KillGames %k")]
+    private static void KillGames()
+    {
+        foreach(System.Diagnostics.Process process in System.Diagnostics.Process.GetProcessesByName("Build"))
+        {
+            Debug.Log(process);
+            process.Kill();
+        }
+    }
+
 
     private static void ChangeScene(string sceneName)
     {
         if (EditorSceneManager.GetActiveScene().name != sceneName)
         {
-            EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+            EditorSceneManager.SaveOpenScenes();// SaveScene();// SaveCurrentModifiedScenesIfUserWantsTo();
             EditorSceneManager.OpenScene(sceneName);
         }
+    }
+
+    [MenuItem("MyTools/Save %i")]
+    public static void SaveScene()
+    {
+        ChangeScene(Paths.SCENE_MAIN);
+
     }
 }

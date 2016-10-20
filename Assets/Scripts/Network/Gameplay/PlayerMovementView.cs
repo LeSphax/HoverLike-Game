@@ -73,7 +73,7 @@ public class PlayerMovementView : ObservedComponent
         PacketLoss.AddView(this);
     }
 
-    protected override void OwnerUpdate()
+    public override void OwnerUpdate()
     {
         if (targetPosition != null)
         {
@@ -102,7 +102,7 @@ public class PlayerMovementView : ObservedComponent
         myRigidbody.velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
     }
 
-    protected override void SimulationUpdate()
+    public override void SimulationUpdate()
     {
         while (StateBuffer.Count > 0 && currentId >= StateBuffer.Peek().id)
         {

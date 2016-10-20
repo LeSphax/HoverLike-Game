@@ -11,7 +11,7 @@ public class BallState : MonoBehaviour
     void Awake()
     {
         ball = gameObject;
-        MyGameObjects.RoomManager.AddGameStartedListener(StartGame);
+        MyGameObjects.GameInitialization.AddGameStartedListener(StartGame);
     }
 
     void Start()
@@ -27,7 +27,7 @@ public class BallState : MonoBehaviour
             MyGameObjects.Properties.SetProperty(PropertiesKeys.NamePlayerHoldingBall, -1);
         }
 
-        AttachBall(GetAttachedPlayerID());
+        AttachBall(GetIdOfPlayerOwningBall());
 
     }
 
@@ -43,10 +43,10 @@ public class BallState : MonoBehaviour
 
     public static bool IsAttached()
     {
-        return GetAttachedPlayerID() != -1;
+        return GetIdOfPlayerOwningBall() != -1;
     }
 
-    public static int GetAttachedPlayerID()
+    public static int GetIdOfPlayerOwningBall()
     {
         object attachedPlayerID;
         MyGameObjects.Properties.TryGetProperty(PropertiesKeys.NamePlayerHoldingBall, out attachedPlayerID);
@@ -63,7 +63,7 @@ public class BallState : MonoBehaviour
     {
         foreach (GameObject player in Tags.FindPlayers())
         {
-            if (player.GetNetworkView().ViewId == GetAttachedPlayerID())
+            if (player.GetNetworkView().ViewId == GetIdOfPlayerOwningBall())
                 return player;
         }
         return null;
@@ -73,6 +73,7 @@ public class BallState : MonoBehaviour
     public static void AttachBall(int viewId)
     {
         bool attach = viewId != -1;
+        Debug.Log("Call To Attach Ball " + viewId + "   " + attach);
         GameObject player = GetAttachedPlayer();
         if (attach)
         {

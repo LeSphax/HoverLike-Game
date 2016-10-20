@@ -9,12 +9,12 @@ public class StealEffect : AbilityEffect
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
         this.target = target;
-        target.GetComponent<PlayerBallController>().stealing = true;
+        target.GetComponent<PlayerBallController>().Stealing = true;
         Invoke("StopStealing", stealingDuration);
     }                   
 
     private void StopStealing()
     {
-        target.GetComponent<PlayerBallController>().stealing = false;
+        target.GetComponent<PlayerBallController>().Stealing = false;
     }
 }

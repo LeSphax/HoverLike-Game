@@ -11,7 +11,7 @@ using UnityEngine.Assertions;
 public delegate void NetworkEventHandler(byte[] data, ConnectionId id);
 public delegate void ConnectionEventHandler(ConnectionId id);
 
-public class NetworkManagement : MonoBehaviour
+public class NetworkManagement : SlideBall.MonoBehaviour
 {
     /* 
  * Copyright (C) 2015 Christoph Kutza
@@ -81,20 +81,17 @@ public class NetworkManagement : MonoBehaviour
     private const string GET_ROOMS_COMMAND = "___GetRooms";
     private List<NetworkMessage> bufferedMessages = new List<NetworkMessage>();
 
-    public event EmptyEventHandler ServerCreated;
-    public event ConnectionEventHandler NewPlayerConnected;
-    public event EmptyEventHandler ConnectedToServer;
+    public event EmptyEventHandler RoomCreated;
+    public event ConnectionEventHandler NewPlayerConnectedToRoom;
+    public event EmptyEventHandler ConnectedToRoom;
+
+    public event EmptyEventHandler ReceivedAllBufferedMessages;
 
     /// <summary>
     /// Will setup webrtc and create the network object
     /// </summary>
 	private void Start()
     {
-        //InvokeRepeating("HandleNetwork", 0.1f, 1 / 60f);
-
-        //shows the console on all platforms. for debugging only
-        //if (uDebugConsole)
-        //    DebugHelper.ActivateConsole();
         if (uLog)
             SLog.SetLogger(OnLog);
 
@@ -137,17 +134,13 @@ public class NetworkManagement : MonoBehaviour
             Debug.Log("Failed to access webrtc ");
         }
     }
-    void Update()
+
+    public void GetRooms()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            mNetwork.Connect(GET_ROOMS_COMMAND);
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            CreateRoom(RoomName);
-        }
+        Setup();
+        mNetwork.Connect(GET_ROOMS_COMMAND);
     }
+
     private void Reset()
     {
         Debug.Log("Cleanup!");
@@ -191,10 +184,6 @@ public class NetworkManagement : MonoBehaviour
             while (mNetwork != null && mNetwork.Dequeue(out evt) && x < 100)
             {
                 x++;
-                if (evt.MessageData != null)
-                    Debug.Log(evt + "   " + evt.MessageData.ContentLength);
-                else
-                    Debug.Log(evt + "   &" + evt.Info); // MessageData.Buffer.ToString());
                 switch (evt.Type)
                 {
                     case NetEventType.ServerInitialized:
@@ -202,8 +191,9 @@ public class NetworkManagement : MonoBehaviour
                             //server initialized message received
                             isServer = true;
                             string address = evt.Info;
-                            Debug.LogError("Server started. Address: " + address);
-                            ServerCreated.Invoke();
+                            Debug.LogError("Server started. Address: " + address + "   " + evt.ConnectionId.id);
+                            SetConnectionId(ConnectionId.INVALID);
+                            RoomCreated.Invoke();
                         }
                         break;
                     //user tried to start the server but it failed
@@ -211,11 +201,13 @@ public class NetworkManagement : MonoBehaviour
                     case NetEventType.ServerInitFailed:
                         {
                             string rawData = (string)evt.RawData;
-                            Debug.Log(rawData);// MessageData.Buffer.ToString());
                             string[] rooms = rawData.Split('@');
-                            if (rooms[0] == GET_ROOMS_COMMAND)
+                            if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
                             {
-                                MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
+                                if (rooms.Length == 1)
+                                    MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
+                                else
+                                    MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
                             }
                             else
                             {
@@ -240,14 +232,19 @@ public class NetworkManagement : MonoBehaviour
                     //user runs the server and a new client connected
                     case NetEventType.NewConnection:
                         {
-                            Debug.LogError("NewConnection");
+                            Debug.LogError("NewConnection " + evt.ConnectionId.id);
                             mConnections.Add(evt.ConnectionId);
 
                             if (isServer)
-                                NewPlayerConnected.Invoke(evt.ConnectionId);
-                            else
-                                ConnectedToServer.Invoke();
-
+                            {
+                                View.RPC("SetConnectionId", evt.ConnectionId, evt.ConnectionId);
+                                NewPlayerConnectedToRoom.Invoke(evt.ConnectionId);
+                                SendBufferedMessages(evt.ConnectionId);
+                            }
+                            else if (ConnectedToRoom != null)
+                            {
+                                ConnectedToRoom.Invoke();
+                            }
                         }
                         break;
                     case NetEventType.ConnectionFailed:
@@ -294,22 +291,6 @@ public class NetworkManagement : MonoBehaviour
             if (mNetwork != null)
                 mNetwork.Flush();
         }
-    }
-
-    public int GetNumberPlayers()
-    {
-        Assert.IsTrue(isServer);
-        return mConnections.Count + 1;
-    }
-
-    public void SendBufferedMessages(ConnectionId id)
-    {
-        Assert.IsTrue(isServer);
-        foreach (NetworkMessage message in bufferedMessages)
-        {
-            SendData(message, id);
-        }
-        Debug.Log("All buffered messages sent");
     }
 
     private void HandleIncommingMessage(ref NetworkEvent evt)
@@ -391,21 +372,13 @@ public class NetworkManagement : MonoBehaviour
         TryAddBuffered(message);
     }
 
-    private void TryAddBuffered(NetworkMessage message)
-    {
-        if (isServer && message.isBuffered())
-        {
-            message.flags = message.flags & ~MessageFlags.Buffered;
-            bufferedMessages.Add(message);
-        }
-    }
+
 
     private void SendToNetwork(byte[] data, ConnectionId id, bool reliable)
     {
-        if (data.Length == 365 || data.Length == 95)
-            Debug.Log(data.Length);
-        //Debug.Log(Encoding.UTF8.GetString(data, 0, data.Length));
         mNetwork.SendData(id, data, 0, data.Length, reliable);
+        if (!mConnections.Contains(id))
+            Debug.LogError("This isn't a valid connectionId");
     }
 
 
@@ -433,5 +406,54 @@ public class NetworkManagement : MonoBehaviour
         Debug.Log("StartServer " + roomName);
     }
 
+    #region host
+    public int GetNumberPlayers()
+    {
+        Assert.IsTrue(isServer);
+        return mConnections.Count + 1;
+    }
 
+    public void SendBufferedMessages(ConnectionId id)
+    {
+        Assert.IsTrue(isServer);
+        foreach (NetworkMessage message in bufferedMessages)
+        {
+            SendData(message, id);
+        }
+        View.RPC("AllBufferedMessagesSent", id, null);
+        Debug.Log("All buffered messages sent");
+    }
+
+    private void TryAddBuffered(NetworkMessage message)
+    {
+        if (isServer && message.isBuffered())
+        {
+            message.flags = message.flags & ~MessageFlags.Buffered;
+            Buffer(message);
+        }
+    }
+
+    public void Buffer(NetworkMessage message)
+    {
+        Assert.IsTrue(isServer);
+        bufferedMessages.Add(message);
+    }
+    #endregion
+
+    #region client
+    [MyRPC]
+    private void AllBufferedMessagesSent()
+    {
+        ReceivedAllBufferedMessages.Invoke();
+    }
+
+    [MyRPC]
+    private void SetConnectionId(ConnectionId id)
+    {
+        Players.myPlayerId = id;
+        Players.MyPlayer.Nickname = NickNamePanel.nickname;
+    }
+
+
+    #endregion
 }

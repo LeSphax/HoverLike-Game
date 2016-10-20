@@ -18,7 +18,7 @@ public class Scoreboard : SlideBall.MonoBehaviour {
 
     void Start()
     {
-        MyGameObjects.NetworkManagement.ConnectedToServer += UpdateScoreBoard;
+        MyGameObjects.NetworkManagement.ConnectedToRoom += UpdateScoreBoard;
     }
 
     [MyRPC]
