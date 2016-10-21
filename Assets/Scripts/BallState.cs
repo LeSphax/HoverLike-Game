@@ -1,16 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-public class BallState : MonoBehaviour
+public class BallState : SlideBall.MonoBehaviour
 {
+    private const int NO_PLAYER_ID = -1;
+
     //This is set to false when we want the ball's simulation to be handled by the client
-    public static bool ListenToServer = true;
-    public static GameObject ball;
-    private static Vector3 ballHoldingPosition = new Vector3(.5f, .5f, .5f);
+    public bool ListenToServer = true;
+    public GameObject Ball;
+    private Vector3 ballHoldingPosition = new Vector3(.5f, .5f, .5f);
 
 
     void Awake()
     {
-        ball = gameObject;
+        Ball = gameObject;
         MyGameObjects.GameInitialization.AddGameStartedListener(StartGame);
     }
 
@@ -21,45 +24,44 @@ public class BallState : MonoBehaviour
 
     public void StartGame()
     {
-        Debug.Log("BallState : StartGame");
         if (MyGameObjects.NetworkManagement.isServer)
         {
-            MyGameObjects.Properties.SetProperty(PropertiesKeys.NamePlayerHoldingBall, -1);
+            MyGameObjects.Properties.SetProperty(PropertiesKeys.NamePlayerHoldingBall, NO_PLAYER_ID);
         }
 
         AttachBall(GetIdOfPlayerOwningBall());
 
     }
 
-    public static void SetAttached(int playerID)
+    public void SetAttached(int playerID)
     {
         MyGameObjects.Properties.SetProperty(PropertiesKeys.NamePlayerHoldingBall, playerID);
 
     }
-    public static void Detach()
+    public void Detach()
     {
-        MyGameObjects.Properties.SetProperty(PropertiesKeys.NamePlayerHoldingBall, -1);
+        MyGameObjects.Properties.SetProperty(PropertiesKeys.NamePlayerHoldingBall, NO_PLAYER_ID);
     }
 
-    public static bool IsAttached()
+    public bool IsAttached()
     {
-        return GetIdOfPlayerOwningBall() != -1;
+        return GetIdOfPlayerOwningBall() != NO_PLAYER_ID;
     }
 
-    public static int GetIdOfPlayerOwningBall()
+    public int GetIdOfPlayerOwningBall()
     {
         object attachedPlayerID;
         MyGameObjects.Properties.TryGetProperty(PropertiesKeys.NamePlayerHoldingBall, out attachedPlayerID);
         if (attachedPlayerID == null)
         {
             //Debug.LogError("The attachedPlayer wasn't set, this should not happen");
-            return -1;
+            return NO_PLAYER_ID;
         }
         else
             return (int)attachedPlayerID;
     }
 
-    public static GameObject GetAttachedPlayer()
+    public GameObject GetAttachedPlayer()
     {
         foreach (GameObject player in Tags.FindPlayers())
         {
@@ -70,24 +72,36 @@ public class BallState : MonoBehaviour
     }
 
 
-    public static void AttachBall(int viewId)
+    public void AttachBall(int viewId)
     {
-        bool attach = viewId != -1;
+        bool attach = viewId != NO_PLAYER_ID;
         Debug.Log("Call To Attach Ball " + viewId + "   " + attach);
         GameObject player = GetAttachedPlayer();
         if (attach)
         {
-            Debug.Log("Attach Ball" + ball + "    " + player);
-            ball.transform.SetParent(player.transform);
-            ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
-            ball.transform.localPosition = ballHoldingPosition;
+            Debug.Log("Attach Ball" + Ball + "    " + player);
+            Ball.transform.SetParent(player.transform);
+            Ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            Ball.transform.localPosition = ballHoldingPosition;
         }
         else
         {
             Debug.Log("Detach Ball");
             //Physics.IgnoreCollision(ball.GetComponent<Collider>(), player.GetComponent<Collider>(),);
-            ball.transform.SetParent(null);
-            ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            Ball.transform.SetParent(null);
+            Ball.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         }
+    }
+
+    [MyRPC]
+    internal void PutAtStartPosition()
+    {
+        if (MyGameObjects.NetworkManagement.isServer)
+        {
+            SetAttached(NO_PLAYER_ID);
+            View.RPC("PutAtStartPosition", RPCTargets.Others);
+        }
+        Ball.transform.position = MyGameObjects.Spawns.BallSpawn;
+        Ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 }

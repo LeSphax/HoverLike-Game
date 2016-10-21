@@ -15,6 +15,32 @@ public static class MyGameObjects
         }
     }
 
+    private static BallState ballState;
+    public static BallState BallState
+    {
+        get
+        {
+            if (ballState == null)
+            {
+                ballState = GameObject.FindGameObjectWithTag(Tags.Ball).GetComponent<BallState>();
+            }
+            return ballState;
+        }
+    }
+
+    private static MatchManager matchManager;
+    public static MatchManager MatchManager
+    {
+        get
+        {
+            if (matchManager == null)
+            {
+                matchManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<MatchManager>();
+            }
+            return matchManager;
+        }
+    }
+
     private static Players players;
     public static Players Players
     {
@@ -116,6 +142,19 @@ public static class MyGameObjects
                 spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
             }
             return spawns;
+        }
+    }
+
+    private static Countdown countdown;
+    public static Countdown Countdown
+    {
+        get
+        {
+            if (countdown == null)
+            {
+                countdown = GameObject.FindGameObjectWithTag(Tags.Countdown).GetComponent<Countdown>();
+            }
+            return countdown;
         }
     }
 

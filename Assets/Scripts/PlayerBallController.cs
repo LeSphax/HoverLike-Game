@@ -25,21 +25,25 @@ public class PlayerBallController : SlideBall.MonoBehaviour
         }
     }
 
-    private GameObject ball
+    private GameObject Ball
     {
         get
         {
-            return BallState.ball;
+            return MyGameObjects.BallState.Ball;
         }
     }
 
 
     protected void Start()
     {
-        MyGameObjects.Properties.AddListener(PropertiesKeys.NamePlayerHoldingBall, AttachBall);
-        Physics.IgnoreCollision(GetComponent<Collider>(), ball.GetComponent<Collider>(), true);
+        MyGameObjects.GameInitialization.GameStarted += StartGame;
         powerBar = GetComponent<PowerBar>();
+        MyGameObjects.Properties.AddListener(PropertiesKeys.NamePlayerHoldingBall, AttachBall);
+    }
 
+    private void StartGame()
+    {
+        Physics.IgnoreCollision(GetComponent<Collider>(), Ball.GetComponent<Collider>(), true);
     }
 
     private void TryStealing()
@@ -47,9 +51,9 @@ public class PlayerBallController : SlideBall.MonoBehaviour
         if (stealing)
             foreach (int id in idsPlayerInContact)
             {
-                if (id == BallState.GetIdOfPlayerOwningBall())
+                if (id == MyGameObjects.BallState.GetIdOfPlayerOwningBall())
                 {
-                    View.RPC("StealBall", RPCTargets.Server, BallState.GetIdOfPlayerOwningBall());
+                    View.RPC("StealBall", RPCTargets.Server, MyGameObjects.BallState.GetIdOfPlayerOwningBall());
                     stealing = false;
                     break;
                 }
@@ -87,7 +91,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
         {
             if (collider.gameObject.tag == Tags.CatchDetector)
             {
-                Debug.LogError("Exit" + collider);
+                //Debug.LogError("Exit" + collider);
             }
         }
     }
@@ -96,9 +100,9 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     {
         if (View.isMine)
         {
-            if (collider.gameObject.tag == Tags.CatchDetector && !BallState.IsAttached() && tryingToCatchBall)
+            if (collider.gameObject.tag == Tags.CatchDetector && !MyGameObjects.BallState.IsAttached() && tryingToCatchBall)
             {
-                Debug.LogError("Enter" + collider);
+                //Debug.LogError("Enter" + collider);
                 View.RPC("PickUpBall", RPCTargets.Server);
             }
         }
@@ -107,11 +111,11 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     [MyRPC]
     public void PickUpBall()
     {
-        Debug.Log("PickUpBall " + gameObject.name + "   " + BallState.IsAttached());
+        Debug.Log("PickUpBall " + gameObject.name + "   " + MyGameObjects.BallState.IsAttached());
         Assert.IsTrue(MyGameObjects.NetworkManagement.isServer);
-        if (!BallState.IsAttached())
+        if (!MyGameObjects.BallState.IsAttached())
         {
-            BallState.SetAttached(View.ViewId);
+            MyGameObjects.BallState.SetAttached(View.ViewId);
         }
     }
 
@@ -120,10 +124,10 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     {
         Debug.Log("StealBall " + victimId + "     " + View.ViewId + "   " + gameObject.name);
         Assert.IsTrue(MyGameObjects.NetworkManagement.isServer);
-        if (BallState.GetIdOfPlayerOwningBall() == victimId)
+        if (MyGameObjects.BallState.GetIdOfPlayerOwningBall() == victimId)
         {
             Debug.LogWarning("SetAttached " + View.ViewId);
-            BallState.SetAttached(View.ViewId);
+            MyGameObjects.BallState.SetAttached(View.ViewId);
         }
     }
 
@@ -139,11 +143,11 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
         if (attach)
         {
-            BallState.AttachBall(View.ViewId);
+            MyGameObjects.BallState.AttachBall(View.ViewId);
         }
         else if (detach)
         {
-            BallState.AttachBall(-1);
+            MyGameObjects.BallState.AttachBall(-1);
         }
     }
 
@@ -159,14 +163,14 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (BallState.GetIdOfPlayerOwningBall() == View.ViewId)
+            if (MyGameObjects.BallState.GetIdOfPlayerOwningBall() == View.ViewId)
             {
                 powerBar.StartFilling();
             }
         }
         else if (Input.GetMouseButtonUp(0) && powerBar.IsFilling())
         {
-            if (BallState.GetIdOfPlayerOwningBall() == View.ViewId)
+            if (MyGameObjects.BallState.GetIdOfPlayerOwningBall() == View.ViewId)
             {
                 ClientThrowBall(Functions.GetMouseWorldPosition(), powerBar.powerValue);
                 powerBar.Hide();
@@ -180,21 +184,21 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
     private void ClientThrowBall(Vector3 target, float power)
     {
-        BallState.AttachBall(-1);
+        MyGameObjects.BallState.AttachBall(-1);
         SetBallSpeed(target, power);
-        BallState.ListenToServer = false;
+        MyGameObjects.BallState.ListenToServer = false;
         View.RPC("ServerThrowBall", RPCTargets.Server, View.ViewId, target, power);
     }
 
     [MyRPC]
-    private void ServerThrowBall(int throwerId, Vector3 target, float power)
+    private void ServerThrowBall(short throwerId, Vector3 target, float power)
     {
         Debug.Log("We should extrapolate the position of the ball considering the time needed for the packet to arrive");
         //Check if ClientThrowBall was already called to avoid setting ball speed twice
-        if (throwerId == BallState.GetIdOfPlayerOwningBall())
+        if (throwerId == MyGameObjects.BallState.GetIdOfPlayerOwningBall())
         {
-            BallState.SetAttached(-1);
-            if (BallState.ListenToServer)
+            MyGameObjects.BallState.SetAttached(-1);
+            if (MyGameObjects.BallState.ListenToServer)
             {
                 SetBallSpeed(target, power);
             }
@@ -205,7 +209,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
     private void SetBallSpeed(Vector3 target, float power)
     {
-        ball.GetComponent<BallMovementView>().Throw(target, power);
+        Ball.GetComponent<BallMovementView>().Throw(target, power);
         AttractionBall.DeactivatePlayer(gameObject);
         tryingToCatchBall = false;
         Invoke("ReactivateAttraction", 0.5f);

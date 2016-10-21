@@ -35,7 +35,7 @@ public class AttractionBall : MonoBehaviour
 
     void Update()
     {
-        if (!BallState.IsAttached())
+        if (!MyGameObjects.BallState.IsAttached())
             foreach (GameObject player in playersAttracting)
             {
                 if (!deactivatedPlayers.Contains(player))

@@ -4,10 +4,22 @@ using System.Collections;
 public class Spawns : MonoBehaviour
 {
 
-    public GameObject[] team0;
-    public GameObject[] team1;
+    [SerializeField]
+    private GameObject[] team0;
+    [SerializeField]
+    private GameObject[] team1;
+    [SerializeField]
+    private GameObject ballSpawn;
 
-    public GameObject GetSpawn(Team teamNumber, int spawnNumber)
+    public Vector3 BallSpawn
+    {
+        get
+        {
+            return ballSpawn.transform.position;
+        }
+    }
+
+    public Vector3 GetSpawn(Team teamNumber, int spawnNumber)
     {
         GameObject[] spawns;
         switch (teamNumber)
@@ -23,7 +35,7 @@ public class Spawns : MonoBehaviour
                 Debug.LogError("This team number doesn't exist " + teamNumber);
                 break;
         }
-        return spawns[spawnNumber];
+        return spawns[spawnNumber].transform.position;
     }
 
 

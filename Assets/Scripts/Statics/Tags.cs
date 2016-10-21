@@ -21,6 +21,7 @@ public class Tags : MonoBehaviour
     public const string RoomScripts = "RoomScripts";
 
     public const string LobbyManager = "LobbyManager";
+    public const string Countdown = "Countdown";
 
     public static bool IsPlayer(string tag)
     {

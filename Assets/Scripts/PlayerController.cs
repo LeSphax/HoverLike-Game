@@ -28,11 +28,6 @@ public class PlayerController : PlayerView
     }
     PlayerMovementView movementManager;
 
-    public Vector3 spawningPoint;
-    public int playerNumber;
-    public Team teamNumber;
-
-
     void Start()
     {
         movementManager = GetComponent<PlayerMovementView>();
@@ -43,16 +38,9 @@ public class PlayerController : PlayerView
     {
         if (View.isMine)
         {
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButton(1) && MyGameObjects.MatchManager.CanPlay)
             {
                 CreateTarget();
-            }
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                ParticleSystem.EmissionModule em = transform.GetChild(1).GetComponent<ParticleSystem>().emission;
-                em.enabled = true;
-                //transform.GetChild(1).GetComponent<ParticleSystem>().Play();
-                transform.GetChild(1).GetComponent<ParticleSystem>().Emit(1);
             }
         }
     }
@@ -85,7 +73,7 @@ public class PlayerController : PlayerView
 
     public void Init(ConnectionId id, int teamNumber, string name)
     {
-        View.RPC("InitPlayer", RPCTargets.AllBuffered,id);
+        View.RPC("InitPlayer", RPCTargets.AllBuffered, id);
     }
 
     [MyRPC]
@@ -94,13 +82,12 @@ public class PlayerController : PlayerView
         if (View.isMine)
         {
             tag = Tags.MyPlayer;
+            PutAtStartPosition();
         }
         connectionId = id;
         gameObject.name = Player.Nickname;
-        transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team,Player.SpawningPoint).transform.position;
-        transform.LookAt(Vector3.zero);
 
-        if (teamNumber == 0)
+        if (Player.Team == Team.FIRST)
         {
             foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material = ResourcesGetter.BlueMaterial(); }
         }
@@ -108,7 +95,27 @@ public class PlayerController : PlayerView
         {
             foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material = ResourcesGetter.RedMaterial(); }
         }
-        gameObject.layer = LayersGetter.players[(int)teamNumber];
-        foreach (Transform go in transform) { go.gameObject.layer = LayersGetter.players[(int)teamNumber]; };
+        gameObject.layer = LayersGetter.players[(int)Player.Team];
+        foreach (Transform go in transform) { go.gameObject.layer = LayersGetter.players[(int)Player.Team]; };
+    }
+
+    [MyRPC]
+    public void PutAtStartPosition()
+    {
+        if (View.isMine)
+        {
+            transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team, Player.SpawningPoint);
+            transform.LookAt(Vector3.zero);
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            DestroyTarget();
+        }
+        else if (MyGameObjects.NetworkManagement.isServer)
+        {
+            View.RPC("PutAtStartPosition", connectionId);
+        }
+        else
+        {
+            Debug.LogError("This function shouldn't be called on a client that doesn't own the view");
+        }
     }
 }

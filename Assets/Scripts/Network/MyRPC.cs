@@ -25,13 +25,13 @@ public enum RPCTargets
     /// This client executes the RPC like any other when it received it from the server.
     /// Benefit: The server's order of sending the RPCs is the same on all clients.
     /// </remarks>
-    AllViaServer,
+    //AllViaServer,
     /// <summary>Sends the RPC to everyone (including this client) through the server and buffers it for players joining later.</summary>
     /// <remarks>
     /// This client executes the RPC like any other when it received it from the server.
     /// Benefit: The server's order of sending the RPCs is the same on all clients.
     /// </remarks>
-    AllBufferedViaServer,
+    //AllBufferedViaServer,
 }
 
 public static class RPCTargetsMethods
@@ -47,9 +47,9 @@ public static class RPCTargetsMethods
             case RPCTargets.Specified:
             case RPCTargets.OthersBuffered:
                 return false;
-            case RPCTargets.AllViaServer:
+            //case RPCTargets.AllViaServer:
             case RPCTargets.Server:
-            case RPCTargets.AllBufferedViaServer:
+            //case RPCTargets.AllBufferedViaServer:
                 return MyGameObjects.NetworkManagement.isServer;
             default:
                 throw new UnhandledSwitchCaseException(target);

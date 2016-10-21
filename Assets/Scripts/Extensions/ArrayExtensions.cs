@@ -5,6 +5,8 @@ using UnityEngine;
 
 public static class ArrayExtensions
 {
+    public delegate void Mapper<T>(T element);
+
     public static T[] Concatenate<T>(T[] array1, T[] array2)
     {
         if (array1.Length == 0)
@@ -25,7 +27,7 @@ public static class ArrayExtensions
     public static string Print<T>(this T[] array)
     {
         StringBuilder builder = new StringBuilder();
-        for (int i =0; i< array.Length; i++)
+        for (int i = 0; i < array.Length; i++)
         {
             builder.Append(array[i]);
         }
@@ -37,5 +39,13 @@ public static class ArrayExtensions
         T[] result = new T[length];
         Array.Copy(data, index, result, 0, length);
         return result;
+    }
+
+    public static void Map<T>(this T[] array, Mapper<T> func)
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            func(array[i]);
+        }
     }
 }

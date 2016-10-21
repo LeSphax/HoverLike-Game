@@ -67,8 +67,6 @@ public class NetworkMessage
             case RPCTargets.Others:
             case RPCTargets.AllBuffered:
             case RPCTargets.OthersBuffered:
-            case RPCTargets.AllViaServer:
-            case RPCTargets.AllBufferedViaServer:
                 break;
             case RPCTargets.Specified:
             case RPCTargets.Server:
@@ -81,12 +79,10 @@ public class NetworkMessage
         {
             case RPCTargets.AllBuffered:
             case RPCTargets.OthersBuffered:
-            case RPCTargets.AllBufferedViaServer:
                 flags |= MessageFlags.Buffered;
                 break;
             case RPCTargets.All:
             case RPCTargets.Others:
-            case RPCTargets.AllViaServer:
             case RPCTargets.Specified:
             case RPCTargets.Server:
                 break;
@@ -101,10 +97,6 @@ public class NetworkMessage
             case RPCTargets.Server:
             case RPCTargets.Specified:
             case RPCTargets.Others:
-                break;
-            case RPCTargets.AllViaServer:
-            case RPCTargets.AllBufferedViaServer:
-                flags |= MessageFlags.SentBack;
                 break;
             default:
                 break;
@@ -125,10 +117,6 @@ public class NetworkMessage
         {
             flags |= MessageFlags.Reliable;
         }
-        if (IsTypeSentBack())
-        {
-            flags |= MessageFlags.SentBack;
-        }
     }
 
     public bool isReliable()
@@ -144,11 +132,6 @@ public class NetworkMessage
     public bool isDistributed()
     {
         return (flags & MessageFlags.NotDistributed) == 0;
-    }
-
-    public bool isSentBack()
-    {
-        return (flags & MessageFlags.SentBack) != 0;
     }
 
     private bool IsTypeReliable()
@@ -229,7 +212,6 @@ public enum MessageFlags
     Reliable = 1,
     NotDistributed = 2,
     Buffered = 4,
-    SentBack = 8,
 }
 
 

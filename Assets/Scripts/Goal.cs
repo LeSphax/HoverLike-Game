@@ -8,7 +8,7 @@ public class Goal : MonoBehaviour {
     {
         if (collider.gameObject.tag == Tags.Ball)
         {
-            Scoreboard.incrementTeamScore(teamNumber);
+            MyGameObjects.MatchManager.TeamScored(teamNumber);
         }
     }
 

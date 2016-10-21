@@ -22,6 +22,8 @@ public class NetworkManagement : SlideBall.MonoBehaviour
 
 
     private const string HEROKU_URL = "ws://sphaxtest.herokuapp.com";
+    private const string BCS_URL = "wss://because-why-not.com:12777/chatapp";
+    
     private const string LOCALHOST_URL = "ws://localhost:5000";
 
     /// <summary>
@@ -38,7 +40,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                 return LOCALHOST_URL;
             }
             else
-                return HEROKU_URL;
+                return BCS_URL;
         }
     }
 
@@ -307,7 +309,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
         {
             foreach (ConnectionId id in mConnections)
             {
-                if (message.isSentBack() || id != evt.ConnectionId)
+                if (id != evt.ConnectionId)
                     SendData(message, id);
                 break;
             }
@@ -376,6 +378,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
 
     private void SendToNetwork(byte[] data, ConnectionId id, bool reliable)
     {
+        Debug.Log("SendToNetwork " + data.Length);
         mNetwork.SendData(id, data, 0, data.Length, reliable);
         if (!mConnections.Contains(id))
             Debug.LogError("This isn't a valid connectionId");
@@ -385,6 +388,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
     public void ConnectToRoom(string roomName)
     {
         Setup();
+        Debug.Log("Before connecting to " + roomName + " ...");
         mNetwork.Connect(roomName);
         Debug.Log("Connecting to " + roomName + " ...");
     }

@@ -14,7 +14,6 @@ public class PlayerInfo : PlayerView
     {
         set
         {
-            Debug.LogWarning("Team " + value);
             GetComponent<Image>().color = Colors.Teams[(int)value];
             MyGameObjects.RoomManager.PutPlayerInTeam(this, value);
         }

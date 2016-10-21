@@ -24,7 +24,6 @@ public class Players : ANetworkView
         int currentIndex = 3;
         PlayerFlags flags = (PlayerFlags)message.data[0];
         ConnectionId playerId = new ConnectionId(BitConverter.ToInt16(message.data, 1));
-        Debug.LogError("PlayerChanged " + playerId);
         Player player = GetOrCreatePlayer(playerId);
         if (flags.HasFlag(PlayerFlags.TEAM))
         {
@@ -33,8 +32,8 @@ public class Players : ANetworkView
         }
         if (flags.HasFlag(PlayerFlags.SPAWNINGPOINT))
         {
-            player.SpawningPoint = BitConverter.ToInt16(message.data,currentIndex);
-            currentIndex+=2;
+            player.SpawningPoint = BitConverter.ToInt16(message.data, currentIndex);
+            currentIndex += 2;
         }
         if (flags.HasFlag(PlayerFlags.NICKNAME))
         {
@@ -130,6 +129,7 @@ public class Player
     public event NicknameChangeHandler NickNameChanged;
 
     public ConnectionId id;
+    public bool isReady = false;
     private Team team = Team.NONE;
     public Team Team
     {
