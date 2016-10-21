@@ -38,7 +38,7 @@ public class Countdown : SlideBall.MonoBehaviour
             }
             else
             {
-                display.text = "" + timeLeft;
+                display.text = "" + (int)timeLeft;
             }
         }
     }

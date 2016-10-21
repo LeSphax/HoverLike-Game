@@ -104,6 +104,12 @@ public class NetworkManagement : SlideBall.MonoBehaviour
         WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
         if (factory != null)
             Debug.Log("WebRtcNetworkFactory created");
+        Invoke("Wallah", 0.1f);
+    }
+
+    private void Wallah()
+    {
+        CreateRoom("OFHEAOFEH");
     }
 
     private void OnLog(object msg, string[] tags)

@@ -28,7 +28,7 @@ public class PlayerController : PlayerView
     }
     PlayerMovementView movementManager;
 
-    void Start()
+    void Awake()
     {
         movementManager = GetComponent<PlayerMovementView>();
         target = null;
