@@ -72,9 +72,11 @@ var NetworkEvent = (function () {
         output += NetEventType[this.type];
         output += "), id: (";
         output += this.connectionId.id;
-        output += "), Data: (";
-        output += this.data;
-        output += ")]";
+        if (this.data){
+            output += "), Data.Length: (";
+            output += this.data.length;
+            output += ")]";
+        }
         return output;
     };
     NetworkEvent.parseFromString = function (str) {
