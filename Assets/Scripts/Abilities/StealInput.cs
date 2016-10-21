@@ -6,4 +6,9 @@ public class StealInput : AbilityInput
     {
         return Input.GetKeyDown(KeyCode.Space);
     }
+
+    public override string GetKey()
+    {
+        return "SPC";
+    }
 }

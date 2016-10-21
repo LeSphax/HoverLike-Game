@@ -87,16 +87,35 @@ public class PlayerController : PlayerView
         connectionId = id;
         gameObject.name = Player.Nickname;
 
+        SetMaterials();
+        gameObject.layer = LayersGetter.players[(int)Player.Team];
+        foreach (Transform go in transform) { go.gameObject.layer = LayersGetter.players[(int)Player.Team]; };
+    }
+
+    private void SetMaterials()
+    {
+        Material firstMaterial;
         if (Player.Team == Team.FIRST)
         {
-            foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material = ResourcesGetter.BlueMaterial(); }
+            if (View.isMine)
+            {
+                firstMaterial = ResourcesGetter.OutLineMaterial();
+                firstMaterial.color = Colors.Teams[0];
+            }
+            else
+                firstMaterial = ResourcesGetter.BlueMaterial();
         }
         else
         {
-            foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material = ResourcesGetter.RedMaterial(); }
+            if (View.isMine)
+            {
+                firstMaterial = ResourcesGetter.OutLineMaterial();
+                firstMaterial.color = Colors.Teams[1];
+            }
+            else
+                firstMaterial = ResourcesGetter.RedMaterial();
         }
-        gameObject.layer = LayersGetter.players[(int)Player.Team];
-        foreach (Transform go in transform) { go.gameObject.layer = LayersGetter.players[(int)Player.Team]; };
+        foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material = firstMaterial; }
     }
 
     [MyRPC]

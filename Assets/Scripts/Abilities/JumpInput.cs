@@ -6,4 +6,9 @@ public class JumpInput : AbilityInput
     {
         return Input.GetKeyDown(KeyCode.E);
     }
+
+    public override string GetKey()
+    {
+        return "E";
+    }
 }

@@ -6,4 +6,9 @@ public class BrakeInput : AbilityInput
     {
         return Input.GetKey(KeyCode.Z);
     }
+
+    public override string GetKey()
+    {
+        return "Z";
+    }
 }

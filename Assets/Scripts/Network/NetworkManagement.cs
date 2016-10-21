@@ -40,7 +40,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                 return LOCALHOST_URL;
             }
             else
-                return BCS_URL;
+                return HEROKU_URL;
         }
     }
 
@@ -208,14 +208,21 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                     //maybe the user is offline or signaling server down?
                     case NetEventType.ServerInitFailed:
                         {
-                            string rawData = (string)evt.RawData;
-                            string[] rooms = rawData.Split('@');
-                            if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                            if (evt.RawData != null)
                             {
-                                if (rooms.Length == 1)
-                                    MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
+                                string rawData = (string)evt.RawData;
+                                string[] rooms = rawData.Split('@');
+                                if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                                {
+                                    if (rooms.Length == 1)
+                                        MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
+                                    else
+                                        MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
+                                }
                                 else
-                                    MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
+                                {
+                                    Debug.LogError("Received weird message " + rawData);
+                                }
                             }
                             else
                             {

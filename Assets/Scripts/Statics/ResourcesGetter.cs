@@ -16,4 +16,9 @@ public class ResourcesGetter
         return Resources.Load<Material>(MATERIALS_FOLDER + "Blue");
     }
 
+    public static Material OutLineMaterial()
+    {
+        return Resources.Load<Material>(MATERIALS_FOLDER + "Outline");
+    }
+
 }

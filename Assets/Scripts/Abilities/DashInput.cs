@@ -6,4 +6,9 @@ public class DashInput : AbilityInput
     {
         return Input.GetKeyDown(KeyCode.A);
     }
+
+    public override string GetKey()
+    {
+        return "A";
+    }
 }
