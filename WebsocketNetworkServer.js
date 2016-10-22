@@ -167,7 +167,7 @@ var SignalingPeer = (function () {
         var address = evt.Info;
         var newConnectionId = evt.ConnectionId;
         if (evt.Type == inet.NetEventType.NewConnection) {
-            console.log("NewConnection "+evt.Info);
+            console.log("NewConnection "+evt.Info + "  " + evt.Info == "___GetRooms");
             if (evt.Info == "___GetRooms"){
                 console.log("___GetRooms "+ evt.ConnectionId);
                 this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerInitFailed, newConnectionId, this.mConnectionPool.getRooms()));
@@ -201,12 +201,12 @@ var SignalingPeer = (function () {
         }
     };
     SignalingPeer.prototype.internalAddIncomingPeer = function (peer,id) {
-            console.log("Incoming" + id.id);
+        console.log("Incoming" + id.id);
         this.mConnections[id.id] = peer;
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.NewConnection, id, null));
     };
     SignalingPeer.prototype.internalAddOutgoingPeer = function (peer, id) {
-            console.log("Outgoing"+id.id);
+        console.log("Outgoing"+id.id);
         this.mConnections[id.id] = peer;
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.NewConnection, id, null));
     };
