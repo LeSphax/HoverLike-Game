@@ -164,6 +164,7 @@ var SignalingPeer = (function () {
         this.mState = SignalingConnectionState.Disconnected;
     };
     SignalingPeer.prototype.handleIncomingEvent = function (evt) {
+        console.log("handleIncomingEvent "+evt.Info);
         var address = evt.Info;
         var newConnectionId = evt.ConnectionId;
         if (evt.Type == inet.NetEventType.NewConnection) {
@@ -201,12 +202,12 @@ var SignalingPeer = (function () {
         }
     };
     SignalingPeer.prototype.internalAddIncomingPeer = function (peer,id) {
-        console.log("Incoming" + id.id);
+        console.log("Incoming");
         this.mConnections[id.id] = peer;
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.NewConnection, id, null));
     };
     SignalingPeer.prototype.internalAddOutgoingPeer = function (peer, id) {
-        console.log("Outgoing"+id.id);
+        console.log("Outgoing");
         this.mConnections[id.id] = peer;
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.NewConnection, id, null));
     };
@@ -230,7 +231,7 @@ var SignalingPeer = (function () {
         var serverConnections = this.mConnectionPool.getServerConnection(address);
         if (serverConnections != null && serverConnections.length == 1) {
             var newConnectionId = serverConnections[0].nextConnectionId();
-            console.log(newConnectionId);
+            console.log("Connect" +newConnectionId);
             serverConnections[0].internalAddIncomingPeer(this, newConnectionId);
             this.internalAddOutgoingPeer(serverConnections[0], newConnectionId);
         }
