@@ -117,7 +117,7 @@ var SignalingPeer = (function () {
         });
 
         socket.on('error', function (error) {
-            console.error(error);
+            console.error("Socket Error " + error);
         });
 
         socket.on('close', function (code, message) { _this.onClose(code, message); });
@@ -143,6 +143,7 @@ var SignalingPeer = (function () {
         }
     };
     SignalingPeer.prototype.onClose = function (code, error) {
+        console.log ("Close socket " +code +" "+ error);
         this.mState = SignalingConnectionState.Disconnecting;
         this.Cleanup();
     };
@@ -168,7 +169,7 @@ var SignalingPeer = (function () {
         var address = evt.Info;
         var newConnectionId = evt.ConnectionId;
         if (evt.Type == inet.NetEventType.NewConnection) {
-            console.log("NewConnection "+evt.Info + "  " + evt.Info == "___GetRooms");
+            console.log("NewConnection "+evt.Info);
             if (evt.Info == "___GetRooms"){
                 console.log("___GetRooms "+ evt.ConnectionId);
                 this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerInitFailed, newConnectionId, this.mConnectionPool.getRooms()));
@@ -277,6 +278,7 @@ var SignalingPeer = (function () {
         }
     };
     SignalingPeer.prototype.stopServer = function () {
+        console.log("Stop Server");
         if (this.mServerAddress != null) {
             this.mConnectionPool.removeServer(this, this.mServerAddress);
             this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerClosed, inet.ConnectionId.INVALID, null));
