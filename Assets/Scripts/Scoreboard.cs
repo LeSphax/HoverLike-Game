@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-public class Scoreboard : SlideBall.MonoBehaviour {
+public class Scoreboard : SlideBall.MonoBehaviour
+{
 
     private static Text textScoreLeft;
     private static Text textScoreRight;
@@ -12,8 +13,8 @@ public class Scoreboard : SlideBall.MonoBehaviour {
     void Awake()
     {
         scoreboard = gameObject;
-        textScoreLeft= transform.GetChild(0).GetComponent<Text>();
-        textScoreRight= transform.GetChild(1).gameObject.GetComponent<Text>();
+        textScoreLeft = transform.GetChild(0).GetComponent<Text>();
+        textScoreRight = transform.GetChild(1).gameObject.GetComponent<Text>();
     }
 
     void Start()
@@ -28,7 +29,7 @@ public class Scoreboard : SlideBall.MonoBehaviour {
         textScoreRight.text = "" + MyGameObjects.Properties.GetProperty<int>(PropertiesKeys.TeamScore[1]);
     }
 
-    public static void incrementTeamScore(int teamNumber)
+    public static void IncrementTeamScore(int teamNumber)
     {
         if (MyGameObjects.NetworkManagement.isServer)
         {
@@ -36,12 +37,19 @@ public class Scoreboard : SlideBall.MonoBehaviour {
             {
                 timeLastGoal = Time.realtimeSinceStartup;
                 string key = PropertiesKeys.TeamScore[teamNumber];
-                int newScore = MyGameObjects.Properties.GetProperty<int>(key)+1;
+                int newScore = MyGameObjects.Properties.GetProperty<int>(key) + 1;
                 MyGameObjects.Properties.SetProperty(key, newScore);
-                scoreboard.GetNetworkView().RPC("UpdateScoreBoard",RPCTargets.All);
+                scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All);
             }
         }
 
+    }
+
+    public static void ResetScore()
+    {
+        MyGameObjects.Properties.SetProperty(PropertiesKeys.TeamScore[(int)Team.FIRST], 0);
+        MyGameObjects.Properties.SetProperty(PropertiesKeys.TeamScore[(int)Team.SECOND], 0);
+        scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All);
     }
 
 }

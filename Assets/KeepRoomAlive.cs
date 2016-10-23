@@ -1,0 +1,94 @@
+﻿using UnityEngine;
+using System.Collections;
+using Byn.Net;
+
+public class KeepRoomAlive : MonoBehaviour
+{
+
+    public string uSignalingUrl
+    {
+        get
+        {
+            return MyGameObjects.NetworkManagement.uSignalingUrl;
+        }
+    }
+
+    /// <summary>
+    /// Mozilla stun server. Used to get trough the firewall and establish direct connections.
+    /// Replace this with your own production server as well. 
+    /// </summary>
+    public string uStunServer
+    {
+        get
+        {
+            return MyGameObjects.NetworkManagement.uStunServer;
+        }
+    }
+
+    /// <summary>
+    /// The network interface.
+    /// This can be native webrtc or the browser webrtc version.
+    /// (Can also be the old or new unity network but this isn't part of this package)
+    /// </summary>
+    private IBasicNetwork mNetwork = null;
+
+    public string roomName
+    {
+        get
+        {
+            return MyGameObjects.NetworkManagement.RoomName;
+        }
+    }
+
+    /// <summary>
+    /// Will setup webrtc and create the network object
+    /// </summary>
+	private void Start()
+    {
+        Debug.Log("Setting up WebRtcNetworkFactory");
+        WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
+        if (factory != null)
+            Debug.Log("WebRtcNetworkFactory created");
+
+        InvokeRepeating("KeepConnectionAlive", 30, 30);
+    }
+
+    private void KeepConnectionAlive()
+    {
+        if (mNetwork != null)
+        {
+            Cleanup();
+        }
+        Setup();
+        mNetwork.Connect(roomName);
+    }
+
+    private void Setup()
+    {
+        Debug.Log("Initializing webrtc network");
+        mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(uSignalingUrl, new string[] { uStunServer });
+        if (mNetwork != null)
+        {
+            Debug.Log("WebRTCNetwork created");
+        }
+        else
+        {
+            Debug.Log("Failed to access webrtc ");
+        }
+    }
+
+    private void Cleanup()
+    {
+        mNetwork.Dispose();
+        mNetwork = null;
+    }
+
+    private void OnDestroy()
+    {
+        if (mNetwork != null)
+        {
+            Cleanup();
+        }
+    }
+
+}

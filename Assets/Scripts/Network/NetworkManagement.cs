@@ -23,7 +23,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
 
     private const string HEROKU_URL = "ws://sphaxtest.herokuapp.com";
     private const string BCS_URL = "wss://because-why-not.com:12777/chatapp";
-    
+
     private const string LOCALHOST_URL = "ws://localhost:5000";
 
     /// <summary>
@@ -46,6 +46,9 @@ public class NetworkManagement : SlideBall.MonoBehaviour
 
     public bool uLog;
 
+    [HideInInspector]
+    public string RoomName = null;
+
     /// <summary>
     /// Mozilla stun server. Used to get trough the firewall and establish direct connections.
     /// Replace this with your own production server as well. 
@@ -65,7 +68,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
     [NonSerialized]
     public bool isServer = false;
 
-
+    private bool serverStarted;
     /// <summary>
     /// Keeps track of all current connections
     /// </summary>
@@ -79,7 +82,6 @@ public class NetworkManagement : SlideBall.MonoBehaviour
     }
 
     private const int MAX_CODE_LENGTH = 256;
-    private const string RoomName = "wololo";
     private const string GET_ROOMS_COMMAND = "___GetRooms";
     private List<NetworkMessage> bufferedMessages = new List<NetworkMessage>();
 
@@ -104,12 +106,8 @@ public class NetworkManagement : SlideBall.MonoBehaviour
         WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
         if (factory != null)
             Debug.Log("WebRtcNetworkFactory created");
-        Invoke("Wallah", 0.1f);
-    }
 
-    private void Wallah()
-    {
-        CreateRoom("OFHEAOFEH");
+        //InvokeRepeating("KeepConnectionAlive");
     }
 
     private void OnLog(object msg, string[] tags)
@@ -197,37 +195,34 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                     case NetEventType.ServerInitialized:
                         {
                             //server initialized message received
-                            isServer = true;
-                            string address = evt.Info;
-                            Debug.LogError("Server started. Address: " + address + "   " + evt.ConnectionId.id);
-                            SetConnectionId(ConnectionId.INVALID);
-                            RoomCreated.Invoke();
+                            if (!serverStarted)
+                            {
+                                isServer = true;
+                                serverStarted = true;
+                                RoomName = evt.Info;
+                                Debug.LogError("Server started. Address: " + RoomName + "   " + evt.ConnectionId.id);
+                                SetConnectionId(ConnectionId.INVALID);
+                                RoomCreated.Invoke();
+                            }
                         }
                         break;
                     //user tried to start the server but it failed
                     //maybe the user is offline or signaling server down?
                     case NetEventType.ServerInitFailed:
                         {
-                            if (evt.RawData != null)
+                            string rawData = (string)evt.RawData;
+                            string[] rooms = rawData.Split('@');
+                            if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
                             {
-                                string rawData = (string)evt.RawData;
-                                string[] rooms = rawData.Split('@');
-                                if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
-                                {
-                                    if (rooms.Length == 1)
-                                        MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
-                                    else
-                                        MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
-                                }
+                                if (rooms.Length == 1)
+                                    MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
                                 else
-                                {
-                                    Debug.LogError("Received weird message " + rawData);
-                                }
+                                    MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
                             }
                             else
                             {
                                 isServer = false;
-                                Debug.LogError("Server start failed.");
+                                Debug.LogError("Server start failed. " + rawData);
                                 Reset();
                                 Setup();
                                 //CreateRoom(RoomName);
@@ -239,8 +234,16 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                     //StopServer or the connection broke down
                     case NetEventType.ServerClosed:
                         {
-                            isServer = false;
-                            Debug.Log("Server closed. No incoming connections possible until restart.");
+                            if (serverStarted)
+                            {
+                                Debug.Log("Server closed. Restarting server");
+                                CreateRoom(RoomName);
+                            }
+                            else
+                            {
+                                isServer = false;
+                                Debug.Log("Server closed. No incoming connections possible until restart.");
+                            }
                         }
                         break;
                     //either user runs a client and connected to a server or the
@@ -249,6 +252,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                         {
                             Debug.LogError("NewConnection " + evt.ConnectionId.id);
                             mConnections.Add(evt.ConnectionId);
+                            RoomName = evt.Info;
 
                             if (isServer)
                             {
@@ -391,7 +395,6 @@ public class NetworkManagement : SlideBall.MonoBehaviour
 
     private void SendToNetwork(byte[] data, ConnectionId id, bool reliable)
     {
-        Debug.Log("SendToNetwork " + data.Length);
         mNetwork.SendData(id, data, 0, data.Length, reliable);
         if (!mConnections.Contains(id))
             Debug.LogError("This isn't a valid connectionId");

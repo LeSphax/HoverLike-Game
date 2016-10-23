@@ -47,7 +47,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         if (MyState == State.PLAYING)
         {
-            Scoreboard.incrementTeamScore(teamNumber);
+            Scoreboard.IncrementTeamScore(teamNumber);
             Invoke("Entry", 3f);
             MyState = State.ENDING;
         }
@@ -79,8 +79,15 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         Assert.IsTrue(MyState == State.WARMUP);
         MyGameObjects.Countdown.TimerFinished += Entry;
-        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Game starts in", 10f);
+        MyGameObjects.Countdown.TimerFinished += ResetScore;
+        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", 10f);
         MyState = State.WARMUP;
+    }
+
+    private void ResetScore()
+    {
+        MyGameObjects.Countdown.TimerFinished -= ResetScore;
+        Scoreboard.ResetScore();
     }
 
     private void Entry()

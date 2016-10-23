@@ -78,11 +78,11 @@ public class SpecialBuild
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
 
-#if UNITY_WEBGL
-        Debug.Log(BuildPipeline.BuildPlayer(levels, path, BuildTarget.WebGL, BuildOptions.None));
-#else
+//#if UNITY_WEBGL
+        //Debug.Log(BuildPipeline.BuildPlayer(levels, path, BuildTarget.WebGL, BuildOptions.None));
+        //#else
         Debug.Log(BuildPipeline.BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development));
-#endif
+        //#endif
 
     }
 

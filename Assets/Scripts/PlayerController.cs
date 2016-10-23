@@ -1,11 +1,15 @@
 ﻿using Byn.Net;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerMovementView))]
 public class PlayerController : PlayerView
 {
     public GameObject targetPrefab;
+
+    public Text playerName;
+
     private GameObject _target;
     private GameObject target
     {
@@ -86,6 +90,7 @@ public class PlayerController : PlayerView
         }
         connectionId = id;
         gameObject.name = Player.Nickname;
+        playerName.text = Player.Nickname;
 
         SetMaterials();
         gameObject.layer = LayersGetter.players[(int)Player.Team];
@@ -94,28 +99,13 @@ public class PlayerController : PlayerView
 
     private void SetMaterials()
     {
-        Material firstMaterial;
-        if (Player.Team == Team.FIRST)
+        if (View.isMine)
         {
-            if (View.isMine)
-            {
-                firstMaterial = ResourcesGetter.OutLineMaterial();
-                firstMaterial.color = Colors.Teams[0];
-            }
-            else
-                firstMaterial = ResourcesGetter.BlueMaterial();
+            GetComponent<Renderer>().material = ResourcesGetter.OutLineMaterial();
         }
-        else
-        {
-            if (View.isMine)
-            {
-                firstMaterial = ResourcesGetter.OutLineMaterial();
-                firstMaterial.color = Colors.Teams[1];
-            }
-            else
-                firstMaterial = ResourcesGetter.RedMaterial();
-        }
-        foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material = firstMaterial; }
+        Color teamColor = Colors.Teams[(int)Player.Team];
+        foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material.color = teamColor; }
+        playerName.color = teamColor;
     }
 
     [MyRPC]

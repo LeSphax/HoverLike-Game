@@ -115,12 +115,12 @@ public class ChatApp : MonoBehaviour
     /// <summary>
     /// Will setup webrtc and create the network object
     /// </summary>
-	private void Start()
+	private void Start ()
     {
         //shows the console on all platforms. for debugging only
-        if (uDebugConsole)
+        if(uDebugConsole)
             DebugHelper.ActivateConsole();
-        if (uLog)
+        if(uLog)
             SLog.SetLogger(OnLog);
 
         SLog.LV("Verbose log is active!");
@@ -128,20 +128,19 @@ public class ChatApp : MonoBehaviour
 
         Append("Setting up WebRtcNetworkFactory");
         WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
-        if (factory != null)
+        if(factory != null)
             Append("WebRtcNetworkFactory created");
 
     }
-
     private void OnLog(object msg, string[] tags)
     {
         StringBuilder builder = new StringBuilder();
         TimeSpan time = DateTime.Now - DateTime.Today;
         builder.Append(time);
         builder.Append("[");
-        for (int i = 0; i < tags.Length; i++)
+        for (int i = 0; i< tags.Length; i++)
         {
-            if (i != 0)
+            if(i != 0)
                 builder.Append(",");
             builder.Append(tags[i]);
         }
@@ -215,6 +214,7 @@ public class ChatApp : MonoBehaviour
             {
                 //print to the console for debugging
                 Debug.Log(evt);
+
                 //check every message
                 switch (evt.Type)
                 {
@@ -226,8 +226,7 @@ public class ChatApp : MonoBehaviour
                             string address = evt.Info;
                             Append("Server started. Address: " + address);
                             uRoomName.text = "" + address;
-                        }
-                        break;
+                        } break;
                     case NetEventType.ServerInitFailed:
                         {
                             //user tried to start the server but it failed
@@ -235,16 +234,14 @@ public class ChatApp : MonoBehaviour
                             mIsServer = false;
                             Append("Server start failed.");
                             Reset();
-                        }
-                        break;
+                        } break;
                     case NetEventType.ServerClosed:
                         {
                             //server shut down. reaction to "Shutdown" call or
                             //StopServer or the connection broke down
                             mIsServer = false;
                             Append("Server closed. No incoming connections possible until restart.");
-                        }
-                        break;
+                        } break;
                     case NetEventType.NewConnection:
                         {
                             mConnections.Add(evt.ConnectionId);
@@ -253,7 +250,7 @@ public class ChatApp : MonoBehaviour
                             Append("New local connection! ID: " + evt.ConnectionId);
 
                             //if server -> send announcement to everyone and use the local id as username
-                            if (mIsServer)
+                            if(mIsServer)
                             {
                                 //user runs a server. announce to everyone the new connection
                                 //using the server side connection id as identification
@@ -261,15 +258,13 @@ public class ChatApp : MonoBehaviour
                                 Append(msg);
                                 SendString(msg);
                             }
-                        }
-                        break;
+                        } break;
                     case NetEventType.ConnectionFailed:
                         {
                             //Outgoing connection failed. Inform the user.
                             Append("Connection failed");
                             Reset();
-                        }
-                        break;
+                        } break;
                     case NetEventType.Disconnected:
                         {
                             mConnections.Remove(evt.ConnectionId);
@@ -294,19 +289,17 @@ public class ChatApp : MonoBehaviour
                                     SendString(userLeftMsg);
                                 }
                             }
-                        }
-                        break;
+                        } break;
                     case NetEventType.ReliableMessageReceived:
                     case NetEventType.UnreliableMessageReceived:
                         {
                             HandleIncommingMessage(ref evt);
-                        }
-                        break;
+                        } break;
                 }
             }
 
             //finish this update by flushing the messages out if the network wasn't destroyed during update
-            if (mNetwork != null)
+            if(mNetwork != null)
                 mNetwork.Flush();
         }
     }
@@ -316,17 +309,9 @@ public class ChatApp : MonoBehaviour
         MessageDataBuffer buffer = (MessageDataBuffer)evt.MessageData;
 
         string msg = Encoding.UTF8.GetString(buffer.Buffer, 0, buffer.ContentLength);
+
         //if server -> forward the message to everyone else including the sender
-        if (msg.Split('@')[0] == "ping")
-        {
-            Append("Received ping message " + msg.Split('@')[1]);
-            SendString("pong@" + msg.Split('@')[1]);
-        }
-        else if (msg.Split('@')[0] == "pong")
-        {
-            Append("Received pong message " + ((Time.realtimeSinceStartup - float.Parse(msg.Split('@')[1])) * 1000f) + " ms");
-        }
-        else if (mIsServer)
+        if (mIsServer)
         {
             //we use the server side connection id to identify the client
             string idAndMessage = evt.ConnectionId + ":" + msg;
@@ -351,23 +336,9 @@ public class ChatApp : MonoBehaviour
     /// <param name="reliable">false to use unreliable messages / true to use reliable messages</param>
     private void SendString(string msg, bool reliable = true)
     {
-        if (msg.Split(':').Length == 2)
-        {
-            msg = msg.Split(':')[1];
-        }
-        Debug.Log(msg);
         if (mNetwork == null || mConnections.Count == 0)
         {
             Append("No connection. Can't send message.");
-        }
-        else if (msg == "/ping")
-        {
-            Debug.Log("Send Ping");
-            byte[] msgData = Encoding.UTF8.GetBytes("ping@" + Time.realtimeSinceStartup);
-            foreach (ConnectionId id in mConnections)
-            {
-                mNetwork.SendData(id, msgData, 0, msgData.Length, reliable);
-            }
         }
         else
         {
@@ -426,7 +397,7 @@ public class ChatApp : MonoBehaviour
     }
     private void EnsureLength()
     {
-        if (uRoomName.text.Length > MAX_CODE_LENGTH)
+        if(uRoomName.text.Length > MAX_CODE_LENGTH)
         {
             uRoomName.text = uRoomName.text.Substring(0, MAX_CODE_LENGTH);
         }
@@ -450,7 +421,7 @@ public class ChatApp : MonoBehaviour
         Setup();
         EnsureLength();
         mNetwork.StartServer(uRoomName.text);
-
+        
         Debug.Log("StartServer " + uRoomName.text);
     }
 
@@ -474,7 +445,7 @@ public class ChatApp : MonoBehaviour
         if (msg.StartsWith("/disconnect"))
         {
             string[] slt = msg.Split(' ');
-            if (slt.Length >= 2)
+            if(slt.Length >= 2)
             {
                 ConnectionId conId;
                 if (short.TryParse(slt[1], out conId.id))
@@ -485,7 +456,7 @@ public class ChatApp : MonoBehaviour
         }
 
         //if we are the server -> add 0 in front as the server id
-        if (mIsServer)
+        if(mIsServer)
         {
             //the server has the authority thus -> we can print it directly adding the 0 as server id
             msg = "0:" + msg;

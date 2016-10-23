@@ -6,14 +6,9 @@ public class ResourcesGetter
 {
     private const string MATERIALS_FOLDER = "Materials/";
 
-    public static Material RedMaterial()
+    public static Material PlayerMaterial()
     {
-        return Resources.Load<Material>(MATERIALS_FOLDER+"Red");
-    }
-
-    public static Material BlueMaterial()
-    {
-        return Resources.Load<Material>(MATERIALS_FOLDER + "Blue");
+        return Resources.Load<Material>(MATERIALS_FOLDER + "Player");
     }
 
     public static Material OutLineMaterial()

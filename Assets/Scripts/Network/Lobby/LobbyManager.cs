@@ -52,6 +52,14 @@ public class LobbyManager : MonoBehaviour
             state = value;
         }
     }
+
+    public bool IsInRoom
+    {
+        get
+        {
+            return MyState == State.ROOM;
+        }
+    }
     private string[] roomList = new string[0];
     public Text inputField;
 
@@ -69,7 +77,7 @@ public class LobbyManager : MonoBehaviour
 
     public void UpdateRoomList(string[] rooms)
     {
-        Debug.Log("UpdateRoomList");
+        Debug.Log("UpdateRoomList " + rooms.Length);
         roomList = rooms;
         MyState = State.ROOMLIST;
         if (roomList.Length == 0)

@@ -153,7 +153,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
     void Update()
     {
-        if (View.isMine)
+        if (View.isMine && MyGameObjects.BallState != null)
         {
             UpdateThrow();
         }
