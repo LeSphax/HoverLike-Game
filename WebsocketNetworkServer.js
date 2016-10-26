@@ -110,9 +110,10 @@ var SignalingPeer = (function () {
         this.mSocket = socket;
         this.mState = SignalingConnectionState.Connecting;
         this.myInterval = setInterval(function(){
-            console.log("<send></send>");
-            socket.send(55);
-        },1000);
+            console.log("Send Staying alive");
+            var msg = inet.NetworkEvent.toByteArray(new inet.NetworkEvent(inet.NetEventType.Log, inet.ConnectionId.INVALID, "stayingAlive"));
+            socket.send(msg);
+        },10000);
 
         console.log("connected " + this.mSocket.upgradeReq.connection.remoteAddress + ":" + this.mSocket.upgradeReq.connection.remotePort);
 
