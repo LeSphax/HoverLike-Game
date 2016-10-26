@@ -109,6 +109,10 @@ var SignalingPeer = (function () {
         this.mConnectionPool = pool;
         this.mSocket = socket;
         this.mState = SignalingConnectionState.Connecting;
+        this.myInterval = setInterval(function(){
+            console.log("<send></send>");
+            socket.send(55);
+        },1000);
 
         console.log("connected " + this.mSocket.upgradeReq.connection.remoteAddress + ":" + this.mSocket.upgradeReq.connection.remotePort);
 
@@ -120,7 +124,8 @@ var SignalingPeer = (function () {
             console.error("Socket Error " + error);
         });
 
-        socket.on('close', function (code, message) { _this.onClose(code, message); });
+        socket.on('close', function (code, message) { _this.onClose(code, message); clearInterval(_this.myInterval)});
+        
         this.mState = SignalingConnectionState.Connected;
     }
 
