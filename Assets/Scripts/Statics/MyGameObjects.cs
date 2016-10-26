@@ -22,7 +22,9 @@ public static class MyGameObjects
         {
             if (ballState == null)
             {
-                ballState = GameObject.FindGameObjectWithTag(Tags.Ball).GetComponent<BallState>();
+                GameObject ball = GameObject.FindGameObjectWithTag(Tags.Ball);
+                if (ball != null)
+                    ballState = ball.GetComponent<BallState>();
             }
             return ballState;
         }

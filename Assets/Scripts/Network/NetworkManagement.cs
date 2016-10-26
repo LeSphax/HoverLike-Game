@@ -26,23 +26,41 @@ public class NetworkManagement : SlideBall.MonoBehaviour
 
     private const string LOCALHOST_URL = "ws://localhost:5000";
 
-    /// <summary>
-    /// This is a test server. Don't use in production! The server code is in a zip file in WebRtcNetwork
-    /// </summary>
-    /// //wss://slideball.x6tzbteyza.us-west-2.elasticbeanstalk.com:12777/chatapp
-    public bool localhost;
+    public enum Server
+    {
+        LOCALHOST,
+        HEROKU,
+        BCS,
+    }
+
+    public Server server;
+
     public string uSignalingUrl
     {
         get
         {
-            if (localhost)
+            switch (server)
             {
-                return LOCALHOST_URL;
+                case Server.LOCALHOST:
+                    return LOCALHOST_URL;
+                case Server.HEROKU:
+                    return HEROKU_URL;
+                case Server.BCS:
+                    return BCS_URL;
+                default:
+                    throw new UnhandledSwitchCaseException(server);
             }
-            else
-                return HEROKU_URL;
         }
     }
+
+    private enum State
+    {
+        IDLE,
+        CONNECTED,
+        SERVER
+    }
+
+    private State stateCurrent = State.IDLE;
 
     public bool uLog;
 
@@ -198,11 +216,13 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                             if (!serverStarted)
                             {
                                 isServer = true;
-                                serverStarted = true;
-                                RoomName = evt.Info;
                                 Debug.LogError("Server started. Address: " + RoomName + "   " + evt.ConnectionId.id);
-                                SetConnectionId(ConnectionId.INVALID);
-                                RoomCreated.Invoke();
+                                if (stateCurrent == State.IDLE)
+                                {
+                                    SetConnectionId(ConnectionId.INVALID);
+                                    RoomCreated.Invoke();
+                                }
+                                stateCurrent = State.SERVER;
                             }
                         }
                         break;
@@ -210,22 +230,29 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                     //maybe the user is offline or signaling server down?
                     case NetEventType.ServerInitFailed:
                         {
-                            string rawData = (string)evt.RawData;
-                            string[] rooms = rawData.Split('@');
-                            if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                            if (evt.RawData != null)
                             {
-                                if (rooms.Length == 1)
-                                    MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
+                                string rawData = (string)evt.RawData;
+                                string[] rooms = rawData.Split('@');
+                                if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                                {
+                                    if (rooms.Length == 1)
+                                        MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
+                                    else
+                                        MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
+                                }
                                 else
-                                    MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
+                                {
+                                    Assert.IsFalse(true, "This shouldn't happen");
+                                }
                             }
                             else
                             {
                                 isServer = false;
-                                Debug.LogError("Server start failed. " + rawData);
+                                Debug.LogError("Server start failed. " + evt.RawData);
                                 Reset();
                                 Setup();
-                                //CreateRoom(RoomName);
+
                                 mNetwork.Connect(RoomName);
                             }
                         }
@@ -234,15 +261,20 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                     //StopServer or the connection broke down
                     case NetEventType.ServerClosed:
                         {
-                            if (serverStarted)
+                            switch (stateCurrent)
                             {
-                                Debug.Log("Server closed. Restarting server");
-                                CreateRoom(RoomName);
-                            }
-                            else
-                            {
-                                isServer = false;
-                                Debug.Log("Server closed. No incoming connections possible until restart.");
+                                case State.CONNECTED:
+                                    ConnectToRoom(RoomName);
+                                    Debug.LogError("Server closed. No incoming connections possible until restart.");
+                                    break;
+                                case State.IDLE:
+                                    Debug.LogError("Didn't manage to create the server " + RoomName + " retrying ...");
+                                    CreateRoom(RoomName);
+                                    break;
+                                case State.SERVER:
+                                    Debug.LogError("Server closed. Restarting server");
+                                    CreateRoom(RoomName);
+                                    break;
                             }
                         }
                         break;
@@ -250,9 +282,8 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                     //user runs the server and a new client connected
                     case NetEventType.NewConnection:
                         {
-                            Debug.LogError("NewConnection " + evt.ConnectionId.id);
+                            Debug.LogError("NewConnection " + evt.Info + "  " + evt.ConnectionId.id);
                             mConnections.Add(evt.ConnectionId);
-                            RoomName = evt.Info;
 
                             if (isServer)
                             {
@@ -262,6 +293,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                             }
                             else if (ConnectedToRoom != null)
                             {
+                                stateCurrent = State.CONNECTED;
                                 ConnectedToRoom.Invoke();
                             }
                         }
@@ -404,6 +436,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
     public void ConnectToRoom(string roomName)
     {
         Setup();
+        RoomName = roomName;
         Debug.Log("Before connecting to " + roomName + " ...");
         mNetwork.Connect(roomName);
         Debug.Log("Connecting to " + roomName + " ...");
@@ -422,6 +455,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
         Setup();
         EnsureLength(roomName);
         mNetwork.StartServer(roomName);
+        RoomName = roomName;
 
         Debug.Log("StartServer " + roomName);
     }
