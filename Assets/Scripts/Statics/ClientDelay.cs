@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 
 public class ClientDelay : MonoBehaviour
@@ -9,19 +8,14 @@ public class ClientDelay : MonoBehaviour
 
     private bool shown = false;
 
-    private static double delay = -1;
-    public static double Delay
+    private static float delay = -1;
+    public static float Delay
     {
         get
         {
             if (delay == -1)
-#if UNITY_WEBGL
                 delay = 0.3f;
-
-#else
-            delay = 0.3f;
-                //delay = 3 * 1f / PhotonNetwork.sendRate + PhotonNetwork.GetPing() / 1000f;
-#endif
+            //delay = 3 * 1f / PhotonNetwork.sendRate + PhotonNetwork.GetPing() / 1000f;
             return delay;
         }
         set
@@ -40,18 +34,18 @@ public class ClientDelay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.C) && Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKey(KeyCode.O) && Input.GetKeyDown(KeyCode.P))
         {
             shown = !shown;
             text.enabled = shown;
         }
         if (shown)
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.L))
             {
                 Delay += 0.01f;
             }
-            else if (Input.GetKeyDown(KeyCode.Z))
+            else if (Input.GetKeyDown(KeyCode.M))
             {
                 Delay -= 0.01f;
             }

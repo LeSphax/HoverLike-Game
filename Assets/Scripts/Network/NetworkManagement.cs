@@ -7,6 +7,7 @@ using Byn.Net;
 using System.Collections.Generic;
 using Byn.Common;
 using UnityEngine.Assertions;
+using PlayerManagement;
 
 public delegate void NetworkEventHandler(byte[] data, ConnectionId id);
 public delegate void ConnectionEventHandler(ConnectionId id);
@@ -86,7 +87,6 @@ public class NetworkManagement : SlideBall.MonoBehaviour
     [NonSerialized]
     public bool isServer = false;
 
-    private bool serverStarted;
     /// <summary>
     /// Keeps track of all current connections
     /// </summary>
@@ -106,6 +106,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
     public event EmptyEventHandler RoomCreated;
     public event ConnectionEventHandler NewPlayerConnectedToRoom;
     public event EmptyEventHandler ConnectedToRoom;
+    public event EmptyEventHandler ServerStartFailed;
 
     public event EmptyEventHandler ReceivedAllBufferedMessages;
 
@@ -213,17 +214,14 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                     case NetEventType.ServerInitialized:
                         {
                             //server initialized message received
-                            if (!serverStarted)
+                            isServer = true;
+                            Debug.LogError("Server started. Address: " + RoomName + "   " + evt.ConnectionId.id);
+                            if (stateCurrent == State.IDLE)
                             {
-                                isServer = true;
-                                Debug.LogError("Server started. Address: " + RoomName + "   " + evt.ConnectionId.id);
-                                if (stateCurrent == State.IDLE)
-                                {
-                                    SetConnectionId(ConnectionId.INVALID);
-                                    RoomCreated.Invoke();
-                                }
-                                stateCurrent = State.SERVER;
+                                SetConnectionId(ConnectionId.INVALID);
+                                RoomCreated.Invoke();
                             }
+                            stateCurrent = State.SERVER;
                         }
                         break;
                     //user tried to start the server but it failed
@@ -243,17 +241,19 @@ public class NetworkManagement : SlideBall.MonoBehaviour
                                 }
                                 else
                                 {
-                                    Assert.IsFalse(true, "This shouldn't happen");
+                                    isServer = false;
+                                    Debug.LogError("Server start failed. " + evt.RawData);
+                                    if (ServerStartFailed != null)
+                                    {
+                                        ServerStartFailed.Invoke();
+                                    }
+                                    Reset();
+                                    Setup();
                                 }
                             }
                             else
                             {
-                                isServer = false;
-                                Debug.LogError("Server start failed. " + evt.RawData);
-                                Reset();
-                                Setup();
-
-                                mNetwork.Connect(RoomName);
+                                Debug.LogError("No internet connection ");
                             }
                         }
                         break;
@@ -350,7 +350,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
         NetworkMessage message = NetworkExtensions.Deserialize<NetworkMessage>(buffer.Buffer);
         if (message.traceMessage)
         {
-            Debug.LogError("HandleMessage " + message + "   " + message.flags + "   " + message.isDistributed());
+            Debug.LogError("HandleTracedMessage " + message);
         }
         //if (message.type != MessageType.ViewPacket)
         //    Debug.LogError("Received Message : " + message.type + "   " + message.viewId);
@@ -359,8 +359,9 @@ public class NetworkManagement : SlideBall.MonoBehaviour
             foreach (ConnectionId id in mConnections)
             {
                 if (id != evt.ConnectionId)
+                {
                     SendData(message, id);
-                break;
+                }
             }
         }
         TryAddBuffered(message);
@@ -413,7 +414,7 @@ public class NetworkManagement : SlideBall.MonoBehaviour
         byte[] dataToSend = message.Serialize();
         if (message.traceMessage)
         {
-            Debug.LogError("SendData " + message + "   " + message.flags + "   " + message.isDistributed());
+            Debug.LogError("SendData " + message);
         }
         for (int i = 0; i < connectionIds.Length; i++)
         {
@@ -437,9 +438,8 @@ public class NetworkManagement : SlideBall.MonoBehaviour
     {
         Setup();
         RoomName = roomName;
-        Debug.Log("Before connecting to " + roomName + " ...");
         mNetwork.Connect(roomName);
-        Debug.Log("Connecting to " + roomName + " ...");
+        Debug.LogError("Connecting to " + roomName + " ...");
     }
 
     private void EnsureLength(string roomName)

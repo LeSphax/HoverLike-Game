@@ -1,6 +1,7 @@
 ﻿using Byn.Net;
 using UnityEngine;
 using UnityEngine.UI;
+using PlayerManagement;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerMovementView))]
@@ -111,20 +112,19 @@ public class PlayerController : PlayerView
     [MyRPC]
     public void PutAtStartPosition()
     {
-        if (View.isMine)
-        {
-            transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team, Player.SpawningPoint);
-            transform.LookAt(Vector3.zero);
-            GetComponent<Rigidbody>().velocity = Vector3.zero;
-            DestroyTarget();
-        }
-        else if (MyGameObjects.NetworkManagement.isServer)
-        {
-            View.RPC("PutAtStartPosition", connectionId);
-        }
-        else
-        {
-            Debug.LogError("This function shouldn't be called on a client that doesn't own the view");
-        }
+
+        transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team, Player.SpawningPoint);
+        transform.LookAt(Vector3.zero);
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        DestroyTarget();
+        //else
+        //{
+        //    Debug.LogError("This function shouldn't be called on a client that doesn't own the view");
+        //}
+    }
+
+    public void CallPutAtStartPosition()
+    {
+        View.RPC("PutAtStartPosition", RPCTargets.All);
     }
 }

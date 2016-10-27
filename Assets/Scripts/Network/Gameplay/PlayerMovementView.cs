@@ -20,32 +20,8 @@ public class PlayerMovementView : ObservedComponent
 
     PacketHandler packetHandler;
 
-    private int lostPackets = 0;
-    private long receivedPackets
-    {
-        get
-        {
-            return lastReceivedId - firstPacketId;
-        }
-    }
+    private float simulationStart;
 
-    public float packetLossRatio
-    {
-        get
-        {
-            return (float)lostPackets / receivedPackets;
-        }
-    }
-
-    private long firstPacketId = -1;
-    private long lastReceivedId=-1;
-    private long currentId
-    {
-        get
-        {
-            return lastReceivedId - 4;
-        }
-    }
     private const float FRAME_DURATION = 0.02f;
 
     private Queue<PlayerPacket> StateBuffer = new Queue<PlayerPacket>();
@@ -61,16 +37,23 @@ public class PlayerMovementView : ObservedComponent
             }
             else
             {
-                return currentPacket;
+                return null;
             }
+        }
+    }
+
+    private float SimulationTime
+    {
+        get
+        {
+            return TimeManagement.NetworkTime - ClientDelay.Delay;
         }
     }
 
     protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
-        packetHandler = ReceiveFirstData;
-        PacketLoss.AddView(this);
+        packetHandler = ReceiveData;
     }
 
     public override void OwnerUpdate()
@@ -93,7 +76,7 @@ public class PlayerMovementView : ObservedComponent
         packet.velocity = myRigidbody.velocity;
         packet.position = transform.position;
         packet.rotation = transform.rotation;
-        packet.id = sendId;
+        packet.timeSent = TimeManagement.NetworkTime;
         return packet.Serialize();
     }
 
@@ -104,52 +87,39 @@ public class PlayerMovementView : ObservedComponent
 
     public override void SimulationUpdate()
     {
-        while (StateBuffer.Count > 0 && currentId >= StateBuffer.Peek().id)
+        while (StateBuffer.Count > 0 && SimulationTime >= StateBuffer.Peek().timeSent)
         {
             currentPacket = StateBuffer.Dequeue();
-            //Debug.Log("Packet Consumed " + currentPacket.Value.id);
+            //Debug.Log("Packet Consumed " + currentPacket.Value.timeSent + "   " + SimulationTime);
         }
 
-        Assert.IsFalse((StateBuffer.Count == 0 || currentId >= StateBuffer.Peek().id) && currentPacket != null, "No Packet in buffer !!! " + currentId + "   " + gameObject.name);
+        Assert.IsFalse(StateBuffer.Count == 0 && currentPacket != null, "No Packet in buffer !!! " + SimulationTime + "   " + gameObject.name);
 
         if (currentPacket != null)
         {
-            double deltaTime = (nextPacket.Value.id - currentPacket.Value.id) * FRAME_DURATION;
-            float completion = 0;
-            if (deltaTime != 0)
-                completion = (float)(FRAME_DURATION / deltaTime);
+            InterpolateMovement();
+        }
+    }
+
+    private void InterpolateMovement()
+    {
+        if (nextPacket != null)
+        {
+            float completion = (SimulationTime - currentPacket.Value.timeSent) / (nextPacket.Value.timeSent - currentPacket.Value.timeSent);
             transform.position = Vector3.Lerp(currentPacket.Value.position, nextPacket.Value.position, completion);
             transform.rotation = Quaternion.Lerp(currentPacket.Value.rotation, nextPacket.Value.rotation, completion);
         }
-        else if (currentId >= 0)
+        else
         {
-            Debug.LogWarning("No Packets for currentId " + currentId);
+            transform.position = currentPacket.Value.position;
+            transform.rotation = currentPacket.Value.rotation;
         }
-
-    }
-
-
-    public void ReceiveFirstData(byte[] data)
-    {
-        Debug.Log("ReceiveFirstData");
-        PlayerPacket newPacket = NetworkExtensions.Deserialize<PlayerPacket>(data);
-        StateBuffer.Enqueue(newPacket);
-        firstPacketId = newPacket.id;
-        lastReceivedId = firstPacketId;
-
-        packetHandler = ReceiveData;
     }
 
     public void ReceiveData(byte[] data)
     {
         PlayerPacket newPacket = NetworkExtensions.Deserialize<PlayerPacket>(data);
         StateBuffer.Enqueue(newPacket);
-
-        if (newPacket.id != lastReceivedId + 1)
-        {
-            lostPackets++;
-        }
-        lastReceivedId = newPacket.id;
     }
 
     public override void PacketReceived(ConnectionId id, byte[] data)
@@ -169,7 +139,7 @@ public struct PlayerPacket
     public Vector3 velocity;
     public Vector3 position;
     public Quaternion rotation;
-    public double timeSent;
-    public long id;
+    public float timeSent;
+    //public long id;
 }
 

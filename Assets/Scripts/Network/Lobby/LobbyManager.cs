@@ -62,6 +62,7 @@ public class LobbyManager : MonoBehaviour
     }
     private string[] roomList = new string[0];
     public Text inputField;
+    private const string DEFAULT_ROOM = "Da Room";
 
     protected void Awake()
     {
@@ -71,8 +72,14 @@ public class LobbyManager : MonoBehaviour
         MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages += () => {RoomManager.CreateMyPlayerInfo(); };
         if (StartGameImmediately)
         {
-            MyGameObjects.NetworkManagement.GetRooms();
+            MyGameObjects.NetworkManagement.ServerStartFailed += () => Invoke("ConnectToDefaultRoom", 0.1f);
+            MyGameObjects.NetworkManagement.CreateRoom(DEFAULT_ROOM);
         }
+    }
+
+    void ConnectToDefaultRoom()
+    {
+        MyGameObjects.NetworkManagement.ConnectToRoom(DEFAULT_ROOM);
     }
 
     public void UpdateRoomList(string[] rooms)

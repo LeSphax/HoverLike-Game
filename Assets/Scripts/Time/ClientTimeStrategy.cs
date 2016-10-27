@@ -8,6 +8,7 @@ public class ClientTimeStrategy : TimeStrategy
     private ConnectionId otherId = ConnectionId.INVALID;
     private float latency;
     private float networkTime;
+    private float lastNetworkUpdate;
 
     public ClientTimeStrategy(TimeManagement management) : base(management)
     {
@@ -34,6 +35,7 @@ public class ClientTimeStrategy : TimeStrategy
         ServerTimePacket packet = NetworkExtensions.Deserialize<ServerTimePacket>(data);
         latency = (Time.realtimeSinceStartup - packet.timeReceived) * 1000;
         networkTime = packet.networkTime + latency / 2000f;
+        lastNetworkUpdate = Time.realtimeSinceStartup;
         management.SetLatency(id, latency);
     }
 
@@ -51,7 +53,7 @@ public class ClientTimeStrategy : TimeStrategy
 
     internal override float GetNetworkTime()
     {
-        return networkTime;
+        return networkTime + Time.realtimeSinceStartup -lastNetworkUpdate;
     }
 }
 

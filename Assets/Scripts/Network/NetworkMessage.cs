@@ -194,7 +194,7 @@ public class NetworkMessage
 
     public override string ToString()
     {
-        return "Id : " + viewId + "-" + subId + ", type : " + type + " flags : " + flags;
+        return "Id : " + viewId + "-" + subId + ", type : " + type + " flags : " + flags + "  IsDistributed :" + isDistributed();
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using Byn.Net;
+using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -93,7 +94,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void Entry()
     {
         Assert.IsTrue(MyGameObjects.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP));
-        Tags.FindPlayers().Map(player => player.GetComponent<PlayerController>().PutAtStartPosition());
+        Tags.FindPlayers().Map(player => player.GetComponent<PlayerController>().CallPutAtStartPosition());
         MyGameObjects.BallState.PutAtStartPosition();
         MyGameObjects.Countdown.TimerFinished -= Entry;
         //

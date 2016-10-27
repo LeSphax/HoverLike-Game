@@ -19,25 +19,25 @@ public class SpecialBuild
     [MenuItem("MyTools/EditorAsServer %g")]
     public static void BuildWithLobby()
     {
-        BuildOnly();
-        RunGame();
+        if (BuildOnly())
+        {
+            RunGame();
 
-        ChangeScene(Paths.SCENE_LOBBY);
-        EditorApplication.isPlaying = true;
-        //var proc = new System.Diagnostics.Process();
-        //proc.StartInfo.FileName = path;
-        //proc.Start();
+            ChangeScene(Paths.SCENE_LOBBY);
+            EditorApplication.isPlaying = true;
+        }
     }
 
     [MenuItem("MyTools/EditorAsClient %h")]
     public static void BuildWithoutLobby()
     {
         //BuildGame(new string[] { Paths.SCENE_MAIN });
-        BuildOnly();
-        RunGame();
+        if (BuildOnly())
+        {
+            RunGame();
 
-        ChangeScene(Paths.SCENE_LOBBY);
-
+            ChangeScene(Paths.SCENE_LOBBY);
+        }
         //ChangeScene(Paths.SCENE_MAIN);
         //EditorApplication.isPlaying = true;
         //startWaitingTime = Time.realtimeSinceStartup;
@@ -47,9 +47,9 @@ public class SpecialBuild
     }
 
     [MenuItem("MyTools/Build Only %j")]
-    public static void BuildOnly()
+    public static bool BuildOnly()
     {
-        BuildGame(levels);
+        return BuildGame(levels);
 
 
         //startWaitingTime = Time.realtimeSinceStartup;
@@ -69,7 +69,7 @@ public class SpecialBuild
 
     }
 
-    private static void BuildGame(string[] levels)
+    private static bool BuildGame(string[] levels)
     {
         KillGames();
         EditorApplication.isPlaying = false;
@@ -78,11 +78,14 @@ public class SpecialBuild
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
 
-//#if UNITY_WEBGL
-        //Debug.Log(BuildPipeline.BuildPlayer(levels, path, BuildTarget.WebGL, BuildOptions.None));
-        //#else
-        Debug.Log(BuildPipeline.BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development));
-        //#endif
+        string x = BuildPipeline.BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development);
+        if (x.Contains("cancelled"))
+        {
+            Debug.LogError(x);
+            return false;
+        }
+        Debug.Log(x);
+        return true;
 
     }
 
@@ -127,7 +130,7 @@ public class SpecialBuild
     [MenuItem("MyTools/KillGames %k")]
     private static void KillGames()
     {
-        foreach(System.Diagnostics.Process process in System.Diagnostics.Process.GetProcessesByName("Build"))
+        foreach (System.Diagnostics.Process process in System.Diagnostics.Process.GetProcessesByName("Build"))
         {
             Debug.Log(process);
             process.Kill();

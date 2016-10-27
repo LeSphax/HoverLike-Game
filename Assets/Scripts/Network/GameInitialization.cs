@@ -1,5 +1,6 @@
 ﻿using Byn.Net;
 using Navigation;
+using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -37,6 +38,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
         {
             Assert.IsTrue(player.Team == Team.FIRST || player.Team == Team.SECOND);
             player.SpawningPoint = teamSpawns[(int)player.Team];
+            teamSpawns[(int)player.Team]++;
         }
 
         View.RPC("LoadRoom", RPCTargets.All);
