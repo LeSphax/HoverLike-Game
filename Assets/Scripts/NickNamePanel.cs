@@ -14,7 +14,6 @@ public class NickNamePanel : MonoBehaviour
         if (autoNickName)
         {
             nicknameField.text = RandomString(5);
-            Debug.Log(nicknameField.text);
             SetNickname();
         }
     }

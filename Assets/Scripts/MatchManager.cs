@@ -14,14 +14,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         ENDING,
     }
 
-    public bool CanPlay
-    {
-        get
-        {
-            return MyState != State.STARTING;
-        }
-    }
-
+    private const float WARMUP_DURATION = 60f;
     private State state;
     private State MyState
     {
@@ -33,8 +26,22 @@ public class MatchManager : SlideBall.MonoBehaviour
         {
             state = value;
             if (MyGameObjects.NetworkManagement.isServer)
+            {
                 View.RPC("SetState", RPCTargets.Others, value);
-
+                switch (state)
+                {
+                    case State.WARMUP:
+                    case State.PLAYING:
+                    case State.ENDING:
+                        Players.SetState(Player.State.PLAYING);
+                        break;
+                    case State.STARTING:
+                        Players.SetState(Player.State.FROZEN);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
@@ -57,7 +64,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MyGameObjects.GameInitialization.GameStarted += SendReady;
+        MyGameObjects.GameInitialization.AllObjectsCreated += SendReady;
         MyState = State.WARMUP;
     }
 
@@ -70,6 +77,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void PlayerReady(ConnectionId RPCSenderId)
     {
         Assert.IsTrue(MyState == State.WARMUP);
+        Debug.Log("Player Ready " + RPCSenderId);
         Players.players[RPCSenderId].isReady = true;
         if (AllPlayersReady())
             StartGameCountdown();
@@ -78,10 +86,10 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void StartGameCountdown()
     {
-        Assert.IsTrue(MyState == State.WARMUP);
+        Assert.IsTrue(MyGameObjects.NetworkManagement.isServer && MyState == State.WARMUP);
         MyGameObjects.Countdown.TimerFinished += Entry;
         MyGameObjects.Countdown.TimerFinished += ResetScore;
-        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", 10f);
+        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", WARMUP_DURATION);
         MyState = State.WARMUP;
     }
 
@@ -94,7 +102,12 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void Entry()
     {
         Assert.IsTrue(MyGameObjects.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP));
-        Tags.FindPlayers().Map(player => player.GetComponent<PlayerController>().CallPutAtStartPosition());
+        Tags.FindPlayers().Map(player =>
+        {
+            PlayerController controller = GetComponent<PlayerController>();
+            controller.Player.SpawnNumber = (short)((controller.Player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(controller.Player.Team));
+            controller.View.RPC("ResetPlayer", RPCTargets.All);
+        });
         MyGameObjects.BallState.PutAtStartPosition();
         MyGameObjects.Countdown.TimerFinished -= Entry;
         //
@@ -111,7 +124,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     private void InvokeStartGame()
     {
-        Invoke("StartGame", 0.2f - TimeManagement.Latency);
+        Invoke("StartGame", 0.2f - TimeManagement.LatencyInMiliseconds);
     }
 
     private void StartGame()

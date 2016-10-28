@@ -17,22 +17,22 @@ public class EditorCompilation : MonoBehaviour
         }
     }
 
-    [InitializeOnLoad]
-    public class AutosaveOnRun
-    {
-        static AutosaveOnRun()
-        {
-            EditorApplication.playmodeStateChanged = () =>
-            {
-                if (EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isPlaying)
-                {
-                    Debug.Log("Auto-Saving scene before entering Play mode: " + EditorSceneManager.GetActiveScene());
+    //[InitializeOnLoad]
+    //public class AutosaveOnRun
+    //{
+    //    static AutosaveOnRun()
+    //    {
+    //        EditorApplication.playmodeStateChanged = () =>
+    //        {
+    //            if (EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isPlaying)
+    //            {
+    //                Debug.Log("Auto-Saving scene before entering Play mode: " + EditorSceneManager.GetActiveScene());
 
-                    EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-                    EditorApplication.SaveAssets();
-                }
-            };
-        }
-    }
+    //                EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+    //                EditorApplication.SaveAssets();
+    //            }
+    //        };
+    //    }
+    //}
 }
 #endif

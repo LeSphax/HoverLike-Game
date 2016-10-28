@@ -1,0 +1,6 @@
+MESH_NAME : AttackerMesh
+acceleration : 70
+maxSpeed : 45
+catchColliderRadius : 3
+catchColliderZPos : 0.5
+abilities : Dash|Brake|Jump|Steal

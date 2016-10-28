@@ -65,11 +65,10 @@ public class PlayerInfo : PlayerView
 
     public void InitView(object[] parameters)
     {
-        connectionId = (ConnectionId)parameters[0];
+        playerConnectionId = (ConnectionId)parameters[0];
         PlayerName = Player.Nickname;
         if (Player.Team != Team.NONE)
             CurrentTeam = Player.Team;
-        Player.NickNameChanged += (value) => PlayerName = value;
         Player.TeamChanged += (value) => CurrentTeam = value;
     }
 }

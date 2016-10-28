@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class LayersGetter
 {
-    public static int[] players = new int[2] { 8, 11 };
+    public static int[] players = new int[3] { 8, 11, 14 };
 
     public static int ballLayer = 9;
 

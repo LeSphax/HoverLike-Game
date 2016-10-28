@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class BlockInput : AbilityInput
 {
-    public override bool Activated()
+    protected override bool FirstActivation()
     {
-        return Input.GetKeyDown(KeyCode.R);
+        return Input.GetKeyDown(KeyCode.E);
     }
 
     public override string GetKey()
     {
-        return "R";
+        return "E";
     }
 }

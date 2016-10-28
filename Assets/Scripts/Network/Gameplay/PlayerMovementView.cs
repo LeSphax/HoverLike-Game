@@ -1,4 +1,5 @@
 ﻿using Byn.Net;
+using PlayerManagement;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,14 +8,39 @@ using UnityEngine.Assertions;
 public delegate void PacketHandler(byte[] data);
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerController))]
 public class PlayerMovementView : ObservedComponent
 {
+    private ConnectionId? playerConnectionId = null;
+    private Player Player
+    {
+        get
+        {
+            if (playerConnectionId == null)
+            {
+                playerConnectionId = GetComponent<PlayerController>().playerConnectionId;
+            }
+            return PlayerView.GetMyPlayer(View.isMine, playerConnectionId.Value);
+        }
+    }
 
     Rigidbody myRigidbody;
 
-    private float speed = 70;
+    private float acceleration
+    {
+        get
+        {
+            return Player.MyAvatarSettings.acceleration;
+        }
+    }
 
-    public static float MAX_VELOCITY = 45;
+    public float MAX_VELOCITY
+    {
+        get
+        {
+            return Player.MyAvatarSettings.maxSpeed;
+        }
+    }
     private float ANGULAR_SPEED = 400;
     public Vector3? targetPosition;
 
@@ -64,7 +90,7 @@ public class PlayerMovementView : ObservedComponent
             lookPos.y = 0;
             var targetRotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, FRAME_DURATION * ANGULAR_SPEED);
-            myRigidbody.AddForce(transform.forward * speed * FRAME_DURATION, ForceMode.VelocityChange);
+            myRigidbody.AddForce(transform.forward * acceleration * FRAME_DURATION, ForceMode.VelocityChange);
 
             ClampPlayerVelocity();
         }
@@ -93,7 +119,8 @@ public class PlayerMovementView : ObservedComponent
             //Debug.Log("Packet Consumed " + currentPacket.Value.timeSent + "   " + SimulationTime);
         }
 
-        Assert.IsFalse(StateBuffer.Count == 0 && currentPacket != null, "No Packet in buffer !!! " + SimulationTime + "   " + gameObject.name);
+        //if (StateBuffer.Count == 0 && currentPacket != null)
+            //Debug.LogWarning("No Packet in buffer !!! " + SimulationTime + "   " + gameObject.name);
 
         if (currentPacket != null)
         {

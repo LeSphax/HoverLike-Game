@@ -2,7 +2,7 @@
 
 public class StealInput : AbilityInput
 {
-    public override bool Activated()
+    protected override bool FirstActivation()
     {
         return Input.GetKeyDown(KeyCode.Space);
     }

@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class NetworkViewsManagement : SlideBall.MonoBehaviour
 {
     private Dictionary<int, ANetworkView> networkViews = new Dictionary<int, ANetworkView>();
-    private const short INSTANCIATION_INTERVAL = 10;
+    private const short INSTANCIATION_INTERVAL = 100;
 
     public event EmptyEventHandler ReadyToInstantiate;
 
@@ -93,13 +93,16 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     [MyRPC]
     private void RemoteInstantiate(InstantiationMessage message, ConnectionId RPCSenderId)
     {
-        MyNetworkView newView = MonoBehaviourExtensions.InstantiateFromMessage(this, message).GetComponent<MyNetworkView>();
-        networkViews.Add(message.newViewId, newView);
-        newView.ViewId = message.newViewId;
-        newView.registered = true;
-        newView.isMine = false;
+        if (!networkViews.ContainsKey(message.newViewId))
+        {
+            MyNetworkView newView = MonoBehaviourExtensions.InstantiateFromMessage(this, message).GetComponent<MyNetworkView>();
+            networkViews.Add(message.newViewId, newView);
+            newView.ViewId = message.newViewId;
+            newView.registered = true;
+            newView.isMine = false;
 
-        InitializeNewObject(message.initialisationParameters, newView.gameObject);
+            InitializeNewObject(message.initialisationParameters, newView.gameObject);
+        }
     }
 
     private static void InitializeNewObject(object[] initialisationParameters, GameObject go)
@@ -110,10 +113,15 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     internal void DistributeMessage(ConnectionId connectionId, NetworkMessage message)
     {
-        if (networkViews.ContainsKey(message.viewId))
+        if (networkViews.ContainsKey(message.viewId) && (Scenes.IsCurrentScene(message.sceneId) || !message.isSceneDependant()))
             networkViews[message.viewId].ReceiveNetworkMessage(connectionId, message);
-        else
-            return;// Debug.Log("No view was registered with this Id " + message.viewId);
+        else if (message.isSceneDependant())
+        {
+            Debug.LogError("Message received in wrong scene " + Scenes.currentSceneId + "  vs " + message.sceneId + "   " + message);
+            RPCCall call = NetworkExtensions.Deserialize<RPCCall>(message.data);
+            Debug.LogError(call.methodName);
+        }
+        return;// Debug.Log("No view was registered with this Id " + message.viewId);
 
 
     }

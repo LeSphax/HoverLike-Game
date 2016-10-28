@@ -2,7 +2,7 @@
 
 public class JumpInput : AbilityInput
 {
-    public override bool Activated()
+    protected override bool FirstActivation()
     {
         return Input.GetKeyDown(KeyCode.E);
     }

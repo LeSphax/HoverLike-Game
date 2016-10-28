@@ -61,7 +61,7 @@ class BallMovementView : ObservedComponent
             if (MyGameObjects.BallState.IsAttached())
             {
                 myRigidbody.velocity = Vector3.zero;
-                transform.localPosition = Vector3.one * 0.5f;
+                transform.localPosition = BallState.ballHoldingPosition;
                 return;
             }
             else

@@ -3,19 +3,20 @@ using Navigation;
 using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public class GameInitialization : SlideBall.MonoBehaviour
 {
     bool started = false;
 
-    public event EmptyEventHandler GameStarted;
+    public event EmptyEventHandler AllObjectsCreated;
 
     public void AddGameStartedListener(EmptyEventHandler handler)
     {
         if (started)
             handler.Invoke();
         else
-            GameStarted += handler;
+            AllObjectsCreated += handler;
     }
 
     protected void Awake()
@@ -37,28 +38,34 @@ public class GameInitialization : SlideBall.MonoBehaviour
         foreach (Player player in Players.players.Values)
         {
             Assert.IsTrue(player.Team == Team.FIRST || player.Team == Team.SECOND);
-            player.SpawningPoint = teamSpawns[(int)player.Team];
+            player.SpawnNumber = teamSpawns[(int)player.Team];
+            if (player.SpawnNumber == 0)
+            {
+                player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
+            }
+            else
+            {
+                player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
+
+            }
             teamSpawns[(int)player.Team]++;
         }
 
         View.RPC("LoadRoom", RPCTargets.All);
     }
 
-    private void InvokeSetupRoom()
-    {
-        Invoke("SetupRoom", 0.001f);
-    }
-
     private void SetupRoom()
     {
         InstantiateNewObjects();
-        GameHasStarted();
+        //Letting the time for the objects we just instantiated and the objects in the scene to call their Start method
+        Invoke("GameHasStarted", 0.01f);
     }
 
     [MyRPC]
     private void LoadRoom()
     {
-        NavigationManager.FinishedLoadingGame += InvokeSetupRoom;
+        NavigationManager.FinishedLoadingGame += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
+        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
         NavigationManager.LoadScene(Scenes.Main);
     }
 
@@ -77,8 +84,8 @@ public class GameInitialization : SlideBall.MonoBehaviour
     [MyRPC]
     private void GameHasStarted()
     {
-        if (GameStarted != null)
-            GameStarted.Invoke();
+        if (AllObjectsCreated != null)
+            AllObjectsCreated.Invoke();
     }
 
 

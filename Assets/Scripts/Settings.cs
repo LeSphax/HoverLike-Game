@@ -2,41 +2,46 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public static class Settings
 {
-    private const string RUNTIME_PATH = "Settings";
-    private const string EDITOR_PATH = "Assets/Resources/Settings.txt";
+    private const string SETTINGS_PATH = "Settings/";
+    private const string EDITOR_PATH = "Assets/Resources/";
 
+    public const string NETWORK_SETTINGS = "NetworkSettings";
     public const string NEXT_VIEW_ID = "NextViewId";
 
-    private static Dictionary<string, string> _data;
-    public static Dictionary<string, string> Data
+    private static Dictionary<string, Dictionary<string, string>> _data = new Dictionary<string, Dictionary<string, string>>();
+    public static Dictionary<string, string> GetSettings(string fileName)
     {
-        get
+        Dictionary<string, string> fileSettings;
+        if (!_data.TryGetValue(fileName, out fileSettings))
         {
-            if (_data == null)
-            {
-                TextAsset settings = (TextAsset)Resources.Load(RUNTIME_PATH);
-                _data = ParseSettings(settings.text);
-            }
-            return _data;
+            TextAsset settings = (TextAsset)Resources.Load(SETTINGS_PATH + fileName);
+            Assert.IsTrue(settings != null, "This settings file doesn't exist " + fileName);
+            fileSettings = ParseSettings(settings.text);
+            _data.Add(fileName, fileSettings);
         }
+        return fileSettings;
+
     }
 
     public static short GetNextViewId()
     {
-        return Int16.Parse(Data["NextViewId"]);
+        return short.Parse(GetSettings(NETWORK_SETTINGS)["NextViewId"]);
     }
 
-    public static void SaveSettings()
+    public static void SaveSettings(string fileName, Dictionary<string, string> settings)
     {
         StringWriter writer = new StringWriter();
-        foreach(var pair in Data)
+        foreach (var __pair in settings)
         {
-            writer.WriteLine(pair.Key + " : " + pair.Value);
+            writer.WriteLine(__pair.Key + " : " + __pair.Value);
         }
-        File.WriteAllText(EDITOR_PATH, writer.ToString());
+        Debug.Log("Save Settings " + EDITOR_PATH + SETTINGS_PATH + fileName + ".txt");
+        File.WriteAllText(EDITOR_PATH + SETTINGS_PATH + fileName + ".txt", writer.ToString());
+
     }
 
 
@@ -49,15 +54,15 @@ public static class Settings
         {
             int separatorIndex = line.IndexOf(':');
             string key = line.Substring(0, separatorIndex).Trim();
-            string value = line.Substring(separatorIndex+1).Trim();
+            string value = line.Substring(separatorIndex + 1).Trim();
             result.Add(key, value);
         }
         return result;
     }
 
-
-
-
-
-
+    internal static string[] ParseTable(string v)
+    {
+        string[] elements = v.Split('|');
+        return elements;
+    }
 }

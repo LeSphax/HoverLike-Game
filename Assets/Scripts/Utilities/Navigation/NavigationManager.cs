@@ -24,7 +24,7 @@ namespace Navigation
 
         private static bool IsSceneMain()
         {
-            return SceneManager.GetActiveScene().name == Scenes.Main;
+            return SceneManager.GetActiveScene().buildIndex == Scenes.MainIndex;
         }
 
         internal static void LoadScene(string scene)

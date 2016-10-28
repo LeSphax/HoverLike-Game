@@ -67,14 +67,44 @@ public class LobbyManager : MonoBehaviour
     protected void Awake()
     {
         MyState = State.IDLE;
-        MyGameObjects.NetworkManagement.RoomCreated += () => { MyState = State.ROOM; RoomManager.CreateMyPlayerInfo(); };
-        MyGameObjects.NetworkManagement.ConnectedToRoom += () => { MyState = State.ROOM; };
-        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages += () => {RoomManager.CreateMyPlayerInfo(); };
         if (StartGameImmediately)
         {
             MyGameObjects.NetworkManagement.ServerStartFailed += () => Invoke("ConnectToDefaultRoom", 0.1f);
             MyGameObjects.NetworkManagement.CreateRoom(DEFAULT_ROOM);
         }
+    }
+
+    protected void OnEnable()
+    {
+        MyGameObjects.NetworkManagement.RoomCreated += RoomState;
+        MyGameObjects.NetworkManagement.RoomCreated += CreatePlayerInfo;
+        MyGameObjects.NetworkManagement.ConnectedToRoom += RoomState;
+        MyGameObjects.NetworkManagement.ConnectedToRoom += ListanToBufferedMessages;
+    }
+
+    protected void OnDisable()
+    {
+        MyGameObjects.NetworkManagement.RoomCreated -= RoomState;
+        MyGameObjects.NetworkManagement.RoomCreated -= CreatePlayerInfo;
+        MyGameObjects.NetworkManagement.ConnectedToRoom -= RoomState;
+        MyGameObjects.NetworkManagement.ConnectedToRoom -= ListanToBufferedMessages;
+        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages -= CreatePlayerInfo;
+
+    }
+
+    private void CreatePlayerInfo()
+    {
+        RoomManager.CreateMyPlayerInfo();
+    }
+
+    private void RoomState()
+    {
+        MyState = State.ROOM;
+    }
+
+    private void ListanToBufferedMessages()
+    {
+        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages += CreatePlayerInfo;
     }
 
     void ConnectToDefaultRoom()

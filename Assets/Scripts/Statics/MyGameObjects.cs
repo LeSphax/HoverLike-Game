@@ -1,5 +1,8 @@
-﻿using PlayerManagement;
+﻿using BaseNetwork;
+using PlayerManagement;
 using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 public static class MyGameObjects
 {
@@ -16,11 +19,26 @@ public static class MyGameObjects
         }
     }
 
+    private static AbilitiesFactory abilitiesFactory;
+    public static AbilitiesFactory AbilitiesFactory
+    {
+        get
+        {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+            if (abilitiesFactory == null)
+            {
+                abilitiesFactory = GameObject.FindGameObjectWithTag(Tags.Abilities).GetComponent<AbilitiesFactory>();
+            }
+            return abilitiesFactory;
+        }
+    }
+
     private static BallState ballState;
     public static BallState BallState
     {
         get
         {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (ballState == null)
             {
                 GameObject ball = GameObject.FindGameObjectWithTag(Tags.Ball);
@@ -36,6 +54,7 @@ public static class MyGameObjects
     {
         get
         {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (matchManager == null)
             {
                 matchManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<MatchManager>();
@@ -75,6 +94,7 @@ public static class MyGameObjects
     {
         get
         {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.LobbyIndex));
             if (lobbyManager == null)
             {
                 lobbyManager = GameObject.FindGameObjectWithTag(Tags.LobbyManager).GetComponent<LobbyManager>();
@@ -114,6 +134,7 @@ public static class MyGameObjects
     {
         get
         {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.LobbyIndex));
             if (roomManager == null)
             {
                 roomManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
@@ -140,6 +161,7 @@ public static class MyGameObjects
     {
         get
         {
+            Assert.IsTrue(Scenes.IsCurrentScene( Scenes.MainIndex));
             if (spawns == null)
             {
                 spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
@@ -153,6 +175,7 @@ public static class MyGameObjects
     {
         get
         {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (countdown == null)
             {
                 countdown = GameObject.FindGameObjectWithTag(Tags.Countdown).GetComponent<Countdown>();

@@ -8,7 +8,7 @@ public class BallState : SlideBall.MonoBehaviour
     //This is set to false when we want the ball's simulation to be handled by the client
     public bool ListenToServer = true;
     public GameObject Ball;
-    private Vector3 ballHoldingPosition = new Vector3(.5f, .5f, .5f);
+    public static Vector3 ballHoldingPosition = new Vector3(0f, 0f, 4f);
 
 
     void Awake()

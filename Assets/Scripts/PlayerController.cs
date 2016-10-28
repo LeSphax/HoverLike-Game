@@ -9,6 +9,8 @@ public class PlayerController : PlayerView
 {
     public GameObject targetPrefab;
 
+    private GameObject Mesh;
+
     public Text playerName;
 
     private GameObject _target;
@@ -33,9 +35,12 @@ public class PlayerController : PlayerView
     }
     PlayerMovementView movementManager;
 
+    private MoveInput moveInput;
+
     void Awake()
     {
         movementManager = GetComponent<PlayerMovementView>();
+        moveInput = gameObject.AddComponent<MoveInput>();
         target = null;
     }
 
@@ -43,7 +48,7 @@ public class PlayerController : PlayerView
     {
         if (View.isMine)
         {
-            if (Input.GetMouseButton(1) && MyGameObjects.MatchManager.CanPlay)
+            if (moveInput.Activate())
             {
                 CreateTarget();
             }
@@ -84,47 +89,70 @@ public class PlayerController : PlayerView
     [MyRPC]
     private void InitPlayer(ConnectionId id)
     {
+        playerConnectionId = id;
+
+        ResetPlayer();
+    }
+
+    [MyRPC]
+    public void ResetPlayer()
+    {
+        if (Mesh != null)
+        {
+            Destroy(Mesh);
+        }
         if (View.isMine)
         {
             tag = Tags.MyPlayer;
             PutAtStartPosition();
         }
-        connectionId = id;
+
         gameObject.name = Player.Nickname;
         playerName.text = Player.Nickname;
 
-        SetMaterials();
-        gameObject.layer = LayersGetter.players[(int)Player.Team];
-        foreach (Transform go in transform) { go.gameObject.layer = LayersGetter.players[(int)Player.Team]; };
+        CreateMesh();
+        ConfigureColliders();
+
+        MyGameObjects.AbilitiesFactory.RecreateAbilities();
     }
 
-    private void SetMaterials()
+    private void ConfigureColliders()
+    {
+        GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
+        GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
+        int layer = -1;
+        if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
+            layer = LayersGetter.players[(int)Player.Team];
+        else
+            layer = LayersGetter.players[2];
+        gameObject.layer = layer;
+        Functions.SetLayer(Mesh.transform, layer);
+    }
+
+    private void CreateMesh()
+    {
+        GameObject meshPrefab = Resources.Load<GameObject>(Player.MyAvatarSettings.MESH_NAME);
+        Mesh = Instantiate(meshPrefab);
+        Mesh.transform.SetParent(transform, false);
+        SetMaterials(Mesh);
+    }
+
+    private void SetMaterials(GameObject mesh)
     {
         if (View.isMine)
         {
-            GetComponent<Renderer>().material = ResourcesGetter.OutLineMaterial();
+            mesh.transform.GetChild(0).GetComponent<Renderer>().material = ResourcesGetter.OutLineMaterial();
         }
         Color teamColor = Colors.Teams[(int)Player.Team];
-        foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { renderer.material.color = teamColor; }
+        foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { if (renderer.tag == Tags.TeamColored) renderer.material.color = teamColor; }
         playerName.color = teamColor;
     }
 
-    [MyRPC]
     public void PutAtStartPosition()
     {
-
-        transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team, Player.SpawningPoint);
+        transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
         transform.LookAt(Vector3.zero);
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         DestroyTarget();
-        //else
-        //{
-        //    Debug.LogError("This function shouldn't be called on a client that doesn't own the view");
-        //}
-    }
-
-    public void CallPutAtStartPosition()
-    {
-        View.RPC("PutAtStartPosition", RPCTargets.All);
     }
 }

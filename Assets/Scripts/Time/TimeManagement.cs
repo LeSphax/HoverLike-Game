@@ -22,7 +22,7 @@ public class TimeManagement : ObservedComponent
         }
     }
 
-    public static float Latency
+    public static float LatencyInMiliseconds
     {
         get
         {
@@ -33,8 +33,8 @@ public class TimeManagement : ObservedComponent
     protected void Awake()
     {
         strategy = new NotConnectedTimeStrategy(this);
-        MyGameObjects.NetworkManagement.ConnectedToRoom += () => { Debug.LogError("ConnectedToRoom"); strategy = new ClientTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
-        MyGameObjects.NetworkManagement.RoomCreated += () => { Debug.LogError("RoomCreated"); strategy = new ServerTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
+        MyGameObjects.NetworkManagement.ConnectedToRoom += () => { strategy = new ClientTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
+        MyGameObjects.NetworkManagement.RoomCreated += () => { strategy = new ServerTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
 
     }
 

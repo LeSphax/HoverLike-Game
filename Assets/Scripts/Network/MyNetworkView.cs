@@ -76,17 +76,17 @@ public class MyNetworkView : ANetworkView
         }
     }
 
-    public void SendData(int observedId, MessageType type, byte[] data)
+    public void SendData(short observedId, MessageType type, byte[] data)
     {
         MyGameObjects.NetworkManagement.SendData(ViewId, observedId, type, data);
     }
 
-    public void SendData(int observedId, MessageType type, byte[] data, ConnectionId id)
+    public void SendData(short observedId, MessageType type, byte[] data, ConnectionId id)
     {
         MyGameObjects.NetworkManagement.SendData(ViewId, observedId, type, data, id);
     }
 
-    public void SendData(int observedId, MessageType type, byte[] data, MessageFlags flags)
+    public void SendData(short observedId, MessageType type, byte[] data, MessageFlags flags)
     {
         NetworkMessage message = new NetworkMessage(ViewId, observedId, type, data);
         message.flags = flags;

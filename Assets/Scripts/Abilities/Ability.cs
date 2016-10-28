@@ -40,7 +40,7 @@ public class Ability : MonoBehaviour
         switch (state)
         {
             case State.READY:
-                if (input.Activated() && MyGameObjects.MatchManager.CanPlay)
+                if (input.Activate())
                 {
                     CastAbility();
                 }

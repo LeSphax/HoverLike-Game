@@ -19,6 +19,9 @@ public class Tags : MonoBehaviour
     public const string Room = "Room";
     public const string Scene = "Scene";
     public const string RoomScripts = "RoomScripts";
+    public const string Mesh = "Mesh";
+    public const string TeamColored = "TeamColored";
+    public const string Abilities = "Abilities";
 
     public const string LobbyManager = "LobbyManager";
     public const string Countdown = "Countdown";

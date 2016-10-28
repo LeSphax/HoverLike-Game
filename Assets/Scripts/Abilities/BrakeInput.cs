@@ -2,7 +2,7 @@
 
 public class BrakeInput : AbilityInput
 {
-    public override bool Activated()
+    protected override bool FirstActivation()
     {
         return Input.GetKey(KeyCode.Z);
     }

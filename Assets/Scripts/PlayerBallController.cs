@@ -11,6 +11,8 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
     private List<int> idsPlayerInContact = new List<int>();
 
+    private ShootInput shootInput;
+
     private bool stealing;
     public bool Stealing
     {
@@ -36,7 +38,8 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
     protected void Start()
     {
-        MyGameObjects.GameInitialization.GameStarted += StartGame;
+        shootInput = gameObject.AddComponent<ShootInput>();
+        MyGameObjects.GameInitialization.AllObjectsCreated += StartGame;
         powerBar = GetComponent<PowerBar>();
         MyGameObjects.Properties.AddListener(PropertiesKeys.NamePlayerHoldingBall, AttachBall);
     }
@@ -44,7 +47,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
     private void StartGame()
     {
         Physics.IgnoreCollision(GetComponent<Collider>(), Ball.GetComponent<Collider>(), true);
-    }
+    } 
 
     private void TryStealing()
     {
@@ -161,14 +164,14 @@ public class PlayerBallController : SlideBall.MonoBehaviour
 
     private void UpdateThrow()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (shootInput.Activate())
         {
             if (MyGameObjects.BallState.GetIdOfPlayerOwningBall() == View.ViewId)
             {
                 powerBar.StartFilling();
             }
         }
-        else if (Input.GetMouseButtonUp(0) && powerBar.IsFilling())
+        else if (shootInput.Reactivate() && powerBar.IsFilling())
         {
             if (MyGameObjects.BallState.GetIdOfPlayerOwningBall() == View.ViewId)
             {
@@ -176,7 +179,7 @@ public class PlayerBallController : SlideBall.MonoBehaviour
                 powerBar.Hide();
             }
         }
-        else if (Input.GetMouseButtonDown(1) && powerBar.IsFilling())
+        else if (shootInput.Cancel() && powerBar.IsFilling())
         {
             powerBar.Hide();
         }

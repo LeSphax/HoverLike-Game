@@ -38,24 +38,12 @@ public class SpecialBuild
 
             ChangeScene(Paths.SCENE_LOBBY);
         }
-        //ChangeScene(Paths.SCENE_MAIN);
-        //EditorApplication.isPlaying = true;
-        //startWaitingTime = Time.realtimeSinceStartup;
-        //EditorApplication.update += OnEditorUpdate;
-
-
     }
 
     [MenuItem("MyTools/Build Only %j")]
     public static bool BuildOnly()
     {
         return BuildGame(levels);
-
-
-        //startWaitingTime = Time.realtimeSinceStartup;
-        //EditorApplication.update += OnEditorUpdate;
-
-
     }
 
     static void OnEditorUpdate()
@@ -92,14 +80,16 @@ public class SpecialBuild
     [MenuItem("MyTools/MakeViewIds %e")]
     public static void MakeViewIds()
     {
+        Debug.Log("MakeViewIDS");
         nextViewId = 0;
         MakeViewIds(Paths.SCENE_LOBBY);
         MakeViewIds(Paths.SCENE_MAIN);
-        if (!Settings.Data.ContainsKey(Settings.NEXT_VIEW_ID))
-            Settings.Data.Add(Settings.NEXT_VIEW_ID, "" + nextViewId);
+        var NetworkSettings = Settings.GetSettings(Settings.NETWORK_SETTINGS);
+        if (!NetworkSettings.ContainsKey(Settings.NEXT_VIEW_ID))
+            NetworkSettings.Add(Settings.NEXT_VIEW_ID, "" + nextViewId);
         else
-            Settings.Data[Settings.NEXT_VIEW_ID] = "" + nextViewId;
-        Settings.SaveSettings();
+            NetworkSettings[Settings.NEXT_VIEW_ID] = "" + nextViewId;
+        Settings.SaveSettings(Settings.NETWORK_SETTINGS,NetworkSettings);
     }
 
     public static void MakeViewIds(string scene)

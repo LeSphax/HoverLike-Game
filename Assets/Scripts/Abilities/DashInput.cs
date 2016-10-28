@@ -2,7 +2,7 @@
 
 public class DashInput : AbilityInput
 {
-    public override bool Activated()
+    protected override bool FirstActivation()
     {
         return Input.GetKeyDown(KeyCode.A);
     }

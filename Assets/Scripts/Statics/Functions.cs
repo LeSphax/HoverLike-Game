@@ -45,5 +45,10 @@ class Functions
 
         return obj;
     }
+
+    public static void SetLayer(Transform go, int layer)
+    {
+        foreach (Transform t in go) { t.gameObject.layer = layer; SetLayer(t, layer); };
+    }
 }
 
