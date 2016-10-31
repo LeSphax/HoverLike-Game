@@ -3,16 +3,15 @@
 public class DashEffect : AbilityEffect
 {
     private bool dashing = false;
-    public float speed = 10f;
-    private float dashDuration = 0.25f;
+    public float speed = 8f;
+    public float endSpeed = 3f;
+    public float dashDuration = 0.4f;
 
     private Vector3 force;
     private Rigidbody myRigidbody;
-    private GameObject target;
 
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
-        this.target = target;
         myRigidbody = target.GetComponent<Rigidbody>();
         //
         target.GetComponent<PlayerController>().DestroyTarget();
@@ -38,7 +37,7 @@ public class DashEffect : AbilityEffect
     private void StopDashing()
     {
         dashing = false;
-        target.GetComponent<PlayerMovementView>().ClampPlayerVelocity();
+        myRigidbody.velocity = force * endSpeed;
     }
 
 }

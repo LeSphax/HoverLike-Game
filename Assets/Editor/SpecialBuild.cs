@@ -122,7 +122,6 @@ public class SpecialBuild
     {
         foreach (System.Diagnostics.Process process in System.Diagnostics.Process.GetProcessesByName("Build"))
         {
-            Debug.Log(process);
             process.Kill();
         }
     }

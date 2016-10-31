@@ -20,9 +20,10 @@ public class BlockEffect : AbilityEffect
     {
         sphereExplosion = (GameObject)Instantiate(explosionPrefab, Vector3.zero, Quaternion.identity);
         sphereExplosion.transform.SetParent(target, false);
-        ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(sphereExplosion, 0.1f, 5f, 0.3f);
+        ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(sphereExplosion, 20f, 35f, 0.2f);
         animation.FinishedAnimating += DestroySphere;
         animation.StartAnimating();
+        GetComponent<AudioSource>().Play();
     }
 
     private void DestroySphere(MonoBehaviour sender)

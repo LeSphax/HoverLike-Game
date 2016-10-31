@@ -11,16 +11,22 @@ public class AttractionBall : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if (Tags.IsPlayer(collider.gameObject.tag))
+        if (IsAttacker(collider))
             playersAttracting.Add(collider.gameObject);
+    }
+
+    private bool IsAttacker(Collider collider)
+    {
+        if (!Tags.IsPlayer(collider.gameObject.tag))
+            return false;
+        PlayerController controller = collider.gameObject.GetComponent<PlayerController>();
+        return controller.Player != null && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER;
     }
 
     void OnTriggerExit(Collider collider)
     {
-        if (Tags.IsPlayer(collider.gameObject.tag))
-        {
+        if (IsAttacker(collider))
             playersAttracting.Remove(collider.gameObject);
-        }
     }
 
     public static void ActivatePlayer(GameObject player)

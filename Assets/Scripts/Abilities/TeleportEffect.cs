@@ -14,6 +14,7 @@ public class TeleportEffect : AbilityEffect
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
         this.target = target;
+        target.GetComponent<PlayerController>().StopMoving();
         GameObject effectPrefab = Resources.Load<GameObject>("Effects/Teleportation");
         effects = new List<GameObject>();
         GameObject effectAtPlayer = (GameObject)Instantiate(effectPrefab, target.transform,false);

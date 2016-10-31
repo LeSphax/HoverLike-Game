@@ -5,14 +5,13 @@ public class LobbyManager : MonoBehaviour
 {
 
     public GameObject MainPanel;
-    public GameObject RoomListPanel;
+    public RoomListPanel RoomListPanel;
     public RoomManager RoomManager;
 
-    public GameObject NoServerFound;
-
-    public GameObject serverInfoPrefab;
-
     public bool StartGameImmediately;
+
+    public Text Status;
+    public Text Host;
 
     private enum State
     {
@@ -34,19 +33,35 @@ public class LobbyManager : MonoBehaviour
             {
                 case State.IDLE:
                     MainPanel.SetActive(true);
-                    RoomListPanel.SetActive(false);
+                    //
+                    RoomListPanel.gameObject.SetActive(false);
+                    RoomListPanel.Reset();
+                    //
                     RoomManager.gameObject.SetActive(false);
+                    RoomManager.Reset();
+                    //
+                    Status.text = "In Lobby";
                     break;
 
                 case State.ROOMLIST:
                     MainPanel.SetActive(false);
-                    RoomListPanel.SetActive(true);
+                    //
+                    RoomListPanel.gameObject.SetActive(true);
+                    //
                     RoomManager.gameObject.SetActive(false);
+                    RoomManager.Reset();
+                    //
+                    Status.text = "Looking for Game";
                     break;
                 case State.ROOM:
                     MainPanel.SetActive(false);
-                    RoomListPanel.SetActive(false);
+                    //
+                    RoomListPanel.gameObject.SetActive(false);
+                    RoomListPanel.Reset();
+                    //
                     RoomManager.gameObject.SetActive(true);
+                    //
+                    Status.text = "In Game Room";
                     break;
             }
             state = value;
@@ -60,7 +75,6 @@ public class LobbyManager : MonoBehaviour
             return MyState == State.ROOM;
         }
     }
-    private string[] roomList = new string[0];
     public Text inputField;
     private const string DEFAULT_ROOM = "Da Room";
 
@@ -79,21 +93,23 @@ public class LobbyManager : MonoBehaviour
         MyGameObjects.NetworkManagement.RoomCreated += RoomState;
         MyGameObjects.NetworkManagement.RoomCreated += CreatePlayerInfo;
         MyGameObjects.NetworkManagement.ConnectedToRoom += RoomState;
-        MyGameObjects.NetworkManagement.ConnectedToRoom += ListanToBufferedMessages;
+        MyGameObjects.NetworkManagement.ConnectedToRoom += ListenToBufferedMessages;
     }
 
     protected void OnDisable()
     {
-        MyGameObjects.NetworkManagement.RoomCreated -= RoomState;
-        MyGameObjects.NetworkManagement.RoomCreated -= CreatePlayerInfo;
-        MyGameObjects.NetworkManagement.ConnectedToRoom -= RoomState;
-        MyGameObjects.NetworkManagement.ConnectedToRoom -= ListanToBufferedMessages;
-        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages -= CreatePlayerInfo;
-
+        if (MyGameObjects.NetworkManagement != null)
+        {
+            MyGameObjects.NetworkManagement.RoomCreated -= RoomState;
+            MyGameObjects.NetworkManagement.RoomCreated -= CreatePlayerInfo;
+            MyGameObjects.NetworkManagement.ConnectedToRoom -= RoomState;
+            MyGameObjects.NetworkManagement.ConnectedToRoom -= ListenToBufferedMessages;
+        }
     }
 
     private void CreatePlayerInfo()
     {
+        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages -= CreatePlayerInfo;
         RoomManager.CreateMyPlayerInfo();
     }
 
@@ -102,7 +118,7 @@ public class LobbyManager : MonoBehaviour
         MyState = State.ROOM;
     }
 
-    private void ListanToBufferedMessages()
+    private void ListenToBufferedMessages()
     {
         MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages += CreatePlayerInfo;
     }
@@ -110,41 +126,6 @@ public class LobbyManager : MonoBehaviour
     void ConnectToDefaultRoom()
     {
         MyGameObjects.NetworkManagement.ConnectToRoom(DEFAULT_ROOM);
-    }
-
-    public void UpdateRoomList(string[] rooms)
-    {
-        Debug.Log("UpdateRoomList " + rooms.Length);
-        roomList = rooms;
-        MyState = State.ROOMLIST;
-        if (roomList.Length == 0)
-        {
-            NoServerFound.SetActive(true);
-        }
-        else
-        {
-            NoServerFound.SetActive(false);
-            int y = -90;
-            foreach (string room in roomList)
-            {
-                GameObject go = Instantiate(serverInfoPrefab);
-                go.transform.SetParent(RoomListPanel.transform, false);
-                go.GetComponent<ServerInfoPanel>().SetRoomName(room);
-                go.GetComponent<RectTransform>().localPosition += y * new Vector3(0, 1, 0);
-                y -= 50;
-            }
-        }
-        if (StartGameImmediately)
-        {
-            if (roomList.Length == 0)
-            {
-                MyGameObjects.NetworkManagement.CreateRoom("DefaultRoom");
-            }
-            else
-            {
-                MyGameObjects.NetworkManagement.ConnectToRoom("DefaultRoom");
-            }
-        }
     }
 
     public void CreateGame()
@@ -162,4 +143,26 @@ public class LobbyManager : MonoBehaviour
         MyGameObjects.GameInitialization.StartGame();
     }
 
+    public void UpdateRoomList(string[] list)
+    {
+        MyState = State.ROOMLIST;
+        RoomListPanel.UpdateRoomList(list);
+        if (StartGameImmediately)
+        {
+            if (list.Length == 0)
+            {
+                MyGameObjects.NetworkManagement.CreateRoom("DefaultRoom");
+            }
+            else
+            {
+                MyGameObjects.NetworkManagement.ConnectToRoom("DefaultRoom");
+            }
+        }
+    }
+
+    public void GoBack()
+    {
+        MyState = State.IDLE;
+        MyGameObjects.NetworkManagement.Reset();
+    }
 }

@@ -41,7 +41,14 @@ public class PlayerController : PlayerView
     {
         movementManager = GetComponent<PlayerMovementView>();
         moveInput = gameObject.AddComponent<MoveInput>();
-        target = null;
+    }
+
+    void LateUpdate()
+    {
+        if (View.isMine)
+        {
+            GameObject.FindGameObjectWithTag("GameController").transform.position = transform.position;
+        }
     }
 
     void Update()
@@ -71,14 +78,12 @@ public class PlayerController : PlayerView
     {
         DestroyTarget();
         target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
+        target.GetComponent<TargetCollisionDetector>().controller = this;
     }
 
-    void OnTriggerEnter(Collider collider)
+    public void TargetHit()
     {
-        if (collider.gameObject.tag == Tags.Target)
-        {
-            DestroyTarget();
-        }
+        DestroyTarget();
     }
 
     public void Init(ConnectionId id, int teamNumber, string name)
@@ -90,13 +95,14 @@ public class PlayerController : PlayerView
     private void InitPlayer(ConnectionId id)
     {
         playerConnectionId = id;
-
         ResetPlayer();
     }
 
     [MyRPC]
     public void ResetPlayer()
     {
+        movementManager.Reset(playerConnectionId);
+        target = null;
         if (Mesh != null)
         {
             Destroy(Mesh);
@@ -125,7 +131,6 @@ public class PlayerController : PlayerView
             layer = LayersGetter.players[(int)Player.Team];
         else
             layer = LayersGetter.players[2];
-        gameObject.layer = layer;
         Functions.SetLayer(Mesh.transform, layer);
     }
 
@@ -152,6 +157,11 @@ public class PlayerController : PlayerView
     {
         transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
         transform.LookAt(Vector3.zero);
+        StopMoving();
+    }
+
+    public void StopMoving()
+    {
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         DestroyTarget();
     }

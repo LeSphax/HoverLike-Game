@@ -13,7 +13,9 @@ public static class MyGameObjects
         {
             if (networkManagement == null)
             {
-                networkManagement = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<NetworkManagement>();
+                GameObject go;
+                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
+                    networkManagement = go.GetComponent<NetworkManagement>();
             }
             return networkManagement;
         }
@@ -161,7 +163,7 @@ public static class MyGameObjects
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene( Scenes.MainIndex));
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (spawns == null)
             {
                 spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();

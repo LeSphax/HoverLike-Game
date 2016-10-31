@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     private const float MAX_CAMERA_OFFSET_X = 120;
     private const float MAX_CAMERA_OFFSET_Z = 30;
 
-    private bool activated = true;
+    private bool activated = false;
 
     void Start()
     {
@@ -42,18 +42,20 @@ public class GameController : MonoBehaviour
             }
             Vector3 newPosition = initialPosition + Camera.main.transform.InverseTransformVector(cameraPosition);
             Camera.main.transform.localPosition = newPosition;
-            if (Input.GetKeyDown(KeyCode.F4))
-            {
-                Cursor.lockState = CursorLockMode.Confined;
-                Screen.fullScreen = true;
-            }
+
         }
         DesactivateOnXPressed();
+        if (Input.GetKeyDown(KeyCode.F4))
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+            Screen.fullScreen = true;
+        }
     }
 
     void DesactivateOnXPressed()
     {
-        if (Input.GetKeyDown(KeyCode.X)){
+        if (Input.GetKeyDown(KeyCode.X))
+        {
             activated = !activated;
         }
     }

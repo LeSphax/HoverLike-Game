@@ -19,6 +19,11 @@ public class PlayerView : SlideBall.MonoBehaviour
         if (hasOwnView)
             return Players.MyPlayer;
         else
-            return Players.players[connectionId];
+        {
+            Player player;
+            if (!Players.players.TryGetValue(connectionId, out player))
+                return null;
+            return player;
+        }
     }
 }

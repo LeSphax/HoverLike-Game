@@ -46,7 +46,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
             else
             {
                 player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
-
             }
             teamSpawns[(int)player.Team]++;
         }

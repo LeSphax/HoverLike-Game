@@ -29,4 +29,10 @@ public abstract class ANetworkView : MonoBehaviour
     [NonSerialized]
     public bool registered;
     public abstract void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message);
+
+    void OnDestroy()
+    {
+        if (MyGameObjects.NetworkViewsManagement != null)
+            MyGameObjects.NetworkViewsManagement.UnregisterView(this);
+    }
 }

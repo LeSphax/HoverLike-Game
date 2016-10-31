@@ -16,42 +16,26 @@ public class PlayerMovementView : ObservedComponent
     {
         get
         {
-            if (playerConnectionId == null)
-            {
-                playerConnectionId = GetComponent<PlayerController>().playerConnectionId;
-            }
+            Assert.IsTrue(playerConnectionId != null);
             return PlayerView.GetMyPlayer(View.isMine, playerConnectionId.Value);
         }
     }
 
-    Rigidbody myRigidbody;
+    private PlayerMovementStrategy strategy;
 
-    private float acceleration
-    {
-        get
-        {
-            return Player.MyAvatarSettings.acceleration;
-        }
-    }
-
-    public float MAX_VELOCITY
-    {
-        get
-        {
-            return Player.MyAvatarSettings.maxSpeed;
-        }
-    }
-    private float ANGULAR_SPEED = 400;
-    public Vector3? targetPosition;
+    private Rigidbody myRigidbody;
 
     PacketHandler packetHandler;
 
-    private float simulationStart;
-
-    private const float FRAME_DURATION = 0.02f;
-
     private Queue<PlayerPacket> StateBuffer = new Queue<PlayerPacket>();
     private PlayerPacket? currentPacket = null;
+    internal Vector3? targetPosition
+    {
+        set
+        {
+            strategy.targetPosition = value;
+        }
+    }
 
     private PlayerPacket? nextPacket
     {
@@ -82,18 +66,31 @@ public class PlayerMovementView : ObservedComponent
         packetHandler = ReceiveData;
     }
 
+
+    public void Reset(ConnectionId connectionId)
+    {
+        playerConnectionId = connectionId;
+        if (strategy != null)
+        {
+            Destroy(strategy);
+        }
+        switch (Player.AvatarSettingsType)
+        {
+            case AvatarSettings.AvatarSettingsTypes.GOALIE:
+                strategy = gameObject.AddComponent<GoalieMovementStrategy>();
+                break;
+            case AvatarSettings.AvatarSettingsTypes.ATTACKER:
+                strategy = gameObject.AddComponent<AttackerMovementStrategy>();
+                break;
+            default:
+                throw new UnhandledSwitchCaseException(Player.AvatarSettingsType);
+        }
+    }
+
+
     public override void OwnerUpdate()
     {
-        if (targetPosition != null)
-        {
-            var lookPos = targetPosition.Value - transform.position;
-            lookPos.y = 0;
-            var targetRotation = Quaternion.LookRotation(lookPos);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, FRAME_DURATION * ANGULAR_SPEED);
-            myRigidbody.AddForce(transform.forward * acceleration * FRAME_DURATION, ForceMode.VelocityChange);
-
-            ClampPlayerVelocity();
-        }
+        strategy.UpdateMovement();
     }
 
     protected override byte[] CreatePacket(long sendId)
@@ -106,11 +103,6 @@ public class PlayerMovementView : ObservedComponent
         return packet.Serialize();
     }
 
-    public void ClampPlayerVelocity()
-    {
-        myRigidbody.velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
-    }
-
     public override void SimulationUpdate()
     {
         while (StateBuffer.Count > 0 && SimulationTime >= StateBuffer.Peek().timeSent)
@@ -120,7 +112,7 @@ public class PlayerMovementView : ObservedComponent
         }
 
         //if (StateBuffer.Count == 0 && currentPacket != null)
-            //Debug.LogWarning("No Packet in buffer !!! " + SimulationTime + "   " + gameObject.name);
+        //Debug.LogWarning("No Packet in buffer !!! " + SimulationTime + "   " + gameObject.name);
 
         if (currentPacket != null)
         {

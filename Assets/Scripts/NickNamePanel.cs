@@ -11,7 +11,7 @@ public class NickNamePanel : MonoBehaviour
 
     void Start()
     {
-        if (autoNickName)
+        if (autoNickName || MyGameObjects.LobbyManager.StartGameImmediately)
         {
             nicknameField.text = RandomString(5);
             SetNickname();

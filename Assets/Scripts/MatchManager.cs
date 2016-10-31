@@ -1,5 +1,6 @@
 ﻿using Byn.Net;
 using PlayerManagement;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -15,6 +16,8 @@ public class MatchManager : SlideBall.MonoBehaviour
     }
 
     private const float WARMUP_DURATION = 60f;
+    private const float END_POINT_DURATION = 5f;
+    private const float ENTRY_DURATION = 3f;
     private State state;
     private State MyState
     {
@@ -56,7 +59,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         if (MyState == State.PLAYING)
         {
             Scoreboard.IncrementTeamScore(teamNumber);
-            Invoke("Entry", 3f);
+            Invoke("Entry", END_POINT_DURATION);
             MyState = State.ENDING;
         }
     }
@@ -99,20 +102,22 @@ public class MatchManager : SlideBall.MonoBehaviour
         Scoreboard.ResetScore();
     }
 
+    IEnumerator RespawnPlayers()
+    {
+
+        yield return null;
+    }
+
     private void Entry()
     {
         Assert.IsTrue(MyGameObjects.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP));
-        Tags.FindPlayers().Map(player =>
-        {
-            PlayerController controller = GetComponent<PlayerController>();
-            controller.Player.SpawnNumber = (short)((controller.Player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(controller.Player.Team));
-            controller.View.RPC("ResetPlayer", RPCTargets.All);
-        });
+        Debug.Log("Entry");
+        SetPlayersRoles();
         MyGameObjects.BallState.PutAtStartPosition();
         MyGameObjects.Countdown.TimerFinished -= Entry;
         //
         MyGameObjects.Countdown.TimerFinished += SendInvokeStartGame;
-        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", 3f);
+        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", ENTRY_DURATION);
         MyState = State.STARTING;
     }
 

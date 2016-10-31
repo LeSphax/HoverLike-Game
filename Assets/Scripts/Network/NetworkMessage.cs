@@ -171,6 +171,7 @@ public class NetworkMessage
         {
             case MessageType.Properties:
             case MessageType.RPC:
+            case MessageType.Synchronisation:
                 return true;
             case MessageType.ViewPacket:
                 return false;
@@ -188,6 +189,7 @@ public class NetworkMessage
             case MessageType.RPC:
             case MessageType.ViewPacket:
             case MessageType.Properties:
+            case MessageType.Synchronisation:
                 return false;
             default:
                 throw new UnhandledSwitchCaseException(type);
@@ -205,6 +207,8 @@ public class NetworkMessage
             case MessageType.ViewPacket:
             case MessageType.Properties:
                 return false;
+            case MessageType.Synchronisation:
+                return true;
             default:
                 throw new UnhandledSwitchCaseException(type);
         }
@@ -217,6 +221,7 @@ public class NetworkMessage
             case MessageType.RPC:
             case MessageType.ViewPacket:
             case MessageType.Properties:
+            case MessageType.Synchronisation:
                 return false;
             default:
                 throw new UnhandledSwitchCaseException(type);
@@ -234,6 +239,7 @@ public enum MessageType
     ViewPacket,
     Properties,
     RPC,
+    Synchronisation,
 }
 
 [Flags]

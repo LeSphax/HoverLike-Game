@@ -63,7 +63,32 @@ namespace BaseNetwork
             SERVER
         }
 
-        private State stateCurrent = State.IDLE;
+        private State _stateCurrent;
+        private State stateCurrent
+        {
+            get
+            {
+                return _stateCurrent;
+            }
+            set
+            {
+                switch (value)
+                {
+                    case State.IDLE:
+                        bufferedMessages = null;
+                        break;
+                    case State.CONNECTED:
+                        bufferedMessages = null;
+                        break;
+                    case State.SERVER:
+                        bufferedMessages = new BufferedMessages(this);
+                        break;
+                    default:
+                        break;
+                }
+                _stateCurrent = value;
+            }
+        }
 
         [HideInInspector]
         public string RoomName = null;
@@ -84,8 +109,13 @@ namespace BaseNetwork
         /// <summary>
         /// True if the user opened an own room allowing incoming connections
         /// </summary>
-        [NonSerialized]
-        public bool isServer = false;
+        public bool isServer
+        {
+            get
+            {
+                return _stateCurrent == State.SERVER;
+            }
+        }
 
         /// <summary>
         /// Keeps track of all current connections
@@ -141,19 +171,23 @@ namespace BaseNetwork
             mNetwork.Connect(GET_ROOMS_COMMAND);
         }
 
-        private void Reset()
+        public void Reset()
         {
-            Debug.Log("Cleanup!");
-
-            isServer = false;
+            Debug.Log("Reset !");
+            stateCurrent = State.IDLE;
+            Players.Reset();
+            MyGameObjects.NetworkViewsManagement.Reset();
             mConnections = new List<ConnectionId>();
             Cleanup();
         }
 
         private void Cleanup()
         {
-            mNetwork.Dispose();
-            mNetwork = null;
+            if (mNetwork != null)
+            {
+                mNetwork.Dispose();
+                mNetwork = null;
+            }
         }
 
         private void OnDestroy()
@@ -189,16 +223,14 @@ namespace BaseNetwork
                         case NetEventType.ServerInitialized:
                             {
                                 //server initialized message received
-                                isServer = true;
                                 Debug.LogError("Server started. Address: " + RoomName + "   " + evt.ConnectionId.id);
                                 if (stateCurrent == State.IDLE)
                                 {
-                                    bufferedMessages = new BufferedMessages(this);
+                                    stateCurrent = State.SERVER;
                                     Players.NewPlayerCreated += (id) => { Players.players[id].SceneChanged += (connectionId, sceneId) => { bufferedMessages.SendBufferedMessages(connectionId, sceneId); }; };
                                     SetConnectionId(ConnectionId.INVALID);
                                     RoomCreated.Invoke();
                                 }
-                                stateCurrent = State.SERVER;
                             }
                             break;
                         //user tried to start the server but it failed
@@ -218,7 +250,6 @@ namespace BaseNetwork
                                     }
                                     else
                                     {
-                                        isServer = false;
                                         Debug.LogError("Server start failed. " + evt.RawData);
                                         if (ServerStartFailed != null)
                                         {

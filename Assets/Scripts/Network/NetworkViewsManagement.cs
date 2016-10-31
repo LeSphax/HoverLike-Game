@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 public class NetworkViewsManagement : SlideBall.MonoBehaviour
 {
     private Dictionary<int, ANetworkView> networkViews = new Dictionary<int, ANetworkView>();
-    private const short INSTANCIATION_INTERVAL = 100;
 
-    public event EmptyEventHandler ReadyToInstantiate;
+    private const short INSTANCIATION_INTERVAL = 100;
+    private short nextClientViewId = -1;
 
     private short nextViewId = -1;
     public short NextViewId
@@ -38,11 +38,15 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         nextViewId++;
     }
 
-    private short nextClientViewId = -1;
-
     void Awake()
     {
         MyGameObjects.NetworkManagement.NewPlayerConnectedToRoom += SendClientInstanciationInterval;
+    }
+
+    public void Reset()
+    {
+        nextClientViewId = -1;
+        nextViewId = -1;
     }
 
     private void SendClientInstanciationInterval(ConnectionId id)
@@ -56,8 +60,6 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     private void SetInstanciationInterval(short nextViewId)
     {
         this.nextViewId = nextViewId;
-        if (ReadyToInstantiate != null)
-            ReadyToInstantiate.Invoke();
     }
 
     public GameObject Instantiate(string path, Vector3 position, Quaternion rotation, params object[] initialisationParameters)
@@ -136,6 +138,19 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         {
             networkViews.Add(view.ViewId, view);
             view.registered = true;
+        }
+    }
+
+    internal void UnregisterView(ANetworkView view)
+    {
+        if (!networkViews.ContainsKey(view.ViewId))
+        {
+            Debug.LogError("This viewid (" + view.ViewId + ") wasn't registered " + networkViews.Count);
+        }
+        else
+        {
+            networkViews.Remove(view.ViewId);
+            view.registered = false;
         }
     }
 

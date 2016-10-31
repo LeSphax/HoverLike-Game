@@ -32,6 +32,13 @@ namespace PlayerManagement
             }
         }
 
+        public static void Reset()
+        {
+            myPlayerId = ConnectionId.INVALID;
+            NewPlayerCreated = null;
+            players.Clear();
+        }
+
         public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
         {
             int currentIndex = 3;
