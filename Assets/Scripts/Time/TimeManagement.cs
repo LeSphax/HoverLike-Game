@@ -1,10 +1,8 @@
 ﻿using Byn.Net;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 
 public delegate void LatencyChange(float newLatency);
+public delegate void SpecificLatencyChange(ConnectionId id, float newLatency);
 
 public class TimeManagement : ObservedComponent
 {
@@ -13,6 +11,7 @@ public class TimeManagement : ObservedComponent
     public Dictionary<ConnectionId, LatencyChange> latencyListeners = new Dictionary<ConnectionId, LatencyChange>();
 
     public event ConnectionEventHandler NewLatency;
+    public event SpecificLatencyChange LatencyChanged;
 
     public static float NetworkTime
     {
@@ -33,8 +32,8 @@ public class TimeManagement : ObservedComponent
     protected void Awake()
     {
         strategy = new NotConnectedTimeStrategy(this);
-        MyGameObjects.NetworkManagement.ConnectedToRoom += () => { strategy = new ClientTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
-        MyGameObjects.NetworkManagement.RoomCreated += () => { strategy = new ServerTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
+        MyComponents.NetworkManagement.ConnectedToRoom += () => { strategy = new ClientTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
+        MyComponents.NetworkManagement.RoomCreated += () => { strategy = new ServerTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
 
     }
 
@@ -74,7 +73,13 @@ public class TimeManagement : ObservedComponent
     internal void SetLatency(ConnectionId id, float latency)
     {
         if (latencyListeners.ContainsKey(id))
+        {
             latencyListeners[id].Invoke(latency);
+        }
+        if (LatencyChanged != null)
+        {
+            LatencyChanged.Invoke(id, latency);
+        }
     }
 
     protected override bool SetFlags(out MessageFlags flags)

@@ -9,6 +9,7 @@ public class LobbyManager : MonoBehaviour
     public RoomManager RoomManager;
 
     public bool StartGameImmediately;
+    public int NumberPlayersToStartGame;
 
     public Text Status;
     public Text Host;
@@ -83,33 +84,43 @@ public class LobbyManager : MonoBehaviour
         MyState = State.IDLE;
         if (StartGameImmediately)
         {
-            MyGameObjects.NetworkManagement.ServerStartFailed += () => Invoke("ConnectToDefaultRoom", 0.1f);
-            MyGameObjects.NetworkManagement.CreateRoom(DEFAULT_ROOM);
+            MyComponents.NetworkManagement.ServerStartFailed += () => Invoke("ConnectToDefaultRoom", 0.1f);
+            MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
+            InvokeRepeating("CheckStartGame", 0f, 0.2f);
+        }
+    }
+
+    void CheckStartGame()
+    {
+        if (MyComponents.NetworkManagement.isServer && MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) == NumberPlayersToStartGame)
+        {
+            Invoke("StartGame", 1f);
+            CancelInvoke("CheckStartGame");
         }
     }
 
     protected void OnEnable()
     {
-        MyGameObjects.NetworkManagement.RoomCreated += RoomState;
-        MyGameObjects.NetworkManagement.RoomCreated += CreatePlayerInfo;
-        MyGameObjects.NetworkManagement.ConnectedToRoom += RoomState;
-        MyGameObjects.NetworkManagement.ConnectedToRoom += ListenToBufferedMessages;
+        MyComponents.NetworkManagement.RoomCreated += RoomState;
+        MyComponents.NetworkManagement.RoomCreated += CreatePlayerInfo;
+        MyComponents.NetworkManagement.ConnectedToRoom += RoomState;
+        MyComponents.NetworkManagement.ConnectedToRoom += ListenToBufferedMessages;
     }
 
     protected void OnDisable()
     {
-        if (MyGameObjects.NetworkManagement != null)
+        if (MyComponents.NetworkManagement != null)
         {
-            MyGameObjects.NetworkManagement.RoomCreated -= RoomState;
-            MyGameObjects.NetworkManagement.RoomCreated -= CreatePlayerInfo;
-            MyGameObjects.NetworkManagement.ConnectedToRoom -= RoomState;
-            MyGameObjects.NetworkManagement.ConnectedToRoom -= ListenToBufferedMessages;
+            MyComponents.NetworkManagement.RoomCreated -= RoomState;
+            MyComponents.NetworkManagement.RoomCreated -= CreatePlayerInfo;
+            MyComponents.NetworkManagement.ConnectedToRoom -= RoomState;
+            MyComponents.NetworkManagement.ConnectedToRoom -= ListenToBufferedMessages;
         }
     }
 
     private void CreatePlayerInfo()
     {
-        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages -= CreatePlayerInfo;
+        MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreatePlayerInfo;
         RoomManager.CreateMyPlayerInfo();
     }
 
@@ -120,27 +131,29 @@ public class LobbyManager : MonoBehaviour
 
     private void ListenToBufferedMessages()
     {
-        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages += CreatePlayerInfo;
+        MyComponents.NetworkManagement.ReceivedAllBufferedMessages += CreatePlayerInfo;
     }
 
     void ConnectToDefaultRoom()
     {
-        MyGameObjects.NetworkManagement.ConnectToRoom(DEFAULT_ROOM);
+        MyComponents.NetworkManagement.ConnectToRoom(DEFAULT_ROOM);
     }
 
     public void CreateGame()
     {
-        MyGameObjects.NetworkManagement.CreateRoom(inputField.text);
+        MyComponents.NetworkManagement.CreateRoom(inputField.text);
     }
 
     public void ListServers()
     {
-        MyGameObjects.NetworkManagement.GetRooms();
+        MyComponents.NetworkManagement.GetRooms();
     }
 
     public void StartGame()
     {
-        MyGameObjects.GameInitialization.StartGame();
+        MyComponents.NetworkManagement.BlockRoom();
+        Debug.Log("There could be a problem if a player connects before the block room message reaches the signaling server");
+        MyComponents.GameInitialization.S();
     }
 
     public void UpdateRoomList(string[] list)
@@ -151,11 +164,11 @@ public class LobbyManager : MonoBehaviour
         {
             if (list.Length == 0)
             {
-                MyGameObjects.NetworkManagement.CreateRoom("DefaultRoom");
+                MyComponents.NetworkManagement.CreateRoom("DefaultRoom");
             }
             else
             {
-                MyGameObjects.NetworkManagement.ConnectToRoom("DefaultRoom");
+                MyComponents.NetworkManagement.ConnectToRoom("DefaultRoom");
             }
         }
     }
@@ -163,6 +176,6 @@ public class LobbyManager : MonoBehaviour
     public void GoBack()
     {
         MyState = State.IDLE;
-        MyGameObjects.NetworkManagement.Reset();
+        MyComponents.NetworkManagement.Reset();
     }
 }

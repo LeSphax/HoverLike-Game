@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(AbilityEffect))]
 [RequireComponent(typeof(AbilityTargeting))]
@@ -9,11 +8,10 @@ public class Ability : MonoBehaviour
     private AbilityInput input;
     private AbilityTargeting targeting;
     private AbilityEffect[] effects;
-    private Image UI;
 
     public bool NoCooldown = false;
     public float cooldownDuration = 5;
-    private float currentCooldown = 0;
+    protected float currentCooldown = 0;
 
     private enum State
     {
@@ -24,14 +22,37 @@ public class Ability : MonoBehaviour
 
     private State state = State.READY;
 
-    // Use this for initialization
-    void Start()
+    protected bool isEnabled;
+    protected virtual bool Enabled
     {
-        UI = GetComponent<Image>();
-        UI.fillAmount = 0;
+        get
+        {
+            return isEnabled;
+        }
+        set
+        {
+            isEnabled = value;
+            if (!isEnabled)
+                if (state == State.CHOOSINGTARGET)
+                {
+                    targeting.CancelTargeting();
+                    state = State.READY;
+                }
+        }
+    }
+
+    protected virtual void Awake()
+    {
         input = GetComponent<AbilityInput>();
+        input.CanBeActivatedChanged += EnableAbility;
         targeting = GetComponent<AbilityTargeting>();
         effects = GetComponents<AbilityEffect>();
+    }
+
+
+    protected void OnDestroy()
+    {
+        input.CanBeActivatedChanged -= EnableAbility;
     }
 
     // Update is called once per frame
@@ -40,23 +61,32 @@ public class Ability : MonoBehaviour
         switch (state)
         {
             case State.READY:
-                if (input.Activate())
+                if (input.Activate() && Enabled)
                 {
                     CastAbility();
                 }
                 break;
             case State.CHOOSINGTARGET:
+                if (input.Cancel())
+                {
+                    targeting.CancelTargeting();
+                    state = State.READY;
+                }
                 break;
             case State.LOADING:
                 currentCooldown = Mathf.Max(0f, currentCooldown - Time.deltaTime);
-                UI.fillAmount = currentCooldown / cooldownDuration;
+                UpdateUI();
                 if (currentCooldown == 0)
                 {
                     state = State.READY;
                 }
                 break;
+            default:
+                throw new UnhandledSwitchCaseException(state);
         }
     }
+
+    protected virtual void UpdateUI() { }
 
     private void CastAbility()
     {
@@ -71,10 +101,17 @@ public class Ability : MonoBehaviour
     {
         foreach (AbilityEffect effect in effects)
             effect.ApplyOnTarget(target, position);
-        currentCooldown = cooldownDuration;
         if (NoCooldown)
             state = State.READY;
         else
+        {
+            currentCooldown = cooldownDuration;
             state = State.LOADING;
+        }
+    }
+
+    private void EnableAbility(bool enable)
+    {
+        Enabled = enable;
     }
 }

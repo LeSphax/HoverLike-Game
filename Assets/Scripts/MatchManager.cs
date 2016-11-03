@@ -15,7 +15,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         ENDING,
     }
 
-    private const float WARMUP_DURATION = 60f;
+    private const float WARMUP_DURATION = 10000f;
     private const float END_POINT_DURATION = 5f;
     private const float ENTRY_DURATION = 3f;
     private State state;
@@ -28,7 +28,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         set
         {
             state = value;
-            if (MyGameObjects.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.isServer)
             {
                 View.RPC("SetState", RPCTargets.Others, value);
                 switch (state)
@@ -67,57 +67,61 @@ public class MatchManager : SlideBall.MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        MyGameObjects.GameInitialization.AllObjectsCreated += SendReady;
         MyState = State.WARMUP;
     }
 
-    private void SendReady()
+    public void StartGameCountdown()
     {
-        View.RPC("PlayerReady", RPCTargets.Server);
-    }
-
-    [MyRPC]
-    private void PlayerReady(ConnectionId RPCSenderId)
-    {
-        Assert.IsTrue(MyState == State.WARMUP);
-        Debug.Log("Player Ready " + RPCSenderId);
-        Players.players[RPCSenderId].isReady = true;
-        if (AllPlayersReady())
-            StartGameCountdown();
-
-    }
-
-    private void StartGameCountdown()
-    {
-        Assert.IsTrue(MyGameObjects.NetworkManagement.isServer && MyState == State.WARMUP);
-        MyGameObjects.Countdown.TimerFinished += Entry;
-        MyGameObjects.Countdown.TimerFinished += ResetScore;
-        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", WARMUP_DURATION);
+        Assert.IsTrue(MyComponents.NetworkManagement.isServer && MyState == State.WARMUP);
+        MyComponents.Countdown.TimerFinished += Entry;
+        MyComponents.Countdown.TimerFinished += ResetScore;
+        MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", WARMUP_DURATION);
         MyState = State.WARMUP;
     }
 
     private void ResetScore()
     {
-        MyGameObjects.Countdown.TimerFinished -= ResetScore;
+        MyComponents.Countdown.TimerFinished -= ResetScore;
         Scoreboard.ResetScore();
     }
 
-    IEnumerator RespawnPlayers()
-    {
 
-        yield return null;
-    }
 
     private void Entry()
     {
-        Assert.IsTrue(MyGameObjects.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP));
+        Assert.IsTrue(MyComponents.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP));
+        MyComponents.Countdown.TimerFinished -= Entry;
+        StartCoroutine(CoEntry());
+    }
+
+    IEnumerator CoEntry()
+    {
         Debug.Log("Entry");
-        SetPlayersRoles();
-        MyGameObjects.BallState.PutAtStartPosition();
-        MyGameObjects.Countdown.TimerFinished -= Entry;
+
+        PlayerSpawner spawner = gameObject.GetComponent<PlayerSpawner>();
+        short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
+        spawner.View.RPC("DesactivatePlayers", RPCTargets.All, syncId);
+
+        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
+
+        Players.players.Values.Map(player =>
+        {
+            player.SpawnNumber = (short)((player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(player.Team));
+            player.AvatarSettingsType = player.SpawnNumber == 0 ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
+        });
+        MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
+        spawner.View.RPC("ResetPlayers", RPCTargets.All, syncId);
+        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
+
+        MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
+        spawner.View.RPC("ReactivatePlayers", RPCTargets.All, syncId);
+        //Debug.LogWarning("Reactivate");
+        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
+
+        MyComponents.BallState.PutAtStartPosition();
         //
-        MyGameObjects.Countdown.TimerFinished += SendInvokeStartGame;
-        MyGameObjects.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", ENTRY_DURATION);
+        MyComponents.Countdown.TimerFinished += SendInvokeStartGame;
+        MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", ENTRY_DURATION);
         MyState = State.STARTING;
     }
 
@@ -135,15 +139,5 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void StartGame()
     {
         MyState = State.PLAYING;
-    }
-
-    private bool AllPlayersReady()
-    {
-        foreach (Player player in Players.players.Values)
-        {
-            if (!player.isReady)
-                return false;
-        }
-        return true;
     }
 }

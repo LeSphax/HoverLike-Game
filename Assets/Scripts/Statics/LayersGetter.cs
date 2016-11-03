@@ -12,4 +12,12 @@ public static class LayersGetter
     {
         return 1 << ballLayer;
     }
+
+    public static LayerMask PlayersMask()
+    {
+        LayerMask layerMask = 0;
+        foreach (int player in players)
+            layerMask |= 1 << player;
+        return layerMask;
+    }
 }

@@ -2,9 +2,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using PlayerManagement;
+using PlayerBallControl;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerMovementView))]
+[RequireComponent(typeof(PlayerBallController))]
 public class PlayerController : PlayerView
 {
     public GameObject targetPrefab;
@@ -35,12 +37,9 @@ public class PlayerController : PlayerView
     }
     PlayerMovementView movementManager;
 
-    private MoveInput moveInput;
-
     void Awake()
     {
         movementManager = GetComponent<PlayerMovementView>();
-        moveInput = gameObject.AddComponent<MoveInput>();
     }
 
     void LateUpdate()
@@ -48,17 +47,6 @@ public class PlayerController : PlayerView
         if (View.isMine)
         {
             GameObject.FindGameObjectWithTag("GameController").transform.position = transform.position;
-        }
-    }
-
-    void Update()
-    {
-        if (View.isMine)
-        {
-            if (moveInput.Activate())
-            {
-                CreateTarget();
-            }
         }
     }
 
@@ -95,6 +83,10 @@ public class PlayerController : PlayerView
     private void InitPlayer(ConnectionId id)
     {
         playerConnectionId = id;
+        Player.controller = this;
+        Player.gameobjectAvatar = gameObject;
+        Player.ballController = GetComponent<PlayerBallController>();
+        GetComponent<PlayerBallController>().Init(id);
         ResetPlayer();
     }
 
@@ -102,6 +94,7 @@ public class PlayerController : PlayerView
     public void ResetPlayer()
     {
         movementManager.Reset(playerConnectionId);
+        Destroy(target);
         target = null;
         if (Mesh != null)
         {
@@ -110,8 +103,8 @@ public class PlayerController : PlayerView
         if (View.isMine)
         {
             tag = Tags.MyPlayer;
-            PutAtStartPosition();
         }
+        PutAtStartPosition();
 
         gameObject.name = Player.Nickname;
         playerName.text = Player.Nickname;
@@ -119,13 +112,14 @@ public class PlayerController : PlayerView
         CreateMesh();
         ConfigureColliders();
 
-        MyGameObjects.AbilitiesFactory.RecreateAbilities();
+        MyComponents.AbilitiesFactory.RecreateAbilities();
     }
 
     private void ConfigureColliders()
     {
         GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
         GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
+        GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
         int layer = -1;
         if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             layer = LayersGetter.players[(int)Player.Team];
@@ -155,7 +149,7 @@ public class PlayerController : PlayerView
 
     public void PutAtStartPosition()
     {
-        transform.position = MyGameObjects.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
+        transform.position = MyComponents.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
         transform.LookAt(Vector3.zero);
         StopMoving();
     }

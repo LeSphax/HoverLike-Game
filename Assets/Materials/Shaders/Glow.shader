@@ -1,6 +1,6 @@
 ﻿Shader "Custom/Glow" {
 	Properties{
-		_ColorTint("Color Tint", Color) = (1,1,1,1)
+		_Color("Color", Color) = (1,1,1,1)
 	}
 		SubShader{
 		Tags{ "Queue" = "Transparent"
@@ -20,10 +20,10 @@
 		float3 viewDir;
 	};
 
-	float4 _ColorTint;
+	float4 _Color;
 
 	void surf(Input IN, inout SurfaceOutput o) {
-		IN.color = _ColorTint;
+		IN.color = _Color;
 		o.Albedo = IN.color;
 
 		half rim = saturate(dot(normalize(IN.viewDir), o.Normal));

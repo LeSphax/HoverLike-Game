@@ -15,6 +15,12 @@ public class AttractionBall : MonoBehaviour
             playersAttracting.Add(collider.gameObject);
     }
 
+    public void Reset()
+    {
+        deactivatedPlayers.Clear();
+        playersAttracting.Clear();
+    }
+
     private bool IsAttacker(Collider collider)
     {
         if (!Tags.IsPlayer(collider.gameObject.tag))
@@ -41,7 +47,7 @@ public class AttractionBall : MonoBehaviour
 
     void Update()
     {
-        if (!MyGameObjects.BallState.IsAttached())
+        if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.Uncatchable)
             foreach (GameObject player in playersAttracting)
             {
                 if (!deactivatedPlayers.Contains(player))

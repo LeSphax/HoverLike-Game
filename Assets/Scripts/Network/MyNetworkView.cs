@@ -15,6 +15,8 @@ public class MyNetworkView : ANetworkView
     [NonSerialized]
     public bool isMine;
 
+    public bool update = true;
+
     protected void Awake()
     {
         foreach (var component in GetComponents<Component>())
@@ -46,17 +48,18 @@ public class MyNetworkView : ANetworkView
 
     void FixedUpdate()
     {
-        foreach (ObservedComponent component in observedComponents)
-        {
-            if (isMine)
+        if (update)
+            foreach (ObservedComponent component in observedComponents)
             {
-                component.OwnerUpdate();
+                if (isMine)
+                {
+                    component.OwnerUpdate();
+                }
+                else
+                {
+                    component.SimulationUpdate();
+                }
             }
-            else
-            {
-                component.SimulationUpdate();
-            }
-        }
     }
 
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
@@ -78,19 +81,19 @@ public class MyNetworkView : ANetworkView
 
     public void SendData(short observedId, MessageType type, byte[] data)
     {
-        MyGameObjects.NetworkManagement.SendData(ViewId, observedId, type, data);
+        MyComponents.NetworkManagement.SendData(ViewId, observedId, type, data);
     }
 
     public void SendData(short observedId, MessageType type, byte[] data, ConnectionId id)
     {
-        MyGameObjects.NetworkManagement.SendData(ViewId, observedId, type, data, id);
+        MyComponents.NetworkManagement.SendData(ViewId, observedId, type, data, id);
     }
 
     public void SendData(short observedId, MessageType type, byte[] data, MessageFlags flags)
     {
         NetworkMessage message = new NetworkMessage(ViewId, observedId, type, data);
         message.flags = flags;
-        MyGameObjects.NetworkManagement.SendData(message);
+        MyComponents.NetworkManagement.SendData(message);
     }
 
     public void RPC(string methodName, ConnectionId id, params object[] parameters)
@@ -101,7 +104,7 @@ public class MyNetworkView : ANetworkView
         else
         {
             NetworkMessage message = new NetworkMessage(ViewId, 0, RPCTargets.Specified, new RPCCall(methodName, parameters).Serialize());
-            MyGameObjects.NetworkManagement.SendData(message, id);
+            MyComponents.NetworkManagement.SendData(message, id);
         }
     }
 
@@ -111,7 +114,7 @@ public class MyNetworkView : ANetworkView
         NetworkMessage message = new NetworkMessage(ViewId, 0, targets, new RPCCall(methodName, parameters).Serialize());
         //
         if (targets.IsSent())
-            MyGameObjects.NetworkManagement.SendData(message);
+            MyComponents.NetworkManagement.SendData(message);
         //
         if (targets.IsInvokedInPlace())
         {

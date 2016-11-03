@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using PlayerManagement;
+using System;
 
 public class AbilitiesFactory : MonoBehaviour {
 
@@ -15,10 +16,19 @@ public class AbilitiesFactory : MonoBehaviour {
         abilityGOs.Clear();
         foreach ( string ability in Players.MyPlayer.MyAvatarSettings.abilities)
         {
-            GameObject prefab = Resources.Load<GameObject>("Prefabs/Abilities/" + ability);
-            GameObject go = Instantiate(prefab);
-            go.transform.SetParent(transform, false);
-            abilityGOs.Add(go);
+            string abilityPath = "Abilities/" + ability;
+            GameObject prefab = Resources.Load<GameObject>(abilityPath);
+            try
+            {
+                GameObject go = Instantiate(prefab);
+                go.transform.SetParent(transform, false);
+                abilityGOs.Add(go);
+            }
+            catch (ArgumentException)
+            {
+                Debug.LogError("The ability " + ability + " isn't present in the Resources folder at " + abilityPath);
+            }
+           
         }
     }
 }

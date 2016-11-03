@@ -6,4 +6,9 @@ public abstract class AbilityTargeting : MonoBehaviour
 {
 
     public abstract void ChooseTarget(CastOnTarget callback);
+
+    public virtual void CancelTargeting()
+    {
+
+    }
 }

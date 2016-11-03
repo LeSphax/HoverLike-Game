@@ -1,7 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ShootInput : AbilityInput
+public class ShootInput : AbilityInputWithBall
 {
     protected override bool FirstActivation()
     {
@@ -18,7 +17,7 @@ public class ShootInput : AbilityInput
         return Input.GetMouseButtonDown(1);
     }
 
-    protected override bool HasIcon()
+    public override bool HasIcon()
     {
         return false;
     }

@@ -8,7 +8,7 @@ public class RoomManager : MonoBehaviour
 
     public void OnEnable()
     {
-        if (MyGameObjects.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.isServer)
         {
             StartButton.SetActive(true);
         }
@@ -31,7 +31,7 @@ public class RoomManager : MonoBehaviour
 
     public void CreateMyPlayerInfo()
     {
-        MyGameObjects.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Vector3.zero, Quaternion.identity, Players.MyPlayer.id).GetComponent<PlayerInfo>();
+        MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Players.MyPlayer.id).GetComponent<PlayerInfo>();
     }
 
     public void Reset()

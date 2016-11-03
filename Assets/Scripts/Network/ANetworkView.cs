@@ -22,7 +22,7 @@ public abstract class ANetworkView : MonoBehaviour
     {
         if (!registered)
         {
-            MyGameObjects.NetworkViewsManagement.RegisterView(this);
+            MyComponents.NetworkViewsManagement.RegisterView(this);
         }
     }
 
@@ -32,7 +32,7 @@ public abstract class ANetworkView : MonoBehaviour
 
     void OnDestroy()
     {
-        if (MyGameObjects.NetworkViewsManagement != null)
-            MyGameObjects.NetworkViewsManagement.UnregisterView(this);
+        if (MyComponents.NetworkViewsManagement != null)
+            MyComponents.NetworkViewsManagement.UnregisterView(this);
     }
 }

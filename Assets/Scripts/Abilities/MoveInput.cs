@@ -7,7 +7,7 @@ public class MoveInput : AbilityInput
         return Input.GetMouseButtonDown(1);
     }
 
-    protected override bool HasIcon()
+    public override bool HasIcon()
     {
         return false;
     }

@@ -48,4 +48,12 @@ public static class ArrayExtensions
             func(array[i]);
         }
     }
+
+    public static void Map<TSource>(this IEnumerable<TSource> sources, Mapper<TSource> selector)
+    {
+        foreach (TSource source in sources)
+        {
+            selector(source);
+        }
+    }
 }

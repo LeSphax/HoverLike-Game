@@ -10,16 +10,17 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     private Dictionary<int, ANetworkView> networkViews = new Dictionary<int, ANetworkView>();
 
     private const short INSTANCIATION_INTERVAL = 100;
-    private short nextClientViewId = -1;
+    private short nextClientViewId = INVALID_VIEW_ID;
 
-    private short nextViewId = -1;
+    public const short INVALID_VIEW_ID = 0;
+    private short nextViewId = INVALID_VIEW_ID;
     public short NextViewId
     {
         get
         {
-            if (nextViewId == -1)
+            if (nextViewId == INVALID_VIEW_ID)
             {
-                if (MyGameObjects.NetworkManagement.isServer)
+                if (MyComponents.NetworkManagement.isServer)
                 {
                     nextViewId = Settings.GetNextViewId();
                     nextClientViewId = (short)(nextViewId + INSTANCIATION_INTERVAL);
@@ -40,18 +41,18 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     void Awake()
     {
-        MyGameObjects.NetworkManagement.NewPlayerConnectedToRoom += SendClientInstanciationInterval;
+        MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendClientInstanciationInterval;
     }
 
     public void Reset()
     {
-        nextClientViewId = -1;
-        nextViewId = -1;
+        nextClientViewId = INVALID_VIEW_ID;
+        nextViewId = INVALID_VIEW_ID;
     }
 
     private void SendClientInstanciationInterval(ConnectionId id)
     {
-        Assert.IsFalse(nextClientViewId == -1);
+        Assert.IsFalse(nextClientViewId == INVALID_VIEW_ID);
         View.RPC("SetInstanciationInterval", id, nextClientViewId);
         nextClientViewId += INSTANCIATION_INTERVAL;
     }
@@ -60,6 +61,17 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     private void SetInstanciationInterval(short nextViewId)
     {
         this.nextViewId = nextViewId;
+    }
+
+    public GameObject Instantiate(string path, params object[] initialisationParameters)
+    {
+        return Instantiate(path, Vector3.zero, Quaternion.identity, initialisationParameters);
+    }
+
+    public void InstantiateOnServer(string path, Vector3 position, Quaternion rotation, params object[] initialisationParameters)
+    {
+        InstantiationMessage content = new InstantiationMessage(path, position, rotation, initialisationParameters);
+        View.RPC("RemoteInstantiate", RPCTargets.Server, content);
     }
 
     public GameObject Instantiate(string path, Vector3 position, Quaternion rotation, params object[] initialisationParameters)
@@ -74,20 +86,23 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
             return null;
         }
 
-        // a scene object instantiated with network visibility has to contain a NetworkView
-        if (prefabGo.GetComponent<MyNetworkView>() == null)
-        {
-            Debug.LogError("Failed to Instantiate prefab:" + path + ". Prefab must have a NetworkView component.");
-            return null;
-        }
         GameObject go = (GameObject)GameObject.Instantiate(prefabGo, position, rotation);
         MyNetworkView newView = go.GetComponent<MyNetworkView>();
-        newView.ViewId = NextViewId;
-        newView.isMine = true;
-        Debug.Log("Instantiate " + newView.ViewId);
-        InstantiationMessage content = new InstantiationMessage(newView.ViewId, path, position, rotation, initialisationParameters);
-        View.RPC("RemoteInstantiate", RPCTargets.OthersBuffered, content);
-        IncrementNextViewId();
+        InstantiationMessage content;
+        if (newView != null)
+        {
+            newView.ViewId = NextViewId;
+            newView.isMine = true;
+            Debug.Log("Instantiate " + newView.ViewId);
+            IncrementNextViewId();
+            content = new InstantiationMessage(newView.ViewId, path, position, rotation, initialisationParameters);
+            View.RPC("RemoteInstantiate", RPCTargets.OthersBuffered, content);
+        }
+        else
+        {
+            content = new InstantiationMessage(path, position, rotation, initialisationParameters);
+            View.RPC("RemoteInstantiate", RPCTargets.Others, content);
+        }
         InitializeNewObject(initialisationParameters, go);
         return go;
     }
@@ -95,7 +110,13 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     [MyRPC]
     private void RemoteInstantiate(InstantiationMessage message, ConnectionId RPCSenderId)
     {
-        if (!networkViews.ContainsKey(message.newViewId))
+        if (message.newViewId == INVALID_VIEW_ID)
+        {
+            GameObject go = MonoBehaviourExtensions.InstantiateFromMessage(this, message);
+            InitializeNewObject(message.initialisationParameters, go);
+
+        }
+        else if (!networkViews.ContainsKey(message.newViewId))
         {
             MyNetworkView newView = MonoBehaviourExtensions.InstantiateFromMessage(this, message).GetComponent<MyNetworkView>();
             networkViews.Add(message.newViewId, newView);
@@ -104,6 +125,11 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
             newView.isMine = false;
 
             InitializeNewObject(message.initialisationParameters, newView.gameObject);
+        }
+        else
+        {
+            //Can happen when something
+           // Debug.LogError("This id has already been taken " + message.newViewId);
         }
     }
 
@@ -163,14 +189,6 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
                 Debug.LogError(i + "-" + networkViews[i].ViewId + "   :" + networkViews[i]);
         }
     }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            PrintViews();
-        }
-    }
 }
 
 [Serializable]
@@ -185,6 +203,15 @@ public struct InstantiationMessage
     public InstantiationMessage(short id, string path, Vector3 position, Quaternion rotation, object[] initialisationParameters)
     {
         this.newViewId = id;
+        this.path = path;
+        this.position = position;
+        this.rotation = rotation;
+        this.initialisationParameters = initialisationParameters;
+    }
+
+    public InstantiationMessage(string path, Vector3 position, Quaternion rotation, object[] initialisationParameters)
+    {
+        this.newViewId = NetworkViewsManagement.INVALID_VIEW_ID;
         this.path = path;
         this.position = position;
         this.rotation = rotation;

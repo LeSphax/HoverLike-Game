@@ -50,7 +50,7 @@ public static class RPCTargetsMethods
             //case RPCTargets.AllViaServer:
             case RPCTargets.Server:
             //case RPCTargets.AllBufferedViaServer:
-                return MyGameObjects.NetworkManagement.isServer;
+                return MyComponents.NetworkManagement.isServer;
             default:
                 throw new UnhandledSwitchCaseException(target);
         }
@@ -58,7 +58,7 @@ public static class RPCTargetsMethods
 
     public static bool IsSent(this RPCTargets target)
     {
-        if (target == RPCTargets.Server && MyGameObjects.NetworkManagement.isServer)
+        if (target == RPCTargets.Server && MyComponents.NetworkManagement.isServer)
             return false;
         return true;
     }

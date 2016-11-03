@@ -13,10 +13,11 @@ public class LatencyGUI : MonoBehaviour {
 
     void Awake()
     {
-        MyGameObjects.TimeManagement.NewLatency += NewLatency;
+        MyComponents.TimeManagement.LatencyChanged += LatencyChanged;
+        //MyComponents.TimeManagement.NewLatency += NewLatency;
     }
 
-    public void NewLatency(ConnectionId id)
+    public void LatencyChanged(ConnectionId id,float latency)
     {
         Text textfield;
         if (!textfields.TryGetValue(id, out textfield))
@@ -27,6 +28,20 @@ public class LatencyGUI : MonoBehaviour {
             currentYPosition -= 50;
             textfield.rectTransform.localPosition += new Vector3(0, 1, 0) * currentYPosition;
         }
-        MyGameObjects.TimeManagement.AddLatencyChangeListener(id, (latency) => { textfields[id].text = id + " : " + latency + " ms"; });
+        textfields[id].text = id + " : " + latency + " ms";
     }
+
+    //public void NewLatency(ConnectionId id)
+    //{
+    //    Text textfield;
+    //    if (!textfields.TryGetValue(id, out textfield))
+    //    {
+    //        GameObject text = this.InstantiateAsChild(textPrefab);
+    //        textfield = text.GetComponent<Text>();
+    //        textfields.Add(id, textfield);
+    //        currentYPosition -= 50;
+    //        textfield.rectTransform.localPosition += new Vector3(0, 1, 0) * currentYPosition;
+    //    }
+    //    MyComponents.TimeManagement.AddLatencyChangeListener(id, (latency) => { textfields[id].text = id + " : " + latency + " ms"; });
+    //}
 }

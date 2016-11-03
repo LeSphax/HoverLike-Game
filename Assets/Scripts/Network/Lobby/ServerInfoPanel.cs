@@ -9,7 +9,7 @@ public class ServerInfoPanel : MonoBehaviour {
 
 	public void JoinRoom()
     {
-        MyGameObjects.NetworkManagement.ConnectToRoom(roomNameLabel.text);
+        MyComponents.NetworkManagement.ConnectToRoom(roomNameLabel.text);
     }
 
     public void SetRoomName(string name)

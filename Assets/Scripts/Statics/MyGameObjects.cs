@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
-public static class MyGameObjects
+public static class MyComponents
 {
     private static NetworkManagement networkManagement;
     public static NetworkManagement NetworkManagement
@@ -18,6 +18,21 @@ public static class MyGameObjects
                     networkManagement = go.GetComponent<NetworkManagement>();
             }
             return networkManagement;
+        }
+    }
+
+    private static PlayersSynchronisation playersSynchronisation;
+    public static PlayersSynchronisation PlayersSynchronisation
+    {
+        get
+        {
+            if (playersSynchronisation == null)
+            {
+                GameObject go;
+                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
+                    playersSynchronisation = go.GetComponent<PlayersSynchronisation>();
+            }
+            return playersSynchronisation;
         }
     }
 
@@ -194,11 +209,6 @@ public static class MyGameObjects
     public static Rigidbody MyPlayerRigidbody()
     {
         return GetTaggedComponent<Rigidbody>(Tags.MyPlayer);
-    }
-
-    public static GameObject MyPlayer()
-    {
-        return GameObject.FindGameObjectWithTag(Tags.MyPlayer);
     }
 
     private static Type GetTaggedComponent<Type>(string tag)

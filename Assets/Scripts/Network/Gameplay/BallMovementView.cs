@@ -56,9 +56,9 @@ class BallMovementView : ObservedComponent
     public override void SimulationUpdate()
     {
         //Debug.Log(currentPacket.position + "   " + BallState.ListenToServer + "   " + BallState.IsAttached());
-        if (MyGameObjects.BallState.ListenToServer)
+        if (MyComponents.BallState.ListenToServer)
         {
-            if (MyGameObjects.BallState.IsAttached())
+            if (MyComponents.BallState.IsAttached())
             {
                 myRigidbody.velocity = Vector3.zero;
                 transform.localPosition = BallState.ballHoldingPosition;

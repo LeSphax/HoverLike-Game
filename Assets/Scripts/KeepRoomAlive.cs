@@ -9,7 +9,7 @@ public class KeepRoomAlive : MonoBehaviour
     {
         get
         {
-            return MyGameObjects.NetworkManagement.uSignalingUrl;
+            return MyComponents.NetworkManagement.uSignalingUrl;
         }
     }
 
@@ -21,7 +21,7 @@ public class KeepRoomAlive : MonoBehaviour
     {
         get
         {
-            return MyGameObjects.NetworkManagement.uStunServer;
+            return MyComponents.NetworkManagement.uStunServer;
         }
     }
 
@@ -36,7 +36,7 @@ public class KeepRoomAlive : MonoBehaviour
     {
         get
         {
-            return MyGameObjects.NetworkManagement.RoomName;
+            return MyComponents.NetworkManagement.RoomName;
         }
     }
 

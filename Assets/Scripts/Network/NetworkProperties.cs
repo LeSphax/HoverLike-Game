@@ -45,7 +45,7 @@ public class NetworkProperties : ANetworkView
 
     public void SetProperty(string key, object property)
     {
-        Assert.IsTrue(MyGameObjects.NetworkManagement.isServer);
+        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
 
         object previousValue = null;
         properties.TryGetValue(key, out previousValue);
@@ -61,14 +61,14 @@ public class NetworkProperties : ANetworkView
 
     private void PropertyChanged(string key, object property, object previousValue)
     {
-        MyGameObjects.NetworkManagement.SendData(ViewId, MessageType.Properties, new PropertiesPacket(key, property).Serialize());
+        MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, new PropertiesPacket(key, property).Serialize());
         NotifiyListeners(key, previousValue, property);
     }
 
     public void SendProperties()
     {
         Debug.Log("SendProperties");
-        MyGameObjects.NetworkManagement.SendData(ViewId, MessageType.Properties, new PropertiesPacket(properties.Keys.ToArray(), properties.Values.ToArray()).Serialize());
+        MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, new PropertiesPacket(properties.Keys.ToArray(), properties.Values.ToArray()).Serialize());
     }
 
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
@@ -91,7 +91,9 @@ public class NetworkProperties : ANetworkView
     {
         NetworkPropertyChanged handler;
         if (listeners.TryGetValue(key, out handler))
+        {
             handler.Invoke(previousValue, newValue);
+        }
     }
 
     public void AddListener(string key, NetworkPropertyChanged handler)
@@ -120,7 +122,7 @@ public struct PropertiesPacket
         Assert.IsTrue(keys.Length == properties.Length);
         for (int i = 0; i < keys.Length; i++)
         {
-            Assert.IsTrue(MyGameObjects.Properties.GetProperty<object>(keys[i]) == properties[i]);
+            Assert.IsTrue(MyComponents.Properties.GetProperty<object>(keys[i]) == properties[i]);
         }
         this.keys = keys;
         this.properties = properties;

@@ -10,6 +10,9 @@ public class GameController : MonoBehaviour
     private const float MAX_CAMERA_OFFSET_X = 120;
     private const float MAX_CAMERA_OFFSET_Z = 30;
 
+    [SerializeField]
+    private Texture2D cursor;
+
     private bool activated = false;
 
     void Start()
@@ -17,6 +20,7 @@ public class GameController : MonoBehaviour
         initialPosition = Camera.main.transform.localPosition;
         cameraPosition = Vector3.zero;
         Cursor.lockState = CursorLockMode.Confined;
+        Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
     }
 
 

@@ -72,6 +72,7 @@ namespace BaseNetwork
             }
             set
             {
+                _stateCurrent = value;
                 switch (value)
                 {
                     case State.IDLE:
@@ -86,7 +87,6 @@ namespace BaseNetwork
                     default:
                         break;
                 }
-                _stateCurrent = value;
             }
         }
 
@@ -131,6 +131,8 @@ namespace BaseNetwork
 
         private const int MAX_CODE_LENGTH = 256;
         private const string GET_ROOMS_COMMAND = "___GetRooms";
+        private const string BLOCK_ROOMS_COMMAND = "___BlockRoom";
+        private const char SPLIT_CHAR = '@';
         private BufferedMessages bufferedMessages;
 
         public event EmptyEventHandler RoomCreated;
@@ -139,6 +141,11 @@ namespace BaseNetwork
         public event EmptyEventHandler ServerStartFailed;
 
         public event EmptyEventHandler ReceivedAllBufferedMessages;
+
+        private void Awake()
+        {
+            Reset();
+        }
 
         /// <summary>
         /// Will setup webrtc and create the network object
@@ -171,12 +178,18 @@ namespace BaseNetwork
             mNetwork.Connect(GET_ROOMS_COMMAND);
         }
 
+        public void BlockRoom()
+        {
+            Assert.IsTrue(isServer);
+            mNetwork.Connect(BLOCK_ROOMS_COMMAND + SPLIT_CHAR + RoomName);
+        }
+
         public void Reset()
         {
             Debug.Log("Reset !");
             stateCurrent = State.IDLE;
             Players.Reset();
-            MyGameObjects.NetworkViewsManagement.Reset();
+            MyComponents.NetworkViewsManagement.Reset();
             mConnections = new List<ConnectionId>();
             Cleanup();
         }
@@ -240,13 +253,13 @@ namespace BaseNetwork
                                 if (evt.RawData != null)
                                 {
                                     string rawData = (string)evt.RawData;
-                                    string[] rooms = rawData.Split('@');
+                                    string[] rooms = rawData.Split(SPLIT_CHAR);
                                     if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
                                     {
                                         if (rooms.Length == 1)
-                                            MyGameObjects.LobbyManager.UpdateRoomList(new string[0]);
+                                            MyComponents.LobbyManager.UpdateRoomList(new string[0]);
                                         else
-                                            MyGameObjects.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
+                                            MyComponents.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
                                     }
                                     else
                                     {
@@ -308,7 +321,7 @@ namespace BaseNetwork
                         case NetEventType.ConnectionFailed:
                             {
                                 //Outgoing connection failed. Inform the user.
-                                Debug.Log("Connection failed");
+                                Debug.LogError("Connection failed");
                                 //Reset();
                             }
                             break;
@@ -374,7 +387,7 @@ namespace BaseNetwork
             if (isServer)
                 bufferedMessages.TryAddBuffered(message);
 
-            MyGameObjects.NetworkViewsManagement.DistributeMessage(evt.ConnectionId, message);
+            MyComponents.NetworkViewsManagement.DistributeMessage(evt.ConnectionId, message);
 
             //This line of code is causing random crashes. 
             //It seems the crash occur when the time between creating and disposing is too short

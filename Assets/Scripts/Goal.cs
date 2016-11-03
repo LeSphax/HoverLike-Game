@@ -7,9 +7,9 @@ public class Goal : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if (MyGameObjects.NetworkManagement.isServer && collider.gameObject.tag == Tags.Ball)
+        if (MyComponents.NetworkManagement.isServer && collider.gameObject.tag == Tags.Ball)
         {
-            MyGameObjects.MatchManager.TeamScored(teamNumber);
+            MyComponents.MatchManager.TeamScored(teamNumber);
         }
     }
 

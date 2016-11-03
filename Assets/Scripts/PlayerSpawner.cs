@@ -1,37 +1,41 @@
 ﻿using Byn.Net;
+using PlayerManagement;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerSpawner : SlideBall.MonoBehaviour
 {
-    public bool playersDesactivated;
-
-    public void DesactivatePlayers()
+    [MyRPC]
+    public void DesactivatePlayers(short syncId)
     {
-        if (MyGameObjects.NetworkManagement.isServer)
-            View.RPC("DesactivatePlayers", RPCTargets.Others);
-        Tags.FindPlayers().Map(player =>
+        Players.players.Values.Map(player =>
         {
-            player.SetActive(false);
+            player.controller.gameObject.SetActive(false);
         });
+        MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
-    private void PlayersAreDesactivated(ConnectionId id)
+    [MyRPC]
+    public void ResetPlayers(short syncId)
     {
+        Players.players.Values.Map(player =>
+        {
+            player.controller.ResetPlayer();
+        });
 
+        MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
-    private static void SetPlayersRoles()
+    [MyRPC]
+    public void ReactivatePlayers(short syncId)
     {
-
-        Tags.FindPlayers().Map(player =>
+        Players.players.Values.Map(player =>
         {
-            PlayerController controller = player.GetComponent<PlayerController>();
-            controller.Player.SpawnNumber = (short)((controller.Player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(controller.Player.Team));
-            controller.Player.AvatarSettingsType = controller.Player.SpawnNumber == 0 ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
-            controller.View.RPC("ResetPlayer", RPCTargets.All);
+            player.controller.gameObject.SetActive(true);
         });
+        MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
 }

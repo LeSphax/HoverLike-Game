@@ -1,6 +1,7 @@
 ﻿using Byn.Net;
 using Navigation;
 using PlayerManagement;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,9 @@ using UnityEngine.SceneManagement;
 public class GameInitialization : SlideBall.MonoBehaviour
 {
     bool started = false;
+    short syncId = PlayersSynchronisation.INVALID_SYNC_ID;
+
+    public bool isGoal;
 
     public event EmptyEventHandler AllObjectsCreated;
 
@@ -21,25 +25,28 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     protected void Awake()
     {
-        MyGameObjects.NetworkManagement.NewPlayerConnectedToRoom += UpdateNumberPlayers;
+        MyComponents.NetworkManagement.NewPlayerConnectedToRoom += UpdateNumberPlayers;
     }
 
     private void UpdateNumberPlayers(ConnectionId id)
     {
-        MyGameObjects.Properties.SetProperty(PropertiesKeys.NumberPlayers, MyGameObjects.NetworkManagement.GetNumberPlayers());
+        MyComponents.Properties.SetProperty(PropertiesKeys.NumberPlayers, MyComponents.NetworkManagement.GetNumberPlayers());
     }
 
-
-    [MyRPC]
-    public void StartGame()
+    public void S()
     {
-        Assert.IsTrue(MyGameObjects.NetworkManagement.isServer);
+        StartCoroutine(StartGame());
+    }
+
+    public IEnumerator StartGame()
+    {
+        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
         short[] teamSpawns = new short[2];
         foreach (Player player in Players.players.Values)
         {
             Assert.IsTrue(player.Team == Team.FIRST || player.Team == Team.SECOND);
             player.SpawnNumber = teamSpawns[(int)player.Team];
-            if (player.SpawnNumber == 0)
+            if (player.SpawnNumber == 0 && isGoal)
             {
                 player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
             }
@@ -50,7 +57,18 @@ public class GameInitialization : SlideBall.MonoBehaviour
             teamSpawns[(int)player.Team]++;
         }
 
-        View.RPC("LoadRoom", RPCTargets.All);
+        short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
+        View.RPC("LoadRoom", RPCTargets.All, syncId);
+        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
+        MyComponents.MatchManager.StartGameCountdown();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("SPACE" + MyComponents.PlayersSynchronisation.IsSynchronised(syncId) + "   " + syncId);
+        }
     }
 
     private void SetupRoom()
@@ -61,30 +79,28 @@ public class GameInitialization : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    private void LoadRoom()
+    private void LoadRoom(short syncId)
     {
+        this.syncId = syncId;
         NavigationManager.FinishedLoadingGame += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
-        MyGameObjects.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
+        MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
         NavigationManager.LoadScene(Scenes.Main);
     }
 
-    [MyRPC]
     private void InstantiateNewObjects()
     {
         Debug.Log("InstantiateNewObjects");
-        if (MyGameObjects.NetworkManagement.isServer)
-            MyGameObjects.NetworkViewsManagement.Instantiate("Ball", MyGameObjects.Spawns.BallSpawn, Quaternion.identity);
+        if (MyComponents.NetworkManagement.isServer)
+            MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
-        GameObject player = MyGameObjects.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity);
-        int numberPlayer = MyGameObjects.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) - 1;
+        GameObject player = MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity);
+        int numberPlayer = MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) - 1;
         player.GetComponent<PlayerController>().Init(Players.MyPlayer.id, numberPlayer % 2, "Player" + numberPlayer);
     }
 
-    [MyRPC]
     private void GameHasStarted()
     {
-        if (AllObjectsCreated != null)
-            AllObjectsCreated.Invoke();
+        MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
 

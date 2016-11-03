@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class SpecialBuild
 {
-    private static short nextViewId = 0;
     private const string path = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/PC/Build.exe";
 
     private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
@@ -81,18 +80,18 @@ public class SpecialBuild
     public static void MakeViewIds()
     {
         Debug.Log("MakeViewIDS");
-        nextViewId = 0;
-        MakeViewIds(Paths.SCENE_LOBBY);
-        MakeViewIds(Paths.SCENE_MAIN);
+        short nextViewId = NetworkViewsManagement.INVALID_VIEW_ID + 1;
+        MakeViewIds(Paths.SCENE_LOBBY, ref nextViewId);
+        MakeViewIds(Paths.SCENE_MAIN, ref nextViewId);
         var NetworkSettings = Settings.GetSettings(Settings.NETWORK_SETTINGS);
         if (!NetworkSettings.ContainsKey(Settings.NEXT_VIEW_ID))
             NetworkSettings.Add(Settings.NEXT_VIEW_ID, "" + nextViewId);
         else
             NetworkSettings[Settings.NEXT_VIEW_ID] = "" + nextViewId;
-        Settings.SaveSettings(Settings.NETWORK_SETTINGS,NetworkSettings);
+        Settings.SaveSettings(Settings.NETWORK_SETTINGS, NetworkSettings);
     }
 
-    public static void MakeViewIds(string scene)
+    public static void MakeViewIds(string scene, ref short nextViewId)
     {
         ChangeScene(scene);
         foreach (ANetworkView view in GameObject.FindObjectsOfType(typeof(ANetworkView)))

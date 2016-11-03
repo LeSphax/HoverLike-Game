@@ -4,6 +4,7 @@ using Byn.Net;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Assertions;
+using PlayerBallControl;
 
 namespace PlayerManagement
 {
@@ -37,7 +38,30 @@ namespace PlayerManagement
             myPlayerId = ConnectionId.INVALID;
             NewPlayerCreated = null;
             players.Clear();
+            MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, MyComponents.Players.PlayerOwningBallChanged);
         }
+
+        public void PlayerOwningBallChanged(object previousPlayer, object newPlayer)
+        {
+            ConnectionId newPlayerId = newPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)newPlayer;
+            ConnectionId previousPlayerId = previousPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)previousPlayer;
+
+            if (newPlayerId != previousPlayerId)
+            {
+                if (previousPlayerId != BallState.NO_PLAYER_ID)
+                    players[previousPlayerId].HasBall = false;
+                if (newPlayerId != BallState.NO_PLAYER_ID)
+                {
+                    players[newPlayerId].HasBall = true;
+                    MyComponents.BallState.AttachBall(newPlayerId);
+                }
+                else
+                {
+                    MyComponents.BallState.AttachBall(BallState.NO_PLAYER_ID);
+                }
+            }
+        }
+
 
         public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
         {
@@ -53,6 +77,7 @@ namespace PlayerManagement
             if (flags.HasFlag(PlayerFlags.SPAWNINGPOINT))
             {
                 player.spawnNumber = BitConverter.ToInt16(message.data, currentIndex);
+                Debug.LogError("SpawnNumber set to " + player.spawnNumber);
                 currentIndex += 2;
             }
             if (flags.HasFlag(PlayerFlags.SCENEID))
@@ -68,6 +93,7 @@ namespace PlayerManagement
             if (flags.HasFlag(PlayerFlags.STATE))
             {
                 player.state = (Player.State)message.data[currentIndex];
+                player.NotifyStateChanged();
                 currentIndex++;
             }
             if (flags.HasFlag(PlayerFlags.NICKNAME))
@@ -94,13 +120,13 @@ namespace PlayerManagement
         public void UpdatePlayer(Player player, PlayerFlags flags)
         {
             byte[] data = CreatePlayerPacket(player, flags);
-            MyGameObjects.NetworkManagement.SendData(ViewId, MessageType.Properties, data);
+            MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, data);
         }
 
         public void UpdatePlayer(Player player, PlayerFlags flags, ConnectionId recipientId)
         {
             byte[] data = CreatePlayerPacket(player, flags);
-            MyGameObjects.NetworkManagement.SendData(ViewId, MessageType.Properties, data, recipientId);
+            MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, data, recipientId);
         }
 
         private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
@@ -158,7 +184,7 @@ namespace PlayerManagement
         protected override void Start()
         {
             base.Start();
-            MyGameObjects.NetworkManagement.NewPlayerConnectedToRoom += SendProperties;
+            MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendProperties;
         }
 
     }
@@ -183,12 +209,20 @@ namespace PlayerManagement
         }
 
         public delegate void TeamChangeHandler(Team team);
+        public delegate void HasBallChangeHandler(bool hasBall);
+        public delegate void StateChangeHandler(State newState);
         public delegate void NicknameChangeHandler(string nickname);
         public delegate void SceneChangeHandler(ConnectionId connectionId, short scene);
 
 
         public event TeamChangeHandler TeamChanged;
         public event SceneChangeHandler SceneChanged;
+        public event StateChangeHandler StateChanged;
+        public event HasBallChangeHandler HasBallChanged;
+
+        public PlayerController controller;
+        public PlayerBallController ballController;
+        public GameObject gameobjectAvatar;
 
         internal void NotifyTeamChanged()
         {
@@ -200,6 +234,17 @@ namespace PlayerManagement
         {
             if (SceneChanged != null)
                 SceneChanged.Invoke(id, sceneId);
+        }
+
+        internal void NotifyStateChanged()
+        {
+            if (StateChanged != null)
+                StateChanged.Invoke(state);
+        }
+
+        internal bool IsHoldingBall()
+        {
+            return MyComponents.BallState.GetIdOfPlayerOwningBall() == id;
         }
 
         public ConnectionId id;
@@ -217,7 +262,7 @@ namespace PlayerManagement
             {
                 team = value;
                 if (id == Players.myPlayerId)
-                    MyGameObjects.Players.UpdatePlayer(this, PlayerFlags.TEAM);
+                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.TEAM);
                 NotifyTeamChanged();
             }
         }
@@ -232,7 +277,7 @@ namespace PlayerManagement
             {
                 nickname = value;
                 if (id == Players.myPlayerId)
-                    MyGameObjects.Players.UpdatePlayer(this, PlayerFlags.NICKNAME);
+                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.NICKNAME);
             }
         }
 
@@ -246,7 +291,7 @@ namespace PlayerManagement
             set
             {
                 spawnNumber = value;
-                MyGameObjects.Players.UpdatePlayer(this, PlayerFlags.SPAWNINGPOINT);
+                MyComponents.Players.UpdatePlayer(this, PlayerFlags.SPAWNINGPOINT);
             }
         }
 
@@ -261,7 +306,7 @@ namespace PlayerManagement
             {
                 sceneId = value;
                 if (id == Players.myPlayerId)
-                    MyGameObjects.Players.UpdatePlayer(this, PlayerFlags.SCENEID);
+                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.SCENEID);
                 NotifySceneChanged();
             }
         }
@@ -276,7 +321,8 @@ namespace PlayerManagement
             set
             {
                 state = value;
-                MyGameObjects.Players.UpdatePlayer(this, PlayerFlags.STATE);
+                MyComponents.Players.UpdatePlayer(this, PlayerFlags.STATE);
+                NotifyStateChanged();
             }
         }
 
@@ -290,7 +336,7 @@ namespace PlayerManagement
             set
             {
                 avatarSettingsType = value;
-                MyGameObjects.Players.UpdatePlayer(this, PlayerFlags.AVATAR_SETTINGS);
+                MyComponents.Players.UpdatePlayer(this, PlayerFlags.AVATAR_SETTINGS);
             }
         }
 
@@ -306,8 +352,23 @@ namespace PlayerManagement
         {
             get
             {
-                Debug.Log("SpawningPoint " + MyGameObjects.Spawns.GetSpawn(Team, SpawnNumber));
-                return MyGameObjects.Spawns.GetSpawn(Team, SpawnNumber);
+                Debug.Log("SpawningPoint " + MyComponents.Spawns.GetSpawn(Team, SpawnNumber));
+                return MyComponents.Spawns.GetSpawn(Team, SpawnNumber);
+            }
+        }
+
+        private bool hasBall;
+        public bool HasBall
+        {
+            get
+            {
+                return hasBall;
+            }
+            set
+            {
+                hasBall = value;
+                if (HasBallChanged != null)
+                    HasBallChanged.Invoke(value);
             }
         }
 

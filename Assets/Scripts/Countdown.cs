@@ -21,7 +21,7 @@ public class Countdown : SlideBall.MonoBehaviour
             return title.text;
         }
     }
-
+    [SerializeField]
     private float timeLeft = 0;
     public float TimeLeft
     {
