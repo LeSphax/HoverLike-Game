@@ -1,13 +1,19 @@
 ﻿using System;
 using Byn.Net;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 class BallMovementView : ObservedComponent
 {
 
     Rigidbody myRigidbody;
 
+    BallPacket? lastPacket;
     BallPacket currentPacket;
+
+    Vector3 startPositionAtCurrentPacket;
+
+    private bool uncatchableLastPacket = false;
 
     public float speedDifference = 5;
     public float maxDistance = 5;
@@ -21,9 +27,10 @@ class BallMovementView : ObservedComponent
 
     public Vector3 GetExtrapolatedPosition()
     {
-        float timePassed = (float)(TimeManagement.NetworkTime - currentPacket.timeSent);
+        float timePassed = TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
 
-        Vector3 extrapolatedPosition = currentPacket.position + currentPacket.velocity * timePassed;
+        Vector3 extrapolatedPosition;
+        extrapolatedPosition = currentPacket.position + currentPacket.velocity * timePassed;
 
         //RaycastHit hit;
 
@@ -40,12 +47,27 @@ class BallMovementView : ObservedComponent
         return extrapolatedPosition;
     }
 
-    public void Throw(Vector3 target, float power)
+    public void SetPositionFromExtrapolation()
+    {
+        Assert.IsTrue(MyComponents.BallState.Uncatchable);
+        if (lastPacket != null)
+        {
+            float timePassed = TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
+            float timeBetweenPackets = currentPacket.timeSent - lastPacket.Value.timeSent;
+            Vector3 extrapolatedPosition = currentPacket.position + currentPacket.position - lastPacket.Value.position;
+            transform.position = Vector3.Lerp(startPositionAtCurrentPacket, extrapolatedPosition, timePassed / timeBetweenPackets);
+        }
+        else
+        {
+            transform.position = currentPacket.position;
+        }
+    }
+    public void Throw(Vector3 target, float power, float latencyinSeconds)
     {
         Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
         myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, 0.3f);
-        Debug.Log("Need to check the functionnement of AttractionBall");
+        transform.position = transform.position + myRigidbody.velocity * latencyinSeconds;
     }
 
     public override void OwnerUpdate()
@@ -64,6 +86,10 @@ class BallMovementView : ObservedComponent
                 transform.localPosition = BallState.ballHoldingPosition;
                 return;
             }
+            else if (MyComponents.BallState.Uncatchable)
+            {
+                SetPositionFromExtrapolation();
+            }
             else
             {
                 if (Vector3.Distance(myRigidbody.velocity, currentPacket.velocity) > myRigidbody.velocity.magnitude * 0.2f)
@@ -72,7 +98,7 @@ class BallMovementView : ObservedComponent
                 }
                 // myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
                 transform.position = Vector3.Lerp(transform.position, currentPacket.position, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
-                if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance * 10)
+                if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance)
                 {
                     transform.position = GetExtrapolatedPosition();
                 }
@@ -83,11 +109,25 @@ class BallMovementView : ObservedComponent
 
     protected override byte[] CreatePacket(long sendId)
     {
-        return new BallPacket(sendId, myRigidbody.velocity, transform.position, TimeManagement.NetworkTime).Serialize();
+        return new BallPacket(sendId, myRigidbody.velocity, transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
     }
 
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
+        if (MyComponents.BallState.Uncatchable)
+        {
+            if (uncatchableLastPacket)
+            {
+                startPositionAtCurrentPacket = transform.position;
+                lastPacket = currentPacket;
+            }
+            uncatchableLastPacket = true;
+        }
+        else
+        {
+            uncatchableLastPacket = false;
+            lastPacket = null;
+        }
         currentPacket = NetworkExtensions.Deserialize<BallPacket>(data);
     }
 

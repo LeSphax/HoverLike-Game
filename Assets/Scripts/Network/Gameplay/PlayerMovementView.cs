@@ -56,7 +56,7 @@ public class PlayerMovementView : ObservedComponent
     {
         get
         {
-            return TimeManagement.NetworkTime - ClientDelay.Delay;
+            return TimeManagement.NetworkTimeInSeconds - ClientDelay.Delay;
         }
     }
 
@@ -99,7 +99,7 @@ public class PlayerMovementView : ObservedComponent
         packet.velocity = myRigidbody.velocity;
         packet.position = transform.position;
         packet.rotation = transform.rotation;
-        packet.timeSent = TimeManagement.NetworkTime;
+        packet.timeSent = TimeManagement.NetworkTimeInSeconds;
         return packet.Serialize();
     }
 

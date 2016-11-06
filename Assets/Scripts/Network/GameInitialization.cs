@@ -4,12 +4,11 @@ using PlayerManagement;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
 
 public class GameInitialization : SlideBall.MonoBehaviour
 {
-    bool started = false;
-    short syncId = PlayersSynchronisation.INVALID_SYNC_ID;
+    bool started;
+    short syncId;
 
     public bool isGoal;
 
@@ -25,6 +24,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     protected void Awake()
     {
+        Reset();
         MyComponents.NetworkManagement.NewPlayerConnectedToRoom += UpdateNumberPlayers;
     }
 
@@ -41,7 +41,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
     public IEnumerator StartGame()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer);
-        short[] teamSpawns = new short[2];
+        short[] teamSpawns = new short[2] { 1, 1 };
         foreach (Player player in Players.players.Values)
         {
             Assert.IsTrue(player.Team == Team.FIRST || player.Team == Team.SECOND);
@@ -73,6 +73,8 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     private void SetupRoom()
     {
+        Debug.LogError("SetupRoom");
+        MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= SetupRoom;
         InstantiateNewObjects();
         //Letting the time for the objects we just instantiated and the objects in the scene to call their Start method
         Invoke("GameHasStarted", 0.01f);
@@ -82,7 +84,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
     private void LoadRoom(short syncId)
     {
         this.syncId = syncId;
-        NavigationManager.FinishedLoadingGame += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
         NavigationManager.LoadScene(Scenes.Main);
     }
@@ -103,8 +104,11 @@ public class GameInitialization : SlideBall.MonoBehaviour
         MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
-
-
-
-
+    public void Reset()
+    {
+        Debug.LogError("Reset GameInit");
+        started = false;
+        syncId = PlayersSynchronisation.INVALID_SYNC_ID;
+        AllObjectsCreated = null;
+    }
 }

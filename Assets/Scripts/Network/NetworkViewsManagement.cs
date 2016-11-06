@@ -1,4 +1,5 @@
 ﻿using Byn.Net;
+using Navigation;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,10 +45,21 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendClientInstanciationInterval;
     }
 
-    public void Reset()
+    public void PartialReset()
     {
         nextClientViewId = INVALID_VIEW_ID;
         nextViewId = INVALID_VIEW_ID;
+    }
+
+    public void ResetViews()
+    {
+        foreach(var pair in networkViews)
+        {
+            if (pair.Value == null)
+            {
+                networkViews.Remove(pair.Key);
+            }
+        }
     }
 
     private void SendClientInstanciationInterval(ConnectionId id)
@@ -129,7 +141,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         else
         {
             //Can happen when something
-           // Debug.LogError("This id has already been taken " + message.newViewId);
+            // Debug.LogError("This id has already been taken " + message.newViewId);
         }
     }
 

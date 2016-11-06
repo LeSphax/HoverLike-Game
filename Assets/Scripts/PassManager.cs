@@ -17,6 +17,18 @@ public class PassManager : MonoBehaviour
 
     MovementAnimation myAnimation;
 
+
+    [SerializeField]
+    private GameObject prefabTargeter;
+    private float sizeOverlapSphere
+    {
+        get
+        {
+            return prefabTargeter.transform.localScale.x * 10;
+        }
+    }
+
+
     // Use this for initialization
     void Start()
     {
@@ -30,7 +42,7 @@ public class PassManager : MonoBehaviour
 
     void TargetReached(MonoBehaviour sender)
     {
-        Collider[] colliders = Physics.OverlapSphere(targetPosition, 10, LayersGetter.PlayersMask());
+        Collider[] colliders = Physics.OverlapSphere(targetPosition, sizeOverlapSphere, LayersGetter.PlayersMask());
 
         float closestPlayerDistance = Mathf.Infinity;
         int closestPlayerMatchingTeam = 0;

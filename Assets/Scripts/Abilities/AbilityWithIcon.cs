@@ -16,7 +16,6 @@ public class AbilityWithIcon : Ability
         set
         {
             base.Enabled = value;
-            Debug.LogWarning(this);
             if (value)
                 DisabledOverlay.SetActive(false);
             else

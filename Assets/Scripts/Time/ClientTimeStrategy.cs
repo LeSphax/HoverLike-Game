@@ -39,19 +39,19 @@ public class ClientTimeStrategy : TimeStrategy
         management.SetLatency(id, latency);
     }
 
-    public override float GetLatency(ConnectionId id)
+    public override float GetLatencyInMiliseconds(ConnectionId id)
     {
         Assert.IsTrue(id ==  otherId);
         Debug.LogError("Shouldn't be called on a client");
         return latency;
     }
 
-    public override float GetMyLatency()
+    public override float GetMyLatencyInMiliseconds()
     {
         return latency;
     }
 
-    internal override float GetNetworkTime()
+    internal override float GetNetworkTimeInSeconds()
     {
         return networkTime + Time.realtimeSinceStartup -lastNetworkUpdate;
     }

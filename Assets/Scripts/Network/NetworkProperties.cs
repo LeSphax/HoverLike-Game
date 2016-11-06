@@ -9,8 +9,21 @@ public delegate void NetworkPropertyChanged(object previousValue, object newValu
 
 public class NetworkProperties : ANetworkView
 {
-    public Dictionary<string, object> properties = new Dictionary<string, object>();
-    public Dictionary<string, NetworkPropertyChanged> listeners = new Dictionary<string, NetworkPropertyChanged>();
+    public Dictionary<string, object> properties;
+    public Dictionary<string, NetworkPropertyChanged> listeners;
+
+
+    void Awake()
+    {
+        Reset();
+    }
+
+    internal void Reset()
+    {
+        listeners = new Dictionary<string, NetworkPropertyChanged>();
+        properties = new Dictionary<string, object>();
+        Debug.LogWarning("Reset walleh");
+    }
 
     public T GetProperty<T>(string propertyName)
     {
@@ -98,6 +111,7 @@ public class NetworkProperties : ANetworkView
 
     public void AddListener(string key, NetworkPropertyChanged handler)
     {
+        Debug.Log("AddListener" + key);
         if (!listeners.ContainsKey(key))
             listeners.Add(key, handler);
         else

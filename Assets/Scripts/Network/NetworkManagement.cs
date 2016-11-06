@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Byn.Common;
 using UnityEngine.Assertions;
 using PlayerManagement;
+using UnityEngine.SceneManagement;
+using Navigation;
 
 public delegate void NetworkEventHandler(byte[] data, ConnectionId id);
 public delegate void ConnectionEventHandler(ConnectionId id);
@@ -77,6 +79,10 @@ namespace BaseNetwork
                 {
                     case State.IDLE:
                         bufferedMessages = null;
+                        if (!Scenes.IsCurrentScene(Scenes.LobbyIndex))
+                            NavigationManager.LoadScene(Scenes.Lobby);
+                        else
+                            MyComponents.LobbyManager.Reset();
                         break;
                     case State.CONNECTED:
                         bufferedMessages = null;
@@ -187,9 +193,8 @@ namespace BaseNetwork
         public void Reset()
         {
             Debug.Log("Reset !");
+            Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
             stateCurrent = State.IDLE;
-            Players.Reset();
-            MyComponents.NetworkViewsManagement.Reset();
             mConnections = new List<ConnectionId>();
             Cleanup();
         }
@@ -240,7 +245,7 @@ namespace BaseNetwork
                                 if (stateCurrent == State.IDLE)
                                 {
                                     stateCurrent = State.SERVER;
-                                    Players.NewPlayerCreated += (id) => { Players.players[id].SceneChanged += (connectionId, sceneId) => { bufferedMessages.SendBufferedMessages(connectionId, sceneId); }; };
+                                    Players.NewPlayerCreated += SendBufferedMessagesOnSceneChange;
                                     SetConnectionId(ConnectionId.INVALID);
                                     RoomCreated.Invoke();
                                 }
@@ -331,17 +336,19 @@ namespace BaseNetwork
                                 //A connection was disconnected
                                 //If this was the client then he was disconnected from the server
                                 //if it was the server this just means that one of the clients left
-                                Debug.Log("Local Connection ID " + evt.ConnectionId + " disconnected");
+                                Debug.LogError("Local Connection ID " + evt.ConnectionId + " disconnected");
                                 if (isServer == false)
                                 {
-                                    Reset();
+                                    MyComponents.ResetNetworkComponents();
+                                    DisconnectedPopUp.ShowPopUp = true;
                                 }
                                 else
                                 {
                                     string userLeftMsg = "User " + evt.ConnectionId + " left the room.";
-
+                                    mConnections.Remove(evt.ConnectionId);
+                                    Players.Remove(evt.ConnectionId);
                                     //show the server the message
-                                    Debug.Log(userLeftMsg);
+                                    Debug.LogError(userLeftMsg);
                                 }
                             }
                             break;
@@ -362,6 +369,12 @@ namespace BaseNetwork
                 if (mNetwork != null)
                     mNetwork.Flush();
             }
+        }
+
+        private void SendBufferedMessagesOnSceneChange(ConnectionId id)
+        {
+            Debug.LogError("Listen To schenzeopfijhzef");
+            Players.players[id].SceneChanged += (connectionId, sceneId) => { Debug.LogError("SENFDOAZEOEH"); bufferedMessages.SendBufferedMessages(connectionId, sceneId); };
         }
 
         private void HandleIncommingMessage(ref NetworkEvent evt)
@@ -503,6 +516,7 @@ namespace BaseNetwork
             Players.myPlayerId = id;
             Players.MyPlayer.Nickname = NickNamePanel.nickname;
             Players.MyPlayer.SceneId = Scenes.currentSceneId;
+            NavigationManager.FinishedLoadingScene += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
         }
         #endregion
     }

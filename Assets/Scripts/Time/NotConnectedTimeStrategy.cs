@@ -24,17 +24,17 @@ public class NotConnectedTimeStrategy : TimeStrategy
         throw new NotImplementedException();
     }
 
-    public override float GetLatency(ConnectionId id)
+    public override float GetLatencyInMiliseconds(ConnectionId id)
     {
         throw new NotImplementedException();
     }
 
-    public override float GetMyLatency()
+    public override float GetMyLatencyInMiliseconds()
     {
         throw new NotImplementedException();
     }
 
-    internal override float GetNetworkTime()
+    internal override float GetNetworkTimeInSeconds()
     {
         return 0;
     }

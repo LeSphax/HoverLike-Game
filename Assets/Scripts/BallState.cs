@@ -30,12 +30,14 @@ public class BallState : SlideBall.MonoBehaviour
     {
         if (uncatchable)
         {
-            GetComponent<Rigidbody>().Sleep();
+            GetComponent<Rigidbody>().isKinematic = true;
+            GetComponent<Rigidbody>().detectCollisions = false;
             protectionSphere.SetActive(true);
         }
         else
         {
-            GetComponent<Rigidbody>().WakeUp();
+            GetComponent<Rigidbody>().isKinematic = false;
+            GetComponent<Rigidbody>().detectCollisions = true;
             protectionSphere.SetActive(false);
         }
     }
@@ -59,7 +61,7 @@ public class BallState : SlideBall.MonoBehaviour
 
     void Start()
     {
-        MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, (previousValue, value) => ListenToServer = true);
+        MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, (previousValue, value) => { Debug.Log("IDHO0HFEOZHF"); ListenToServer = true; });
         Uncatchable = false;
     }
 
@@ -76,6 +78,7 @@ public class BallState : SlideBall.MonoBehaviour
 
     public void SetAttached(ConnectionId playerID)
     {
+        Debug.Log("SetAttached " + playerID);
         MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, playerID);
 
     }

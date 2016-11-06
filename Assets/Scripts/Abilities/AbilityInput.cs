@@ -23,7 +23,7 @@ public abstract class AbilityInput : MonoBehaviour
 
     protected void InvokeCanBeActivatedChanged()
     {
-        Assert.IsFalse(CanBeActivatedChanged == null, this + "The correpsonding ability should always listen");
+        Assert.IsFalse(CanBeActivatedChanged == null, this + " The correpsonding ability should always listen");
         CanBeActivatedChanged.Invoke(IsActivated);
     }
 
@@ -95,7 +95,7 @@ public abstract class AbilityInput : MonoBehaviour
         InvokeCanBeActivatedChanged();
     }
 
-    protected void OnDestroy()
+    protected virtual void OnDestroy()
     {
         Players.MyPlayer.StateChanged -= PlayerStateChanged;
     }

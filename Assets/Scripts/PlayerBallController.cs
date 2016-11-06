@@ -159,17 +159,17 @@ namespace PlayerBallControl
                 MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
                 if (MyComponents.BallState.ListenToServer)
                 {
-                    SetBallSpeed(target, power);
+                    SetBallSpeed(target, power, MyComponents.TimeManagement.GetLatencyInMiliseconds(throwerId) / 1000);
                 }
             }
 
         }
 
 
-        private void SetBallSpeed(Vector3 target, float power)
+        private void SetBallSpeed(Vector3 target, float power, float latencyInSeconds = 0)
         {
             PrepareForThrowing();
-            Ball.GetComponent<BallMovementView>().Throw(target, power);
+            Ball.GetComponent<BallMovementView>().Throw(target, power, latencyInSeconds);
         }
 
         private void PrepareForThrowing()

@@ -16,7 +16,7 @@ public class PlayerInfo : PlayerView
         set
         {
             GetComponent<Image>().color = Colors.Teams[(int)value];
-            MyComponents.RoomManager.PutPlayerInTeam(this, value);
+            RoomManager.Instance.PutPlayerInTeam(this, value);
         }
     }
 
@@ -43,6 +43,7 @@ public class PlayerInfo : PlayerView
 
     void Start()
     {
+        Player.gameobjectAvatar = gameObject;
         if (View.isMine)
             View.RPC("GetInitialTeam", RPCTargets.Server, null);
     }

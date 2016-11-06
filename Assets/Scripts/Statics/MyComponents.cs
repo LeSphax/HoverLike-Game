@@ -1,4 +1,5 @@
 ﻿using BaseNetwork;
+using Navigation;
 using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -6,6 +7,22 @@ using UnityEngine.SceneManagement;
 
 public static class MyComponents
 {
+    public static void NullifyComponents()
+    {
+        if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
+        {
+            matchManager = null;
+            countdown = null;
+            abilitiesFactory = null;
+            ballState = null;
+            spawns = null;
+        }
+        else if (Scenes.IsCurrentScene(Scenes.MainIndex))
+        {
+            lobbyManager = null;
+        }
+    }
+
     private static NetworkManagement networkManagement;
     public static NetworkManagement NetworkManagement
     {
@@ -146,20 +163,6 @@ public static class MyComponents
         }
     }
 
-    private static RoomManager roomManager;
-    public static RoomManager RoomManager
-    {
-        get
-        {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.LobbyIndex));
-            if (roomManager == null)
-            {
-                roomManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
-            }
-            return roomManager;
-        }
-    }
-
     private static GameInitialization gameInitialization;
     public static GameInitialization GameInitialization
     {
@@ -217,6 +220,18 @@ public static class MyComponents
         if (go != null)
             return go.GetComponent<Type>();
         return default(Type);
+    }
+
+    public static void ResetNetworkComponents()
+    {
+        NavigationManager.Reset();
+        Properties.Reset();
+        Players.Reset();
+        NetworkViewsManagement.PartialReset();
+        GameInitialization.Reset();
+        PlayersSynchronisation.Reset();
+        TimeManagement.Reset();
+        NetworkManagement.Reset();
     }
 
 }

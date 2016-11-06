@@ -121,10 +121,10 @@ public class PlayerController : PlayerView
         GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
         GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
         int layer = -1;
-        if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
+        //if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             layer = LayersGetter.players[(int)Player.Team];
-        else
-            layer = LayersGetter.players[2];
+        //else
+        //    layer = LayersGetter.players[2];
         Functions.SetLayer(Mesh.transform, layer);
     }
 

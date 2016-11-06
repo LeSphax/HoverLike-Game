@@ -11,7 +11,6 @@ public class ShootTargeting : AbilityTargeting
 
     public override void ChooseTarget(CastOnTarget callback)
     {
-        Debug.LogWarning("ChooseTarget");
         powerBar = GetComponent<PowerBar>();
         powerBar.StartFilling();
         this.callback = callback;

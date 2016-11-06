@@ -15,7 +15,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         ENDING,
     }
 
-    private const float WARMUP_DURATION = 10000f;
+    private const float WARMUP_DURATION = 60f;
     private const float END_POINT_DURATION = 5f;
     private const float ENTRY_DURATION = 3f;
     private State state;
@@ -64,12 +64,6 @@ public class MatchManager : SlideBall.MonoBehaviour
         }
     }
 
-    // Use this for initialization
-    void Start()
-    {
-        MyState = State.WARMUP;
-    }
-
     public void StartGameCountdown()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer && MyState == State.WARMUP);
@@ -106,7 +100,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
         Players.players.Values.Map(player =>
         {
-            player.SpawnNumber = (short)((player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(player.Team));
+            player.SpawnNumber = (short)(((player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(player.Team)) + 1) ;
             player.AvatarSettingsType = player.SpawnNumber == 0 ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
         });
         MyComponents.PlayersSynchronisation.ResetSyncId(syncId);

@@ -38,11 +38,13 @@ namespace PlayerManagement
             myPlayerId = ConnectionId.INVALID;
             NewPlayerCreated = null;
             players.Clear();
+            Debug.LogWarning("AddListener ogozrgjhori");
             MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, MyComponents.Players.PlayerOwningBallChanged);
         }
 
         public void PlayerOwningBallChanged(object previousPlayer, object newPlayer)
         {
+            Debug.Log("PlayerOwningBallChanged ");
             ConnectionId newPlayerId = newPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)newPlayer;
             ConnectionId previousPlayerId = previousPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)previousPlayer;
 
@@ -77,7 +79,6 @@ namespace PlayerManagement
             if (flags.HasFlag(PlayerFlags.SPAWNINGPOINT))
             {
                 player.spawnNumber = BitConverter.ToInt16(message.data, currentIndex);
-                Debug.LogError("SpawnNumber set to " + player.spawnNumber);
                 currentIndex += 2;
             }
             if (flags.HasFlag(PlayerFlags.SCENEID))
@@ -185,8 +186,15 @@ namespace PlayerManagement
         {
             base.Start();
             MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendProperties;
+            Reset();
         }
 
+        internal static void Remove(ConnectionId connectionId)
+        {
+            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+            Destroy(players[connectionId].gameobjectAvatar);
+            players.Remove(connectionId);
+        }
     }
     [Flags]
     public enum PlayerFlags

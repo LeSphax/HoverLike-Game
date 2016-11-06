@@ -24,8 +24,9 @@ public abstract class AbilityInputWithBall : AbilityInput
         return hasBall;
     }
 
-    protected void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Players.MyPlayer.HasBallChanged -= SetHasBall;
     }
 

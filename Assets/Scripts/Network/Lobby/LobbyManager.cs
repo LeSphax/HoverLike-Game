@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
@@ -84,10 +85,16 @@ public class LobbyManager : MonoBehaviour
         MyState = State.IDLE;
         if (StartGameImmediately)
         {
-            MyComponents.NetworkManagement.ServerStartFailed += () => Invoke("ConnectToDefaultRoom", 0.1f);
+            MyComponents.NetworkManagement.ServerStartFailed += InvokeConnectToDefaultRoom;
             MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
             InvokeRepeating("CheckStartGame", 0f, 0.2f);
         }
+    }
+
+    private void InvokeConnectToDefaultRoom()
+    {
+        MyComponents.NetworkManagement.ServerStartFailed -= InvokeConnectToDefaultRoom;
+        Invoke("ConnectToDefaultRoom", 0.1f);
     }
 
     void CheckStartGame()
@@ -175,7 +182,12 @@ public class LobbyManager : MonoBehaviour
 
     public void GoBack()
     {
+        Reset();
+        MyComponents.ResetNetworkComponents();
+    }
+
+    internal void Reset()
+    {
         MyState = State.IDLE;
-        MyComponents.NetworkManagement.Reset();
     }
 }

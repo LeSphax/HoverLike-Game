@@ -12,6 +12,7 @@ public class PassTargeting : AbilityTargeting
     {
         this.callback = callback;
         targeter = (GameObject)Instantiate(prefabTargeter, transform, true);
+        IsTargeting = true;
         UpdateTargeterPosition();
     }
 
@@ -30,6 +31,7 @@ public class PassTargeting : AbilityTargeting
 
     public override void CancelTargeting()
     {
+        IsTargeting = false;
         Destroy(targeter);
     }
 

@@ -13,9 +13,9 @@ public abstract class TimeStrategy
     internal abstract bool IsSendingPackets();
     internal abstract byte[] CreatePacket();
     public abstract void PacketReceived(ConnectionId id, byte[] data);
-    public abstract float GetLatency(ConnectionId id);
-    public abstract float GetMyLatency();
-    internal abstract float GetNetworkTime();
+    public abstract float GetLatencyInMiliseconds(ConnectionId id);
+    public abstract float GetMyLatencyInMiliseconds();
+    internal abstract float GetNetworkTimeInSeconds();
 
     protected void InvokeNewConnection(ConnectionId id)
     {

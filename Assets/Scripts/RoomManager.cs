@@ -1,10 +1,25 @@
 ﻿using PlayerManagement;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class RoomManager : MonoBehaviour
 {
     public GameObject[] teamPanels;
     public GameObject StartButton;
+
+    private static RoomManager instance;
+    public static RoomManager Instance
+    {
+        get
+        {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.LobbyIndex));
+            if (instance == null)
+            {
+                instance = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
+            }
+            return instance;
+        }
+    }
 
     public void OnEnable()
     {
@@ -43,5 +58,10 @@ public class RoomManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
+    }
+
+    protected void OnDestroy()
+    {
+        instance = null;
     }
 }

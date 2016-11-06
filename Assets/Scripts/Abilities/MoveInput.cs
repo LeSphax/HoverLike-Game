@@ -4,7 +4,7 @@ public class MoveInput : AbilityInput
 {
     protected override bool FirstActivation()
     {
-        return Input.GetMouseButtonDown(1);
+        return Input.GetMouseButton(1);
     }
 
     public override bool HasIcon()

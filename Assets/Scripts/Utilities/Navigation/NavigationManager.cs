@@ -6,12 +6,12 @@ namespace Navigation
     public class NavigationManager : MonoBehaviour
     {
         public static SceneLoader loader;
-        public static event EmptyEventHandler FinishedLoadingGame;
+        public static event EmptyEventHandler FinishedLoadingScene;
 
         void Start()
         {
             loader = GetComponent<SceneLoader>();
-            loader.FinishedLoading += FinishedLoadingScene;
+            loader.FinishedLoading += FinishedLoading;
         }
 
         public void GoBack()
@@ -32,13 +32,22 @@ namespace Navigation
             loader.StartLoading(scene);
         }
 
-        private static void FinishedLoadingScene()
+        private static void FinishedLoading()
         {
-            if (IsSceneMain())
+            Debug.LogError("FinishedLoading");
+            if (FinishedLoadingScene != null)
             {
-                FinishedLoadingGame.Invoke();
-                FinishedLoadingGame = null;
+                Debug.Log("InvokeFinishedLoading");
+                FinishedLoadingScene.Invoke();
             }
+            if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
+                MyComponents.NetworkViewsManagement.ResetViews();
+            MyComponents.NullifyComponents();
+        }
+
+        public static void Reset()
+        {
+            FinishedLoadingScene = null;
         }
     }
 }

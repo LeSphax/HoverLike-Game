@@ -9,4 +9,5 @@
     public const string SCENE_LOBBY = ASSETS_PATH + "Lobby.unity";
 
     public const string KEY_TO_USE = PREFAB_PATH + "KeyToUse";
+    public const string NETWORK_SCRIPTS = PREFAB_PATH + "NetworkScripts";
 }

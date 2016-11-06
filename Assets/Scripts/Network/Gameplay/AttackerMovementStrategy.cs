@@ -10,7 +10,7 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
     [SerializeField]
     private float MAX_VELOCITY = 45;
     [SerializeField]
-    private float ANGULAR_SPEED = 400;
+    private float ANGULAR_SPEED = 800;
 
     public void ClampPlayerVelocity()
     {

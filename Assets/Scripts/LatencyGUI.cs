@@ -31,6 +31,11 @@ public class LatencyGUI : MonoBehaviour {
         textfields[id].text = id + " : " + latency + " ms";
     }
 
+    void OnDestroy()
+    {
+        MyComponents.TimeManagement.LatencyChanged -= LatencyChanged;
+    }
+
     //public void NewLatency(ConnectionId id)
     //{
     //    Text textfield;

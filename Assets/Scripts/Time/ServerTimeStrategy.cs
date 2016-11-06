@@ -11,12 +11,14 @@ public class ServerTimeStrategy : TimeStrategy
     {
     }
 
-    public override float GetLatency(ConnectionId id)
+    public override float GetLatencyInMiliseconds(ConnectionId id)
     {
+        if (id == ConnectionId.INVALID)
+            return 0;
         return latencies[id];
     }
 
-    public override float GetMyLatency()
+    public override float GetMyLatencyInMiliseconds()
     {
         return 0;
     }
@@ -28,7 +30,7 @@ public class ServerTimeStrategy : TimeStrategy
             InvokeNewConnection(id);
         latencies[id] = packet.latency;
         management.SetLatency(id, packet.latency);
-        management.View.SendData(management.observedId, MessageType.ViewPacket, new ServerTimePacket(GetNetworkTime(), packet.time).Serialize(), id);
+        management.View.SendData(management.observedId, MessageType.ViewPacket, new ServerTimePacket(GetNetworkTimeInSeconds(), packet.time).Serialize(), id);
     }
 
     internal override byte[] CreatePacket()
@@ -37,7 +39,7 @@ public class ServerTimeStrategy : TimeStrategy
         return null;
     }
 
-    internal override float GetNetworkTime()
+    internal override float GetNetworkTimeInSeconds()
     {
         return Time.realtimeSinceStartup;
     }

@@ -1,5 +1,6 @@
 ﻿using Byn.Net;
 using System.Collections.Generic;
+using System;
 
 public delegate void LatencyChange(float newLatency);
 public delegate void SpecificLatencyChange(ConnectionId id, float newLatency);
@@ -13,11 +14,11 @@ public class TimeManagement : ObservedComponent
     public event ConnectionEventHandler NewLatency;
     public event SpecificLatencyChange LatencyChanged;
 
-    public static float NetworkTime
+    public static float NetworkTimeInSeconds
     {
         get
         {
-            return strategy.GetNetworkTime();
+            return strategy.GetNetworkTimeInSeconds();
         }
     }
 
@@ -25,16 +26,18 @@ public class TimeManagement : ObservedComponent
     {
         get
         {
-            return strategy.GetMyLatency();
+            return strategy.GetMyLatencyInMiliseconds();
         }
+    }
+
+    public float GetLatencyInMiliseconds(ConnectionId id)
+    {
+        return strategy.GetLatencyInMiliseconds(id);
     }
 
     protected void Awake()
     {
-        strategy = new NotConnectedTimeStrategy(this);
-        MyComponents.NetworkManagement.ConnectedToRoom += () => { strategy = new ClientTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
-        MyComponents.NetworkManagement.RoomCreated += () => { strategy = new ServerTimeStrategy(this); strategy.NewConnection += InvokeNewLatency; };
-
+        Reset();
     }
 
     private void InvokeNewLatency(ConnectionId id)
@@ -98,6 +101,28 @@ public class TimeManagement : ObservedComponent
         {
             latencyListeners.Add(id, callback);
         }
+    }
+
+    internal void Reset()
+    {
+        MyComponents.NetworkManagement.ConnectedToRoom -= CreateClientStrategy;
+        MyComponents.NetworkManagement.RoomCreated -= CreateServerStrategy;
+        latencyListeners = new Dictionary<ConnectionId, LatencyChange>();
+        strategy = new NotConnectedTimeStrategy(this);
+        MyComponents.NetworkManagement.ConnectedToRoom += CreateClientStrategy;
+        MyComponents.NetworkManagement.RoomCreated += CreateServerStrategy;
+    }
+
+    private void CreateServerStrategy()
+    {
+        strategy = new ServerTimeStrategy(this);
+        strategy.NewConnection += InvokeNewLatency;
+    }
+
+    private void CreateClientStrategy()
+    {
+        strategy = new ClientTimeStrategy(this);
+        strategy.NewConnection += InvokeNewLatency;
     }
 }
 

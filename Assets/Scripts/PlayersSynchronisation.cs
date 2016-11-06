@@ -10,9 +10,20 @@ public class PlayersSynchronisation : ANetworkView
 {
     public const short INVALID_SYNC_ID = -1;
 
-    private ListDictionary<short, ConnectionId> synchronisations = new ListDictionary<short, ConnectionId>();
+    private ListDictionary<short, ConnectionId> synchronisations;
 
     private short currentSynchronisationId;
+
+    void Awake()
+    {
+        Reset();
+    }
+
+    internal void Reset()
+    {
+        currentSynchronisationId = 0;
+        synchronisations = new ListDictionary<short, ConnectionId>();
+    }
 
     public short GetNewSynchronisationId()
     {
