@@ -1,45 +1,57 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class CustomRigidbody : MonoBehaviour
 {
-
-    [HideInInspector]
-    public Vector3 velocity;
-
-    private Rigidbody myRigidbody;
-    public float drag;
-
-    void Start()
+    private CharacterController _characterController;
+    public CharacterController characterController
     {
-        myRigidbody = GetComponent<Rigidbody>();
-    }
-
-
-    // Update is called once per frame
-    public void CustomUpdate()
-    {
-        Vector3 nextPosition = transform.position + velocity * Time.deltaTime;
-        Vector3 movement = nextPosition - transform.position;
-        RaycastHit[] hitInfos;
-        bool collision = false;
-        if ((hitInfos = myRigidbody.SweepTestAll(movement, movement.magnitude)).Length > 0)
+        get
         {
-            foreach (RaycastHit hit in hitInfos)
+            if (this._characterController == null)
             {
-                if (!hit.collider.isTrigger)
-                    collision = true;
+                this._characterController = this.GetComponent<CharacterController>();
             }
+
+            return this._characterController;
         }
-        if (!collision)
-        {
-            transform.position = nextPosition;
-        }
-        velocity = velocity * (1 - Time.deltaTime * drag);
     }
 
-    public void AddForce(Vector3 force)
+    public Vector3 velocity;
+    public Vector3 acceleration = Vector3.zero;
+
+    public void Simulate(float dt)
     {
-        velocity += force;
+        if (this.characterController == null)
+        {
+            return;
+        }
+        Debug.Log(velocity + "   " + acceleration);
+        Vector3 movementDelta = (this.velocity * dt) + 0.5f * (Physics.gravity * dt * dt);
+        this.characterController.Move(movementDelta);
+
+        this.velocity += Physics.gravity * dt;
+        velocity += acceleration * dt;
+        acceleration = Vector3.zero;
+        Debug.Log(velocity);
+    }
+
+    internal void AddForce(Vector3 vector3)
+    {
+        acceleration += vector3;
+    }
+
+    public void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        // Negate some of the velocity based on the normal of the collision by projecting velocity onto normal
+        Debug.Log("Collision " + velocity);
+        //this.velocity += Vector3.Dot(this.velocity, hit.normal) * hit.normal;
+        Debug.DrawRay(Vector3.up * 10, hit.normal, Color.red);
+        Debug.Log("Collision " + velocity);
+    }
+
+    public virtual void FixedUpdate()
+    {
+        this.Simulate(Time.fixedDeltaTime);
     }
 }

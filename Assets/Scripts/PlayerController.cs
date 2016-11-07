@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using PlayerManagement;
 using PlayerBallControl;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CustomRigidbody))]
 [RequireComponent(typeof(PlayerMovementView))]
 [RequireComponent(typeof(PlayerBallController))]
 public class PlayerController : PlayerView
@@ -117,9 +117,9 @@ public class PlayerController : PlayerView
 
     private void ConfigureColliders()
     {
-        GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
-        GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
-        GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
+        //GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
+        //GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
+        //GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
         int layer = -1;
         //if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             layer = LayersGetter.players[(int)Player.Team];
@@ -156,7 +156,9 @@ public class PlayerController : PlayerView
 
     public void StopMoving()
     {
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        Debug.Log("Stop" + GetComponent<CustomRigidbody>().velocity);
+        GetComponent<CustomRigidbody>().velocity = Vector3.zero;
+        Debug.Log("StopEnd " + GetComponent<CustomRigidbody>().velocity);
         DestroyTarget();
     }
 }

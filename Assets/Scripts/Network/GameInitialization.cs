@@ -95,7 +95,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
         if (MyComponents.NetworkManagement.isServer)
             MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
-        GameObject player = MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity);
+        GameObject player = MyComponents.NetworkViewsManagement.Instantiate("MyPlayer2", new Vector3(0, 4.4f, 0), Quaternion.identity);
         int numberPlayer = MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) - 1;
         player.GetComponent<PlayerController>().Init(Players.MyPlayer.id, numberPlayer % 2, "Player" + numberPlayer);
     }

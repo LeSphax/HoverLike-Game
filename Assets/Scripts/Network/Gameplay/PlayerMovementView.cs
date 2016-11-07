@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 
 public delegate void PacketHandler(byte[] data);
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CustomRigidbody))]
 [RequireComponent(typeof(PlayerController))]
 public class PlayerMovementView : ObservedComponent
 {
@@ -23,7 +23,7 @@ public class PlayerMovementView : ObservedComponent
 
     private PlayerMovementStrategy strategy;
 
-    private Rigidbody myRigidbody;
+    private CustomRigidbody myRigidbody;
 
     PacketHandler packetHandler;
 
@@ -62,7 +62,7 @@ public class PlayerMovementView : ObservedComponent
 
     protected virtual void Awake()
     {
-        myRigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<CustomRigidbody>();
         packetHandler = ReceiveData;
     }
 

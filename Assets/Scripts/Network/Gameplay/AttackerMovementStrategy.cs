@@ -14,7 +14,9 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
 
     public void ClampPlayerVelocity()
     {
+        Debug.Log("Clamp" + myRigidbody.velocity);
         myRigidbody.velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
+        Debug.Log("ClampEnd" + myRigidbody.velocity);
     }
 
     protected override void Move()
@@ -23,7 +25,7 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
         lookPos.y = 0;
         var targetRotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, FRAME_DURATION * ANGULAR_SPEED);
-        myRigidbody.AddForce(transform.forward * ACCELERATION * FRAME_DURATION, ForceMode.VelocityChange);
+        myRigidbody.AddForce(transform.forward * ACCELERATION);
 
         ClampPlayerVelocity();
     }

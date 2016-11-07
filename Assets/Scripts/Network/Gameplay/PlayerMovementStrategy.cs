@@ -6,14 +6,14 @@ public abstract class PlayerMovementStrategy : MonoBehaviour
 {
     public Vector3? targetPosition;
 
-    protected Rigidbody myRigidbody;
+    protected CustomRigidbody myRigidbody;
 
     protected const float FRAME_DURATION = 0.02f;
     internal GameObject target;
 
     void Awake()
     {
-        myRigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<CustomRigidbody>();
     }
 
     public void UpdateMovement()
