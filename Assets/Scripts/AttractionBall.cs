@@ -55,7 +55,7 @@ public class AttractionBall : MonoBehaviour
                     Vector3 target = player.transform.position;
                     Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
                     velocity.Normalize();
-                    transform.parent.GetComponent<Rigidbody>().velocity += velocity * power;
+                    transform.parent.GetComponent<CustomRigidbody>().velocity += velocity * power;
                 }
             }
     }

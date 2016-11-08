@@ -8,11 +8,11 @@ public class DashEffect : AbilityEffect
     public float dashDuration = 0.4f;
 
     private Vector3 force;
-    private Rigidbody myRigidbody;
+    private CustomRigidbody myRigidbody;
 
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
-        myRigidbody = target.GetComponent<Rigidbody>();
+        myRigidbody = target.GetComponent<CustomRigidbody>();
         //
         target.GetComponent<PlayerController>().DestroyTarget();
         target.transform.LookAt(position + Vector3.up * target.transform.position.y);
@@ -21,7 +21,6 @@ public class DashEffect : AbilityEffect
         force.Normalize();
         //
         myRigidbody.velocity = Vector3.zero;
-        myRigidbody.angularVelocity = Vector3.zero;
         dashing = true;
         Invoke("StopDashing", dashDuration);
     }

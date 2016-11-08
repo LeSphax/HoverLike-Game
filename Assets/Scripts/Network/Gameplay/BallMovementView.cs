@@ -3,10 +3,11 @@ using Byn.Net;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+[RequireComponent(typeof(CustomRigidbody))]
 class BallMovementView : ObservedComponent
 {
 
-    Rigidbody myRigidbody;
+    CustomRigidbody myRigidbody;
 
     BallPacket? lastPacket;
     BallPacket currentPacket;
@@ -22,7 +23,7 @@ class BallMovementView : ObservedComponent
 
     protected virtual void Awake()
     {
-        myRigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<CustomRigidbody>();
     }
 
     public Vector3 GetExtrapolatedPosition()
@@ -96,7 +97,7 @@ class BallMovementView : ObservedComponent
                 {
                     myRigidbody.velocity = currentPacket.velocity;
                 }
-                // myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
+                //myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
                 transform.position = Vector3.Lerp(transform.position, currentPacket.position, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
                 if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance)
                 {

@@ -8,6 +8,6 @@ public class JumpEffect : AbilityEffect
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
         Debug.Log("Jump");
-        target.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce,ForceMode.VelocityChange);
+        target.GetComponent<CustomRigidbody>().AddForce(Vector3.up * jumpForce);
     }
 }

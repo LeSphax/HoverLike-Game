@@ -156,9 +156,7 @@ public class PlayerController : PlayerView
 
     public void StopMoving()
     {
-        Debug.Log("Stop" + GetComponent<CustomRigidbody>().velocity);
         GetComponent<CustomRigidbody>().velocity = Vector3.zero;
-        Debug.Log("StopEnd " + GetComponent<CustomRigidbody>().velocity);
         DestroyTarget();
     }
 }

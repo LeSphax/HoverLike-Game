@@ -14,11 +14,8 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
 
     public void ClampPlayerVelocity()
     {
-        Debug.Log("Clamp" + myRigidbody.velocity);
         myRigidbody.velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
-        Debug.Log("ClampEnd" + myRigidbody.velocity);
     }
-
     protected override void Move()
     {
         var lookPos = targetPosition.Value - transform.position;

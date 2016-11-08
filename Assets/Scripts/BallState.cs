@@ -3,6 +3,7 @@ using PlayerManagement;
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(CustomRigidbody))]
 public class BallState : SlideBall.MonoBehaviour
 {
     public static ConnectionId NO_PLAYER_ID
@@ -16,6 +17,8 @@ public class BallState : SlideBall.MonoBehaviour
     //This is set to false when we want the ball's simulation to be handled by the client
     [HideInInspector]
     public bool ListenToServer = true;
+
+    private CustomRigidbody myRigidbody;
 
     private bool uncatchable;
     public bool Uncatchable
@@ -36,14 +39,12 @@ public class BallState : SlideBall.MonoBehaviour
     {
         if (uncatchable)
         {
-            GetComponent<Rigidbody>().isKinematic = true;
-            GetComponent<Rigidbody>().detectCollisions = false;
+            myRigidbody.activated = false;
             protectionSphere.SetActive(true);
         }
         else
         {
-            GetComponent<Rigidbody>().isKinematic = false;
-            GetComponent<Rigidbody>().detectCollisions = true;
+            myRigidbody.activated = true;
             protectionSphere.SetActive(false);
         }
     }
@@ -63,6 +64,7 @@ public class BallState : SlideBall.MonoBehaviour
     void Awake()
     {
         MyComponents.GameInitialization.AddGameStartedListener(StartGame);
+        myRigidbody = GetComponent<CustomRigidbody>();
     }
 
     void Start()
@@ -130,13 +132,13 @@ public class BallState : SlideBall.MonoBehaviour
         if (attach)
         {
             gameObject.transform.SetParent(player.transform);
-            gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            myRigidbody.activated = false;
             gameObject.transform.localPosition = ballHoldingPosition;
         }
         else
         {
             gameObject.transform.SetParent(null);
-            gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            myRigidbody.activated = true;
         }
     }
 
@@ -149,7 +151,7 @@ public class BallState : SlideBall.MonoBehaviour
             View.RPC("PutAtStartPosition", RPCTargets.Others);
         }
         gameObject.transform.position = MyComponents.Spawns.BallSpawn;
-        gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        myRigidbody.velocity = Vector3.zero;
         gameObject.GetComponentInChildren<AttractionBall>().Reset();
     }
 }
