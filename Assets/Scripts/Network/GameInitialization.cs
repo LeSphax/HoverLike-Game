@@ -33,12 +33,12 @@ public class GameInitialization : SlideBall.MonoBehaviour
         MyComponents.Properties.SetProperty(PropertiesKeys.NumberPlayers, MyComponents.NetworkManagement.GetNumberPlayers());
     }
 
-    public void S()
+    public void StartGame()
     {
-        StartCoroutine(StartGame());
+        StartCoroutine(CoStartGame());
     }
 
-    public IEnumerator StartGame()
+    public IEnumerator CoStartGame()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer);
         short[] teamSpawns = new short[2] { 1, 1 };
@@ -73,7 +73,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     private void SetupRoom()
     {
-        Debug.LogError("SetupRoom");
+        Debug.Log("SetupRoom");
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= SetupRoom;
         InstantiateNewObjects();
         //Letting the time for the objects we just instantiated and the objects in the scene to call their Start method
@@ -83,6 +83,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
     [MyRPC]
     private void LoadRoom(short syncId)
     {
+        Debug.Log("LoadRoom");
         this.syncId = syncId;
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
         NavigationManager.LoadScene(Scenes.Main);
@@ -106,7 +107,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     public void Reset()
     {
-        Debug.LogError("Reset GameInit");
         started = false;
         syncId = PlayersSynchronisation.INVALID_SYNC_ID;
         AllObjectsCreated = null;

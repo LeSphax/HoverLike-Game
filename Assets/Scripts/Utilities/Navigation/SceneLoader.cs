@@ -13,7 +13,7 @@ namespace Navigation
 
         public void StartLoading(string levelName)
         {
-            Debug.LogError(levelName);
+            Debug.Log("StartLoading " + levelName);
             this.levelName = levelName;
             StartCoroutine("load");
         }

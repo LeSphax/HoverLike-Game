@@ -97,6 +97,7 @@ public abstract class AbilityInput : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        Players.MyPlayer.StateChanged -= PlayerStateChanged;
+        if (Players.MyPlayer != null)
+            Players.MyPlayer.StateChanged -= PlayerStateChanged;
     }
 }

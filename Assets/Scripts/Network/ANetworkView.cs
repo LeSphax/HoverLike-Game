@@ -32,7 +32,7 @@ public abstract class ANetworkView : MonoBehaviour
 
     void OnDestroy()
     {
-        if (MyComponents.NetworkViewsManagement != null)
+        if (MyComponents.NetworkViewsManagement != null && registered)
             MyComponents.NetworkViewsManagement.UnregisterView(this);
     }
 }

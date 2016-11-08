@@ -8,6 +8,7 @@ using UnityEngine;
 public class SpecialBuild
 {
     private const string path = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/PC/Build.exe";
+    private const string path_WebGL = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/";
 
     private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
 
@@ -39,7 +40,6 @@ public class SpecialBuild
         }
     }
 
-    [MenuItem("MyTools/Build Only %j")]
     public static bool BuildOnly()
     {
         return BuildGame(levels);
@@ -58,9 +58,7 @@ public class SpecialBuild
 
     private static bool BuildGame(string[] levels)
     {
-        KillGames();
-        EditorApplication.isPlaying = false;
-        MakeViewIds();
+        PrepareBuild();
 
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
@@ -74,6 +72,24 @@ public class SpecialBuild
         Debug.Log(x);
         return true;
 
+    }
+
+    private static void PrepareBuild()
+    {
+        KillGames();
+        EditorApplication.isPlaying = false;
+        MakeViewIds();
+    }
+
+    [MenuItem("MyTools/Build Only %j")]
+    public static void BuildWebGL()
+    {
+        PrepareBuild();
+        ChangeScene(Paths.SCENE_LOBBY);
+        ((LobbyManager)UnityEngine.Object.FindObjectOfType(typeof(LobbyManager))).StartGameImmediately = false;
+        ((NickNamePanel)UnityEngine.Object.FindObjectOfType(typeof(NickNamePanel))).autoNickName = false;
+        string x = BuildPipeline.BuildPlayer(levels, path_WebGL, BuildTarget.WebGL, BuildOptions.None);
+        Debug.Log(x);
     }
 
     [MenuItem("MyTools/MakeViewIds %e")]

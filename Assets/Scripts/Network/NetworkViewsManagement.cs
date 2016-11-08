@@ -58,6 +58,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
             if (pair.Value == null)
             {
                 networkViews.Remove(pair.Key);
+                Debug.LogError("Remove view " + pair.Key);
             }
         }
     }
@@ -154,16 +155,22 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     internal void DistributeMessage(ConnectionId connectionId, NetworkMessage message)
     {
         if (networkViews.ContainsKey(message.viewId) && (Scenes.IsCurrentScene(message.sceneId) || !message.isSceneDependant()))
+        {
+            if (message.traceMessage)
+                Debug.LogError("Message Sent to view " + message);
             networkViews[message.viewId].ReceiveNetworkMessage(connectionId, message);
+        }
         else if (message.isSceneDependant())
         {
             Debug.LogError("Message received in wrong scene " + Scenes.currentSceneId + "  vs " + message.sceneId + "   " + message);
             RPCCall call = NetworkExtensions.Deserialize<RPCCall>(message.data);
             Debug.LogError(call.methodName);
         }
-        return;// Debug.Log("No view was registered with this Id " + message.viewId);
-
-
+        else
+        {
+            Debug.LogError("No view was registered with this Id " + message.viewId);
+            PrintViews();
+        }
     }
 
     public void RegisterView(ANetworkView view)
@@ -181,6 +188,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     internal void UnregisterView(ANetworkView view)
     {
+        Debug.Log("UnregisterView " + view + "    " + view.ViewId);
         if (!networkViews.ContainsKey(view.ViewId))
         {
             Debug.LogError("This viewid (" + view.ViewId + ") wasn't registered " + networkViews.Count);
@@ -192,10 +200,17 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
     }
 
+    protected void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            PrintViews();
+        }
+    }
 
     public void PrintViews()
     {
-        for (int i = 0; i < networkViews.Count; i++)
+        for (int i = 0; i < 500; i++)
         {
             if (networkViews.ContainsKey(i))
                 Debug.LogError(i + "-" + networkViews[i].ViewId + "   :" + networkViews[i]);

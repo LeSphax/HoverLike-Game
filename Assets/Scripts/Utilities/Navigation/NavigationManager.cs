@@ -34,7 +34,6 @@ namespace Navigation
 
         private static void FinishedLoading()
         {
-            Debug.LogError("FinishedLoading");
             if (FinishedLoadingScene != null)
             {
                 Debug.Log("InvokeFinishedLoading");

@@ -5,7 +5,13 @@ using UnityEngine;
 
 public class BallState : SlideBall.MonoBehaviour
 {
-    public static ConnectionId NO_PLAYER_ID = new ConnectionId(-100);
+    public static ConnectionId NO_PLAYER_ID
+    {
+        get
+        {
+            return Players.INVALID_PLAYER_ID;
+        }
+    }
 
     //This is set to false when we want the ball's simulation to be handled by the client
     [HideInInspector]

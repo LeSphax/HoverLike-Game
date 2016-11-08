@@ -22,7 +22,6 @@ public class NetworkProperties : ANetworkView
     {
         listeners = new Dictionary<string, NetworkPropertyChanged>();
         properties = new Dictionary<string, object>();
-        Debug.LogWarning("Reset walleh");
     }
 
     public T GetProperty<T>(string propertyName)

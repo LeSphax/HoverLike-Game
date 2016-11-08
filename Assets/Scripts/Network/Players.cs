@@ -10,6 +10,8 @@ namespace PlayerManagement
 {
     public class Players : ANetworkView
     {
+        public static ConnectionId INVALID_PLAYER_ID = new ConnectionId(-100);
+
         //The server is the only one having access to this dictionnary
         public static Dictionary<ConnectionId, Player> players = new Dictionary<ConnectionId, Player>();
 
@@ -21,7 +23,10 @@ namespace PlayerManagement
         {
             get
             {
-                return GetOrCreatePlayer(myPlayerId);
+                Player player;
+                if (players.TryGetValue(myPlayerId, out player))
+                    return player;
+                return null;
             }
         }
 
@@ -35,10 +40,9 @@ namespace PlayerManagement
 
         public static void Reset()
         {
-            myPlayerId = ConnectionId.INVALID;
+            myPlayerId = INVALID_PLAYER_ID;
             NewPlayerCreated = null;
             players.Clear();
-            Debug.LogWarning("AddListener ogozrgjhori");
             MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, MyComponents.Players.PlayerOwningBallChanged);
         }
 
@@ -108,13 +112,20 @@ namespace PlayerManagement
             Player player;
             if (!players.TryGetValue(id, out player))
             {
-                Debug.Log("Create Player " + id);
-                player = new Player(id);
-                players.Add(id, player);
-                if (NewPlayerCreated != null)
-                    NewPlayerCreated.Invoke(id);
+                player = CreatePlayer(id);
             }
 
+            return player;
+        }
+
+        public static Player CreatePlayer(ConnectionId id)
+        {
+            Player player;
+            Debug.Log("Create Player " + id);
+            player = new Player(id);
+            players.Add(id, player);
+            if (NewPlayerCreated != null)
+                NewPlayerCreated.Invoke(id);
             return player;
         }
 
@@ -240,6 +251,7 @@ namespace PlayerManagement
 
         internal void NotifySceneChanged()
         {
+            Debug.Log("NotifySceneChanged");
             if (SceneChanged != null)
                 SceneChanged.Invoke(id, sceneId);
         }

@@ -160,7 +160,7 @@ public class LobbyManager : MonoBehaviour
     {
         MyComponents.NetworkManagement.BlockRoom();
         Debug.Log("There could be a problem if a player connects before the block room message reaches the signaling server");
-        MyComponents.GameInitialization.S();
+        MyComponents.GameInitialization.StartGame();
     }
 
     public void UpdateRoomList(string[] list)

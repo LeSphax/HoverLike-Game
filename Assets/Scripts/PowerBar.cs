@@ -28,8 +28,7 @@ public class PowerBar : MonoBehaviour
 
                 case State.HIDDEN:
                     powerValue = 0;
-                    if (slider != null)
-                        Destroy(slider.gameObject);
+                    DestroySlider();
                     break;
                 case State.FILLING:
                     powerValue = 0f;
@@ -39,6 +38,12 @@ public class PowerBar : MonoBehaviour
             }
             _state = value;
         }
+    }
+
+    private void DestroySlider()
+    {
+        if (slider != null)
+            Destroy(slider.gameObject);
     }
 
     // Use this for initialization
@@ -75,5 +80,10 @@ public class PowerBar : MonoBehaviour
     public bool IsFilling()
     {
         return state == State.FILLING;
+    }
+
+    void OnDestroy()
+    {
+        DestroySlider();
     }
 }

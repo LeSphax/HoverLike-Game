@@ -142,9 +142,10 @@ public static class MyComponents
     {
         get
         {
-            if (networkViewsManagement == null)
+            GameObject go;
+            if (networkViewsManagement == null && (go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
             {
-                networkViewsManagement = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<NetworkViewsManagement>();
+                networkViewsManagement = go.GetComponent<NetworkViewsManagement>();
             }
             return networkViewsManagement;
         }

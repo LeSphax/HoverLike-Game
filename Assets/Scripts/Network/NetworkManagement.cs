@@ -187,6 +187,7 @@ namespace BaseNetwork
         public void BlockRoom()
         {
             Assert.IsTrue(isServer);
+            Debug.Log("Send Block Room " + RoomName);
             mNetwork.Connect(BLOCK_ROOMS_COMMAND + SPLIT_CHAR + RoomName);
         }
 
@@ -287,6 +288,7 @@ namespace BaseNetwork
                         //StopServer or the connection broke down
                         case NetEventType.ServerClosed:
                             {
+                                Reset();
                                 switch (stateCurrent)
                                 {
                                     case State.CONNECTED:
@@ -373,8 +375,7 @@ namespace BaseNetwork
 
         private void SendBufferedMessagesOnSceneChange(ConnectionId id)
         {
-            Debug.LogError("Listen To schenzeopfijhzef");
-            Players.players[id].SceneChanged += (connectionId, sceneId) => { Debug.LogError("SENFDOAZEOEH"); bufferedMessages.SendBufferedMessages(connectionId, sceneId); };
+            Players.players[id].SceneChanged += (connectionId, sceneId) => { Debug.Log("SceneChanged -> SendBufferedMessages " + connectionId); bufferedMessages.SendBufferedMessages(connectionId, sceneId); };
         }
 
         private void HandleIncommingMessage(ref NetworkEvent evt)
@@ -504,7 +505,7 @@ namespace BaseNetwork
 
         #region client
         [MyRPC]
-        private void AllBufferedMessagesSent()
+        private void ReceivedAllBuffered()
         {
             if (ReceivedAllBufferedMessages != null)
                 ReceivedAllBufferedMessages.Invoke();
@@ -513,6 +514,8 @@ namespace BaseNetwork
         [MyRPC]
         private void SetConnectionId(ConnectionId id)
         {
+            Debug.Log("SetConnectionId " + id);
+            Players.CreatePlayer(id);
             Players.myPlayerId = id;
             Players.MyPlayer.Nickname = NickNamePanel.nickname;
             Players.MyPlayer.SceneId = Scenes.currentSceneId;

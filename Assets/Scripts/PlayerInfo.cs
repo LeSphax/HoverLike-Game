@@ -11,6 +11,8 @@ public class PlayerInfo : PlayerView
     [SerializeField]
     private Text latency;
 
+    private int updateLatency = 0;
+
     private Team CurrentTeam
     {
         set
@@ -32,20 +34,46 @@ public class PlayerInfo : PlayerView
             gameObject.name = value;
         }
     }
-    public int Latency
+    public float Latency
     {
         set
         {
-            latency.text = value + " ms";
+            latency.text = Mathf.Round(value) + " ms";
         }
     }
 
+    private void SetLatency(ConnectionId id, float latency)
+    {
+        if (id == playerConnectionId)
+        {
+            Latency = latency;
+            updateLatency++;
+            if (updateLatency == 10)
+            {
+                updateLatency = 0;
+                Debug.Log("SendLatency");
+                //We could avoid sending it to the owner of the view
+                View.RPC("RPCSetLatency", RPCTargets.Others, latency);
+            }
+        }
+    }
+
+    [MyRPC]
+    private void RPCSetLatency(float latency)
+    {
+        Latency = latency;
+    }
 
     void Start()
     {
+        Latency = 0;
         Player.gameobjectAvatar = gameObject;
         if (View.isMine)
             View.RPC("GetInitialTeam", RPCTargets.Server, null);
+        if (MyComponents.NetworkManagement.isServer)
+        {
+            MyComponents.TimeManagement.LatencyChanged += SetLatency;
+        }
     }
 
     [MyRPC]
@@ -71,5 +99,10 @@ public class PlayerInfo : PlayerView
         if (Player.Team != Team.NONE)
             CurrentTeam = Player.Team;
         Player.TeamChanged += (value) => CurrentTeam = value;
+    }
+
+    void OnDestroy()
+    {
+
     }
 }
