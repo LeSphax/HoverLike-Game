@@ -26,6 +26,7 @@ public class CustomRigidbody : MonoBehaviour
     public bool activated = true;
 
     public float bounciness;
+    public float drag;
 
     public void Simulate(float dt)
     {
@@ -43,6 +44,7 @@ public class CustomRigidbody : MonoBehaviour
 
             this.velocity += Physics.gravity * dt;
             velocity += acceleration * dt;
+            velocity *= (1 - drag * dt);
             acceleration = Vector3.zero;
             //Debug.Log(velocity);
             this.characterController.Move(movementDelta);

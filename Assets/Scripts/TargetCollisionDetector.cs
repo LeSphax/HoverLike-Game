@@ -9,13 +9,15 @@ public class TargetCollisionDetector : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (IsObjectInMyPlayer(other.transform))
-        {
-            if (IsObjectInMesh(other.transform))
-            {
-                controller.TargetHit();
-            }
-        }
+        if (other.tag == Tags.MyPlayer)
+            controller.TargetHit();
+        //if (IsObjectInMyPlayer(other.transform))
+        //{
+        //    if (IsObjectInMesh(other.transform))
+        //    {
+        //        controller.TargetHit();
+        //    }
+        //}
     }
 
     private bool IsObjectInMyPlayer(Transform t)
