@@ -127,7 +127,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     private void InvokeStartGame()
     {
-        Invoke("StartGame", 0.2f - TimeManagement.LatencyInMiliseconds);
+        Invoke("StartGame", 0.2f - MyComponents.TimeManagement.LatencyInMiliseconds);
     }
 
     private void StartGame()

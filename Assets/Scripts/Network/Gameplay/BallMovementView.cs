@@ -3,7 +3,6 @@ using Byn.Net;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-[RequireComponent(typeof(CustomRigidbody))]
 class BallMovementView : ObservedComponent
 {
 
@@ -28,7 +27,7 @@ class BallMovementView : ObservedComponent
 
     public Vector3 GetExtrapolatedPosition()
     {
-        float timePassed = TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
+        float timePassed = MyComponents.TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
 
         Vector3 extrapolatedPosition;
         extrapolatedPosition = currentPacket.position + currentPacket.velocity * timePassed;
@@ -53,7 +52,7 @@ class BallMovementView : ObservedComponent
         Assert.IsTrue(MyComponents.BallState.Uncatchable);
         if (lastPacket != null)
         {
-            float timePassed = TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
+            float timePassed = MyComponents.TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
             float timeBetweenPackets = currentPacket.timeSent - lastPacket.Value.timeSent;
             Vector3 extrapolatedPosition = currentPacket.position + currentPacket.position - lastPacket.Value.position;
             transform.position = Vector3.Lerp(startPositionAtCurrentPacket, extrapolatedPosition, timePassed / timeBetweenPackets);
@@ -79,38 +78,36 @@ class BallMovementView : ObservedComponent
     public override void SimulationUpdate()
     {
         //Debug.Log(currentPacket.position + "   " + BallState.ListenToServer + "   " + BallState.IsAttached());
-        if (MyComponents.BallState.ListenToServer)
+        //if (MyComponents.BallState.ListenToServer)
+        if (MyComponents.BallState.IsAttached())
         {
-            if (MyComponents.BallState.IsAttached())
-            {
-                myRigidbody.velocity = Vector3.zero;
-                transform.localPosition = BallState.ballHoldingPosition;
-                return;
-            }
-            else if (MyComponents.BallState.Uncatchable)
-            {
-                SetPositionFromExtrapolation();
-            }
-            else
-            {
-                if (Vector3.Distance(myRigidbody.velocity, currentPacket.velocity) > myRigidbody.velocity.magnitude * 0.2f)
-                {
-                    myRigidbody.velocity = currentPacket.velocity;
-                }
-                //myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
-                transform.position = Vector3.Lerp(transform.position, currentPacket.position, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
-                if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance)
-                {
-                    transform.position = GetExtrapolatedPosition();
-                }
-            }
-            //transform.position = Vector3.Lerp(transform.position, GetExtrapolatedPosition(), Vector3.Distance(GetExtrapolatedPosition(), transform.position)/maxDistance);
+            myRigidbody.velocity = Vector3.zero;
+            transform.localPosition = BallState.ballHoldingPosition;
+            return;
         }
+        else if (MyComponents.BallState.Uncatchable)
+        {
+            SetPositionFromExtrapolation();
+        }
+        else
+        {
+            if (Vector3.Distance(myRigidbody.velocity, currentPacket.velocity) > myRigidbody.velocity.magnitude * 0.2f)
+            {
+                myRigidbody.velocity = currentPacket.velocity;
+            }
+            //myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
+            transform.position = Vector3.Lerp(transform.position, currentPacket.position, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
+            if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance)
+            {
+                transform.position = GetExtrapolatedPosition();
+            }
+        }
+        //transform.position = Vector3.Lerp(transform.position, GetExtrapolatedPosition(), Vector3.Distance(GetExtrapolatedPosition(), transform.position)/maxDistance);
     }
 
     protected override byte[] CreatePacket(long sendId)
     {
-        return new BallPacket(sendId, myRigidbody.velocity, transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
+        return new BallPacket(sendId, myRigidbody.velocity, transform.position, MyComponents.TimeManagement.NetworkTimeInSeconds).Serialize();
     }
 
     public override void PacketReceived(ConnectionId id, byte[] data)

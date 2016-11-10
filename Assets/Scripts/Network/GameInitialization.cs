@@ -60,6 +60,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         View.RPC("LoadRoom", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
+        AllObjectsCreated.Invoke();
         MyComponents.MatchManager.StartGameCountdown();
     }
 
@@ -93,7 +94,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
     {
         Debug.Log("InstantiateNewObjects");
         if (MyComponents.NetworkManagement.isServer)
-            MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
+            MyComponents.NetworkViewsManagement.Instantiate("Ball", Vector3.zero, Quaternion.identity);
 
         GameObject player = MyComponents.NetworkViewsManagement.Instantiate("MyPlayer2", new Vector3(0, 4.4f, 0), Quaternion.identity);
         int numberPlayer = MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) - 1;

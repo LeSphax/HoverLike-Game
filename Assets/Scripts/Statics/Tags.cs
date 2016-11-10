@@ -26,7 +26,7 @@ public class Tags : MonoBehaviour
     public const string LobbyManager = "LobbyManager";
     public const string Countdown = "Countdown";
     public const string GoalZone = "GoalZone";
-
+    public const string GameController = "GameController";
     public static bool IsPlayer(string tag)
     {
         return tag == Player || tag == MyPlayer;

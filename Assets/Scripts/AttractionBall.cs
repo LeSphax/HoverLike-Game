@@ -25,7 +25,7 @@ public class AttractionBall : MonoBehaviour
     {
         if (!Tags.IsPlayer(collider.gameObject.tag))
             return false;
-        PlayerController controller = collider.gameObject.GetComponent<PlayerController>();
+        PlayerController controller = collider.transform.parent.GetComponent<PlayerController>();
         return controller.Player != null && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER;
     }
 
@@ -55,7 +55,7 @@ public class AttractionBall : MonoBehaviour
                     Vector3 target = player.transform.position;
                     Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
                     velocity.Normalize();
-                    transform.parent.GetComponent<CustomRigidbody>().velocity += velocity * power;
+                    transform.parent.GetComponent<CustomRigidbody>().AddForce(velocity * power);
                 }
             }
     }

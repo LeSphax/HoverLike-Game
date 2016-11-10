@@ -4,8 +4,6 @@ using UnityEngine.UI;
 using PlayerManagement;
 using PlayerBallControl;
 
-[RequireComponent(typeof(CustomRigidbody))]
-[RequireComponent(typeof(PlayerMovementView))]
 [RequireComponent(typeof(PlayerBallController))]
 public class PlayerController : PlayerView
 {
@@ -14,6 +12,11 @@ public class PlayerController : PlayerView
     private GameObject Mesh;
 
     public Text playerName;
+
+    [SerializeField]
+    public PlayerPhysicsModel physicsModel;
+    [SerializeField]
+    private PlayerPhysicsView physicsView;
 
     private GameObject _target;
     private GameObject target
@@ -26,27 +29,13 @@ public class PlayerController : PlayerView
         {
             if (value == null)
             {
-                movementManager.targetPosition = null;
+                physicsModel.targetPosition = null;
             }
             else
             {
-                movementManager.targetPosition = value.transform.position;
+                physicsModel.targetPosition = value.transform.position;
             }
             _target = value;
-        }
-    }
-    PlayerMovementView movementManager;
-
-    void Awake()
-    {
-        movementManager = GetComponent<PlayerMovementView>();
-    }
-
-    void LateUpdate()
-    {
-        if (View.isMine)
-        {
-            GameObject.FindGameObjectWithTag("GameController").transform.position = transform.position;
         }
     }
 
@@ -93,7 +82,7 @@ public class PlayerController : PlayerView
     [MyRPC]
     public void ResetPlayer()
     {
-        movementManager.Reset(playerConnectionId);
+        physicsModel.Reset(playerConnectionId);
         Destroy(target);
         target = null;
         if (Mesh != null)
@@ -104,6 +93,7 @@ public class PlayerController : PlayerView
         {
             tag = Tags.MyPlayer;
         }
+        physicsModel.tag = tag;
         PutAtStartPosition();
 
         gameObject.name = Player.Nickname;
@@ -122,7 +112,7 @@ public class PlayerController : PlayerView
         //GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
         int layer = -1;
         //if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
-            layer = LayersGetter.players[(int)Player.Team];
+        layer = LayersGetter.players[(int)Player.Team];
         //else
         //    layer = LayersGetter.players[2];
         Functions.SetLayer(Mesh.transform, layer);
@@ -132,7 +122,7 @@ public class PlayerController : PlayerView
     {
         GameObject meshPrefab = Resources.Load<GameObject>(Player.MyAvatarSettings.MESH_NAME);
         Mesh = Instantiate(meshPrefab);
-        Mesh.transform.SetParent(transform, false);
+        Mesh.transform.SetParent(physicsView.transform, false);
         SetMaterials(Mesh);
     }
 
@@ -156,7 +146,7 @@ public class PlayerController : PlayerView
 
     public void StopMoving()
     {
-        GetComponent<CustomRigidbody>().velocity = Vector3.zero;
+        physicsModel.GetComponent<CustomRigidbody>().velocity = Vector3.zero;
         DestroyTarget();
     }
 }

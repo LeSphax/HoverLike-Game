@@ -9,7 +9,6 @@ public abstract class PlayerMovementStrategy : MonoBehaviour
     protected CustomRigidbody myRigidbody;
 
     protected const float FRAME_DURATION = 0.02f;
-    internal GameObject target;
 
     void Awake()
     {

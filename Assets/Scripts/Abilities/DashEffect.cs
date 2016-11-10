@@ -12,9 +12,10 @@ public class DashEffect : AbilityEffect
 
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
-        myRigidbody = target.GetComponent<CustomRigidbody>();
+        PlayerController controller = target.GetComponent<PlayerController>();
+        myRigidbody = controller.physicsModel.GetComponent<CustomRigidbody>();
         //
-        target.GetComponent<PlayerController>().DestroyTarget();
+        controller.DestroyTarget();
         target.transform.LookAt(position + Vector3.up * target.transform.position.y);
         //
         force = new Vector3(position.x - target.transform.position.x, 0, position.z - target.transform.position.z);

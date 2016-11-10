@@ -14,7 +14,7 @@ public class TimeManagement : ObservedComponent
     public event ConnectionEventHandler NewLatency;
     public event SpecificLatencyChange LatencyChanged;
 
-    public static float NetworkTimeInSeconds
+    public float NetworkTimeInSeconds
     {
         get
         {
@@ -22,7 +22,7 @@ public class TimeManagement : ObservedComponent
         }
     }
 
-    public static float LatencyInMiliseconds
+    public float LatencyInMiliseconds
     {
         get
         {

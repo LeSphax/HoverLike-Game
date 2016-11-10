@@ -38,6 +38,21 @@ public static class MyComponents
         }
     }
 
+    private static PhysicsModelsManager physicsModelsManager;
+    public static PhysicsModelsManager PhysicsModelsManager
+    {
+        get
+        {
+            if (physicsModelsManager == null)
+            {
+                GameObject go;
+                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
+                    physicsModelsManager = go.GetComponent<PhysicsModelsManager>();
+            }
+            return physicsModelsManager;
+        }
+    }
+
     private static PlayersSynchronisation playersSynchronisation;
     public static PlayersSynchronisation PlayersSynchronisation
     {
@@ -117,7 +132,9 @@ public static class MyComponents
         {
             if (timeManagement == null)
             {
-                timeManagement = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<TimeManagement>();
+                GameObject go;
+                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
+                    timeManagement = go.GetComponent<TimeManagement>();
             }
             return timeManagement;
         }
@@ -233,6 +250,7 @@ public static class MyComponents
         PlayersSynchronisation.Reset();
         TimeManagement.Reset();
         NetworkManagement.Reset();
+        PhysicsModelsManager.Reset();
     }
 
 }

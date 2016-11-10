@@ -10,20 +10,15 @@ public class PlayerView : SlideBall.MonoBehaviour
     {
         get
         {
-            return GetMyPlayer(View.isMine, playerConnectionId);
+            return GetMyPlayer(playerConnectionId);
         }
     }
 
-    public static Player GetMyPlayer(bool hasOwnView, ConnectionId connectionId)
+    public static Player GetMyPlayer(ConnectionId connectionId)
     {
-        if (hasOwnView)
-            return Players.MyPlayer;
-        else
-        {
             Player player;
             if (!Players.players.TryGetValue(connectionId, out player))
                 return null;
             return player;
-        }
     }
 }

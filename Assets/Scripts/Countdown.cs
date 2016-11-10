@@ -61,7 +61,7 @@ public class Countdown : SlideBall.MonoBehaviour
     [MyRPC]
     private void StartTimer(string title, float timeLeft)
     {
-        TimeLeft = timeLeft - TimeManagement.LatencyInMiliseconds / 2000f;
+        TimeLeft = timeLeft - MyComponents.TimeManagement.LatencyInMiliseconds / 2000f;
         Title = title;
     }
 }

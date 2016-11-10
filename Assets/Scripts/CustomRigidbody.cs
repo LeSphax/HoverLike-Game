@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class CustomRigidbody : MonoBehaviour
 {
     private CharacterController _characterController;
@@ -30,26 +31,15 @@ public class CustomRigidbody : MonoBehaviour
 
     public void Simulate(float dt)
     {
-        if (this.characterController == null)
-        {
-            return;
-        }
-        //Debug.Log(velocity + "   " + acceleration);
         if (activated)
         {
-            if (gameObject.name == "Ball(Clone)")
-                Debug.Log("Before " + velocity);
             Vector3 movementDelta = (this.velocity * dt) + 0.5f * (Physics.gravity * dt * dt);
-
 
             this.velocity += Physics.gravity * dt;
             velocity += acceleration * dt;
             velocity *= (1 - drag * dt);
             acceleration = Vector3.zero;
-            //Debug.Log(velocity);
             this.characterController.Move(movementDelta);
-            if (gameObject.name == "Ball(Clone)")
-                Debug.Log("After " + velocity);
         }
     }
 
@@ -60,12 +50,9 @@ public class CustomRigidbody : MonoBehaviour
 
     public void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        //if (hit.gameObject.GetComponent<Test>() != null)
+        //    hit.gameObject.SendMessage("OnPlayerEnter", gameObject);
         float collisionForceMagnitude = Mathf.Cos(Mathf.Deg2Rad * Vector3.Angle(velocity, hit.normal)) * velocity.magnitude;
         velocity += 2 * collisionForceMagnitude * bounciness * -hit.normal;
-    }
-
-    public virtual void FixedUpdate()
-    {
-        this.Simulate(Time.fixedDeltaTime);
     }
 }

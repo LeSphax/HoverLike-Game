@@ -48,22 +48,21 @@ namespace PlayerManagement
 
         public void PlayerOwningBallChanged(object previousPlayer, object newPlayer)
         {
-            Debug.Log("PlayerOwningBallChanged ");
-            ConnectionId newPlayerId = newPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)newPlayer;
-            ConnectionId previousPlayerId = previousPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)previousPlayer;
+            ConnectionId newPlayerId = newPlayer == null ? INVALID_PLAYER_ID : (ConnectionId)newPlayer;
+            ConnectionId previousPlayerId = previousPlayer == null ? INVALID_PLAYER_ID : (ConnectionId)previousPlayer;
 
             if (newPlayerId != previousPlayerId)
             {
-                if (previousPlayerId != BallState.NO_PLAYER_ID)
+                if (previousPlayerId != INVALID_PLAYER_ID)
                     players[previousPlayerId].HasBall = false;
-                if (newPlayerId != BallState.NO_PLAYER_ID)
+                if (newPlayerId != INVALID_PLAYER_ID)
                 {
                     players[newPlayerId].HasBall = true;
                     MyComponents.BallState.AttachBall(newPlayerId);
                 }
                 else
                 {
-                    MyComponents.BallState.AttachBall(BallState.NO_PLAYER_ID);
+                    MyComponents.BallState.AttachBall(INVALID_PLAYER_ID);
                 }
             }
         }
@@ -265,6 +264,14 @@ namespace PlayerManagement
         internal bool IsHoldingBall()
         {
             return MyComponents.BallState.GetIdOfPlayerOwningBall() == id;
+        }
+
+        public bool IsMyPlayer
+        {
+            get
+            {
+                return id == Players.myPlayerId;
+            }
         }
 
         public ConnectionId id;

@@ -35,7 +35,7 @@ public class PassManager : MonoBehaviour
         MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
         MyComponents.BallState.Uncatchable = true;
 
-        myAnimation = MovementAnimation.CreateMovementAnimation(MyComponents.BallState.gameObject, targetPosition, 1.0f);
+        myAnimation = MovementAnimation.CreateMovementAnimation(MyComponents.BallState.ballModel, targetPosition, 1.0f);
         myAnimation.FinishedAnimating += TargetReached;
         myAnimation.StartAnimating();
     }

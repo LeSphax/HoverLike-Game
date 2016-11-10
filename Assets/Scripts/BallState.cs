@@ -2,8 +2,8 @@
 using PlayerManagement;
 using System;
 using UnityEngine;
+using UnityEngine.Assertions;
 
-[RequireComponent(typeof(CustomRigidbody))]
 public class BallState : SlideBall.MonoBehaviour
 {
     public static ConnectionId NO_PLAYER_ID
@@ -14,11 +14,10 @@ public class BallState : SlideBall.MonoBehaviour
         }
     }
 
-    //This is set to false when we want the ball's simulation to be handled by the client
-    [HideInInspector]
-    public bool ListenToServer = true;
-
     private CustomRigidbody myRigidbody;
+
+    public GameObject ballModel;
+    public BallPhysicsModel ballPhysics;
 
     private bool uncatchable;
     public bool Uncatchable
@@ -64,53 +63,39 @@ public class BallState : SlideBall.MonoBehaviour
     void Awake()
     {
         MyComponents.GameInitialization.AddGameStartedListener(StartGame);
-        myRigidbody = GetComponent<CustomRigidbody>();
+        myRigidbody = ballModel.GetComponent<CustomRigidbody>();
+        ballPhysics = ballModel.GetComponent<BallPhysicsModel>();
     }
 
     void Start()
     {
-        MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, (previousValue, value) => { Debug.Log("IDHO0HFEOZHF"); ListenToServer = true; });
         Uncatchable = false;
     }
 
     public void StartGame()
     {
         if (MyComponents.NetworkManagement.isServer)
-        {
-            MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, NO_PLAYER_ID);
-        }
+            SetAttached(NO_PLAYER_ID);
 
         AttachBall(GetIdOfPlayerOwningBall());
-
     }
 
-    public void SetAttached(ConnectionId playerID)
+    public void SetAttached(ConnectionId playerId)
     {
-        Debug.Log("SetAttached " + playerID);
-        MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, playerID);
-
-    }
-    public void Detach()
-    {
-        MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, NO_PLAYER_ID);
+        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+        ConnectionId oldPlayerId = ballPhysics.PlayerOwningBall;
+        ballPhysics.PlayerOwningBall = playerId;
+        MyComponents.Players.PlayerOwningBallChanged(oldPlayerId, playerId);
     }
 
     public bool IsAttached()
     {
-        return GetIdOfPlayerOwningBall() != NO_PLAYER_ID;
+        return ballPhysics.IsAttached;
     }
 
     public ConnectionId GetIdOfPlayerOwningBall()
     {
-        object attachedPlayerID;
-        MyComponents.Properties.TryGetProperty(PropertiesKeys.IdPlayerOwningBall, out attachedPlayerID);
-        if (attachedPlayerID == null)
-        {
-            //Debug.LogError("The attachedPlayer wasn't set, this should not happen");
-            return NO_PLAYER_ID;
-        }
-        else
-            return (ConnectionId)attachedPlayerID;
+        return ballPhysics.PlayerOwningBall;
     }
 
     public GameObject GetAttachedPlayer()
@@ -131,13 +116,13 @@ public class BallState : SlideBall.MonoBehaviour
         GameObject player = GetAttachedPlayer();
         if (attach)
         {
-            gameObject.transform.SetParent(player.transform);
+            ballModel.transform.SetParent(player.GetComponent<PlayerController>().physicsModel.transform);
             myRigidbody.activated = false;
-            gameObject.transform.localPosition = ballHoldingPosition;
+            ballModel.transform.localPosition = ballHoldingPosition;
         }
         else
         {
-            gameObject.transform.SetParent(null);
+            ballModel.transform.SetParent(null);
             myRigidbody.activated = true;
         }
     }
@@ -150,8 +135,8 @@ public class BallState : SlideBall.MonoBehaviour
             SetAttached(NO_PLAYER_ID);
             View.RPC("PutAtStartPosition", RPCTargets.Others);
         }
-        gameObject.transform.position = MyComponents.Spawns.BallSpawn;
+        ballModel.transform.position = MyComponents.Spawns.BallSpawn;
         myRigidbody.velocity = Vector3.zero;
-        gameObject.GetComponentInChildren<AttractionBall>().Reset();
+        ballModel.GetComponentInChildren<AttractionBall>().Reset();
     }
 }

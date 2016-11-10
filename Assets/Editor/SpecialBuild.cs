@@ -67,6 +67,7 @@ public class SpecialBuild
         if (x.Contains("cancelled"))
         {
             Debug.LogError(x);
+            ChangeScene(Paths.SCENE_LOBBY);
             return false;
         }
         Debug.Log(x);
