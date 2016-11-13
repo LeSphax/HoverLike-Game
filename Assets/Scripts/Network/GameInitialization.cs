@@ -7,20 +7,9 @@ using UnityEngine.Assertions;
 
 public class GameInitialization : SlideBall.MonoBehaviour
 {
-    bool started;
     short syncId;
 
     public bool isGoal;
-
-    public event EmptyEventHandler AllObjectsCreated;
-
-    public void AddGameStartedListener(EmptyEventHandler handler)
-    {
-        if (started)
-            handler.Invoke();
-        else
-            AllObjectsCreated += handler;
-    }
 
     protected void Awake()
     {
@@ -60,7 +49,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         View.RPC("LoadRoom", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-        AllObjectsCreated.Invoke();
         MyComponents.MatchManager.StartGameCountdown();
     }
 
@@ -108,8 +96,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     public void Reset()
     {
-        started = false;
         syncId = PlayersSynchronisation.INVALID_SYNC_ID;
-        AllObjectsCreated = null;
     }
 }

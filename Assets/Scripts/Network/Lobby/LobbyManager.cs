@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyManager : MonoBehaviour
+public class LobbyManager : SlideBall.MonoBehaviour
 {
 
     public GameObject MainPanel;
@@ -87,7 +87,7 @@ public class LobbyManager : MonoBehaviour
         {
             MyComponents.NetworkManagement.ServerStartFailed += InvokeConnectToDefaultRoom;
             MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
-            InvokeRepeating("CheckStartGame", 0f, 0.2f);
+           // InvokeRepeating("CheckStartGame", 0f, 0.2f);
         }
     }
 
@@ -97,12 +97,13 @@ public class LobbyManager : MonoBehaviour
         Invoke("ConnectToDefaultRoom", 0.1f);
     }
 
+    [MyRPC]
     void CheckStartGame()
     {
         if (MyComponents.NetworkManagement.isServer && (MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) == NumberPlayersToStartGame || NumberPlayersToStartGame == 1))
         {
             Invoke("StartGame", 0.5f);
-            CancelInvoke("CheckStartGame");
+          //  CancelInvoke("CheckStartGame");
         }
     }
 
@@ -129,6 +130,7 @@ public class LobbyManager : MonoBehaviour
     {
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreatePlayerInfo;
         RoomManager.CreateMyPlayerInfo();
+        View.RPC("CheckStartGame",RPCTargets.Server);
     }
 
     private void RoomState()

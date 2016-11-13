@@ -168,7 +168,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
         else
         {
-            Debug.LogError("No view was registered with this Id " + message.viewId);
+            Debug.LogError("No view was registered with this Id " + message);
             PrintViews();
         }
     }

@@ -1,27 +1,32 @@
 ﻿using PlayerManagement;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public class TeleportEffect : AbilityEffect
+public class TeleportEffect : AbilityEffectBuilder
 {
 
-    public float TimeBeforeTeleportation;
+    //public float TimeBeforeTeleportation;
 
-    private GameObject target;
+    //private GameObject target;
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    //public override void ApplyOnTarget(GameObject target, Vector3 position)
+    //{
+    //    this.target = target;
+    //    target.GetComponent<PlayerController>().StopMoving();
+
+    //    MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", target.transform.position, Quaternion.identity);
+    //    MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", position, Quaternion.identity);
+
+    //    Invoke("Teleport", TimeBeforeTeleportation);
+    //}
+
+    //private void Teleport()
+    //{
+    //    target.transform.position = Players.MyPlayer.SpawningPoint;
+    //}
+    public override AbilityEffect GetEffect(params object[] parameters)
     {
-        this.target = target;
-        target.GetComponent<PlayerController>().StopMoving();
-
-        MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", target.transform.position, Quaternion.identity);
-        MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", position, Quaternion.identity);
-
-        Invoke("Teleport", TimeBeforeTeleportation);
-    }
-
-    private void Teleport()
-    {
-        target.transform.position = Players.MyPlayer.SpawningPoint;
+        throw new NotImplementedException();
     }
 }

@@ -1,11 +1,11 @@
 ﻿using PlayerManagement;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BlockTargeting : AbilityTargeting
 {
-    public override void ChooseTarget(CastOnTarget callback)
+    public override List<AbilityEffect> StartTargeting(CastOnTarget callback)
     {
-        GameObject gameObject = Players.MyPlayer.gameobjectAvatar;
-        callback.Invoke(gameObject, gameObject.transform.position);
+        return callback.Invoke(Players.MyPlayer.physicsModel, gameObject.transform.position);
     }
 }

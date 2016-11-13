@@ -3,101 +3,123 @@ using System.Collections.Generic;
 using Byn.Net;
 using UnityEngine;
 
-public class PhysicsModelsManager : ObservedComponent
+namespace PhysicsManagement
 {
-    private SortedDictionary<short,PhysicsModel> physicModels;
-
-    private float lastServerTime;
-
-    protected void Awake()
+    public class PhysicsModelsManager : ObservedComponent
     {
-        Reset();
-    }
+        internal SortedDictionary<short, PhysicsModel> physicModels;
 
-    public void Reset()
-    {
-        physicModels = new SortedDictionary<short, PhysicsModel>();
-    }
+        internal short lastAckFrame;
 
-    public override void OwnerUpdate()
-    {
-        SimulateViews(Time.fixedDeltaTime);
-    }
+        internal short lastSimulatedFrame = 0;
 
-    public override void SimulationUpdate()
-    {
-        SimulateViews(Time.fixedDeltaTime);
-    }
+        private PhysicsModelManagerStrategy strategy;
 
-    private void SimulateViews(float dt)
-    {
-        foreach (var pair in physicModels)
+        public bool Activated
         {
-            pair.Value.CheckForPreSimulationActions();
+            get;
+            set;
         }
-        foreach (var pair in physicModels)
-        {
-            pair.Value.Simulate(dt);
-        }
-        foreach (var pair in physicModels)
-        {
-            pair.Value.CheckForPostSimulationActions();
-        }
-    }
 
-    public override void PacketReceived(ConnectionId id, byte[] data)
-    {
-        int currentIndex = 0;
-        float timePacketSent = BitConverter.ToSingle(data, currentIndex);
-        if (timePacketSent > lastServerTime)
+        protected void Awake()
         {
-            lastServerTime = timePacketSent;
-            currentIndex += 4;
+            Reset();
+            Activated = false;
+        }
 
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                foreach(var model in physicModels.Values)
+                {
+                    if (model.transform.parent != null)
+                        Debug.LogError(model.transform.parent.name);
+                    else
+                        Debug.LogError("Ball");
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                strategy.x = 100;
+            }
+        }
+
+
+        public void Reset()
+        {
+            physicModels = new SortedDictionary<short, PhysicsModel>();
+            MyComponents.NetworkManagement.ConnectedToRoom -= CreateClientStrategy;
+            MyComponents.NetworkManagement.RoomCreated -= CreateServerStrategy;
+            strategy = new NotConnectedPhysicsMMStrategy(this);
+            MyComponents.NetworkManagement.ConnectedToRoom += CreateClientStrategy;
+            MyComponents.NetworkManagement.RoomCreated += CreateServerStrategy;
+        }
+
+        private void CreateClientStrategy()
+        {
+            strategy = new ClientPhysicsMMStrategy(this);
+        }
+
+        private void CreateServerStrategy()
+        {
+            strategy = new ServerPhysicsMMStrategy(this);
+        }
+
+        public override void SimulationUpdate()
+        {
+            if (Activated)
+            {
+                lastSimulatedFrame++;
+                SimulateViews(lastSimulatedFrame, Time.fixedDeltaTime, true);
+            }
+        }
+
+        internal void SimulateViews(short frameNumber, float dt, bool isRealSimulation)
+        {
             foreach (var pair in physicModels)
             {
-                currentIndex += pair.Value.DeserializeAndRewind(data, currentIndex);
+                pair.Value.CheckForPreSimulationActions();
             }
-
-            float time = timePacketSent + Time.fixedDeltaTime;
-            int x = 0;
-            while (time < MyComponents.TimeManagement.NetworkTimeInSeconds - Time.fixedDeltaTime)
+            foreach (var pair in physicModels)
             {
-                x++;
-                if (x > 100)
-                {
-                    Debug.LogError("The loop ran more than 100 times");
-                    break;
-                }
-                SimulateViews(Time.fixedDeltaTime);
-                time += Time.fixedDeltaTime;
+                pair.Value.Simulate(frameNumber, dt, isRealSimulation);
             }
-            SimulateViews(MyComponents.TimeManagement.NetworkTimeInSeconds - time);
+            foreach (var pair in physicModels)
+            {
+                pair.Value.CheckForPostSimulationActions();
+            }
         }
-    }
 
-    protected override byte[] CreatePacket(long sendId)
-    {
-        byte[] data = BitConverter.GetBytes(MyComponents.TimeManagement.NetworkTimeInSeconds);
-        foreach (var pair in physicModels)
+        public override void PacketReceived(ConnectionId id, byte[] data)
         {
-            data = ArrayExtensions.Concatenate(data, pair.Value.Serialize());
+            strategy.PacketReceived(id, data);
         }
-        return data;
-    }
 
-    protected override bool IsSendingPackets()
-    {
-        return MyComponents.NetworkManagement.isServer;
-    }
+        protected override byte[] CreatePacket(long sendId, out Dictionary<ConnectionId, byte[]> dataSpecificToClients)
+        {
+            return strategy.CreatePacket(out dataSpecificToClients);
+        }
 
-    public void RegisterView(short viewId, PhysicsModel model)
-    {
-        physicModels.Add(viewId,model);
-    }
+        protected override bool IsSendingPackets()
+        {
+            return Activated;
+        }
 
-    internal void UnregisterView(short viewId)
-    {
-        physicModels.Remove(viewId);
+        public void RegisterView(short viewId, PhysicsModel model)
+        {
+            physicModels.Add(viewId, model);
+        }
+
+        internal void UnregisterView(short viewId)
+        {
+            physicModels.Remove(viewId);
+        }
+
+        protected override bool SetFlags(out MessageFlags flags)
+        {
+            flags = MessageFlags.NotDistributed | MessageFlags.SceneDependant;
+            return true;
+        }
     }
 }

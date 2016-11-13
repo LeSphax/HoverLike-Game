@@ -7,6 +7,15 @@ public static class ArrayExtensions
 {
     public delegate void Mapper<T>(T element);
 
+    public static byte[] Combine(byte[] first, byte[] second)
+    {
+        byte[] ret = new byte[first.Length + second.Length];
+        Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+        Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+        return ret;
+    }
+
+
     public static T[] Concatenate<T>(T[] array1, T[] array2)
     {
         if (array1.Length == 0)

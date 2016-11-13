@@ -1,16 +1,88 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-[RequireComponent(typeof(AbilityEffect))]
+[RequireComponent(typeof(AbilityEffectBuilder))]
 [RequireComponent(typeof(AbilityTargeting))]
 [RequireComponent(typeof(AbilityInput))]
 public class Ability : MonoBehaviour
 {
     private AbilityInput input;
     private AbilityTargeting targeting;
-    private AbilityEffect[] effects;
+    private AbilityEffectBuilder[] effectBuilders;
 
     public bool NoCooldown = false;
     public float cooldownDuration = 5;
+
+    private bool activate;
+    private bool reactivate;
+    private bool cancel;
+
+    void Update()
+    {
+        if (input.Activate())
+        {
+            activate = true;
+        }
+        if (input.Reactivate())
+        {
+            reactivate = true;
+        }
+        if (input.Cancel())
+            cancel = true;
+    }
+
+    public void ResetInputs()
+    {
+        activate = false;
+        reactivate = false;
+        cancel = false;
+    }
+
+    internal List<AbilityEffect> UpdateAbility()
+    {
+        switch (state)
+        {
+            case State.READY:
+                if (Enabled)
+                {
+                    if (activate)
+                    {
+                        if (currentCooldown == 0)
+                        {
+                            state = State.CHOOSINGTARGET;
+                            return targeting.StartTargeting(CastOnTarget);
+                        }
+                    }
+                }
+                return null;
+            case State.CHOOSINGTARGET:
+                if (Enabled)
+                {
+                    if (cancel)
+                    {
+                        targeting.CancelTargeting();
+                        state = State.READY;
+                    }
+                    else if (reactivate)
+                    {
+                        return targeting.ReactivateTargeting();
+                    }
+                }
+                return null;
+            case State.LOADING:
+                currentCooldown = Mathf.Max(0f, currentCooldown - Time.deltaTime);
+                UpdateUI();
+                if (currentCooldown == 0)
+                {
+                    state = State.READY;
+                }
+                return null;
+            default:
+                throw new UnhandledSwitchCaseException(state);
+        }
+    }
+
     protected float currentCooldown = 0;
 
     private enum State
@@ -46,61 +118,24 @@ public class Ability : MonoBehaviour
         input = GetComponent<AbilityInput>();
         input.CanBeActivatedChanged += EnableAbility;
         targeting = GetComponent<AbilityTargeting>();
-        effects = GetComponents<AbilityEffect>();
+        effectBuilders = GetComponents<AbilityEffectBuilder>();
+        MyComponents.AbilitiesManager.RegisterAbility(this);
     }
 
 
     protected void OnDestroy()
     {
+        MyComponents.AbilitiesManager.UnregisterAbility(this);
         input.CanBeActivatedChanged -= EnableAbility;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        switch (state)
-        {
-            case State.READY:
-                if (input.Activate() && Enabled)
-                {
-                    CastAbility();
-                }
-                break;
-            case State.CHOOSINGTARGET:
-                if (input.Cancel())
-                {
-                    targeting.CancelTargeting();
-                    state = State.READY;
-                }
-                break;
-            case State.LOADING:
-                currentCooldown = Mathf.Max(0f, currentCooldown - Time.deltaTime);
-                UpdateUI();
-                if (currentCooldown == 0)
-                {
-                    state = State.READY;
-                }
-                break;
-            default:
-                throw new UnhandledSwitchCaseException(state);
-        }
     }
 
     protected virtual void UpdateUI() { }
 
-    private void CastAbility()
+    private List<AbilityEffect> CastOnTarget(params object[] parameters)
     {
-        if (currentCooldown == 0)
-        {
-            state = State.CHOOSINGTARGET;
-            targeting.ChooseTarget(CastOnTarget);
-        }
-    }
-
-    private void CastOnTarget(GameObject target, Vector3 position)
-    {
-        foreach (AbilityEffect effect in effects)
-            effect.ApplyOnTarget(target, position);
+        List<AbilityEffect> effects = new List<AbilityEffect>();
+        foreach (AbilityEffectBuilder effectBuilder in effectBuilders)
+            effects.Add(effectBuilder.GetEffect(parameters));
         if (NoCooldown)
             state = State.READY;
         else
@@ -108,6 +143,7 @@ public class Ability : MonoBehaviour
             currentCooldown = cooldownDuration;
             state = State.LOADING;
         }
+        return effects;
     }
 
     private void EnableAbility(bool enable)

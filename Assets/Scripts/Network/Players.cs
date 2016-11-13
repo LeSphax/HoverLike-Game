@@ -50,7 +50,7 @@ namespace PlayerManagement
         {
             ConnectionId newPlayerId = newPlayer == null ? INVALID_PLAYER_ID : (ConnectionId)newPlayer;
             ConnectionId previousPlayerId = previousPlayer == null ? INVALID_PLAYER_ID : (ConnectionId)previousPlayer;
-
+            //Debug.LogError("PlayerOwningBallChanged" + previousPlayerId + "   " + newPlayerId + "   " + players.Count);
             if (newPlayerId != previousPlayerId)
             {
                 if (previousPlayerId != INVALID_PLAYER_ID)
@@ -240,6 +240,7 @@ namespace PlayerManagement
 
         public PlayerController controller;
         public PlayerBallController ballController;
+        public PlayerPhysicsModel physicsModel;
         public GameObject gameobjectAvatar;
 
         internal void NotifyTeamChanged()

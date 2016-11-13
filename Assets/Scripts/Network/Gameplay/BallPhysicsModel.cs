@@ -17,7 +17,6 @@ public class BallPhysicsModel : PhysicsModel
         }
         set
         {
-            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
             playerOwningBall = value;
         }
     }
@@ -32,20 +31,18 @@ public class BallPhysicsModel : PhysicsModel
 
     private float MAX_SPEED = 200;
 
-    public override void Simulate(float dt)
+    public override void Simulate(short frameNumber, float dt, bool isRealSimulation)
     {
         myRigidbody.Simulate(dt);
     }
 
-    protected override void Awake()
+    protected  void Awake()
     {
-        base.Awake();
         myRigidbody = gameObject.GetComponent<CustomRigidbody>();
     }
 
     public override byte[] Serialize()
     {
-        Assert.IsTrue(myRigidbody.velocity == BitConverterExtensions.ToVector3(BitConverterExtensions.GetBytes(myRigidbody.velocity), 0), "Original " + myRigidbody.velocity + "  Result : " + BitConverterExtensions.ToVector3(BitConverterExtensions.GetBytes(myRigidbody.velocity), 0));
         byte[] data = BitConverter.GetBytes(IsAttached);
         if (IsAttached)
         {
@@ -89,7 +86,8 @@ public class BallPhysicsModel : PhysicsModel
 
     public void Throw(Vector3 target, float power, float latencyinSeconds)
     {
-        Vector3 velocity = new Vector3(target.x - gameObject.transform.position.x, 0, target.z - gameObject.transform.position.z);
+        myRigidbody.Reset();
+        Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
         myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, 0.3f);
         //ballModel.transform.position = transform.position + myRigidbody.velocity * latencyinSeconds;
@@ -103,4 +101,10 @@ public class BallPhysicsModel : PhysicsModel
     public override void CheckForPreSimulationActions()
     {
     }
+
+    public override byte[] SerializeInputs(short frame)
+    {
+        return new byte[0];
+    }
+
 }

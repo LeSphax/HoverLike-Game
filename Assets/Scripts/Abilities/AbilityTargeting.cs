@@ -1,13 +1,20 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public delegate void CastOnTarget(GameObject gameObject, Vector3 target);
+public delegate List<AbilityEffect> CastOnTarget(params object[] parameters);
 
 public abstract class AbilityTargeting : MonoBehaviour
 {
 
     public static bool IsTargeting;
 
-    public abstract void ChooseTarget(CastOnTarget callback);
+    public abstract List<AbilityEffect> StartTargeting(CastOnTarget callback);
+
+
+    public virtual List<AbilityEffect> ReactivateTargeting()
+    {
+        return null;
+    }
 
     public virtual void CancelTargeting()
     {

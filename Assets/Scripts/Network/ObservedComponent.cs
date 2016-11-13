@@ -1,5 +1,6 @@
 ﻿using Byn.Net;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MyNetworkView))]
@@ -23,22 +24,46 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
         if (IsSendingPackets())
         {
             MessageFlags flags;
-            if (SetFlags(out flags))
+            Dictionary<ConnectionId, byte[]> dataSpecificToClient;
+            byte[] packet = CreatePacket(sendId, out dataSpecificToClient);
+            if (packet != null)
             {
-                SendData(MessageType.ViewPacket, CreatePacket(sendId), flags);
+                if (dataSpecificToClient == null)
+                {
+                    if (SetFlags(out flags))
+                    {
+                        SendData(MessageType.ViewPacket, packet, flags);
+                    }
+                    else
+                        SendData(MessageType.ViewPacket, packet);
+                }
+                else
+                {
+                    if (SetFlags(out flags))
+                    {
+                        foreach (var pair in dataSpecificToClient)
+                        {
+                            byte[] newPacket = ArrayExtensions.Concatenate(pair.Value, packet);
+                            SendData(MessageType.ViewPacket, newPacket, pair.Key, flags);
+                        }
+                    }
+                    else
+                        foreach (var pair in dataSpecificToClient)
+                        {
+                            byte[] newPacket = ArrayExtensions.Concatenate(pair.Value, packet);
+                            SendData(MessageType.ViewPacket, newPacket, pair.Key);
+                        }
+                }
+                sendId++;
             }
-            else
-                SendData(MessageType.ViewPacket, CreatePacket(sendId));
-            sendId++;
         }
     }
 
     protected abstract bool IsSendingPackets();
 
-    public abstract void OwnerUpdate();
     public abstract void SimulationUpdate();
 
-    protected abstract byte[] CreatePacket(long sendId);
+    protected abstract byte[] CreatePacket(long sendId, out Dictionary<ConnectionId, byte[]> dataSpecificToClient);
 
     public abstract void PacketReceived(ConnectionId id, byte[] data);
 
@@ -54,6 +79,11 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     protected void SendData(MessageType type, byte[] data, MessageFlags flags)
     {
         View.SendData(observedId, type, data, flags);
+    }
+
+    protected void SendData(MessageType type, byte[] data, ConnectionId id, MessageFlags flags)
+    {
+        View.SendData(observedId, type, data, id, flags);
     }
 
     // True is flags shouled be set, false otherwise

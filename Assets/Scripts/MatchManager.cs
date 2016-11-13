@@ -6,7 +6,6 @@ using UnityEngine.Assertions;
 
 public class MatchManager : SlideBall.MonoBehaviour
 {
-
     private enum State
     {
         WARMUP,
@@ -15,7 +14,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         ENDING,
     }
 
-    private const float WARMUP_DURATION = 60f;
+    private const float WARMUP_DURATION = 3f;
     private const float END_POINT_DURATION = 5f;
     private const float ENTRY_DURATION = 3f;
     private State state;
@@ -48,6 +47,10 @@ public class MatchManager : SlideBall.MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+    }
+
     [MyRPC]
     private void SetState(State newState)
     {
@@ -66,11 +69,9 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     public void StartGameCountdown()
     {
+        Debug.Log("StartGameCD " + MyState);
         Assert.IsTrue(MyComponents.NetworkManagement.isServer && MyState == State.WARMUP);
-        MyComponents.Countdown.TimerFinished += Entry;
-        MyComponents.Countdown.TimerFinished += ResetScore;
-        MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", WARMUP_DURATION);
-        MyState = State.WARMUP;
+        Entry();
     }
 
     private void ResetScore()
@@ -79,10 +80,9 @@ public class MatchManager : SlideBall.MonoBehaviour
         Scoreboard.ResetScore();
     }
 
-
-
     private void Entry()
     {
+        Debug.Log("Entry " + MyState);
         Assert.IsTrue(MyComponents.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP));
         MyComponents.Countdown.TimerFinished -= Entry;
         StartCoroutine(CoEntry());
@@ -90,8 +90,6 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     IEnumerator CoEntry()
     {
-        Debug.Log("Entry");
-
         PlayerSpawner spawner = gameObject.GetComponent<PlayerSpawner>();
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         spawner.View.RPC("DesactivatePlayers", RPCTargets.All, syncId);
@@ -100,7 +98,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
         Players.players.Values.Map(player =>
         {
-            player.SpawnNumber = (short)(((player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(player.Team)) + 1) ;
+            player.SpawnNumber = (short)(((player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(player.Team)) + 1);
             player.AvatarSettingsType = player.SpawnNumber == 0 ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
         });
         MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
@@ -109,14 +107,35 @@ public class MatchManager : SlideBall.MonoBehaviour
 
         MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
         spawner.View.RPC("ReactivatePlayers", RPCTargets.All, syncId);
-        //Debug.LogWarning("Reactivate");
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
         MyComponents.BallState.PutAtStartPosition();
         //
-        MyComponents.Countdown.TimerFinished += SendInvokeStartGame;
-        MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", ENTRY_DURATION);
-        MyState = State.STARTING;
+        if (MyState == State.WARMUP)
+        {
+            MyComponents.Countdown.TimerFinished += EndWarmup;
+            MyComponents.Countdown.TimerFinished += ResetScore;
+            MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", WARMUP_DURATION);
+            MyState = State.WARMUP;
+        }
+        else if (MyState == State.ENDING)
+        {
+            MyComponents.Countdown.TimerFinished += SendInvokeStartGame;
+            MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", ENTRY_DURATION);
+            MyState = State.STARTING;
+        }
+        else
+        {
+            Debug.LogError("This shouldn't happen " + MyState);
+        }
+    }
+
+    private void EndWarmup()
+    {
+        MyComponents.Countdown.TimerFinished -= EndWarmup;
+        MyComponents.Countdown.Reset();
+        MyState = State.ENDING;
+        Entry();
     }
 
     private void SendInvokeStartGame()

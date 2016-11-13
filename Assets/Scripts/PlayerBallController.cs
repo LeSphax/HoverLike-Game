@@ -143,7 +143,6 @@ namespace PlayerBallControl
                 ThrowBall(target, power, MyComponents.TimeManagement.GetLatencyInMiliseconds(throwerId) / 1000);
                 MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
             }
-
         }
 
         internal void TryCatchBall(Vector3 modelPosition)
@@ -161,7 +160,7 @@ namespace PlayerBallControl
 
         public void TryAttractBall(Vector3 modelPosition)
         {
-            if (!MyComponents.BallState.Uncatchable && tryingToCatchBall)
+            if (!MyComponents.BallState.Uncatchable && tryingToCatchBall && !MyComponents.BallState.IsAttached())
             {
                 float distanceFromBall = Vector3.Distance(MyComponents.BallState.ballModel.transform.position, modelPosition);
                 if (distanceFromBall <= ATTRACTION_RANGE)

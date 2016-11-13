@@ -51,14 +51,7 @@ public class MyNetworkView : ANetworkView
         if (update)
             foreach (ObservedComponent component in observedComponents)
             {
-                if (isMine)
-                {
-                    component.OwnerUpdate();
-                }
-                else
-                {
-                    component.SimulationUpdate();
-                }
+                component.SimulationUpdate();
             }
     }
 
@@ -87,6 +80,13 @@ public class MyNetworkView : ANetworkView
     public void SendData(short observedId, MessageType type, byte[] data, ConnectionId id)
     {
         MyComponents.NetworkManagement.SendData(ViewId, observedId, type, data, id);
+    }
+
+    public void SendData(short observedId, MessageType type, byte[] data, ConnectionId id, MessageFlags flags)
+    {
+        NetworkMessage message = new NetworkMessage(ViewId, observedId, type, data);
+        message.flags = flags;
+        MyComponents.NetworkManagement.SendData(message, id);
     }
 
     public void SendData(short observedId, MessageType type, byte[] data, MessageFlags flags)

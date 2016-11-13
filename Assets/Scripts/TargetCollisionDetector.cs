@@ -9,8 +9,8 @@ public class TargetCollisionDetector : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == Tags.MyPlayer)
-            controller.TargetHit();
+        //if (other.tag == Tags.MyPlayer)
+        //    controller.TargetHit();
         //if (IsObjectInMyPlayer(other.transform))
         //{
         //    if (IsObjectInMesh(other.transform))

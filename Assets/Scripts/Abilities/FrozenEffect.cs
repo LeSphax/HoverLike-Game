@@ -1,16 +1,20 @@
 ﻿using PlayerManagement;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class FrozenEffect : AbilityEffect
+public class FrozenEffect : AbilityEffectBuilder
 {
     public float duration;
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    public void ApplyOnTarget(GameObject target, Vector3 position)
     {
         Players.MyPlayer.CurrentState = Player.State.FROZEN;
         Invoke("StopFreezing", duration);
+    }
+
+    public override AbilityEffect GetEffect(params object[] parameters)
+    {
+        throw new NotImplementedException();
     }
 
     private void StopFreezing()

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Countdown : SlideBall.MonoBehaviour
@@ -53,7 +54,9 @@ public class Countdown : SlideBall.MonoBehaviour
             {
                 Title = "";
                 if (TimerFinished != null)
+                {
                     TimerFinished.Invoke();
+                }
             }
         }
     }
@@ -64,4 +67,5 @@ public class Countdown : SlideBall.MonoBehaviour
         TimeLeft = timeLeft - MyComponents.TimeManagement.LatencyInMiliseconds / 2000f;
         Title = title;
     }
+
 }

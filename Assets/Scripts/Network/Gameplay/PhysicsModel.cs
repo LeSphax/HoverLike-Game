@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public abstract class PhysicsModel : MonoBehaviour
 {
@@ -7,24 +8,21 @@ public abstract class PhysicsModel : MonoBehaviour
 
 
 
-    protected virtual void Awake()
+    protected virtual void Start()
     {
-        MyComponents.GameInitialization.AddGameStartedListener(Register);
-    }
-
-    private void Register()
-    {
-        Debug.Log("Register Physics Model " + this + "   " + myNetworkView.ViewId);
         MyComponents.PhysicsModelsManager.RegisterView(myNetworkView.ViewId, this);
     }
 
-    public abstract void Simulate(float dt);
+    public abstract void Simulate(short frameNumber, float dt, bool isRealSimulation);
 
     public abstract byte[] Serialize();
 
     public abstract int DeserializeAndRewind(byte[] data, int offset);
 
     public abstract void CheckForPostSimulationActions();
+
+    public abstract byte[] SerializeInputs(short frame);
+
     public abstract void CheckForPreSimulationActions();
 
     protected void OnDestroy()

@@ -1,9 +1,9 @@
 ﻿using BaseNetwork;
 using Navigation;
+using PhysicsManagement;
 using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
 
 public static class MyComponents
 {
@@ -16,6 +16,7 @@ public static class MyComponents
             abilitiesFactory = null;
             ballState = null;
             spawns = null;
+            abilitiesManager = null;
         }
         else if (Scenes.IsCurrentScene(Scenes.MainIndex))
         {
@@ -79,6 +80,20 @@ public static class MyComponents
                 abilitiesFactory = GameObject.FindGameObjectWithTag(Tags.Abilities).GetComponent<AbilitiesFactory>();
             }
             return abilitiesFactory;
+        }
+    }
+
+    private static AbilitiesManager abilitiesManager;
+    public static AbilitiesManager AbilitiesManager
+    {
+        get
+        {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+            if (abilitiesManager == null)
+            {
+                abilitiesManager = GameObject.FindGameObjectWithTag(Tags.Abilities).GetComponent<AbilitiesManager>();
+            }
+            return abilitiesManager;
         }
     }
 

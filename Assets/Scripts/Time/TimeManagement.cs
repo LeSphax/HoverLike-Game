@@ -53,18 +53,14 @@ public class TimeManagement : ObservedComponent
         strategy.PacketReceived(id, data);
     }
 
-    public override void OwnerUpdate()
-    {
-        //DoNothing
-    }
-
     public override void SimulationUpdate()
     {
         //DoNothing
     }
 
-    protected override byte[] CreatePacket(long sendId)
+    protected override byte[] CreatePacket(long sendId, out Dictionary<ConnectionId,byte[]> dataSpecificToClients)
     {
+        dataSpecificToClients = null;
         return strategy.CreatePacket();
     }
 

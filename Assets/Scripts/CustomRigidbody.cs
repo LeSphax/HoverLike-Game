@@ -50,9 +50,13 @@ public class CustomRigidbody : MonoBehaviour
 
     public void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        //if (hit.gameObject.GetComponent<Test>() != null)
-        //    hit.gameObject.SendMessage("OnPlayerEnter", gameObject);
         float collisionForceMagnitude = Mathf.Cos(Mathf.Deg2Rad * Vector3.Angle(velocity, hit.normal)) * velocity.magnitude;
         velocity += 2 * collisionForceMagnitude * bounciness * -hit.normal;
+    }
+
+    internal void Reset()
+    {
+        acceleration = Vector3.zero;
+        velocity = Vector3.zero;
     }
 }

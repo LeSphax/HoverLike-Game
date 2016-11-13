@@ -1,11 +1,12 @@
 ﻿using PlayerManagement;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MoveTargeting : AbilityTargeting
 {
-    public override void ChooseTarget(CastOnTarget callback)
+    public override List<AbilityEffect> StartTargeting(CastOnTarget callback)
     {
         Vector3 position = Functions.GetMouseWorldPosition();
-        callback.Invoke(Players.MyPlayer.controller.gameObject, position);
+        return callback.Invoke(position);
     }
 }

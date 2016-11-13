@@ -75,6 +75,7 @@ public class PlayerController : PlayerView
         Player.controller = this;
         Player.gameobjectAvatar = gameObject;
         Player.ballController = GetComponent<PlayerBallController>();
+        Player.physicsModel = physicsModel;
         GetComponent<PlayerBallController>().Init(id);
         ResetPlayer();
     }
@@ -139,14 +140,15 @@ public class PlayerController : PlayerView
 
     public void PutAtStartPosition()
     {
-        transform.position = MyComponents.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
-        transform.LookAt(Vector3.zero);
+        physicsModel.transform.position = MyComponents.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
+        physicsModel.transform.LookAt(Vector3.zero);
         StopMoving();
     }
 
     public void StopMoving()
     {
         physicsModel.GetComponent<CustomRigidbody>().velocity = Vector3.zero;
+        physicsModel.GetComponent<CustomRigidbody>().acceleration = Vector3.zero;
         DestroyTarget();
     }
 }

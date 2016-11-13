@@ -62,7 +62,6 @@ public class BallState : SlideBall.MonoBehaviour
 
     void Awake()
     {
-        MyComponents.GameInitialization.AddGameStartedListener(StartGame);
         myRigidbody = ballModel.GetComponent<CustomRigidbody>();
         ballPhysics = ballModel.GetComponent<BallPhysicsModel>();
     }
@@ -72,17 +71,8 @@ public class BallState : SlideBall.MonoBehaviour
         Uncatchable = false;
     }
 
-    public void StartGame()
-    {
-        if (MyComponents.NetworkManagement.isServer)
-            SetAttached(NO_PLAYER_ID);
-
-        AttachBall(GetIdOfPlayerOwningBall());
-    }
-
     public void SetAttached(ConnectionId playerId)
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
         ConnectionId oldPlayerId = ballPhysics.PlayerOwningBall;
         ballPhysics.PlayerOwningBall = playerId;
         MyComponents.Players.PlayerOwningBallChanged(oldPlayerId, playerId);

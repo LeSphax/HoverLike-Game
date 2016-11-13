@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using PlayerManagement;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class PassTargeting : AbilityTargeting
 {
@@ -8,12 +10,13 @@ public class PassTargeting : AbilityTargeting
 
     private CastOnTarget callback;
 
-    public override void ChooseTarget(CastOnTarget callback)
+    public override List<AbilityEffect> StartTargeting(CastOnTarget callback)
     {
         this.callback = callback;
         targeter = (GameObject)Instantiate(prefabTargeter, transform, true);
         IsTargeting = true;
         UpdateTargeterPosition();
+        return null;
     }
 
     void Update()
@@ -23,7 +26,7 @@ public class PassTargeting : AbilityTargeting
             UpdateTargeterPosition();
             if (Input.GetMouseButtonDown(0))
             {
-                callback.Invoke(targeter, targeter.transform.position);
+                callback.Invoke(Players.MyPlayer.physicsModel, targeter.transform.position);
                 CancelTargeting();
             }
         }

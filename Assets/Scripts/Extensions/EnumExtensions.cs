@@ -28,4 +28,28 @@ public static class EnumExtensions
         a = a ^ b;
     }
 
+    public static void SetFlag(this InputFlag a, InputFlag b)
+    {
+        Debug.LogError(a + "   " + (a | b));
+        a = a | b;
+        Debug.LogError(a);
+
+    }
+
+    public static void UnsetFlag(this InputFlag a, InputFlag b)
+    {
+        a = a & (~b);
+    }
+
+    // Works with "None" as well
+    public static bool HasFlag(this InputFlag a, InputFlag b)
+    {
+        return (a & b) == b;
+    }
+
+    public static void ToogleFlag(InputFlag a, InputFlag b)
+    {
+        a = a ^ b;
+    }
+
 }

@@ -103,6 +103,7 @@ public class PlayerInfo : PlayerView
 
     void OnDestroy()
     {
-        MyComponents.TimeManagement.LatencyChanged -= SetLatency;
+        if (MyComponents.TimeManagement != null)
+            MyComponents.TimeManagement.LatencyChanged -= SetLatency;
     }
 }

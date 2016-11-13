@@ -1,12 +1,16 @@
-﻿using PlayerManagement;
+﻿using System;
+using PlayerManagement;
 using UnityEngine;
 
-public class BlockEffect : AbilityEffect
+public class BlockEffect : AbilityEffectBuilder
 {
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    //public override void ApplyOnTarget(Phys target, Vector3 position)
+    //{
+    //    MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", Players.myPlayerId);
+    //}
+    public override AbilityEffect GetEffect(params object[] parameters)
     {
-        MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", Players.myPlayerId);
+        throw new NotImplementedException();
     }
-
 }

@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class DashTargeting : AbilityTargeting
 {
-    public override void ChooseTarget(CastOnTarget callback)
+    public override List<AbilityEffect> StartTargeting(CastOnTarget callback)
     {
         Vector3 position = Functions.GetMouseWorldPosition();
-        callback.Invoke(Players.MyPlayer.gameobjectAvatar, position);
+        return callback.Invoke(Players.MyPlayer.physicsModel, position);
     }
 }

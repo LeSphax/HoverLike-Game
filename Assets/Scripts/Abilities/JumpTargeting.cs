@@ -1,11 +1,11 @@
 ﻿using PlayerManagement;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class JumpTargeting : AbilityTargeting
 {
-    public override void ChooseTarget(CastOnTarget callback)
+    public override List<AbilityEffect> StartTargeting(CastOnTarget callback)
     {
-        GameObject target = Players.MyPlayer.gameobjectAvatar;
-        callback.Invoke(target, target.transform.position);
+        return callback.Invoke(Players.MyPlayer.physicsModel);
     }
 }
