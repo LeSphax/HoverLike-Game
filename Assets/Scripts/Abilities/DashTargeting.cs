@@ -8,6 +8,6 @@ public class DashTargeting : AbilityTargeting
     public override List<AbilityEffect> StartTargeting(CastOnTarget callback)
     {
         Vector3 position = Functions.GetMouseWorldPosition();
-        return callback.Invoke(Players.MyPlayer.physicsModel, position);
+        return callback.Invoke(position);
     }
 }

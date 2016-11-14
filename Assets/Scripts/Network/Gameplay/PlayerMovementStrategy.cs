@@ -8,20 +8,23 @@ public abstract class PlayerMovementStrategy : MonoBehaviour
 
     protected CustomRigidbody myRigidbody;
 
-    protected const float FRAME_DURATION = 0.02f;
+    [SerializeField]
+    internal float maxVelocity;
+    [SerializeField]
+    internal float AngularSpeed;
 
-    void Awake()
+    protected virtual void Awake()
     {
         myRigidbody = GetComponent<CustomRigidbody>();
     }
 
-    public void UpdateMovement()
+    public void UpdateMovement(float dt)
     {
         if (targetPosition != null)
         {
-            Move();
+            Move(dt);
         }
     }
 
-    protected abstract void Move();
+    protected abstract void Move(float dt);
 }

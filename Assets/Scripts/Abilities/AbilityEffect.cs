@@ -9,11 +9,13 @@ public abstract class AbilityEffect
 
     public abstract void UnApplyEffect(PlayerPhysicsModel playerPhysicsModel);
 
-    public abstract InputFlag GetInputFlag();
+    public virtual InputFlag GetInputFlag() { return InputFlag.NONE; }
 
-    public abstract byte[] Serialize();
+    public abstract bool IsSerialisable();
 
-    public abstract int Deserialize(byte[] data, int currentIndex);
+    public virtual byte[] Serialize() { return null; }
+
+    public virtual int Deserialize(byte[] data, int currentIndex) { return 0; }
 
 
     private static Queue<AbilityEffect> effects = new Queue<AbilityEffect>();
@@ -22,16 +24,15 @@ public abstract class AbilityEffect
     {
         if (flags.HasFlag(InputFlag.LEFTCLICK))
         {
-            effects.Enqueue(new MoveEffect());
+            effects.Enqueue(new ShootEffect());
         }
         if (flags.HasFlag(InputFlag.RIGHTCLICK))
         {
-            effects.Enqueue(new ShootEffect());
+            effects.Enqueue(new MoveEffect());
         }
         if (flags.HasFlag(InputFlag.FIRST))
         {
-
-
+            effects.Enqueue(new DashEffect());
         }
         if (flags.HasFlag(InputFlag.SECOND))
         {
@@ -49,10 +50,10 @@ public abstract class AbilityEffect
         {
 
         }
-        AbilityEffect effect;
         List<AbilityEffect> result = new List<AbilityEffect>();
-        while ((effect = effects.Dequeue()) != null)
+        while (effects.Count > 0)
         {
+            var effect = effects.Dequeue();
             currentIndex += effect.Deserialize(data, currentIndex);
             result.Add(effect);
         }

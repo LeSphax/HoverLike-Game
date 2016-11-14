@@ -20,6 +20,7 @@ namespace PhysicsManagement
                 return null;
             byte[] data = BitConverter.GetBytes(manager.lastSimulatedFrame);
             data = ArrayExtensions.Concatenate(data, Players.MyPlayer.physicsModel.SerializeInputs(manager.lastSimulatedFrame));
+            //Debug.LogError((InputFlag)data[2] + " " +data.Length);
             return data;
         }
 
@@ -29,14 +30,15 @@ namespace PhysicsManagement
             short ackFrame = BitConverter.ToInt16(data, currentIndex);
             if (ackFrame > manager.lastAckFrame)
             {
-                manager.lastAckFrame = ackFrame;
                 currentIndex += 2;
 
                 foreach (var pair in manager.physicModels)
                 {
                     //Debug.LogError(pair.Value + "    " + currentIndex + "   " + data.Length);
-                    currentIndex += pair.Value.DeserializeAndRewind(data, currentIndex);
+                    currentIndex += pair.Value.DeserializeAndRewind(manager.lastAckFrame, ackFrame, data, currentIndex);
                 }
+                manager.lastAckFrame = ackFrame;
+
                 for (short i = manager.lastAckFrame; i <= manager.lastSimulatedFrame; i++)
                 {
                     manager.SimulateViews(i, Time.fixedDeltaTime, false);

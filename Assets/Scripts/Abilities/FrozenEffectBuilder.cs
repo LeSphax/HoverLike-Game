@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public class FrozenEffect : AbilityEffectBuilder
+public class FrozenEffectBuilder : AbilityEffectBuilder
 {
     public float duration;
 
@@ -14,12 +14,29 @@ public class FrozenEffect : AbilityEffectBuilder
 
     public override AbilityEffect GetEffect(params object[] parameters)
     {
-        throw new NotImplementedException();
+        return new FrozenEffect();
     }
 
     private void StopFreezing()
     {
         if (Players.MyPlayer.CurrentState == Player.State.FROZEN)
             Players.MyPlayer.CurrentState = Player.State.PLAYING;
+    }
+}
+
+public class FrozenEffect : AbilityEffect
+{
+    public override void ApplyEffect(PlayerPhysicsModel model)
+    {
+        Debug.Log("FrozenEffect not implemented");
+    }
+
+    public override void UnApplyEffect(PlayerPhysicsModel playerPhysicsModel)
+    {
+
+    }
+    public override bool IsSerialisable()
+    {
+        return false;
     }
 }

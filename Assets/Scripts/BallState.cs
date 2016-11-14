@@ -17,6 +17,8 @@ public class BallState : SlideBall.MonoBehaviour
     private CustomRigidbody myRigidbody;
 
     public GameObject ballModel;
+    public GameObject ballView;
+    [HideInInspector]
     public BallPhysicsModel ballPhysics;
 
     private bool uncatchable;
@@ -107,12 +109,15 @@ public class BallState : SlideBall.MonoBehaviour
         if (attach)
         {
             ballModel.transform.SetParent(player.GetComponent<PlayerController>().physicsModel.transform);
+            ballView.transform.SetParent(player.GetComponent<PlayerController>().physicsView.transform);
             myRigidbody.activated = false;
             ballModel.transform.localPosition = ballHoldingPosition;
+            ballView.transform.localPosition = ballHoldingPosition;
         }
         else
         {
             ballModel.transform.SetParent(null);
+            ballView.transform.SetParent(null);
             myRigidbody.activated = true;
         }
     }

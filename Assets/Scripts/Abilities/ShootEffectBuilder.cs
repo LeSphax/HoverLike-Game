@@ -28,7 +28,7 @@ namespace PlayerBallControl
 
         public override void ApplyEffect(PlayerPhysicsModel model)
         {
-            model.ballController.ClientThrowBall(position, powerValue);
+            model.ballController.ThrowBall(position, powerValue);
         }
 
         public override void UnApplyEffect(PlayerPhysicsModel playerPhysicsModel)
@@ -41,6 +41,10 @@ namespace PlayerBallControl
             return InputFlag.LEFTCLICK;
         }
 
+        public override bool IsSerialisable()
+        {
+            return true;
+        }
         public override byte[] Serialize()
         {
             return ArrayExtensions.Concatenate(BitConverter.GetBytes(powerValue), BitConverterExtensions.GetBytes(position));

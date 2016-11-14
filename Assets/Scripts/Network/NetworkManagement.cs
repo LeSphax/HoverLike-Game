@@ -31,6 +31,9 @@ namespace BaseNetwork
 
         private const string LOCALHOST_URL = "ws://localhost:5000";
 
+        public bool addLatency;
+        public int NumberFramesLatency;
+
         public enum Server
         {
             LOCALHOST,
@@ -112,6 +115,8 @@ namespace BaseNetwork
         /// </summary>
         private IBasicNetwork mNetwork = null;
 
+        private LatencySimulation latencySimulation;
+
         /// <summary>
         /// True if the user opened an own room allowing incoming connections
         /// </summary>
@@ -171,6 +176,8 @@ namespace BaseNetwork
             if (mNetwork != null)
             {
                 Debug.Log("WebRTCNetwork created");
+                if (addLatency)
+                    latencySimulation = new LatencySimulation(mNetwork, NumberFramesLatency);
             }
             else
             {
@@ -225,6 +232,8 @@ namespace BaseNetwork
             //check if the network was created
             if (mNetwork != null)
             {
+                if (addLatency)
+                    latencySimulation.NewFrame();
                 //first update it to read the data from the underlaying network system
                 mNetwork.Update();
 
@@ -463,7 +472,10 @@ namespace BaseNetwork
 
         private void SendToNetwork(byte[] data, ConnectionId id, bool reliable)
         {
-            mNetwork.SendData(id, data, 0, data.Length, reliable);
+            if (addLatency)
+                latencySimulation.AddMessage(data, id, reliable);
+            else
+                mNetwork.SendData(id, data, 0, data.Length, reliable);
             if (!mConnections.Contains(id))
                 Debug.LogError("This isn't a valid connectionId");
         }

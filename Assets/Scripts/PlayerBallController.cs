@@ -125,26 +125,6 @@ namespace PlayerBallControl
             }
         }
 
-        internal void ClientThrowBall(Vector3 target, float power)
-        {
-            if (!MyComponents.NetworkManagement.isServer)
-            {
-                MyComponents.BallState.AttachBall(BallState.NO_PLAYER_ID);
-                ThrowBall(target, power);
-            }
-            View.RPC("ServerThrowBall", RPCTargets.Server, playerConnectionId, target, power);
-        }
-
-        [MyRPC]
-        private void ServerThrowBall(ConnectionId throwerId, Vector3 target, float power)
-        {
-            if (throwerId == MyComponents.BallState.GetIdOfPlayerOwningBall())
-            {
-                ThrowBall(target, power, MyComponents.TimeManagement.GetLatencyInMiliseconds(throwerId) / 1000);
-                MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
-            }
-        }
-
         internal void TryCatchBall(Vector3 modelPosition)
         {
             if ((!MyComponents.BallState.IsAttached() || Stealing) && !MyComponents.BallState.Uncatchable && tryingToCatchBall)
@@ -177,11 +157,12 @@ namespace PlayerBallControl
         }
 
 
-        private void ThrowBall(Vector3 target, float power, float latencyInSeconds = 0)
+        public void ThrowBall(Vector3 target, float power, float latencyInSeconds = 0)
         {
             tryingToCatchBall = false;
             MyComponents.BallState.ballPhysics.Throw(target, power, latencyInSeconds);
             Invoke("TryToCatchBall", 0.5f);
+            MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
         }
 
         void TryToCatchBall()

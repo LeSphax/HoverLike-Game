@@ -30,6 +30,11 @@ namespace PlayerBallControl
             model.targetPosition = targetPosition;
         }
 
+        public override bool IsSerialisable()
+        {
+            return true;
+        }
+
         public override int Deserialize(byte[] data, int currentIndex)
         {
             targetPosition = BitConverterExtensions.ToVector3(data, currentIndex);

@@ -29,7 +29,7 @@ public class BallPhysicsModel : PhysicsModel
         }
     }
 
-    private float MAX_SPEED = 200;
+    public float MAX_SPEED = 200;
 
     public override void Simulate(short frameNumber, float dt, bool isRealSimulation)
     {
@@ -57,7 +57,7 @@ public class BallPhysicsModel : PhysicsModel
         }
     }
 
-    public override int DeserializeAndRewind(byte[] data, int currentIndex)
+    public override int DeserializeAndRewind(short previousAcknowlegedFrame, short frameNumber, byte[] data, int currentIndex)
     {
         bool isAttached = BitConverter.ToBoolean(data, currentIndex);
         currentIndex++;

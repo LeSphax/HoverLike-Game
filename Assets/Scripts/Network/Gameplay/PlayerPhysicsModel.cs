@@ -15,6 +15,7 @@ public class PlayerPhysicsModel : PhysicsModel
     private const float TARGET_POSITION_RANGE = 3f;
 
     private ConnectionId? playerConnectionId = null;
+
     private Player Player
     {
         get
@@ -33,6 +34,8 @@ public class PlayerPhysicsModel : PhysicsModel
     private Dictionary<short, List<AbilityEffect>> unacknowlegedEffects = new Dictionary<short, List<AbilityEffect>>();
 
     private List<AbilityEffect> appliedEffects = new List<AbilityEffect>();
+    private List<PersistentAbilityEffect> persistentEffects = new List<PersistentAbilityEffect>();
+
 
     internal Vector3? targetPosition
     {
@@ -42,6 +45,22 @@ public class PlayerPhysicsModel : PhysicsModel
             strategy.targetPosition = value;
             if (TargetPositionChanged != null)
                 TargetPositionChanged.Invoke(strategy.targetPosition);
+        }
+    }
+
+    public float MaxVelocity
+    {
+        get
+        {
+            return strategy.maxVelocity;
+        }
+    }
+
+    public float AngularSpeed
+    {
+        get
+        {
+            return strategy.AngularSpeed;
         }
     }
 
@@ -99,9 +118,14 @@ public class PlayerPhysicsModel : PhysicsModel
             }
         }
 
-        strategy.UpdateMovement();
+        foreach(var effect in new List<PersistentAbilityEffect>(persistentEffects))
+        {
+            effect.Simulate(dt);
+        }
 
-        myRigidbody.Simulate(Time.fixedDeltaTime);
+        strategy.UpdateMovement(dt);
+
+        myRigidbody.Simulate(dt);
     }
 
     public override byte[] Serialize()
@@ -122,8 +146,12 @@ public class PlayerPhysicsModel : PhysicsModel
         return data;
     }
 
-    public override int DeserializeAndRewind(byte[] data, int currentIndex)
+    public override int DeserializeAndRewind(short previousAcknowlegedFrame, short frameNumber, byte[] data, int currentIndex)
     {
+        for (short i = previousAcknowlegedFrame; i < frameNumber; i++)
+        {
+            unacknowlegedEffects.Remove(i);
+        }
         UnapplyEffects();
         int offset = 0;
         bool hasTarget = BitConverter.ToBoolean(data, currentIndex + offset);
@@ -185,8 +213,11 @@ public class PlayerPhysicsModel : PhysicsModel
         {
             foreach (var effect in effects)
             {
-                flags = flags | effect.GetInputFlag();
-                flagsToEffects.Add(effect.GetInputFlag(), effect);
+                if (effect.IsSerialisable())
+                {
+                    flags = flags | effect.GetInputFlag();
+                    flagsToEffects.Add(effect.GetInputFlag(), effect);
+                }
             }
         }
 
@@ -198,6 +229,16 @@ public class PlayerPhysicsModel : PhysicsModel
                 data = ArrayExtensions.Concatenate(data, effect.Serialize());
         }
         return data;
+    }
+
+    internal void AddPersistentEffect(PersistentAbilityEffect persistentAbilityEffect)
+    {
+        persistentEffects.Add(persistentAbilityEffect);
+    }
+
+    internal void RemovePersistentEffect(PersistentAbilityEffect persistentAbilityEffect)
+    {
+        persistentEffects.Remove(persistentAbilityEffect);
     }
 
 }

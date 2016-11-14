@@ -16,7 +16,7 @@ public class PlayerController : PlayerView
     [SerializeField]
     public PlayerPhysicsModel physicsModel;
     [SerializeField]
-    private PlayerPhysicsView physicsView;
+    public PlayerPhysicsView physicsView;
 
     private GameObject _target;
     private GameObject target

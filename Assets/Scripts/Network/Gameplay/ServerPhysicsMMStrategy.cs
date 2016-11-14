@@ -16,6 +16,9 @@ namespace PhysicsManagement
 
         private Dictionary<ConnectionId, short> lastAckFrameForEachClient = new Dictionary<ConnectionId, short>();
 
+        private Queue<short> savedFrames = new Queue<short>();
+        private Dictionary<short, List<AbilityEffect>> unacknowlegedEffects = new Dictionary<short, List<AbilityEffect>>();
+
         public override byte[] CreatePacket(out Dictionary<ConnectionId, byte[]> dataSpecificToClients)
         {
             dataSpecificToClients = new Dictionary<ConnectionId, byte[]>();
@@ -47,6 +50,10 @@ namespace PhysicsManagement
             InputFlag flags = (InputFlag)data[currentIndex];
             currentIndex++;
             List<AbilityEffect> effects = AbilityEffect.Deserialize(flags, data, currentIndex);
+            foreach(var effect in effects)
+            {
+                effect.ApplyEffect(Players.players[id].physicsModel);
+            }
         }
 
         public override void RunTimeStep(float dt)

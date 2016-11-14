@@ -42,6 +42,11 @@ public class SpecialBuild
 
     public static bool BuildOnly()
     {
+        LobbyManager lobbyManager = ((LobbyManager)UnityEngine.Object.FindObjectOfType(typeof(LobbyManager)));
+        if (lobbyManager.NumberPlayersToStartGame < 2)
+        {
+            lobbyManager.NumberPlayersToStartGame = 2;
+        }
         return BuildGame(levels);
     }
 

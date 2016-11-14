@@ -21,7 +21,7 @@ public class PlayerPhysicsView : PhysicsView
         }
     }
 
-    protected void Awake()
+    protected void Start()
     {
         if (IsMyPlayer())
         {
@@ -46,19 +46,18 @@ public class PlayerPhysicsView : PhysicsView
 
     protected override void ClientBehaviour()
     {
-        //transform.position = Vector3.MoveTowards(transform.position, model.transform.position, 0.5f);
-        UpdateView();
+        UpdateCamera();
     }
 
     protected override void ServerBehaviour()
     {
-        UpdateView();
+        UpdateCamera();
     }
 
-    private void UpdateView()
+    private void UpdateCamera()
     {
-        transform.position = model.transform.position;
-        transform.rotation = model.transform.rotation;
+        transform.position = Vector3.MoveTowards(transform.position, model.transform.position, DashEffect.SPEED * 1.2f * Time.fixedDeltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, model.transform.rotation, model.AngularSpeed * 1.5f * Time.fixedDeltaTime);
         if (IsMyPlayer())
             CameraController.transform.position = transform.position;
     }

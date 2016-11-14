@@ -14,7 +14,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         ENDING,
     }
 
-    private const float WARMUP_DURATION = 3f;
+    private const float WARMUP_DURATION = 60f;
     private const float END_POINT_DURATION = 5f;
     private const float ENTRY_DURATION = 3f;
     private State state;
@@ -133,7 +133,6 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void EndWarmup()
     {
         MyComponents.Countdown.TimerFinished -= EndWarmup;
-        MyComponents.Countdown.Reset();
         MyState = State.ENDING;
         Entry();
     }

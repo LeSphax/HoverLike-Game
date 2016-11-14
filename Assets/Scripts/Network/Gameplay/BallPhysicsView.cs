@@ -8,17 +8,17 @@ public class BallPhysicsView : PhysicsView
 
     protected override void ClientBehaviour()
     {
-        //if (model.PlayerOwningBall != Players.INVALID_PLAYER_ID)
-        //{
-        //    float distance = Vector3.Distance(transform.position, model.transform.position);
-        //    transform.position = Vector3.MoveTowards(transform.position, model.transform.position, Mathf.distance / 2);
-        //}
-        //else
-            transform.position = model.transform.position;
+        UpdateView();
+    }
+
+    private void UpdateView()
+    {
+        if (!MyComponents.BallState.IsAttached())
+            transform.position = Vector3.MoveTowards(transform.position, model.transform.position, model.MAX_SPEED * 1.5f * Time.fixedDeltaTime);
     }
 
     protected override void ServerBehaviour()
     {
-        transform.position = model.transform.position;
+        UpdateView();
     }
 }
