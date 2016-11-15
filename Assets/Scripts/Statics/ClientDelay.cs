@@ -14,7 +14,7 @@ public class ClientDelay : MonoBehaviour
         get
         {
             if (delay == -1)
-                delay = 0.166f;
+                delay = 0.05f;
             //delay = 3 * 1f / PhotonNetwork.sendRate + PhotonNetwork.GetPing() / 1000f;
             return delay;
         }

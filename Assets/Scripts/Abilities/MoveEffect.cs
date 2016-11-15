@@ -8,7 +8,7 @@ namespace PlayerBallControl
 
         public override void ApplyOnTarget(GameObject player, Vector3 position)
         {
-            player.GetComponent<PlayerController>().CreateTarget(position);
+            player.GetComponent<PlayerController>().View.RPC("CreateTarget",RPCTargets.Server,position);
         }
 
     }

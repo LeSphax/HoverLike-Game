@@ -17,25 +17,18 @@ public class PlayerMovementView : ObservedComponent
         get
         {
             Assert.IsTrue(playerConnectionId != null);
-            return PlayerView.GetMyPlayer(View.isMine, playerConnectionId.Value);
+            return PlayerView.GetMyPlayer(playerConnectionId.Value);
         }
     }
 
     private PlayerMovementStrategy strategy;
+    private PlayerController controller;
 
     private Rigidbody myRigidbody;
 
-    PacketHandler packetHandler;
-
     private Queue<PlayerPacket> StateBuffer = new Queue<PlayerPacket>();
     private PlayerPacket? currentPacket = null;
-    internal Vector3? targetPosition
-    {
-        set
-        {
-            strategy.targetPosition = value;
-        }
-    }
+
 
     private PlayerPacket? nextPacket
     {
@@ -60,10 +53,22 @@ public class PlayerMovementView : ObservedComponent
         }
     }
 
+    internal Vector3? targetPosition
+    {
+        set
+        {
+            strategy.targetPosition = value;
+        }
+    }
+
+
+
     protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
-        packetHandler = ReceiveData;
+        controller = GetComponent<PlayerController>();
+        if (!MyComponents.NetworkManagement.isServer)
+            myRigidbody.isKinematic = true;
     }
 
 
@@ -90,13 +95,13 @@ public class PlayerMovementView : ObservedComponent
 
     public override void OwnerUpdate()
     {
+        controller.abilitiesManager.ApplyAbilityEffects(Time.fixedDeltaTime);
         strategy.UpdateMovement();
     }
 
     protected override byte[] CreatePacket(long sendId)
     {
         PlayerPacket packet = new PlayerPacket();
-        packet.velocity = myRigidbody.velocity;
         packet.position = transform.position;
         packet.rotation = transform.rotation;
         packet.timeSent = TimeManagement.NetworkTimeInSeconds;
@@ -135,27 +140,21 @@ public class PlayerMovementView : ObservedComponent
         }
     }
 
-    public void ReceiveData(byte[] data)
+    public override void PacketReceived(ConnectionId id, byte[] data)
     {
         PlayerPacket newPacket = NetworkExtensions.Deserialize<PlayerPacket>(data);
         StateBuffer.Enqueue(newPacket);
     }
 
-    public override void PacketReceived(ConnectionId id, byte[] data)
-    {
-        packetHandler.Invoke(data);
-    }
-
     protected override bool IsSendingPackets()
     {
-        return View.isMine;
+        return MyComponents.NetworkManagement.isServer;
     }
 }
 
 [Serializable]
 public struct PlayerPacket
 {
-    public Vector3 velocity;
     public Vector3 position;
     public Quaternion rotation;
     public float timeSent;

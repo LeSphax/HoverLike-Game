@@ -1,8 +1,21 @@
-﻿using UnityEngine;
+﻿using System;
+using AbilitiesManagement;
+using UnityEngine;
 
 public class DashEffect : AbilityEffect
 {
-    private bool dashing = false;
+
+
+    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    {
+        target.GetComponent<PlayerController>().View.RPC("Dash", RPCTargets.Server, position);
+    }
+
+}
+
+public class PersistentDashEffect : PersistentEffect
+{
+    float time;
     public float speed = 8f;
     public float endSpeed = 3f;
     public float dashDuration = 0.4f;
@@ -10,34 +23,32 @@ public class DashEffect : AbilityEffect
     private Vector3 force;
     private Rigidbody myRigidbody;
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    public PersistentDashEffect(AbilitiesManager manager, Vector3 position) : base(manager)
     {
-        myRigidbody = target.GetComponent<Rigidbody>();
+        myRigidbody = manager.GetComponent<Rigidbody>();
         //
-        target.GetComponent<PlayerController>().DestroyTarget();
-        target.transform.LookAt(position + Vector3.up * target.transform.position.y);
+        manager.controller.DestroyTarget();
+        manager.transform.LookAt(position + Vector3.up * manager.transform.position.y);
         //
-        force = new Vector3(position.x - target.transform.position.x, 0, position.z - target.transform.position.z);
+        force = new Vector3(position.x - manager.transform.position.x, 0, position.z - manager.transform.position.z);
         force.Normalize();
         //
         myRigidbody.velocity = Vector3.zero;
         myRigidbody.angularVelocity = Vector3.zero;
-        dashing = true;
-        Invoke("StopDashing", dashDuration);
     }
 
-    void FixedUpdate()
+    internal override void ApplyEffect(float dt)
     {
-        if (dashing)
-        {
+        time += dt;
+        if (time < dashDuration)
             myRigidbody.velocity = force * speed;
-        }
+        else
+            EndDash();
     }
 
-    private void StopDashing()
+    private void EndDash()
     {
-        dashing = false;
         myRigidbody.velocity = force * endSpeed;
+        DestroyEffect();
     }
-
 }

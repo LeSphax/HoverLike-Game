@@ -4,7 +4,8 @@ using Byn.Net;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class LatencyGUI : MonoBehaviour {
+public class LatencyGUI : MonoBehaviour
+{
 
     private float currentYPosition = 0;
     public GameObject textPrefab;
@@ -17,7 +18,7 @@ public class LatencyGUI : MonoBehaviour {
         //MyComponents.TimeManagement.NewLatency += NewLatency;
     }
 
-    public void LatencyChanged(ConnectionId id,float latency)
+    public void LatencyChanged(ConnectionId id, float latency)
     {
         Text textfield;
         if (!textfields.TryGetValue(id, out textfield))
@@ -33,7 +34,8 @@ public class LatencyGUI : MonoBehaviour {
 
     void OnDestroy()
     {
-        MyComponents.TimeManagement.LatencyChanged -= LatencyChanged;
+        if (MyComponents.TimeManagement != null)
+            MyComponents.TimeManagement.LatencyChanged -= LatencyChanged;
     }
 
     //public void NewLatency(ConnectionId id)

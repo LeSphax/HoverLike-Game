@@ -117,7 +117,9 @@ public static class MyComponents
         {
             if (timeManagement == null)
             {
-                timeManagement = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<TimeManagement>();
+                GameObject go;
+                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
+                    timeManagement = go.GetComponent<TimeManagement>();
             }
             return timeManagement;
         }

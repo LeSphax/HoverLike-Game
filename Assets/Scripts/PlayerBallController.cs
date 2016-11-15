@@ -46,7 +46,7 @@ namespace PlayerBallControl
 
         public void Init(ConnectionId id)
         {
-            this.playerConnectionId = id;
+            playerConnectionId = id;
         }
 
         private void StartGame()
@@ -61,7 +61,7 @@ namespace PlayerBallControl
                 {
                     if (id == MyComponents.BallState.GetIdOfPlayerOwningBall())
                     {
-                        View.RPC("StealBall", RPCTargets.Server, MyComponents.BallState.GetIdOfPlayerOwningBall());
+                        MyComponents.BallState.SetAttached(playerConnectionId);
                         stealing = false;
                         break;
                     }
@@ -70,7 +70,7 @@ namespace PlayerBallControl
 
         void OnCollisionEnter(Collision collision)
         {
-            if (View.isMine)
+            if (MyComponents.NetworkManagement.isServer)
             {
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
@@ -83,7 +83,7 @@ namespace PlayerBallControl
 
         void OnCollisionExit(Collision collision)
         {
-            if (View.isMine)
+            if (MyComponents.NetworkManagement.isServer)
             {
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
@@ -93,24 +93,12 @@ namespace PlayerBallControl
             }
         }
 
-        void OnTriggerExit(Collider collider)
-        {
-            if (View.isMine)
-            {
-                if (collider.gameObject.tag == Tags.CatchDetector)
-                {
-                    //Debug.LogError("Exit" + collider);
-                }
-            }
-        }
-
         void OnTriggerEnter(Collider collider)
         {
-            if (View.isMine)
+            if (MyComponents.NetworkManagement.isServer)
             {
                 if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached() && tryingToCatchBall)
                 {
-                    //Debug.LogError("Enter" + collider);
                     View.RPC("PickUpBall", RPCTargets.Server);
                 }
             }
@@ -128,48 +116,25 @@ namespace PlayerBallControl
             }
         }
 
-        [MyRPC]
-        private void StealBall(ConnectionId victimId)
+        internal void ThrowBall(Vector3 target, float power)
         {
-            Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
-            Debug.Log("StealBall " + victimId + "     " + playerConnectionId + "   " + gameObject.name);
-            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
-            if (MyComponents.BallState.GetIdOfPlayerOwningBall() == victimId)
-            {
-                Debug.LogWarning("SetAttached " + playerConnectionId);
-                MyComponents.BallState.SetAttached(playerConnectionId);
-            }
-        }
-
-        internal void ClientThrowBall(Vector3 target, float power)
-        {
-            MyComponents.BallState.AttachBall(BallState.NO_PLAYER_ID);
-            SetBallSpeed(target, power);
-            MyComponents.BallState.ListenToServer = false;
             View.RPC("ServerThrowBall", RPCTargets.Server, playerConnectionId, target, power);
         }
 
         [MyRPC]
         private void ServerThrowBall(ConnectionId throwerId, Vector3 target, float power)
         {
-            Debug.Log("We should extrapolate the position of the ball considering the time needed for the packet to arrive");
-            //Check if ClientThrowBall was already called to avoid setting ball speed twice
             if (throwerId == MyComponents.BallState.GetIdOfPlayerOwningBall())
             {
                 MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
-                if (MyComponents.BallState.ListenToServer)
-                {
-                    SetBallSpeed(target, power, MyComponents.TimeManagement.GetLatencyInMiliseconds(throwerId) / 1000);
-                }
+                SetBallSpeed(target, power);
             }
-
         }
 
-
-        private void SetBallSpeed(Vector3 target, float power, float latencyInSeconds = 0)
+        private void SetBallSpeed(Vector3 target, float power)
         {
             PrepareForThrowing();
-            Ball.GetComponent<BallMovementView>().Throw(target, power, latencyInSeconds);
+            Ball.GetComponent<BallMovementView>().Throw(target, power);
         }
 
         private void PrepareForThrowing()

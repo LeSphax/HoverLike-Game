@@ -59,6 +59,12 @@ public class SpecialBuild
     private static bool BuildGame(string[] levels)
     {
         PrepareBuild();
+        ChangeScene(Paths.SCENE_LOBBY);
+        LobbyManager lobbyManager = ((LobbyManager)UnityEngine.Object.FindObjectOfType(typeof(LobbyManager)));
+        if (lobbyManager.NumberPlayersToStartGame < 2)
+        {
+            lobbyManager.NumberPlayersToStartGame = 2;
+        }
 
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
@@ -67,6 +73,7 @@ public class SpecialBuild
         if (x.Contains("cancelled"))
         {
             Debug.LogError(x);
+            ChangeScene(Paths.SCENE_LOBBY);
             return false;
         }
         Debug.Log(x);

@@ -13,10 +13,6 @@ public class BallState : SlideBall.MonoBehaviour
         }
     }
 
-    //This is set to false when we want the ball's simulation to be handled by the client
-    [HideInInspector]
-    public bool ListenToServer = true;
-
     private bool uncatchable;
     public bool Uncatchable
     {
@@ -67,7 +63,6 @@ public class BallState : SlideBall.MonoBehaviour
 
     void Start()
     {
-        MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, (previousValue, value) => { Debug.Log("IDHO0HFEOZHF"); ListenToServer = true; });
         Uncatchable = false;
     }
 

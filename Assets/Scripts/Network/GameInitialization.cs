@@ -73,11 +73,8 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     private void SetupRoom()
     {
-        Debug.Log("SetupRoom");
-        MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= SetupRoom;
         InstantiateNewObjects();
-        //Letting the time for the objects we just instantiated and the objects in the scene to call their Start method
-        Invoke("GameHasStarted", 0.01f);
+        View.RPC("SendReady", RPCTargets.All);
     }
 
     [MyRPC]
@@ -85,22 +82,27 @@ public class GameInitialization : SlideBall.MonoBehaviour
     {
         Debug.Log("LoadRoom");
         this.syncId = syncId;
-        MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
         NavigationManager.LoadScene(Scenes.Main);
+        if (MyComponents.NetworkManagement.isServer)
+        {
+            MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
+        }
     }
 
     private void InstantiateNewObjects()
     {
         Debug.Log("InstantiateNewObjects");
-        if (MyComponents.NetworkManagement.isServer)
-            MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
+        MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
-        GameObject player = MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity);
-        int numberPlayer = MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) - 1;
-        player.GetComponent<PlayerController>().Init(Players.MyPlayer.id, numberPlayer % 2, "Player" + numberPlayer);
+        foreach (var id in Players.players.Keys)
+        {
+            GameObject player = MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity);
+            player.GetComponent<PlayerController>().Init(id);
+        }
     }
 
-    private void GameHasStarted()
+    [MyRPC]
+    private void SendReady()
     {
         MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }

@@ -8,7 +8,7 @@ namespace PlayerBallControl
 
         public override void ApplyOnTarget(GameObject target, Vector3 position)
         {
-            target.GetComponent<PlayerBallController>().ClientThrowBall(position, GetComponent<PowerBar>().powerValue);
+            target.GetComponent<PlayerBallController>().ThrowBall(position, GetComponent<PowerBar>().powerValue);
         }
 
     }

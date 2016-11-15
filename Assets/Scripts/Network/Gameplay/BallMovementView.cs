@@ -2,72 +2,57 @@
 using Byn.Net;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System.Collections.Generic;
 
 class BallMovementView : ObservedComponent
 {
 
     Rigidbody myRigidbody;
 
-    BallPacket? lastPacket;
-    BallPacket currentPacket;
-
-    Vector3 startPositionAtCurrentPacket;
-
-    private bool uncatchableLastPacket = false;
-
-    public float speedDifference = 5;
-    public float maxDistance = 5;
-
     private float MAX_SPEED = 200;
+
+    PacketHandler packetHandler;
+
+    private Queue<BallPacket> StateBuffer = new Queue<BallPacket>();
+    private BallPacket? currentPacket = null;
+
+
+    private BallPacket? nextPacket
+    {
+        get
+        {
+            if (StateBuffer.Count > 0)
+            {
+                return StateBuffer.Peek();
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    private float SimulationTime
+    {
+        get
+        {
+            return TimeManagement.NetworkTimeInSeconds - ClientDelay.Delay;
+        }
+    }
 
     protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
+        if (!MyComponents.NetworkManagement.isServer)
+            myRigidbody.isKinematic = true;
     }
 
-    public Vector3 GetExtrapolatedPosition()
-    {
-        float timePassed = TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
-
-        Vector3 extrapolatedPosition;
-        extrapolatedPosition = currentPacket.position + currentPacket.velocity * timePassed;
-
-        //RaycastHit hit;
-
-        //if (Physics.Raycast(myNetworkPosition, extrapolatedPosition, out hit, Vector3.Distance(myNetworkPosition,extrapolatedPosition)))
-        //{
-        //    if (hit.collider.gameObject.tag != Tags.Player && Vector3.Distance(transform.position, hit.point) < 10)
-        //    {
-        //        myNetworkPosition = hit.point;
-        //        myNetworkVelocity = Vector3.Reflect(myNetworkVelocity, hit.normal);
-        //        myLastSerializeTime = PhotonNetwork.time;
-        //        //extrapolatedPosition = GetExtrapolatedPosition();
-        //    }
-        //}
-        return extrapolatedPosition;
-    }
-
-    public void SetPositionFromExtrapolation()
-    {
-        Assert.IsTrue(MyComponents.BallState.Uncatchable);
-        if (lastPacket != null)
-        {
-            float timePassed = TimeManagement.NetworkTimeInSeconds - currentPacket.timeSent;
-            float timeBetweenPackets = currentPacket.timeSent - lastPacket.Value.timeSent;
-            Vector3 extrapolatedPosition = currentPacket.position + currentPacket.position - lastPacket.Value.position;
-            transform.position = Vector3.Lerp(startPositionAtCurrentPacket, extrapolatedPosition, timePassed / timeBetweenPackets);
-        }
-        else
-        {
-            transform.position = currentPacket.position;
-        }
-    }
-    public void Throw(Vector3 target, float power, float latencyinSeconds)
+    public void Throw(Vector3 target, float power)
     {
         Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
         myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, 0.3f);
-        transform.position = transform.position + myRigidbody.velocity * latencyinSeconds;
+        transform.position = transform.position;
     }
 
     public override void OwnerUpdate()
@@ -77,77 +62,62 @@ class BallMovementView : ObservedComponent
 
     public override void SimulationUpdate()
     {
-        //Debug.Log(currentPacket.position + "   " + BallState.ListenToServer + "   " + BallState.IsAttached());
-        if (MyComponents.BallState.ListenToServer)
+        while (StateBuffer.Count > 0 && SimulationTime >= StateBuffer.Peek().timeSent)
         {
-            if (MyComponents.BallState.IsAttached())
-            {
-                myRigidbody.velocity = Vector3.zero;
-                transform.localPosition = BallState.ballHoldingPosition;
-                return;
-            }
-            else if (MyComponents.BallState.Uncatchable)
-            {
-                SetPositionFromExtrapolation();
-            }
-            else
-            {
-                if (Vector3.Distance(myRigidbody.velocity, currentPacket.velocity) > myRigidbody.velocity.magnitude * 0.2f)
-                {
-                    myRigidbody.velocity = currentPacket.velocity;
-                }
-                // myRigidbody.velocity = Vector3.Lerp(myRigidbody.velocity, myNetworkVelocity, Time.deltaTime * Vector3.Distance(myRigidbody.velocity, myNetworkVelocity) / (speedDifference - Vector3.Distance(myRigidbody.velocity, myNetworkVelocity)));
-                transform.position = Vector3.Lerp(transform.position, currentPacket.position, Time.deltaTime * Vector3.Distance(GetExtrapolatedPosition(), transform.position) / (maxDistance));
-                if (Vector3.Distance(GetExtrapolatedPosition(), transform.position) > maxDistance)
-                {
-                    transform.position = GetExtrapolatedPosition();
-                }
-            }
-            //transform.position = Vector3.Lerp(transform.position, GetExtrapolatedPosition(), Vector3.Distance(GetExtrapolatedPosition(), transform.position)/maxDistance);
+            currentPacket = StateBuffer.Dequeue();
+        }
+
+        if (MyComponents.BallState.IsAttached())
+        {
+            myRigidbody.velocity = Vector3.zero;
+            transform.localPosition = BallState.ballHoldingPosition;
+            return;
+        }
+        else if (currentPacket != null)
+        {
+            InterpolateMovement();
+        }
+    }
+
+    private void InterpolateMovement()
+    {
+        if (nextPacket != null)
+        {
+            float completion = (SimulationTime - currentPacket.Value.timeSent) / (nextPacket.Value.timeSent - currentPacket.Value.timeSent);
+            transform.position = Vector3.Lerp(currentPacket.Value.position, nextPacket.Value.position, completion);
+        }
+        else
+        {
+            transform.position = currentPacket.Value.position;
         }
     }
 
     protected override byte[] CreatePacket(long sendId)
     {
-        return new BallPacket(sendId, myRigidbody.velocity, transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
+        return new BallPacket(sendId, transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
     }
 
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
-        if (MyComponents.BallState.Uncatchable)
-        {
-            if (uncatchableLastPacket)
-            {
-                startPositionAtCurrentPacket = transform.position;
-                lastPacket = currentPacket;
-            }
-            uncatchableLastPacket = true;
-        }
-        else
-        {
-            uncatchableLastPacket = false;
-            lastPacket = null;
-        }
-        currentPacket = NetworkExtensions.Deserialize<BallPacket>(data);
+        BallPacket newPacket = NetworkExtensions.Deserialize<BallPacket>(data);
+        StateBuffer.Enqueue(newPacket);
     }
 
     protected override bool IsSendingPackets()
     {
-        return View.isMine;
+        return MyComponents.NetworkManagement.isServer;
     }
 
     [Serializable]
     public struct BallPacket
     {
-        public Vector3 velocity;
         public Vector3 position;
         public float timeSent;
         public long id;
 
-        public BallPacket(long sendId, Vector3 velocity, Vector3 position, float time) : this()
+        public BallPacket(long sendId, Vector3 position, float time) : this()
         {
             this.id = sendId;
-            this.velocity = velocity;
             this.position = position;
             this.timeSent = time;
         }

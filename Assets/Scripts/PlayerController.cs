@@ -3,10 +3,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using PlayerManagement;
 using PlayerBallControl;
+using AbilitiesManagement;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerMovementView))]
 [RequireComponent(typeof(PlayerBallController))]
+[RequireComponent(typeof(AbilitiesManager))]
 public class PlayerController : PlayerView
 {
     public GameObject targetPrefab;
@@ -36,15 +38,17 @@ public class PlayerController : PlayerView
         }
     }
     PlayerMovementView movementManager;
+    public AbilitiesManager abilitiesManager;
 
     void Awake()
     {
         movementManager = GetComponent<PlayerMovementView>();
+        abilitiesManager = GetComponent<AbilitiesManager>();
     }
 
     void LateUpdate()
     {
-        if (View.isMine)
+        if (Player != null && Player.IsMyPlayer)
         {
             GameObject.FindGameObjectWithTag("GameController").transform.position = transform.position;
         }
@@ -62,6 +66,7 @@ public class PlayerController : PlayerView
         CreateTarget(position);
     }
 
+    [MyRPC]
     public void CreateTarget(Vector3 position)
     {
         DestroyTarget();
@@ -74,7 +79,7 @@ public class PlayerController : PlayerView
         DestroyTarget();
     }
 
-    public void Init(ConnectionId id, int teamNumber, string name)
+    public void Init(ConnectionId id)
     {
         View.RPC("InitPlayer", RPCTargets.AllBuffered, id);
     }
@@ -100,7 +105,7 @@ public class PlayerController : PlayerView
         {
             Destroy(Mesh);
         }
-        if (View.isMine)
+        if (Player.IsMyPlayer)
         {
             tag = Tags.MyPlayer;
         }
@@ -122,7 +127,7 @@ public class PlayerController : PlayerView
         GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
         int layer = -1;
         //if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
-            layer = LayersGetter.players[(int)Player.Team];
+        layer = LayersGetter.players[(int)Player.Team];
         //else
         //    layer = LayersGetter.players[2];
         Functions.SetLayer(Mesh.transform, layer);
@@ -138,7 +143,7 @@ public class PlayerController : PlayerView
 
     private void SetMaterials(GameObject mesh)
     {
-        if (View.isMine)
+        if (Player.IsMyPlayer)
         {
             mesh.transform.GetChild(0).GetComponent<Renderer>().material = ResourcesGetter.OutLineMaterial();
         }

@@ -88,7 +88,6 @@ public class PlayerInfo : PlayerView
     [MyRPC]
     public void SetInitialTeam(Team team)
     {
-        Debug.Log(this + " SetInitialTeam " + team);
         Players.MyPlayer.Team = team;
     }
 
@@ -103,6 +102,7 @@ public class PlayerInfo : PlayerView
 
     void OnDestroy()
     {
-
+        if (MyComponents.TimeManagement != null)
+            MyComponents.TimeManagement.LatencyChanged -= SetLatency;
     }
 }

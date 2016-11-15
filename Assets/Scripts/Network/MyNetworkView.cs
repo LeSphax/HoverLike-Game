@@ -98,7 +98,6 @@ public class MyNetworkView : ANetworkView
 
     public void RPC(string methodName, ConnectionId id, params object[] parameters)
     {
-        Debug.Log(this + "Call RPC : " + methodName + " on Id : " + id);
         if (id == ConnectionId.INVALID)
             RPC(methodName, RPCTargets.Server, parameters);
         else
@@ -110,7 +109,6 @@ public class MyNetworkView : ANetworkView
 
     public void RPC(string methodName, RPCTargets targets, params object[] parameters)
     {
-        Debug.Log(this + " : Call RPC : " + methodName);
         NetworkMessage message = new NetworkMessage(ViewId, 0, targets, new RPCCall(methodName, parameters).Serialize());
         //
         if (targets.IsSent())
@@ -129,7 +127,6 @@ public class MyNetworkView : ANetworkView
         {
             call.parameters = new object[0];
         }
-        Debug.Log(this + ": RPCCallReceived " + call.methodName);
         RPCHandler handler;
         if (rpcs.TryGetValue(call.methodName, out handler))
         {

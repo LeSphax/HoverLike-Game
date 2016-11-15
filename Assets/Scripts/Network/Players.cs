@@ -392,6 +392,8 @@ namespace PlayerManagement
             }
         }
 
+        public bool IsMyPlayer { get { return id == Players.myPlayerId; } }
+
         public Player(ConnectionId id)
         {
             this.id = id;
