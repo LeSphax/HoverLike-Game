@@ -2,6 +2,9 @@
 
 public class PlayerPhysicsView : PhysicsView
 {
+    [HideInInspector]
+    public bool Activated = false;
+
     public PlayerPhysicsModel model;
     public PlayerController controller;
 
@@ -46,20 +49,23 @@ public class PlayerPhysicsView : PhysicsView
 
     protected override void ClientBehaviour()
     {
-        UpdateCamera();
+        UpdateView();
     }
 
     protected override void ServerBehaviour()
     {
-        UpdateCamera();
+        UpdateView();
     }
 
-    private void UpdateCamera()
+    private void UpdateView()
     {
-        transform.position = Vector3.MoveTowards(transform.position, model.transform.position, DashEffect.SPEED * 1.2f * Time.fixedDeltaTime);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, model.transform.rotation, model.AngularSpeed * 1.5f * Time.fixedDeltaTime);
-        if (IsMyPlayer())
-            CameraController.transform.position = transform.position;
+        if (Activated)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, model.transform.position, DashEffect.SPEED * 1.2f * Time.fixedDeltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, model.transform.rotation, model.AngularSpeed * 1.5f * Time.fixedDeltaTime);
+            if (IsMyPlayer())
+                CameraController.transform.position = transform.position;
+        }
     }
 
     private bool IsMyPlayer()

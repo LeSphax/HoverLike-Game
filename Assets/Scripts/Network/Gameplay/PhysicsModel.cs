@@ -17,7 +17,7 @@ public abstract class PhysicsModel : MonoBehaviour
 
     public abstract byte[] Serialize();
 
-    public abstract int DeserializeAndRewind(short previousAcknowlegedFrame, short frameNumber, byte[] data, int offset);
+    public abstract int DeserializeAndRewind(byte[] data, int offset);
 
     public abstract void CheckForPostSimulationActions();
 
@@ -29,4 +29,6 @@ public abstract class PhysicsModel : MonoBehaviour
     {
         MyComponents.PhysicsModelsManager.UnregisterView(myNetworkView.ViewId);
     }
+
+    internal abstract void RemoveAcknowledgedInputs(short lastAckFrame, short ackFrame);
 }

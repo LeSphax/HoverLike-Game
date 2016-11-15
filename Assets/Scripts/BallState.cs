@@ -104,7 +104,6 @@ public class BallState : SlideBall.MonoBehaviour
     public void AttachBall(ConnectionId playerId)
     {
         bool attach = playerId != NO_PLAYER_ID;
-        Debug.Log("Call To Attach Ball " + playerId + "   " + attach);
         GameObject player = GetAttachedPlayer();
         if (attach)
         {

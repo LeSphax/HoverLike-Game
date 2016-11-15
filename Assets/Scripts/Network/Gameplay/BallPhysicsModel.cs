@@ -57,7 +57,7 @@ public class BallPhysicsModel : PhysicsModel
         }
     }
 
-    public override int DeserializeAndRewind(short previousAcknowlegedFrame, short frameNumber, byte[] data, int currentIndex)
+    public override int DeserializeAndRewind(byte[] data, int currentIndex)
     {
         bool isAttached = BitConverter.ToBoolean(data, currentIndex);
         currentIndex++;
@@ -107,4 +107,7 @@ public class BallPhysicsModel : PhysicsModel
         return new byte[0];
     }
 
+    internal override void RemoveAcknowledgedInputs(short lastAckFrame, short ackFrame)
+    {
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -50,5 +51,23 @@ class Functions
     {
         foreach (Transform t in go) { t.gameObject.layer = layer; SetLayer(t, layer); };
     }
+
+    public static int GetIndexClosestFrame<T>(float time, SortedList<float,T> list)
+    {
+        for (int i = 1; i < list.Count; i++)
+        {
+            //Debug.LogWarning(time + "  " + list.Keys[i]);
+            if (list.Keys[i] > time)
+            {
+                return i - 1;
+            }
+        }
+        return -1;
+    }
+
+    //public static byte[] GetInterpolatedFrame(float time, int indexFirstFrame, SortedList<float, byte[]> list)
+    //{
+
+    //}
 }
 

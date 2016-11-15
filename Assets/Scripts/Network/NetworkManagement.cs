@@ -34,6 +34,8 @@ namespace BaseNetwork
         public bool addLatency;
         public int NumberFramesLatency;
 
+        public float currentFrameTimestamp;
+
         public enum Server
         {
             LOCALHOST,
@@ -225,7 +227,13 @@ namespace BaseNetwork
         }
         private void FixedUpdate()
         {
+            float time = Time.realtimeSinceStartup;
+            currentFrameTimestamp = Time.realtimeSinceStartup;
             HandleNetwork();
+            if (Time.realtimeSinceStartup - time > 0.01f)
+            {
+                Debug.LogWarning("Very long Physics" + (Time.realtimeSinceStartup - time));
+            }
         }
         private void HandleNetwork()
         {

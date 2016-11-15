@@ -31,7 +31,7 @@ namespace PhysicsManagement
         {
             if (Input.GetKeyDown(KeyCode.B))
             {
-                foreach(var model in physicModels.Values)
+                foreach (var model in physicModels.Values)
                 {
                     if (model.transform.parent != null)
                         Debug.LogError(model.transform.parent.name);
@@ -68,10 +68,15 @@ namespace PhysicsManagement
 
         public override void SimulationUpdate()
         {
+            float time = Time.realtimeSinceStartup;
             if (Activated)
             {
                 lastSimulatedFrame++;
-                SimulateViews(lastSimulatedFrame, Time.fixedDeltaTime, true);
+                strategy.RunTimeStep(lastSimulatedFrame,Time.fixedDeltaTime);
+            }
+            if (Time.realtimeSinceStartup - time > 0.01f)
+            {
+                Debug.LogWarning("Very long Physics" + (Time.realtimeSinceStartup - time));
             }
         }
 
@@ -96,7 +101,7 @@ namespace PhysicsManagement
             strategy.PacketReceived(id, data);
         }
 
-        protected override byte[] CreatePacket(long sendId, out Dictionary<ConnectionId, byte[]> dataSpecificToClients)
+        protected override byte[] CreatePacket(out Dictionary<ConnectionId, byte[]> dataSpecificToClients)
         {
             return strategy.CreatePacket(out dataSpecificToClients);
         }

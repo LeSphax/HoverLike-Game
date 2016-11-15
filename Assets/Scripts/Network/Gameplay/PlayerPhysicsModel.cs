@@ -99,6 +99,7 @@ public class PlayerPhysicsModel : PhysicsModel
             default:
                 throw new UnhandledSwitchCaseException(Player.AvatarSettingsType);
         }
+        controller.physicsView.Activated = true;
     }
 
     public override void Simulate(short frameNumber, float dt, bool isRealSimulation)
@@ -146,12 +147,8 @@ public class PlayerPhysicsModel : PhysicsModel
         return data;
     }
 
-    public override int DeserializeAndRewind(short previousAcknowlegedFrame, short frameNumber, byte[] data, int currentIndex)
+    public override int DeserializeAndRewind(byte[] data, int currentIndex)
     {
-        for (short i = previousAcknowlegedFrame; i < frameNumber; i++)
-        {
-            unacknowlegedEffects.Remove(i);
-        }
         UnapplyEffects();
         int offset = 0;
         bool hasTarget = BitConverter.ToBoolean(data, currentIndex + offset);
@@ -241,5 +238,12 @@ public class PlayerPhysicsModel : PhysicsModel
         persistentEffects.Remove(persistentAbilityEffect);
     }
 
+    internal override void RemoveAcknowledgedInputs(short lastAckFrame, short ackFrame)
+    {
+        for (short i = lastAckFrame; i < ackFrame; i++)
+        {
+            unacknowlegedEffects.Remove(i);
+        }
+    }
 }
 

@@ -18,7 +18,7 @@ namespace PhysicsManagement
 
         public abstract byte[] CreatePacket(out Dictionary<ConnectionId, byte[]> dataSpecificToClients);
 
-        public abstract void RunTimeStep(float dt);
+        public abstract void RunTimeStep(short frameId, float dt);
 
     }
 }

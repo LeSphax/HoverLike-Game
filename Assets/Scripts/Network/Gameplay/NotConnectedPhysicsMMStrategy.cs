@@ -25,7 +25,7 @@ namespace PhysicsManagement
             //DoNothing
         }
 
-        public override void RunTimeStep(float dt)
+        public override void RunTimeStep(short frameId, float dt)
         {
             //DoNothing
         }

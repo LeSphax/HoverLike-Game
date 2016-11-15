@@ -11,9 +11,6 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
 
     public int sendRate = 60;
 
-    //TODO : use an int with a sliding window
-    private long sendId = 0;
-
     public void StartUpdating()
     {
         InvokeRepeating("SendPacket", 0, 1f / sendRate);
@@ -25,7 +22,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
         {
             MessageFlags flags;
             Dictionary<ConnectionId, byte[]> dataSpecificToClient;
-            byte[] packet = CreatePacket(sendId, out dataSpecificToClient);
+            byte[] packet = CreatePacket(out dataSpecificToClient);
             if (packet != null)
             {
                 if (dataSpecificToClient == null)
@@ -54,7 +51,6 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
                             SendData(MessageType.ViewPacket, newPacket, pair.Key);
                         }
                 }
-                sendId++;
             }
         }
     }
@@ -63,7 +59,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
 
     public abstract void SimulationUpdate();
 
-    protected abstract byte[] CreatePacket(long sendId, out Dictionary<ConnectionId, byte[]> dataSpecificToClient);
+    protected abstract byte[] CreatePacket(out Dictionary<ConnectionId, byte[]> dataSpecificToClient);
 
     public abstract void PacketReceived(ConnectionId id, byte[] data);
 

@@ -28,14 +28,15 @@ namespace PhysicsManagement
         {
             int currentIndex = 0;
             short ackFrame = BitConverter.ToInt16(data, currentIndex);
+
             if (ackFrame > manager.lastAckFrame)
             {
                 currentIndex += 2;
 
                 foreach (var pair in manager.physicModels)
                 {
-                    //Debug.LogError(pair.Value + "    " + currentIndex + "   " + data.Length);
-                    currentIndex += pair.Value.DeserializeAndRewind(manager.lastAckFrame, ackFrame, data, currentIndex);
+                    pair.Value.RemoveAcknowledgedInputs(manager.lastAckFrame, ackFrame);
+                    currentIndex += pair.Value.DeserializeAndRewind(data, currentIndex);
                 }
                 manager.lastAckFrame = ackFrame;
 
@@ -46,9 +47,9 @@ namespace PhysicsManagement
             }
         }
 
-        public override void RunTimeStep(float dt)
+        public override void RunTimeStep(short frameId, float dt)
         {
-            throw new NotImplementedException();
+            manager.SimulateViews(frameId, Time.fixedDeltaTime, true);
         }
     }
 }

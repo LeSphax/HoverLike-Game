@@ -58,7 +58,7 @@ public class TimeManagement : ObservedComponent
         //DoNothing
     }
 
-    protected override byte[] CreatePacket(long sendId, out Dictionary<ConnectionId,byte[]> dataSpecificToClients)
+    protected override byte[] CreatePacket(out Dictionary<ConnectionId,byte[]> dataSpecificToClients)
     {
         dataSpecificToClients = null;
         return strategy.CreatePacket();
