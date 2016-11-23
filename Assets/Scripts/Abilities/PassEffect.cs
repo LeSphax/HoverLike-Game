@@ -1,4 +1,5 @@
 ﻿using AbilitiesManagement;
+using Byn.Net;
 using PlayerManagement;
 using UnityEngine;
 
@@ -16,9 +17,10 @@ public class PassEffect : AbilityEffect
 
 public class PassPersistentEffect : PersistentEffect
 {
-    Vector3 targetPosition;
-    Vector3 controlPosition;
-    Vector3 startPosition;
+
+    Transform target;
+    Vector3 arcCenter;
+    float currentAngle;
 
     private static GameObject prefabTargeter;
     private static GameObject PrefabTargeter
@@ -41,21 +43,24 @@ public class PassPersistentEffect : PersistentEffect
         }
     }
 
-    public PassPersistentEffect(AbilitiesManager manager, Vector3 targetPosition) : base(manager)
+    public PassPersistentEffect(AbilitiesManager manager, ConnectionId id) : base(manager)
     {
         MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
         MyComponents.BallState.Uncatchable = true;
 
-        this.targetPosition = targetPosition;
-        startPosition = manager.transform.position;
-        controlPosition = startPosition + (targetPosition - startPosition) / 2 + Vector3.up * 20f;
+        target = Players.players[id].controller.transform;
+        arcCenter = manager.transform.position + (target.position - manager.transform.position) / 2;
 
         duration = 1.0f;
     }
 
     protected override void Apply(float dt)
     {
-        MyComponents.BallState.transform.position = Functions.Bezier3(startPosition, controlPosition, targetPosition, time / duration);
+        float radius = Vector3.Distance(arcCenter, target.position);
+        float yPos = Mathf.Sin(currentAngle) * radius;
+        float xPos = Mathf.Cos(currentAngle) * radius;
+
+        Vector3 currentPosOnNewArc = (arcCenter - target.position) * xPos + Vector3.up * yPos;
     }
 
     protected override void StopEffect()
