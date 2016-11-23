@@ -7,6 +7,7 @@ public abstract class AbilityInputWithBall : AbilityInput
 
     protected override void Start()
     {
+        base.Start();
         Players.MyPlayer.HasBallChanged += SetHasBall;
     }
 

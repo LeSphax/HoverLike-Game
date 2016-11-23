@@ -35,7 +35,6 @@ public class RoomManager : MonoBehaviour
 
     public void PutPlayerInTeam(PlayerInfo player, Team team)
     {
-        //Debug.Log(player + " PutPlayerInTeam " + team);
         player.transform.SetParent(teamPanels[(int)team].transform, false);
     }
 

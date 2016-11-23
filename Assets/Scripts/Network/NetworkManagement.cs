@@ -40,6 +40,10 @@ namespace BaseNetwork
 
         public Server server;
 
+        public bool addLatency;
+        public int NumberFramesLatency;
+        private LatencySimulation latencySimulation;
+
         public string uSignalingUrl
         {
             get
@@ -171,6 +175,8 @@ namespace BaseNetwork
             if (mNetwork != null)
             {
                 Debug.Log("WebRTCNetwork created");
+                if (addLatency)
+                    latencySimulation = new LatencySimulation(mNetwork, NumberFramesLatency);
             }
             else
             {
@@ -225,6 +231,8 @@ namespace BaseNetwork
             //check if the network was created
             if (mNetwork != null)
             {
+                if (addLatency)
+                    latencySimulation.NewFrame();
                 //first update it to read the data from the underlaying network system
                 mNetwork.Update();
 
@@ -375,7 +383,7 @@ namespace BaseNetwork
 
         private void SendBufferedMessagesOnSceneChange(ConnectionId id)
         {
-            Players.players[id].SceneChanged += (connectionId, sceneId) => { Debug.Log("SceneChanged -> SendBufferedMessages " + connectionId); bufferedMessages.SendBufferedMessages(connectionId, sceneId); };
+            Players.players[id].SceneChanged += (connectionId, sceneId) => { bufferedMessages.SendBufferedMessages(connectionId, sceneId); };
         }
 
         private void HandleIncommingMessage(ref NetworkEvent evt)
@@ -386,8 +394,6 @@ namespace BaseNetwork
             {
                 Debug.LogError("HandleTracedMessage " + message);
             }
-            //if (message.type != MessageType.ViewPacket)
-            //    Debug.LogError("Received Message : " + message.type + "   " + message.viewId);
             if (isServer && message.isDistributed())
             {
                 foreach (ConnectionId id in mConnections)
@@ -463,7 +469,10 @@ namespace BaseNetwork
 
         private void SendToNetwork(byte[] data, ConnectionId id, bool reliable)
         {
-            mNetwork.SendData(id, data, 0, data.Length, reliable);
+            if (addLatency)
+                latencySimulation.AddMessage(data, id, reliable);
+            else
+                mNetwork.SendData(id, data, 0, data.Length, reliable);
             if (!mConnections.Contains(id))
                 Debug.LogError("This isn't a valid connectionId");
         }
@@ -514,10 +523,9 @@ namespace BaseNetwork
         [MyRPC]
         private void SetConnectionId(ConnectionId id)
         {
-            Debug.Log("SetConnectionId " + id);
             Players.CreatePlayer(id);
             Players.myPlayerId = id;
-            Players.MyPlayer.Nickname = NickNamePanel.nickname;
+            Players.MyPlayer.Nickname = NicknamePanel.nickname;
             Players.MyPlayer.SceneId = Scenes.currentSceneId;
             NavigationManager.FinishedLoadingScene += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
         }

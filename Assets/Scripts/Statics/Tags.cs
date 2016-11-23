@@ -24,6 +24,7 @@ public class Tags : MonoBehaviour
     public const string Abilities = "Abilities";
 
     public const string LobbyManager = "LobbyManager";
+    public const string NavigationManager = "NavigationManager";
     public const string Countdown = "Countdown";
     public const string GoalZone = "GoalZone";
 

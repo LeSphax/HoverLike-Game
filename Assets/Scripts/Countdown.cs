@@ -64,4 +64,12 @@ public class Countdown : SlideBall.MonoBehaviour
         TimeLeft = timeLeft - TimeManagement.LatencyInMiliseconds / 2000f;
         Title = title;
     }
+
+    [MyRPC]
+    private void StopTimer()
+    {
+        TimerFinished = null;
+        TimeLeft = 0;
+        Title = "";
+    }
 }

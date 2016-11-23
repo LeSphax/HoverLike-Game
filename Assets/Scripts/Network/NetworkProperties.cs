@@ -79,7 +79,6 @@ public class NetworkProperties : ANetworkView
 
     public void SendProperties()
     {
-        Debug.Log("SendProperties");
         MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, new PropertiesPacket(properties.Keys.ToArray(), properties.Values.ToArray()).Serialize());
     }
 
@@ -91,7 +90,6 @@ public class NetworkProperties : ANetworkView
         {
             string key = packet.keys[i];
             object value = packet.properties[i];
-            Debug.Log("Properties packet " + key + "   " + value);
             object previousValue = null;
             properties.TryGetValue(key, out previousValue);
             properties[key] = value;
@@ -110,7 +108,6 @@ public class NetworkProperties : ANetworkView
 
     public void AddListener(string key, NetworkPropertyChanged handler)
     {
-        Debug.Log("AddListener" + key);
         if (!listeners.ContainsKey(key))
             listeners.Add(key, handler);
         else

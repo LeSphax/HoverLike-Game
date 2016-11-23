@@ -1,27 +1,31 @@
-﻿using PlayerManagement;
-using System.Collections.Generic;
+﻿using AbilitiesManagement;
 using UnityEngine;
 
 public class TeleportEffect : AbilityEffect
 {
 
-    public float TimeBeforeTeleportation;
-
-    private GameObject target;
-
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
-        this.target = target;
-        target.GetComponent<PlayerController>().StopMoving();
+        target.GetComponent<PlayerController>().View.RPC("Teleport", RPCTargets.Server);
+    }
+}
 
-        MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", target.transform.position, Quaternion.identity);
-        MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", position, Quaternion.identity);
+public class TeleportPersistentEffect : PersistentEffect
+{
+    private float TimeBeforeTeleportation = 1.5f;
 
-        Invoke("Teleport", TimeBeforeTeleportation);
+    public TeleportPersistentEffect(AbilitiesManager manager) : base(manager)
+    {
+        duration = TimeBeforeTeleportation;
+        manager.controller.StopMoving();
     }
 
-    private void Teleport()
+    protected override void Apply(float dt)
     {
-        target.transform.position = Players.MyPlayer.SpawningPoint;
+    }
+
+    protected override void StopEffect()
+    {
+        manager.transform.position = manager.controller.Player.SpawningPoint;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Byn.Net;
 using PlayerManagement;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -67,10 +68,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     public void StartGameCountdown()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer && MyState == State.WARMUP);
-        MyComponents.Countdown.TimerFinished += Entry;
-        MyComponents.Countdown.TimerFinished += ResetScore;
-        MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", WARMUP_DURATION);
-        MyState = State.WARMUP;
+        Entry();
     }
 
     private void ResetScore()
@@ -79,7 +77,21 @@ public class MatchManager : SlideBall.MonoBehaviour
         Scoreboard.ResetScore();
     }
 
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift) && Input.GetKeyDown(KeyCode.M))
+        {
+            View.RPC("ManualEntry", RPCTargets.Server);
+        }
+    }
 
+    [MyRPC]
+    private void ManualEntry()
+    {
+        MyState = State.ENDING;
+        MyComponents.Countdown.View.RPC("StopTimer", RPCTargets.All);
+        Entry();
+    }
 
     private void Entry()
     {
@@ -90,33 +102,85 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     IEnumerator CoEntry()
     {
-        Debug.Log("Entry");
-
         PlayerSpawner spawner = gameObject.GetComponent<PlayerSpawner>();
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         spawner.View.RPC("DesactivatePlayers", RPCTargets.All, syncId);
 
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
-        Players.players.Values.Map(player =>
-        {
-            player.SpawnNumber = (short)(((player.SpawnNumber + 1) % Players.GetNumberPlayersInTeam(player.Team)) + 1) ;
-            player.AvatarSettingsType = player.SpawnNumber == 0 ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
-        });
+        SetPlayerRoles();
         MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
         spawner.View.RPC("ResetPlayers", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
         MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
         spawner.View.RPC("ReactivatePlayers", RPCTargets.All, syncId);
-        //Debug.LogWarning("Reactivate");
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
         MyComponents.BallState.PutAtStartPosition();
         //
-        MyComponents.Countdown.TimerFinished += SendInvokeStartGame;
-        MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", ENTRY_DURATION);
-        MyState = State.STARTING;
+        if (MyState == State.WARMUP)
+        {
+            MyComponents.Countdown.TimerFinished += EndWarmup;
+            MyComponents.Countdown.TimerFinished += ResetScore;
+            MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Warmup", WARMUP_DURATION);
+            MyState = State.WARMUP;
+        }
+        else if (MyState == State.ENDING)
+        {
+            MyComponents.Countdown.TimerFinished += SendInvokeStartGame;
+            MyComponents.Countdown.View.RPC("StartTimer", RPCTargets.All, "Get ready !", ENTRY_DURATION);
+            MyState = State.STARTING;
+        }
+        else
+        {
+            Debug.LogError("This shouldn't happen " + MyState);
+        }
+    }
+
+    private void EndWarmup()
+    {
+        MyComponents.Countdown.TimerFinished -= EndWarmup;
+        MyState = State.ENDING;
+        Entry();
+    }
+
+    private void SetPlayerRoles()
+    {
+
+        foreach (Team team in new Team[2] { Team.FIRST, Team.SECOND })
+        {
+            List<Player> players = Players.GetPlayersInTeam(team);
+            if (players.Count == 1)
+            {
+                players[0].SpawnNumber = players[0].PlayAsGoalie ? (short)0 : (short)1;
+                players[0].AvatarSettingsType = players[0].SpawnNumber == 0 ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
+
+            }
+            else if (players.Count > 1)
+            {
+                Player oldGoalie = null;
+                players.Map(player => { if (player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE) oldGoalie = player; });
+                Assert.IsTrue(oldGoalie != null);
+
+                List<Player> potentialGoalies = new List<Player>();
+                players.Map(player => { if (player.PlayAsGoalie) potentialGoalies.Add(player); });
+                if (potentialGoalies.Count == 0)
+                    potentialGoalies = new List<Player>(players);
+
+                Player goalie = potentialGoalies[Random.Range(0, potentialGoalies.Count - 1)];
+                oldGoalie.SpawnNumber = goalie.SpawnNumber;
+                goalie.SpawnNumber = 0;
+                goalie.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
+                players.Remove(goalie);
+
+                players.Map(player =>
+                {
+                    player.SpawnNumber = (short)(((player.SpawnNumber + 1) % (Players.GetPlayersInTeam(player.Team).Count - 1)) + 1);
+                    player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
+                });
+            }
+        }
     }
 
     private void SendInvokeStartGame()

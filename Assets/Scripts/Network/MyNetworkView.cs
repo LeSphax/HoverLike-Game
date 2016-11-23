@@ -120,6 +120,20 @@ public class MyNetworkView : ANetworkView
         }
     }
 
+    public void RPC(string methodName, RPCTargets targets, MessageFlags additionalFlags, params object[] parameters)
+    {
+        NetworkMessage message = new NetworkMessage(ViewId, 0, targets, new RPCCall(methodName, parameters).Serialize());
+        message.flags = message.flags | additionalFlags;
+        //
+        if (targets.IsSent())
+            MyComponents.NetworkManagement.SendData(message);
+        //
+        if (targets.IsInvokedInPlace())
+        {
+            RPCCallReceived(message, ConnectionId.INVALID);
+        }
+    }
+
     protected void RPCCallReceived(NetworkMessage message, ConnectionId connectionId)
     {
         RPCCall call = NetworkExtensions.Deserialize<RPCCall>(message.data);

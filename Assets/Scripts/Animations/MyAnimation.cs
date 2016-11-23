@@ -57,7 +57,7 @@ namespace CustomAnimations
             startingTime = Time.time;
         }
 
-        void Update()
+        protected virtual void Update()
         {
             float completion = -1;
             switch (state)

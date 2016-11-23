@@ -43,7 +43,6 @@ public class PlayersSynchronisation : ANetworkView
     private void Synchronise(short syncId, ConnectionId connectionId)
     {
         Assert.IsFalse(syncId == INVALID_SYNC_ID);
-        Debug.Log("Synchronise " + connectionId + "        " + ViewId);
         synchronisations.AddItem(syncId, connectionId);
     }
 
@@ -64,7 +63,7 @@ public class PlayersSynchronisation : ANetworkView
             byte[] data = new byte[4] { syncIdData[0], syncIdData[1], connectionIdData[0], connectionIdData[1] };
             NetworkMessage message = new NetworkMessage(ViewId, MessageType.Synchronisation, data);
             MyComponents.NetworkManagement.SendData(message);
-            Debug.Log("SendSynchronisation To " + ViewId + " net " + syncId +"   " + connectionId);
+            //Debug.Log("SendSynchronisation To " + ViewId + " net " + syncId +"   " + connectionId);
         }
         else
         {

@@ -106,7 +106,6 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         {
             newView.ViewId = NextViewId;
             newView.isMine = true;
-            Debug.Log("Instantiate " + newView.ViewId);
             IncrementNextViewId();
             content = new InstantiationMessage(newView.ViewId, path, position, rotation, initialisationParameters);
             View.RPC("RemoteInstantiate", RPCTargets.OthersBuffered, content);
@@ -188,7 +187,6 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     internal void UnregisterView(ANetworkView view)
     {
-        Debug.Log("UnregisterView " + view + "    " + view.ViewId);
         if (!networkViews.ContainsKey(view.ViewId))
         {
             Debug.LogError("This viewid (" + view.ViewId + ") wasn't registered " + networkViews.Count);

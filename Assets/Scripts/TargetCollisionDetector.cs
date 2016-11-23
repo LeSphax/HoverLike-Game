@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 public class TargetCollisionDetector : MonoBehaviour
 {
@@ -20,13 +18,9 @@ public class TargetCollisionDetector : MonoBehaviour
 
     private bool IsObjectInMyPlayer(Transform t)
     {
-        if (t.tag == Tags.MyPlayer)
+        if (t.tag == Tags.MyPlayer || t.tag == Tags.Player)
         {
-            return true;
-        }
-        else if (t.tag == Tags.Player)
-        {
-            return false;
+            return t.GetComponent<PlayerController>() == controller;
         }
         else if (t.parent == null)
         {

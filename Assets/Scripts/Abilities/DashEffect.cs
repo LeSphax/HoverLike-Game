@@ -13,17 +13,16 @@ public class DashEffect : AbilityEffect
 
 }
 
-public class PersistentDashEffect : PersistentEffect
+public class DashPersistentEffect : PersistentEffect
 {
-    float time;
-    public float speed = 8f;
-    public float endSpeed = 3f;
-    public float dashDuration = 0.4f;
+    public float speed = 100f;
+    public float endSpeed = 30f;
+    public float dashDuration = 0.25f;
 
     private Vector3 force;
     private Rigidbody myRigidbody;
 
-    public PersistentDashEffect(AbilitiesManager manager, Vector3 position) : base(manager)
+    public DashPersistentEffect(AbilitiesManager manager, Vector3 position) : base(manager)
     {
         myRigidbody = manager.GetComponent<Rigidbody>();
         //
@@ -33,22 +32,19 @@ public class PersistentDashEffect : PersistentEffect
         force = new Vector3(position.x - manager.transform.position.x, 0, position.z - manager.transform.position.z);
         force.Normalize();
         //
+        duration = dashDuration;
         myRigidbody.velocity = Vector3.zero;
         myRigidbody.angularVelocity = Vector3.zero;
     }
 
-    internal override void ApplyEffect(float dt)
+
+    protected override void Apply(float dt)
     {
-        time += dt;
-        if (time < dashDuration)
-            myRigidbody.velocity = force * speed;
-        else
-            EndDash();
+        myRigidbody.velocity = force * speed;
     }
 
-    private void EndDash()
+    protected override void StopEffect()
     {
         myRigidbody.velocity = force * endSpeed;
-        DestroyEffect();
     }
 }

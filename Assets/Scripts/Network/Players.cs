@@ -48,7 +48,6 @@ namespace PlayerManagement
 
         public void PlayerOwningBallChanged(object previousPlayer, object newPlayer)
         {
-            Debug.Log("PlayerOwningBallChanged ");
             ConnectionId newPlayerId = newPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)newPlayer;
             ConnectionId previousPlayerId = previousPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)previousPlayer;
 
@@ -95,6 +94,11 @@ namespace PlayerManagement
                 player.avatarSettingsType = (AvatarSettings.AvatarSettingsTypes)message.data[currentIndex];
                 currentIndex++;
             }
+            if (flags.HasFlag(PlayerFlags.PLAY_AS_GOALIE))
+            {
+                player.PlayAsGoalie = BitConverter.ToBoolean(message.data, currentIndex);
+                currentIndex++;
+            }
             if (flags.HasFlag(PlayerFlags.STATE))
             {
                 player.state = (Player.State)message.data[currentIndex];
@@ -121,7 +125,6 @@ namespace PlayerManagement
         public static Player CreatePlayer(ConnectionId id)
         {
             Player player;
-            Debug.Log("Create Player " + id);
             player = new Player(id);
             players.Add(id, player);
             if (NewPlayerCreated != null)
@@ -161,6 +164,10 @@ namespace PlayerManagement
             {
                 data = ArrayExtensions.Concatenate(data, new byte[1] { (byte)player.AvatarSettingsType });
             }
+            if (flags.HasFlag(PlayerFlags.PLAY_AS_GOALIE))
+            {
+                data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(player.PlayAsGoalie));
+            }
             if (flags.HasFlag(PlayerFlags.STATE))
             {
                 data = ArrayExtensions.Concatenate(data, new byte[1] { (byte)player.CurrentState });
@@ -172,15 +179,14 @@ namespace PlayerManagement
             return data;
         }
 
-
-        public static int GetNumberPlayersInTeam(Team team)
+        public static List<Player> GetPlayersInTeam(Team team)
         {
-            int result = 0;
+            List<Player> result = new List<Player>();
             foreach (var player in players.Values)
             {
                 if (player.Team == team)
                 {
-                    result++;
+                    result.Add(player);
                 }
             }
             return result;
@@ -188,7 +194,6 @@ namespace PlayerManagement
 
         public void SendProperties(ConnectionId recipientId)
         {
-            Debug.Log("This could be optimized into a single packet");
             foreach (Player player in players.Values)
                 UpdatePlayer(player, PlayerFlags.NICKNAME | PlayerFlags.TEAM, recipientId);
         }
@@ -216,6 +221,7 @@ namespace PlayerManagement
         AVATAR_SETTINGS = 16,
         STATE = 32,
         SCENEID = 64,
+        PLAY_AS_GOALIE = 128,
     }
     public class Player
     {
@@ -251,7 +257,6 @@ namespace PlayerManagement
 
         internal void NotifySceneChanged()
         {
-            Debug.Log("NotifySceneChanged");
             if (SceneChanged != null)
                 SceneChanged.Invoke(id, sceneId);
         }
@@ -360,6 +365,21 @@ namespace PlayerManagement
             }
         }
 
+        internal bool playAsGoalie;
+        public bool PlayAsGoalie
+        {
+            get
+            {
+                return playAsGoalie;
+            }
+            set
+            {
+                playAsGoalie = value;
+                if (id == Players.myPlayerId)
+                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.PLAY_AS_GOALIE);
+            }
+        }
+
         public AvatarSettings MyAvatarSettings
         {
             get
@@ -372,7 +392,6 @@ namespace PlayerManagement
         {
             get
             {
-                Debug.Log("SpawningPoint " + MyComponents.Spawns.GetSpawn(Team, SpawnNumber));
                 return MyComponents.Spawns.GetSpawn(Team, SpawnNumber);
             }
         }

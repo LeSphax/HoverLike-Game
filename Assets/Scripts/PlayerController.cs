@@ -5,7 +5,6 @@ using PlayerManagement;
 using PlayerBallControl;
 using AbilitiesManagement;
 
-[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerMovementView))]
 [RequireComponent(typeof(PlayerBallController))]
 [RequireComponent(typeof(AbilitiesManager))]
@@ -37,13 +36,15 @@ public class PlayerController : PlayerView
             _target = value;
         }
     }
-    PlayerMovementView movementManager;
+    public PlayerMovementView movementManager;
+    public PlayerBallController ballController;
     public AbilitiesManager abilitiesManager;
 
     void Awake()
     {
         movementManager = GetComponent<PlayerMovementView>();
         abilitiesManager = GetComponent<AbilitiesManager>();
+        ballController = GetComponent<PlayerBallController>();
     }
 
     void LateUpdate()
@@ -69,9 +70,12 @@ public class PlayerController : PlayerView
     [MyRPC]
     public void CreateTarget(Vector3 position)
     {
-        DestroyTarget();
-        target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
-        target.GetComponent<TargetCollisionDetector>().controller = this;
+        if (Player.state == Player.State.PLAYING)
+        {
+            DestroyTarget();
+            target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
+            target.GetComponent<TargetCollisionDetector>().controller = this;
+        }
     }
 
     public void TargetHit()
@@ -92,7 +96,6 @@ public class PlayerController : PlayerView
         Player.gameobjectAvatar = gameObject;
         Player.ballController = GetComponent<PlayerBallController>();
         GetComponent<PlayerBallController>().Init(id);
-        ResetPlayer();
     }
 
     [MyRPC]
@@ -115,6 +118,7 @@ public class PlayerController : PlayerView
         playerName.text = Player.Nickname;
 
         CreateMesh();
+
         ConfigureColliders();
 
         MyComponents.AbilitiesFactory.RecreateAbilities();
@@ -122,15 +126,20 @@ public class PlayerController : PlayerView
 
     private void ConfigureColliders()
     {
-        GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
-        GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
-        GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
+        if (MyComponents.NetworkManagement.isServer)
+        {
+            GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
+            GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
+            GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
+        }
         int layer = -1;
-        //if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
-        layer = LayersGetter.players[(int)Player.Team];
-        //else
-        //    layer = LayersGetter.players[2];
-        Functions.SetLayer(Mesh.transform, layer);
+        if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE || Players.GetPlayersInTeam(Player.Team).Count == 1)
+            layer = LayersGetter.players[(int)Player.Team];
+        else if (Players.GetPlayersInTeam(Player.Team).Count == 1)
+            layer = LayersGetter.attackers[(int)Player.Team];
+        else
+            layer = LayersGetter.ATTACKER;
+        Functions.SetLayer(transform, layer);
     }
 
     private void CreateMesh()
@@ -156,7 +165,8 @@ public class PlayerController : PlayerView
     {
         transform.position = MyComponents.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
         transform.LookAt(Vector3.zero);
-        StopMoving();
+        if (MyComponents.NetworkManagement.isServer)
+            StopMoving();
     }
 
     public void StopMoving()

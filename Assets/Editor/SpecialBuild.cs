@@ -16,12 +16,16 @@ public class SpecialBuild
 
     private static List<System.Diagnostics.Process> processes = new List<System.Diagnostics.Process>();
 
+
+    private static int numberOfGamesToLaunch;
+
     [MenuItem("MyTools/EditorAsServer %g")]
     public static void BuildWithLobby()
     {
         if (BuildOnly())
         {
-            RunGame();
+            for (int i = 0; i < numberOfGamesToLaunch; i++)
+                RunGame();
 
             ChangeScene(Paths.SCENE_LOBBY);
             EditorApplication.isPlaying = true;
@@ -34,7 +38,8 @@ public class SpecialBuild
         //BuildGame(new string[] { Paths.SCENE_MAIN });
         if (BuildOnly())
         {
-            RunGame();
+            for (int i = 0; i < numberOfGamesToLaunch; i++)
+                RunGame();
 
             ChangeScene(Paths.SCENE_LOBBY);
         }
@@ -65,12 +70,13 @@ public class SpecialBuild
         {
             lobbyManager.NumberPlayersToStartGame = 2;
         }
+        numberOfGamesToLaunch = lobbyManager.NumberPlayersToStartGame - 1;
 
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
 
         string x = BuildPipeline.BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development);
-        if (x.Contains("cancelled"))
+        if (x.Contains("cancelled") || x.Contains("error"))
         {
             Debug.LogError(x);
             ChangeScene(Paths.SCENE_LOBBY);
@@ -88,13 +94,13 @@ public class SpecialBuild
         MakeViewIds();
     }
 
-    [MenuItem("MyTools/Build Only %j")]
+    [MenuItem("MyTools/Build WebGL %j")]
     public static void BuildWebGL()
     {
         PrepareBuild();
         ChangeScene(Paths.SCENE_LOBBY);
         ((LobbyManager)UnityEngine.Object.FindObjectOfType(typeof(LobbyManager))).StartGameImmediately = false;
-        ((NickNamePanel)UnityEngine.Object.FindObjectOfType(typeof(NickNamePanel))).autoNickName = false;
+        //((NicknamePanel)UnityEngine.Object.FindObjectOfType(typeof(NicknamePanel))).autoNickName = false;
         string x = BuildPipeline.BuildPlayer(levels, path_WebGL, BuildTarget.WebGL, BuildOptions.None);
         Debug.Log(x);
     }

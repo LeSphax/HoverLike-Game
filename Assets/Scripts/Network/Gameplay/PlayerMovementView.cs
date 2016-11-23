@@ -7,10 +7,12 @@ using UnityEngine.Assertions;
 
 public delegate void PacketHandler(byte[] data);
 
-[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerController))]
 public class PlayerMovementView : ObservedComponent
 {
+    private const float BRAKE_AMOUNT = 3f;
+    private const float JUMP_FORCE = 30f;
+
     private ConnectionId? playerConnectionId = null;
     private Player Player
     {
@@ -67,8 +69,7 @@ public class PlayerMovementView : ObservedComponent
     {
         myRigidbody = GetComponent<Rigidbody>();
         controller = GetComponent<PlayerController>();
-        if (!MyComponents.NetworkManagement.isServer)
-            myRigidbody.isKinematic = true;
+        strategy = gameObject.AddComponent<NotInitializedStrategy>();
     }
 
 
@@ -113,11 +114,7 @@ public class PlayerMovementView : ObservedComponent
         while (StateBuffer.Count > 0 && SimulationTime >= StateBuffer.Peek().timeSent)
         {
             currentPacket = StateBuffer.Dequeue();
-            //Debug.Log("Packet Consumed " + currentPacket.Value.timeSent + "   " + SimulationTime);
         }
-
-        //if (StateBuffer.Count == 0 && currentPacket != null)
-        //Debug.LogWarning("No Packet in buffer !!! " + SimulationTime + "   " + gameObject.name);
 
         if (currentPacket != null)
         {
@@ -149,6 +146,24 @@ public class PlayerMovementView : ObservedComponent
     protected override bool IsSendingPackets()
     {
         return MyComponents.NetworkManagement.isServer;
+    }
+
+    [MyRPC]
+    public void Brake()
+    {
+        Vector3 currentVelocity = myRigidbody.velocity;
+        if (currentVelocity.magnitude != 0)
+        {
+            float reduction = (currentVelocity.magnitude - BRAKE_AMOUNT * Time.deltaTime) / currentVelocity.magnitude;
+            myRigidbody.velocity *= reduction;
+            controller.DestroyTarget();
+        }
+    }
+
+    [MyRPC]
+    public void Jump()
+    {
+        myRigidbody.AddForce(Vector3.up * JUMP_FORCE, ForceMode.VelocityChange);
     }
 }
 

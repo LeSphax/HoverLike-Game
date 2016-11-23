@@ -13,7 +13,6 @@ namespace Navigation
 
         public void StartLoading(string levelName)
         {
-            Debug.Log("StartLoading " + levelName);
             this.levelName = levelName;
             StartCoroutine("load");
         }
@@ -40,8 +39,6 @@ namespace Navigation
         {
             if (async != null && async.progress >= 0.9f)
             {
-                //Debug.Log(async.progress);
-                //Debug.Log(levelName);
                 if (!fading)
                 {
                     fading = true;

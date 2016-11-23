@@ -26,10 +26,10 @@ public class LatencyGUI : MonoBehaviour
             GameObject text = this.InstantiateAsChild(textPrefab);
             textfield = text.GetComponent<Text>();
             textfields.Add(id, textfield);
-            currentYPosition -= 50;
+            currentYPosition -= 40;
             textfield.rectTransform.localPosition += new Vector3(0, 1, 0) * currentYPosition;
         }
-        textfields[id].text = id + " : " + latency + " ms";
+        textfields[id].text = id + " : " + Mathf.Round(latency) + " ms";
     }
 
     void OnDestroy()

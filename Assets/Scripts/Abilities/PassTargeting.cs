@@ -23,7 +23,7 @@ public class PassTargeting : AbilityTargeting
             UpdateTargeterPosition();
             if (Input.GetMouseButtonDown(0))
             {
-                callback.Invoke(targeter, targeter.transform.position);
+                callback.Invoke(null, targeter.transform.position);
                 CancelTargeting();
             }
         }

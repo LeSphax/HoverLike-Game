@@ -10,8 +10,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
     bool started;
     short syncId;
 
-    public bool isGoal;
-
     public event EmptyEventHandler AllObjectsCreated;
 
     public void AddGameStartedListener(EmptyEventHandler handler)
@@ -41,57 +39,44 @@ public class GameInitialization : SlideBall.MonoBehaviour
     public IEnumerator CoStartGame()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer);
-        short[] teamSpawns = new short[2] { 1, 1 };
-        foreach (Player player in Players.players.Values)
-        {
-            Assert.IsTrue(player.Team == Team.FIRST || player.Team == Team.SECOND);
-            player.SpawnNumber = teamSpawns[(int)player.Team];
-            if (player.SpawnNumber == 0 && isGoal)
-            {
-                player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
-            }
-            else
-            {
-                player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
-            }
-            teamSpawns[(int)player.Team]++;
-        }
+        //short[] teamSpawns = new short[2] { 1, 1 };
+        //foreach (Player player in Players.players.Values)
+        //{
+        //    Assert.IsTrue(player.Team == Team.FIRST || player.Team == Team.SECOND);
+        //    player.SpawnNumber = teamSpawns[(int)player.Team];
+        //    if (player.SpawnNumber == 0)
+        //    {
+        //        player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
+        //    }
+        //    else
+        //    {
+        //        player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
+        //    }
+        //    teamSpawns[(int)player.Team]++;
+        //}
 
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         View.RPC("LoadRoom", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-        MyComponents.MatchManager.StartGameCountdown();
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("SPACE" + MyComponents.PlayersSynchronisation.IsSynchronised(syncId) + "   " + syncId);
-        }
-    }
-
-    private void SetupRoom()
-    {
+        //
+        syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         InstantiateNewObjects();
-        View.RPC("SendReady", RPCTargets.All);
+        View.RPC("SendReady", RPCTargets.All, syncId);
+        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
+        //
+        MyComponents.MatchManager.StartGameCountdown();
     }
 
     [MyRPC]
     private void LoadRoom(short syncId)
     {
-        Debug.Log("LoadRoom");
         this.syncId = syncId;
         NavigationManager.LoadScene(Scenes.Main);
-        if (MyComponents.NetworkManagement.isServer)
-        {
-            MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupRoom;
-        }
+        Players.MyPlayer.SceneChanged += SendReady;
     }
 
     private void InstantiateNewObjects()
     {
-        Debug.Log("InstantiateNewObjects");
         MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
         foreach (var id in Players.players.Keys)
@@ -101,8 +86,13 @@ public class GameInitialization : SlideBall.MonoBehaviour
         }
     }
 
+    private void SendReady(ConnectionId id, short newSceneId)
+    {
+        SendReady(this.syncId);
+    }
+
     [MyRPC]
-    private void SendReady()
+    private void SendReady(short syncId)
     {
         MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }

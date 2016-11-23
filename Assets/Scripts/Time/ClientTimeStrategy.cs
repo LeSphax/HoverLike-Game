@@ -34,7 +34,7 @@ public class ClientTimeStrategy : TimeStrategy
         Assert.IsTrue(id == otherId);
         ServerTimePacket packet = NetworkExtensions.Deserialize<ServerTimePacket>(data);
         latency = (Time.realtimeSinceStartup - packet.timeReceived) * 1000;
-        networkTime = packet.networkTime + latency / 2000f;
+        networkTime = packet.networkTime;
         lastNetworkUpdate = Time.realtimeSinceStartup;
         management.SetLatency(id, latency);
     }

@@ -14,7 +14,6 @@ public class RoomListPanel : MonoBehaviour {
 
     public void UpdateRoomList(string[] rooms)
     {
-        Debug.Log("UpdateRoomList " + rooms.Length);
         roomList = rooms;
         if (roomList.Length == 0)
         {

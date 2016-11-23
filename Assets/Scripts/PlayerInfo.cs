@@ -1,6 +1,7 @@
 ﻿using Byn.Net;
 using PlayerManagement;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 public class PlayerInfo : PlayerView
@@ -51,9 +52,8 @@ public class PlayerInfo : PlayerView
             if (updateLatency == 10)
             {
                 updateLatency = 0;
-                Debug.Log("SendLatency");
                 //We could avoid sending it to the owner of the view
-                View.RPC("RPCSetLatency", RPCTargets.Others, latency);
+                View.RPC("RPCSetLatency", RPCTargets.Others, MessageFlags.SceneDependant, latency);
             }
         }
     }
@@ -79,10 +79,14 @@ public class PlayerInfo : PlayerView
     [MyRPC]
     public void GetInitialTeam(ConnectionId RPCSenderId)
     {
-        if (Players.GetNumberPlayersInTeam(Team.FIRST) <= Players.GetNumberPlayersInTeam(Team.SECOND))
-            View.RPC("SetInitialTeam", RPCSenderId, Team.FIRST);
+        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+        Team team;
+        if (Players.GetPlayersInTeam(Team.FIRST).Count <= Players.GetPlayersInTeam(Team.SECOND).Count)
+            team = Team.FIRST;
         else
-            View.RPC("SetInitialTeam", RPCSenderId, Team.SECOND);
+            team = Team.SECOND;
+        View.RPC("SetInitialTeam", RPCSenderId, team);
+        Players.players[RPCSenderId].Team = team;
     }
 
     [MyRPC]

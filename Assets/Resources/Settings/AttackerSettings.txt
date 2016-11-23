@@ -4,4 +4,4 @@ maxSpeed : 45
 catchColliderRadius : 3
 catchColliderZPos : 0.5
 catchColliderHeight : 2.5
-abilities : Move|Shoot|Dash|Brake|Jump|Pass|Steal
+abilities : Move|Shoot|Dash|Jump|Pass|Steal

@@ -10,4 +10,10 @@
 
     public const string KEY_TO_USE = PREFAB_PATH + "KeyToUse";
     public const string NETWORK_SCRIPTS = PREFAB_PATH + "NetworkScripts";
+
+    public static string MOVE_UI_ANIMATION = PREFAB_PATH + "MoveUIAnimation";
+
+    public static string SHADOW_PREFAB = PREFAB_PATH + "Shadow";
+
+    public static string PASS_TARGETER = PREFAB_PATH + "PassTargeter";
 }

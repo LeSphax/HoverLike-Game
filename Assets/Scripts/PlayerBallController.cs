@@ -76,7 +76,6 @@ namespace PlayerBallControl
                 {
                     idsPlayerInContact.Add(collision.gameObject.GetComponent<PlayerController>().playerConnectionId);
                     TryStealing();
-                    Debug.Log(gameObject.name + " CollisionEnter " + collision.gameObject.name);
                 }
             }
         }
@@ -88,7 +87,6 @@ namespace PlayerBallControl
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
                     idsPlayerInContact.Remove(collision.gameObject.GetComponent<PlayerController>().playerConnectionId);
-                    Debug.Log("CollisionExit");
                 }
             }
         }
@@ -97,22 +95,11 @@ namespace PlayerBallControl
         {
             if (MyComponents.NetworkManagement.isServer)
             {
-                if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached() && tryingToCatchBall)
+                if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached() && tryingToCatchBall && (!MyComponents.BallState.Uncatchable || stealing))
                 {
-                    View.RPC("PickUpBall", RPCTargets.Server);
+                    Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
+                    MyComponents.BallState.SetAttached(playerConnectionId);
                 }
-            }
-        }
-
-        [MyRPC]
-        public void PickUpBall()
-        {
-            Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
-            Debug.Log("PickUpBall " + gameObject.name + "   " + !MyComponents.BallState.IsAttached() + " " + !MyComponents.BallState.Uncatchable);
-            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
-            if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.Uncatchable)
-            {
-                MyComponents.BallState.SetAttached(playerConnectionId);
             }
         }
 

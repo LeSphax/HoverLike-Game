@@ -2,16 +2,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NickNamePanel : MonoBehaviour
+public class NicknamePanel : MonoBehaviour
 {
     public InputField nicknameField;
-    public static string nickname;
+    public static string nickname = "Focus Graves";
 
     public bool autoNickName;
 
     void Start()
     {
-        if (autoNickName || MyComponents.LobbyManager.StartGameImmediately)
+        if ((autoNickName || MyComponents.LobbyManager.StartGameImmediately) && nickname == "Focus Graves")
         {
             nicknameField.text = RandomString(5);
             SetNickname();

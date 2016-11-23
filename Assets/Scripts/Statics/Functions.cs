@@ -46,9 +46,18 @@ class Functions
         return obj;
     }
 
-    public static void SetLayer(Transform go, int layer)
+    public static void SetLayer(Transform transform, int layer)
     {
-        foreach (Transform t in go) { t.gameObject.layer = layer; SetLayer(t, layer); };
+        if (transform.gameObject.tag != Tags.Ball)
+        {
+            transform.gameObject.layer = layer;
+            foreach (Transform t in transform) { SetLayer(t, layer); };
+        }
+    }
+
+    public static Vector3 Bezier3(Vector3 Start, Vector3 Control, Vector3 End, float t)
+    {
+        return (((1 - t) * (1 - t)) * Start) + (2 * t * (1 - t) * Control) + ((t * t) * End);
     }
 }
 

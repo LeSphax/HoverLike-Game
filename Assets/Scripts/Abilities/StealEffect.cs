@@ -1,21 +1,35 @@
-﻿using PlayerBallControl;
+﻿using AbilitiesManagement;
 using UnityEngine;
 
 public class StealEffect : AbilityEffect
 {
 
     public float stealingDuration = 0.5f;
-    private GameObject target;
 
     public override void ApplyOnTarget(GameObject target, Vector3 position)
     {
-        this.target = target;
-        target.GetComponent<PlayerBallController>().Stealing = true;
-        Invoke("StopStealing", stealingDuration);
+        target.GetComponent<PlayerController>().abilitiesManager.View.RPC("Steal",RPCTargets.Server,stealingDuration);
     }                   
 
-    private void StopStealing()
+}
+
+public class StealPersistentEffect : PersistentEffect
+{
+
+    public StealPersistentEffect(AbilitiesManager manager, float duration) : base(manager)
     {
-        target.GetComponent<PlayerBallController>().Stealing = false;
+        manager.controller.ballController.Stealing = true;
+        this.duration = duration;
     }
+
+    protected override void Apply(float dt)
+    {
+        manager.controller.ballController.Stealing = true;
+    }
+
+    protected override void StopEffect()
+    {
+        manager.controller.ballController.Stealing = false;
+    }
+
 }

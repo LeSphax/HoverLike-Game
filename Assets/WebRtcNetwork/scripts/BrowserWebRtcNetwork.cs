@@ -266,11 +266,11 @@ namespace Byn.Net
         public ConnectionId Connect(string name)
         {
             //until fully supported -> block connecting to others while running a server
-            if (this.mIsServer == true)
-            {
-                UnityEngine.Debug.LogError("Can't create outgoing connections while in server mode!");
-                return ConnectionId.INVALID;
-            }
+            //if (this.mIsServer == true)
+            //{
+            //    UnityEngine.Debug.LogError("Can't create outgoing connections while in server mode!");
+            //    return ConnectionId.INVALID;
+            //}
 
             ConnectionId id = new ConnectionId();
             id.id = (short)UnityWebRtcNetworkConnect(mReference, name);
@@ -325,7 +325,7 @@ namespace Byn.Net
 
 
                 evt = new NetworkEvent(type, id, data);
-                UnityEngine.Debug.Log("event" + type + " received");
+                //UnityEngine.Debug.Log("event" + type + " received");
                 HandleEventInternally(ref evt);
                 return eventFound;
             }

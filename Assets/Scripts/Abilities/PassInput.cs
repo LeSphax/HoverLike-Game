@@ -4,7 +4,7 @@ public class PassInput : AbilityInputWithBall
 {
     protected override bool FirstActivation()
     {
-        return Input.GetKeyDown(KeyCode.R);
+        return Input.GetKeyDown(KeyCode.E);
     }
 
     protected override bool Cancellation()
@@ -14,6 +14,7 @@ public class PassInput : AbilityInputWithBall
 
     public override string GetKey()
     {
-        return "R";
+        return "E";
     }
+
 }

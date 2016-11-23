@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
@@ -44,7 +43,6 @@ public class LobbyManager : MonoBehaviour
                     //
                     Status.text = "In Lobby";
                     break;
-
                 case State.ROOMLIST:
                     MainPanel.SetActive(false);
                     //
@@ -64,6 +62,7 @@ public class LobbyManager : MonoBehaviour
                     RoomManager.gameObject.SetActive(true);
                     //
                     Status.text = "In Game Room";
+                    Host.text = MyComponents.NetworkManagement.RoomName;
                     break;
             }
             state = value;
@@ -99,7 +98,7 @@ public class LobbyManager : MonoBehaviour
 
     void CheckStartGame()
     {
-        if (MyComponents.NetworkManagement.isServer && MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) == NumberPlayersToStartGame)
+        if (MyComponents.NetworkManagement.isServer && MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) == NumberPlayersToStartGame || NumberPlayersToStartGame ==1)
         {
             Invoke("StartGame", 1f);
             CancelInvoke("CheckStartGame");
@@ -159,7 +158,7 @@ public class LobbyManager : MonoBehaviour
     public void StartGame()
     {
         MyComponents.NetworkManagement.BlockRoom();
-        Debug.Log("There could be a problem if a player connects before the block room message reaches the signaling server");
+        Debug.LogWarning("There could be a problem if a player connects before the block room message reaches the signaling server");
         MyComponents.GameInitialization.StartGame();
     }
 

@@ -36,7 +36,6 @@ namespace Navigation
         {
             if (FinishedLoadingScene != null)
             {
-                Debug.Log("InvokeFinishedLoading");
                 FinishedLoadingScene.Invoke();
             }
             if (Scenes.IsCurrentScene(Scenes.LobbyIndex))

@@ -31,7 +31,6 @@ namespace BaseNetwork
                 }
             }
             networkManagement.View.RPC("ReceivedAllBuffered", id, null);
-            Debug.Log("All buffered messages sent " + id);
         }
 
         internal void TryAddBuffered(NetworkMessage message)

@@ -32,14 +32,18 @@ public class BallState : SlideBall.MonoBehaviour
     {
         if (uncatchable)
         {
-            GetComponent<Rigidbody>().isKinematic = true;
-            GetComponent<Rigidbody>().detectCollisions = false;
+            if (MyComponents.NetworkManagement.isServer)
+            {
+                GetComponent<Rigidbody>().isKinematic = true;
+            }
             protectionSphere.SetActive(true);
         }
         else
         {
-            GetComponent<Rigidbody>().isKinematic = false;
-            GetComponent<Rigidbody>().detectCollisions = true;
+            if (MyComponents.NetworkManagement.isServer)
+            {
+                GetComponent<Rigidbody>().isKinematic = false;
+            }
             protectionSphere.SetActive(false);
         }
     }
@@ -79,7 +83,6 @@ public class BallState : SlideBall.MonoBehaviour
 
     public void SetAttached(ConnectionId playerID)
     {
-        Debug.Log("SetAttached " + playerID);
         MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, playerID);
 
     }
@@ -99,7 +102,6 @@ public class BallState : SlideBall.MonoBehaviour
         MyComponents.Properties.TryGetProperty(PropertiesKeys.IdPlayerOwningBall, out attachedPlayerID);
         if (attachedPlayerID == null)
         {
-            //Debug.LogError("The attachedPlayer wasn't set, this should not happen");
             return NO_PLAYER_ID;
         }
         else
@@ -120,18 +122,19 @@ public class BallState : SlideBall.MonoBehaviour
     public void AttachBall(ConnectionId playerId)
     {
         bool attach = playerId != NO_PLAYER_ID;
-        Debug.Log("Call To Attach Ball " + playerId + "   " + attach);
         GameObject player = GetAttachedPlayer();
         if (attach)
         {
             gameObject.transform.SetParent(player.transform);
-            gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            if (MyComponents.NetworkManagement.isServer)
+                gameObject.GetComponent<Rigidbody>().isKinematic = true;
             gameObject.transform.localPosition = ballHoldingPosition;
         }
         else
         {
             gameObject.transform.SetParent(null);
-            gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+            if (MyComponents.NetworkManagement.isServer)
+                gameObject.GetComponent<Rigidbody>().isKinematic = false;
         }
     }
 
@@ -144,7 +147,10 @@ public class BallState : SlideBall.MonoBehaviour
             View.RPC("PutAtStartPosition", RPCTargets.Others);
         }
         gameObject.transform.position = MyComponents.Spawns.BallSpawn;
-        gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        gameObject.GetComponentInChildren<AttractionBall>().Reset();
+        if (MyComponents.NetworkManagement.isServer)
+        {
+            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            gameObject.GetComponentInChildren<AttractionBall>().Reset();
+        }
     }
 }

@@ -2,10 +2,11 @@
 using System.Collections;
 using PlayerManagement;
 using Byn.Net;
+using AbilitiesManagement;
 
 public class BlockExplosion : MonoBehaviour
 {
-    public float radius = 35f;
+    public const float BLOCK_DIAMETER = 35;
     public float power = 100.0f;
 
     private ConnectionId targetId;
@@ -14,8 +15,6 @@ public class BlockExplosion : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        if (MyComponents.NetworkManagement.isServer)
-            AddForces(target.position);
         VisualEffects(target.transform);
     }
 
@@ -23,12 +22,13 @@ public class BlockExplosion : MonoBehaviour
     {
         targetId = (ConnectionId)parameters[0];
         target = Players.players[targetId].controller.transform;
+        AbilitiesManager.visualEffects.Add(gameObject);
     }
 
     private void VisualEffects(Transform target)
     {
         transform.SetParent(target, false);
-        ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(gameObject, 20f, 35f, 0.2f);
+        ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(gameObject, 20f, BLOCK_DIAMETER, 0.2f);
         animation.FinishedAnimating += DestroySphere;
         animation.StartAnimating();
     }
@@ -38,22 +38,9 @@ public class BlockExplosion : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void AddForces(Vector3 position)
+    private void OnDestroy()
     {
-        Collider[] colliders = Physics.OverlapSphere(position, radius, LayersGetter.BallMask());
-        foreach (Collider hit in colliders)
-        {
-            if (hit.tag == Tags.Ball)
-            {
-                Rigidbody rb = hit.GetComponent<Rigidbody>();
-                Vector3 force = hit.transform.position - position;
-                force.Normalize();
-                if (rb != null)
-                {
-                    rb.AddForce(force * power, ForceMode.VelocityChange);
-                }
-
-            }
-        }
+        AbilitiesManager.visualEffects.Remove(gameObject);
     }
+
 }
