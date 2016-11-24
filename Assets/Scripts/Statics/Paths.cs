@@ -16,4 +16,5 @@
     public static string SHADOW_PREFAB = PREFAB_PATH + "Shadow";
 
     public static string PASS_TARGETER = PREFAB_PATH + "PassTargeter";
+    public static string TIME_SLOW_TARGETER = PREFAB_PATH + "TimeSlowTargeter";
 }

@@ -19,7 +19,6 @@ public class PassPersistentEffect : PersistentEffect
     Vector3 targetPosition;
     Vector3 controlPosition;
     Vector3 startPosition;
-    float currentAngle;
 
     private static GameObject prefabTargeter;
     private static GameObject PrefabTargeter
@@ -51,13 +50,11 @@ public class PassPersistentEffect : PersistentEffect
         startPosition = manager.transform.position;
         controlPosition = startPosition + (targetPosition - startPosition) / 2 + Vector3.up * 20f;
 
-        currentAngle = 0;
-        duration = Mathf.Infinity;
+        duration = 1.0f;
     }
 
     protected override void Apply(float dt)
     {
-
         MyComponents.BallState.transform.position = Functions.Bezier3(startPosition, controlPosition, targetPosition, time / duration);
     }
 

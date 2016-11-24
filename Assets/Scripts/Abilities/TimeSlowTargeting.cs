@@ -3,7 +3,26 @@
 public class TimeSlowTargeting : AbilityTargeting
 {
     [SerializeField]
-    private GameObject prefabTargeter;
+    private static GameObject prefabTargeter;
+    private static GameObject PrefabTargeter
+    {
+        get
+        {
+            if (prefabTargeter == null)
+            {
+                prefabTargeter = Resources.Load<GameObject>(Paths.TIME_SLOW_TARGETER);
+            }
+            return prefabTargeter;
+        }
+    }
+
+    public static float DIAMETER_TIME_SLOW_ZONE
+    {
+        get
+        {
+            return PrefabTargeter.transform.localScale.x * 10;
+        }
+    }
     private GameObject targeter;
 
     private CastOnTarget callback;
@@ -11,7 +30,7 @@ public class TimeSlowTargeting : AbilityTargeting
     public override void ChooseTarget(CastOnTarget callback)
     {
         this.callback = callback;
-        targeter = (GameObject)Instantiate(prefabTargeter, transform, true);
+        targeter = (GameObject)Instantiate(PrefabTargeter, transform, true);
         IsTargeting = true;
         UpdateTargeterPosition();
     }

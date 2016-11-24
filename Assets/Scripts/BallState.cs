@@ -34,6 +34,7 @@ public class BallState : SlideBall.MonoBehaviour
         {
             if (MyComponents.NetworkManagement.isServer)
             {
+                GetComponent<Rigidbody>().detectCollisions = false;
                 GetComponent<Rigidbody>().isKinematic = true;
             }
             protectionSphere.SetActive(true);
@@ -42,6 +43,7 @@ public class BallState : SlideBall.MonoBehaviour
         {
             if (MyComponents.NetworkManagement.isServer)
             {
+                GetComponent<Rigidbody>().detectCollisions = true;
                 GetComponent<Rigidbody>().isKinematic = false;
             }
             protectionSphere.SetActive(false);

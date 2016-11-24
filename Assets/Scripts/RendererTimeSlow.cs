@@ -8,7 +8,7 @@ public class RendererTimeSlow : MonoBehaviour
 
     private void Awake()
     {
-        transform.localScale = Vector3.one * TimeSlowPersistentEffect.DIAMETER_TIME_SLOW_ZONE;
+        transform.localScale = Vector3.one * TimeSlowTargeting.DIAMETER_TIME_SLOW_ZONE;
         gameObject.AddComponent<DestroyAfterTimeout>().timeout = TimeSlowPersistentEffect.DURATION;
         AbilitiesManager.visualEffects.Add(gameObject);
     }

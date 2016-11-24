@@ -25,27 +25,6 @@ namespace TimeSlow
 
         public const float DURATION = 5f;
 
-        private static GameObject prefabTargeter;
-        private static GameObject PrefabTargeter
-        {
-            get
-            {
-                if (prefabTargeter == null)
-                {
-                    prefabTargeter = Resources.Load<GameObject>(Paths.PASS_TARGETER);
-                }
-                return prefabTargeter;
-            }
-        }
-
-        public static float DIAMETER_TIME_SLOW_ZONE
-        {
-            get
-            {
-                return PrefabTargeter.transform.localScale.x * 10;
-            }
-        }
-
         public TimeSlowPersistentEffect(AbilitiesManager manager, Vector3 epicenter) : base(manager)
         {
             this.epicenter = epicenter;
@@ -55,7 +34,7 @@ namespace TimeSlow
 
         protected override void Apply(float dt)
         {
-            Collider[] colliders = Physics.OverlapSphere(epicenter, DIAMETER_TIME_SLOW_ZONE / 2, LayersGetter.AttackersMask() | LayersGetter.BallMask());
+            Collider[] colliders = Physics.OverlapSphere(epicenter, TimeSlowTargeting.DIAMETER_TIME_SLOW_ZONE / 2, LayersGetter.AttackersMask() | LayersGetter.BallMask());
             foreach (var collider in colliders)
             {
                 Rigidbody rb = GetObjectsWithRigidbody(collider.transform);
