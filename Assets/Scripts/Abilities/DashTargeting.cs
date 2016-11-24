@@ -8,6 +8,6 @@ public class DashTargeting : AbilityTargeting
     public override void ChooseTarget(CastOnTarget callback)
     {
         Vector3 position = Functions.GetMouseWorldPosition();
-        callback.Invoke(Players.MyPlayer.gameobjectAvatar,position);
+        callback.Invoke(Players.MyPlayer.controller, position);
     }
 }

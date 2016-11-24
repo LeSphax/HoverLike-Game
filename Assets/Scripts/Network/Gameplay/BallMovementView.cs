@@ -43,8 +43,6 @@ class BallMovementView : ObservedComponent
     protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
-        if (!MyComponents.NetworkManagement.isServer)
-            myRigidbody.isKinematic = true;
     }
 
     public void Throw(Vector3 target, float power)

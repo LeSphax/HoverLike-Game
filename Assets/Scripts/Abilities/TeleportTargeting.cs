@@ -6,6 +6,6 @@ public class TeleportTargeting : AbilityTargeting
 {
     public override void ChooseTarget(CastOnTarget callback)
     {
-        callback.Invoke(Players.MyPlayer.gameobjectAvatar, Players.MyPlayer.SpawningPoint);
+        callback.Invoke();
     }
 }

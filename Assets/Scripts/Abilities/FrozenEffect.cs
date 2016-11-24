@@ -7,7 +7,7 @@ public class FrozenEffect : AbilityEffect
 {
     public float duration;
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    public override void ApplyOnTarget(params object[] parameters)
     {
         Players.MyPlayer.CurrentState = Player.State.FROZEN;
         Invoke("StopFreezing", duration);

@@ -98,7 +98,7 @@ public class LobbyManager : MonoBehaviour
 
     void CheckStartGame()
     {
-        if (MyComponents.NetworkManagement.isServer && MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) == NumberPlayersToStartGame || NumberPlayersToStartGame ==1)
+        if (MyComponents.NetworkManagement.isServer && (MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) == NumberPlayersToStartGame || NumberPlayersToStartGame ==1))
         {
             Invoke("StartGame", 1f);
             CancelInvoke("CheckStartGame");

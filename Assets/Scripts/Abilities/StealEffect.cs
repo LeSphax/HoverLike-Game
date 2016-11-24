@@ -6,10 +6,11 @@ public class StealEffect : AbilityEffect
 
     public float stealingDuration = 0.5f;
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    public override void ApplyOnTarget(params object[] parameters)
     {
-        target.GetComponent<PlayerController>().abilitiesManager.View.RPC("Steal",RPCTargets.Server,stealingDuration);
-    }                   
+        PlayerController controller = (PlayerController)parameters[0];
+        controller.abilitiesManager.View.RPC("Steal", RPCTargets.Server, stealingDuration);
+    }
 
 }
 
@@ -27,7 +28,7 @@ public class StealPersistentEffect : PersistentEffect
         manager.controller.ballController.Stealing = true;
     }
 
-    protected override void StopEffect()
+    public override void StopEffect()
     {
         manager.controller.ballController.Stealing = false;
     }

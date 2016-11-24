@@ -1,4 +1,5 @@
-﻿using PlayerManagement;
+﻿using Byn.Net;
+using PlayerManagement;
 using System;
 using System.Collections.Generic;
 using TimeSlow;
@@ -14,6 +15,10 @@ namespace AbilitiesManagement
 
         public void ResetPersistentEffects()
         {
+            foreach(var effect in persistentEffects)
+            {
+                effect.StopEffect();
+            }
             persistentEffects.Clear();
         }
 
@@ -55,9 +60,9 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
-        private void Pass(Vector3 position)
+        private void Pass(ConnectionId id)
         {
-            new PassPersistentEffect(this, position);
+            new PassPersistentEffect(this, id);
         }
 
         [MyRPC]

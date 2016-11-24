@@ -39,6 +39,6 @@ namespace AbilitiesManagement
 
         protected abstract void Apply(float dt);
 
-        protected abstract void StopEffect();
+        public abstract void StopEffect();
     }
 }

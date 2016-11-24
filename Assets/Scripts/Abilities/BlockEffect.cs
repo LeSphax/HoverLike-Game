@@ -4,9 +4,9 @@ using UnityEngine;
 public class BlockEffect : AbilityEffect
 {
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    public override void ApplyOnTarget(params object[] parameters)
     {
-        target.GetComponent<PlayerController>().View.RPC("Block", RPCTargets.Server);
+        Players.MyPlayer.controller.View.RPC("Block", RPCTargets.Server);
     }
 
 }

@@ -6,9 +6,11 @@ public class DashEffect : AbilityEffect
 {
 
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    public override void ApplyOnTarget(params object[] parameters)
     {
-        target.GetComponent<PlayerController>().View.RPC("Dash", RPCTargets.Server, position);
+        PlayerController controller = (PlayerController)parameters[0];
+        Vector3 position = (Vector3)parameters[1];
+        controller.View.RPC("Dash", RPCTargets.Server, position);
     }
 
 }
@@ -43,7 +45,7 @@ public class DashPersistentEffect : PersistentEffect
         myRigidbody.velocity = force * speed;
     }
 
-    protected override void StopEffect()
+    public override void StopEffect()
     {
         myRigidbody.velocity = force * endSpeed;
     }

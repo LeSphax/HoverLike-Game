@@ -95,7 +95,7 @@ namespace PlayerBallControl
         {
             if (MyComponents.NetworkManagement.isServer)
             {
-                if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached() && tryingToCatchBall && (!MyComponents.BallState.Uncatchable || stealing))
+                if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached() && tryingToCatchBall && (!MyComponents.BallState.UnPickable || stealing || MyComponents.BallState.PassTarget == playerConnectionId))
                 {
                     Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
                     MyComponents.BallState.SetAttached(playerConnectionId);

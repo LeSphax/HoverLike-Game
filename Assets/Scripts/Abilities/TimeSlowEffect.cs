@@ -6,8 +6,9 @@ using UnityEngine;
 public class TimeSlowEffect : AbilityEffect
 {
 
-    public override void ApplyOnTarget(GameObject targetGameObject, Vector3 epicenter)
+    public override void ApplyOnTarget(params object[] parameters)
     {
+        Vector3 epicenter = (Vector3)parameters[0];
         Players.MyPlayer.controller.View.RPC("TimeSlow", RPCTargets.Server, epicenter);
     }
 
@@ -46,7 +47,7 @@ namespace TimeSlow
             }
         }
 
-        protected override void StopEffect()
+        public override void StopEffect()
         {
         }
 

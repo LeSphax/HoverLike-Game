@@ -5,10 +5,19 @@ using UnityEngine;
 
 public class PassEffect : AbilityEffect
 {
+    public AnimationCurve yPositionCurve;
 
-    public override void ApplyOnTarget(GameObject targetGameObject, Vector3 targetPosition)
+    internal static AnimationCurve YPositionCurve;
+
+    protected void Awake()
     {
-        Players.MyPlayer.controller.View.RPC("Pass", RPCTargets.Server, targetPosition);
+        YPositionCurve = yPositionCurve;
+    }
+
+    public override void ApplyOnTarget(params object[] parameters)
+    {
+        ConnectionId targetId = (ConnectionId)parameters[0];
+        Players.MyPlayer.controller.View.RPC("Pass", RPCTargets.Server, targetId);
     }
 
 
@@ -17,93 +26,98 @@ public class PassEffect : AbilityEffect
 
 public class PassPersistentEffect : PersistentEffect
 {
-
+    ConnectionId targetId;
     Transform target;
-    Vector3 arcCenter;
-    float currentAngle;
-
-    private static GameObject prefabTargeter;
-    private static GameObject PrefabTargeter
-    {
-        get
-        {
-            if (prefabTargeter == null)
-            {
-                prefabTargeter = Resources.Load<GameObject>(Paths.PASS_TARGETER);
-            }
-            return prefabTargeter;
-        }
-    }
-
-    public static float DIAMETER_PASS_ZONE
-    {
-        get
-        {
-            return PrefabTargeter.transform.localScale.x * 10;
-        }
-    }
+    const float SPEED = 70;
+    const float VERTICAL_MAXIMUM = 20;
 
     public PassPersistentEffect(AbilitiesManager manager, ConnectionId id) : base(manager)
     {
         MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
-        MyComponents.BallState.Uncatchable = true;
+        MyComponents.BallState.UnPickable = true;
+        MyComponents.BallState.PassTarget = id;
 
+        targetId = id;
         target = Players.players[id].controller.transform;
-        arcCenter = manager.transform.position + (target.position - manager.transform.position) / 2;
 
-        duration = 1.0f;
+        duration = Mathf.Infinity;
     }
 
     protected override void Apply(float dt)
     {
-        float radius = Vector3.Distance(arcCenter, target.position);
-        float yPos = Mathf.Sin(currentAngle) * radius;
-        float xPos = Mathf.Cos(currentAngle) * radius;
-
-        Vector3 currentPosOnNewArc = (arcCenter - target.position) * xPos + Vector3.up * yPos;
-    }
-
-    protected override void StopEffect()
-    {
-        Collider[] colliders = Physics.OverlapSphere(targetPosition, DIAMETER_PASS_ZONE / 2, LayersGetter.PlayersMask());
-
-        float closestPlayerDistance = Mathf.Infinity;
-        int closestPlayerMatchingTeam = 0;
-        PlayerController closestPlayer = null;
-
-        foreach (Collider hit in colliders)
+        //Someone caught the ball before it reached the player
+        if (!MyComponents.BallState.UnPickable)
         {
-            GameObject go = hit.gameObject;
-            PlayerController controller = GetParentController(go.transform);
-            if (controller != null)
-            {
-                float distance = Vector3.Distance(targetPosition, controller.transform.position);
-                int matchingTeam = controller.Player.Team == manager.controller.Player.Team ? 1 : 0;
-
-                if (distance < closestPlayerDistance || closestPlayerMatchingTeam < matchingTeam)
-                {
-                    closestPlayerDistance = distance;
-                    closestPlayerMatchingTeam = matchingTeam;
-                    closestPlayer = controller;
-                }
-            }
+            StopEffect();
+            DestroyEffect();
         }
-        MyComponents.BallState.Uncatchable = false;
-
-        if (closestPlayer != null)
-            MyComponents.BallState.SetAttached(closestPlayer.playerConnectionId);
-    }
-
-    private PlayerController GetParentController(Transform t)
-    {
-        PlayerController controller = t.GetComponent<PlayerController>();
-        if (controller != null)
-        {
-            return controller;
-        }
-        else if (t.parent != null)
-            return GetParentController(t.parent);
         else
-            return null;
+        {
+            //On ramène la position de la balle sur la droite entre les deux joueurs qui se font la passe.
+            Vector3 trajectoryPlaneNormal = Vector3.Normalize(Vector3.Cross(target.position - manager.transform.position, Vector3.up));
+            Vector3 proj_ballPositionOnTrajectoryPlane = MyComponents.BallState.transform.position - Vector3.Dot(MyComponents.BallState.transform.position - target.position, trajectoryPlaneNormal) * trajectoryPlaneNormal;
+            Vector3 proj_ballPositionOnTrajectoryLine = new Vector3(proj_ballPositionOnTrajectoryPlane.x, manager.transform.position.y, proj_ballPositionOnTrajectoryPlane.z);
+
+            Vector3 newPositionOnLine = Vector3.MoveTowards(proj_ballPositionOnTrajectoryLine, target.position, SPEED * dt);
+
+            //Proportion du mouvement horizontal effectué
+            float H_completion = Vector3.Distance(manager.transform.position, newPositionOnLine) / Vector3.Distance(manager.transform.position, target.position);
+
+            // A partir de la proportion du mouvement horizontal, on calcule la position verticale
+            float yPos = PassEffect.YPositionCurve.Evaluate(H_completion) * VERTICAL_MAXIMUM;
+
+            Vector3 newHorizontalPosition = new Vector3(newPositionOnLine.x, 0, newPositionOnLine.z);
+            Vector3 newPositionWithoutVerticalChange = newHorizontalPosition + Vector3.up * MyComponents.BallState.transform.position.y;
+            Vector3 targetPosition = newHorizontalPosition + Vector3.up * yPos;
+
+            MyComponents.BallState.transform.position = Vector3.MoveTowards(newPositionWithoutVerticalChange, targetPosition, SPEED * dt);
+        }
     }
+
+    public override void StopEffect()
+    {
+        MyComponents.BallState.SetAttached(targetId);
+        MyComponents.BallState.UnPickable = false;
+        MyComponents.BallState.PassTarget = Players.INVALID_PLAYER_ID;
+        //Collider[] colliders = Physics.OverlapSphere(targetPosition, DIAMETER_PASS_ZONE / 2, LayersGetter.PlayersMask());
+
+        //float closestPlayerDistance = Mathf.Infinity;
+        //int closestPlayerMatchingTeam = 0;
+        //PlayerController closestPlayer = null;
+
+        //foreach (Collider hit in colliders)
+        //{
+        //    GameObject go = hit.gameObject;
+        //    PlayerController controller = GetParentController(go.transform);
+        //    if (controller != null)
+        //    {
+        //        float distance = Vector3.Distance(targetPosition, controller.transform.position);
+        //        int matchingTeam = controller.Player.Team == manager.controller.Player.Team ? 1 : 0;
+
+        //        if (distance < closestPlayerDistance || closestPlayerMatchingTeam < matchingTeam)
+        //        {
+        //            closestPlayerDistance = distance;
+        //            closestPlayerMatchingTeam = matchingTeam;
+        //            closestPlayer = controller;
+        //        }
+        //    }
+        //}
+        //MyComponents.BallState.Uncatchable = false;
+
+        //if (closestPlayer != null)
+        //    MyComponents.BallState.SetAttached(closestPlayer.playerConnectionId);
+    }
+
+    //private PlayerController GetParentController(Transform t)
+    //{
+    //    PlayerController controller = t.GetComponent<PlayerController>();
+    //    if (controller != null)
+    //    {
+    //        return controller;
+    //    }
+    //    else if (t.parent != null)
+    //        return GetParentController(t.parent);
+    //    else
+    //        return null;
+    //}
 }

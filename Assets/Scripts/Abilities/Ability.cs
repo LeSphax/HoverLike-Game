@@ -97,10 +97,10 @@ public class Ability : MonoBehaviour
         }
     }
 
-    private void CastOnTarget(GameObject target, Vector3 position)
+    private void CastOnTarget(params object[] parameters)
     {
         foreach (AbilityEffect effect in effects)
-            effect.ApplyOnTarget(target, position);
+            effect.ApplyOnTarget(parameters);
         if (NoCooldown)
             state = State.READY;
         else

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public delegate void CastOnTarget(GameObject gameObject, Vector3 target);
+public delegate void CastOnTarget(params object[] parameters);
 
 public abstract class AbilityTargeting : MonoBehaviour
 {

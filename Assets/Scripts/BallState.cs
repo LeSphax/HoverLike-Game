@@ -13,8 +13,10 @@ public class BallState : SlideBall.MonoBehaviour
         }
     }
 
+    public ConnectionId PassTarget = NO_PLAYER_ID;
+
     private bool uncatchable;
-    public bool Uncatchable
+    public bool UnPickable
     {
         get
         {
@@ -32,21 +34,24 @@ public class BallState : SlideBall.MonoBehaviour
     {
         if (uncatchable)
         {
-            if (MyComponents.NetworkManagement.isServer)
-            {
-                GetComponent<Rigidbody>().detectCollisions = false;
-                GetComponent<Rigidbody>().isKinematic = true;
-            }
             protectionSphere.SetActive(true);
         }
         else
         {
-            if (MyComponents.NetworkManagement.isServer)
-            {
-                GetComponent<Rigidbody>().detectCollisions = true;
-                GetComponent<Rigidbody>().isKinematic = false;
-            }
             protectionSphere.SetActive(false);
+        }
+        TrySetKinematic();
+
+    }
+
+    private void TrySetKinematic()
+    {
+        if (MyComponents.NetworkManagement.isServer)
+        {
+            if (uncatchable || IsAttached())
+                GetComponent<Rigidbody>().isKinematic = true;
+            else
+                GetComponent<Rigidbody>().isKinematic = false;
         }
     }
 
@@ -69,7 +74,7 @@ public class BallState : SlideBall.MonoBehaviour
 
     void Start()
     {
-        Uncatchable = false;
+        UnPickable = false;
     }
 
     public void StartGame()
@@ -127,16 +132,15 @@ public class BallState : SlideBall.MonoBehaviour
         GameObject player = GetAttachedPlayer();
         if (attach)
         {
+            UnPickable = false;
             gameObject.transform.SetParent(player.transform);
-            if (MyComponents.NetworkManagement.isServer)
-                gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            TrySetKinematic();
             gameObject.transform.localPosition = ballHoldingPosition;
         }
         else
         {
             gameObject.transform.SetParent(null);
-            if (MyComponents.NetworkManagement.isServer)
-                gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            TrySetKinematic();
         }
     }
 

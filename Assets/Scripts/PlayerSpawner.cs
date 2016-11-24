@@ -1,4 +1,5 @@
-﻿using Byn.Net;
+﻿using AbilitiesManagement;
+using Byn.Net;
 using PlayerManagement;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ public class PlayerSpawner : SlideBall.MonoBehaviour
     [MyRPC]
     public void DesactivatePlayers(short syncId)
     {
+        AbilitiesManager.ResetAllEffects();
         Players.players.Values.Map(player =>
         {
             player.controller.gameObject.SetActive(false);

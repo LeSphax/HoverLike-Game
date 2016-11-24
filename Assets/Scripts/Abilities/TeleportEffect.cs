@@ -1,12 +1,13 @@
 ﻿using AbilitiesManagement;
+using PlayerManagement;
 using UnityEngine;
 
 public class TeleportEffect : AbilityEffect
 {
 
-    public override void ApplyOnTarget(GameObject target, Vector3 position)
+    public override void ApplyOnTarget(params object[] parameters)
     {
-        target.GetComponent<PlayerController>().View.RPC("Teleport", RPCTargets.Server);
+        Players.MyPlayer.controller.View.RPC("Teleport", RPCTargets.Server);
     }
 }
 
@@ -24,7 +25,7 @@ public class TeleportPersistentEffect : PersistentEffect
     {
     }
 
-    protected override void StopEffect()
+    public override void StopEffect()
     {
         manager.transform.position = manager.controller.Player.SpawningPoint;
     }

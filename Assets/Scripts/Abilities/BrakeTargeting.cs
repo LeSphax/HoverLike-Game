@@ -7,7 +7,6 @@ public class BrakeTargeting : AbilityTargeting
 {
     public override void ChooseTarget(CastOnTarget callback)
     {
-        GameObject target = Players.MyPlayer.gameobjectAvatar;
-        callback.Invoke(target, target.transform.position);
+        callback.Invoke(Players.MyPlayer.controller);
     }
 }
