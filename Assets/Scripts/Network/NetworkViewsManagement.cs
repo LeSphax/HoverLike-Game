@@ -198,14 +198,6 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
     }
 
-    protected void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            PrintViews();
-        }
-    }
-
     public void PrintViews()
     {
         for (int i = 0; i < 500; i++)

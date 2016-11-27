@@ -64,7 +64,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
         View.RPC("SendReady", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         //
-        MyComponents.MatchManager.StartGameCountdown();
+        MyComponents.MatchManager.StartGame();
     }
 
     [MyRPC]

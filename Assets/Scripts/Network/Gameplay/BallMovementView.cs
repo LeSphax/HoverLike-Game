@@ -9,7 +9,7 @@ class BallMovementView : ObservedComponent
 
     Rigidbody myRigidbody;
 
-    private float MAX_SPEED = 200;
+    private float MAX_SPEED = 150;
 
     PacketHandler packetHandler;
 
@@ -49,7 +49,7 @@ class BallMovementView : ObservedComponent
     {
         Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
-        myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, 0.3f);
+        myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, 0.4f);
         transform.position = transform.position;
     }
 

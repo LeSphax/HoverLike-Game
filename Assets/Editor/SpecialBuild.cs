@@ -75,7 +75,7 @@ public class SpecialBuild
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
 
-        string x = BuildPipeline.BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development);
+        string x = BuildPipeline.BuildPlayer(levels, path, BuildTarget.StandaloneWindows64,BuildOptions.Development);
         if (x.Contains("cancelled") || x.Contains("error"))
         {
             Debug.LogError(x);

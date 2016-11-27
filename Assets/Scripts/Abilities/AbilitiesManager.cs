@@ -11,11 +11,14 @@ namespace AbilitiesManagement
     {
         internal PlayerController controller;
 
+        public AnimationCurve passCurve;
+        public AnimationCurve jumpCurve;
+
         private const float BLOCK_POWER = 100;
 
         public void ResetPersistentEffects()
         {
-            foreach(var effect in persistentEffects)
+            foreach (var effect in persistentEffects)
             {
                 effect.StopEffect();
             }
@@ -33,7 +36,7 @@ namespace AbilitiesManagement
         public static void ResetAllEffects()
         {
             ResetVisualEffects();
-            foreach(var player in Players.players.Values)
+            foreach (var player in Players.players.Values)
             {
                 player.controller.abilitiesManager.ResetPersistentEffects();
             }
@@ -48,57 +51,104 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
+        private void Move(Vector3 position)
+        {
+            if (CanUseAbility())
+                controller.CreateTarget(position);
+        }
+
+        [MyRPC]
+        private void Shoot(Vector3 target, float power)
+        {
+            if (CanUseAbility())
+                controller.ballController.ThrowBall(target, power);
+        }
+
+        [MyRPC]
         private void Dash(Vector3 position)
         {
-            new DashPersistentEffect(this, position);
+            if (CanUseAbility())
+                new DashPersistentEffect(this, position);
+        }
+
+        [MyRPC]
+        private void Jump()
+        {
+            if (CanUseAbility())
+                new JumpPersistentEffect(this,jumpCurve);
+                    //controller.movementManager.Jump();
+        }
+
+        [MyRPC]
+        private void Brake()
+        {
+            if (CanUseAbility())
+                controller.movementManager.Brake();
+        }
+
+
+        private bool CanUseAbility()
+        {
+            return controller.Player.CurrentState == Player.State.PLAYING;
         }
 
         [MyRPC]
         private void Steal(float duration)
         {
-            new StealPersistentEffect(this, duration);
+            if (CanUseAbility())
+                new StealPersistentEffect(this, duration);
         }
 
         [MyRPC]
         private void Pass(ConnectionId id)
         {
-            new PassPersistentEffect(this, id);
+            if (CanUseAbility())
+                new PassPersistentEffect(this, id, passCurve);
         }
 
         [MyRPC]
         private void Teleport()
         {
-            MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", transform.position, Quaternion.identity);
-            MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", controller.Player.SpawningPoint, Quaternion.identity);
-            new TeleportPersistentEffect(this);
+            if (CanUseAbility())
+            {
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", transform.position, Quaternion.identity);
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", controller.Player.SpawningPoint, Quaternion.identity);
+                new TeleportPersistentEffect(this);
+            }
         }
 
         [MyRPC]
         private void Block()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, BlockExplosion.BLOCK_DIAMETER/2, LayersGetter.BallMask());
-            foreach (Collider hit in colliders)
+            if (CanUseAbility())
             {
-                if (hit.tag == Tags.Ball)
+                Collider[] colliders = Physics.OverlapSphere(transform.position, BlockExplosion.BLOCK_DIAMETER / 2, LayersGetter.BallMask());
+                foreach (Collider hit in colliders)
                 {
-                    Rigidbody rb = hit.GetComponent<Rigidbody>();
-                    Vector3 force = hit.transform.position - transform.position;
-                    force.Normalize();
-                    if (rb != null)
+                    if (hit.tag == Tags.Ball)
                     {
-                        rb.AddForce(force * BLOCK_POWER, ForceMode.VelocityChange);
-                    }
+                        Rigidbody rb = hit.GetComponent<Rigidbody>();
+                        Vector3 force = hit.transform.position - transform.position;
+                        force.Normalize();
+                        if (rb != null)
+                        {
+                            rb.AddForce(force * BLOCK_POWER, ForceMode.VelocityChange);
+                        }
 
+                    }
                 }
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", controller.playerConnectionId);
             }
-            MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", controller.playerConnectionId);
         }
 
         [MyRPC]
         private void TimeSlow(Vector3 epicenter)
         {
-            MyComponents.NetworkViewsManagement.Instantiate("Effects/TimeSlow", epicenter, Quaternion.identity);
-            new TimeSlowPersistentEffect(this, epicenter);
+            if (CanUseAbility())
+            {
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/TimeSlow", epicenter, Quaternion.identity);
+                new TimeSlowPersistentEffect(this, epicenter);
+            }
         }
 
         public void ApplyAbilityEffects(float dt)
@@ -108,6 +158,8 @@ namespace AbilitiesManagement
                 effect.ApplyEffect(dt);
             }
         }
+
+
 
     }
 }

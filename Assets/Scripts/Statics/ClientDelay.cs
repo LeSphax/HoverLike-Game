@@ -30,26 +30,4 @@ public class ClientDelay : MonoBehaviour
         text.enabled = shown;
 
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.O) && Input.GetKeyDown(KeyCode.P))
-        {
-            shown = !shown;
-            text.enabled = shown;
-        }
-        if (shown)
-        {
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                Delay += 0.01f;
-            }
-            else if (Input.GetKeyDown(KeyCode.M))
-            {
-                Delay -= 0.01f;
-            }
-            text.text = "Delay : " + Delay + " ms";
-        }
-    }
 }

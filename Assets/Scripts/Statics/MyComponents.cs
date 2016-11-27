@@ -12,7 +12,6 @@ public static class MyComponents
         if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
         {
             matchManager = null;
-            countdown = null;
             abilitiesFactory = null;
             ballState = null;
             spawns = null;
@@ -190,20 +189,6 @@ public static class MyComponents
                 spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
             }
             return spawns;
-        }
-    }
-
-    private static Countdown countdown;
-    public static Countdown Countdown
-    {
-        get
-        {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
-            if (countdown == null)
-            {
-                countdown = GameObject.FindGameObjectWithTag(Tags.Countdown).GetComponent<Countdown>();
-            }
-            return countdown;
         }
     }
 

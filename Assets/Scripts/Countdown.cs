@@ -4,23 +4,11 @@ using UnityEngine.UI;
 public class Countdown : SlideBall.MonoBehaviour
 {
     [SerializeField]
-    private Text display;
-    [SerializeField]
-    private Text title;
+    protected Text text;
+
 
     public event EmptyEventHandler TimerFinished;
 
-    public string Title
-    {
-        set
-        {
-            title.text = value;
-        }
-        get
-        {
-            return title.text;
-        }
-    }
     [SerializeField]
     private float timeLeft = 0;
     public float TimeLeft
@@ -34,13 +22,21 @@ public class Countdown : SlideBall.MonoBehaviour
             timeLeft = value;
             if (timeLeft <= 0)
             {
-                display.text = "";
+                text.text = "";
             }
             else
             {
-                display.text = "" + (int)timeLeft;
+                if (timeLeft > 60)
+                    text.text = "" + (int)timeLeft / 60 + ":" + (int)timeLeft % 60;
+                else
+                    text.text = "" + (int)timeLeft;
             }
         }
+    }
+
+    protected virtual void Awake()
+    {
+        text.text = "";
     }
 
     // Update is called once per frame
@@ -51,7 +47,6 @@ public class Countdown : SlideBall.MonoBehaviour
             TimeLeft -= Time.deltaTime;
             if (TimeLeft <= 0)
             {
-                Title = "";
                 if (TimerFinished != null)
                     TimerFinished.Invoke();
             }
@@ -59,10 +54,9 @@ public class Countdown : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    private void StartTimer(string title, float timeLeft)
+    protected virtual void StartTimer(float timeLeft)
     {
         TimeLeft = timeLeft - TimeManagement.LatencyInMiliseconds / 2000f;
-        Title = title;
     }
 
     [MyRPC]
@@ -70,6 +64,5 @@ public class Countdown : SlideBall.MonoBehaviour
     {
         TimerFinished = null;
         TimeLeft = 0;
-        Title = "";
     }
 }

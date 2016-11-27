@@ -48,7 +48,7 @@ public class GameController : MonoBehaviour
             Camera.main.transform.localPosition = newPosition;
 
         }
-        DesactivateOnXPressed();
+       // DesactivateOnXPressed();
         if (Input.GetKeyDown(KeyCode.F4))
         {
             Cursor.lockState = CursorLockMode.Confined;

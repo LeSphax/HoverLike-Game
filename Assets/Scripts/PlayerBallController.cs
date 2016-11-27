@@ -103,15 +103,9 @@ namespace PlayerBallControl
             }
         }
 
-        internal void ThrowBall(Vector3 target, float power)
+        public void ThrowBall(Vector3 target, float power)
         {
-            View.RPC("ServerThrowBall", RPCTargets.Server, playerConnectionId, target, power);
-        }
-
-        [MyRPC]
-        private void ServerThrowBall(ConnectionId throwerId, Vector3 target, float power)
-        {
-            if (throwerId == MyComponents.BallState.GetIdOfPlayerOwningBall())
+            if (playerConnectionId == MyComponents.BallState.GetIdOfPlayerOwningBall())
             {
                 MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
                 SetBallSpeed(target, power);

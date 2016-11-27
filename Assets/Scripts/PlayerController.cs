@@ -5,7 +5,7 @@ using PlayerManagement;
 using PlayerBallControl;
 using AbilitiesManagement;
 
-[RequireComponent(typeof(PlayerMovementView))]
+[RequireComponent(typeof(PlayerMovementManager))]
 [RequireComponent(typeof(PlayerBallController))]
 [RequireComponent(typeof(AbilitiesManager))]
 public class PlayerController : PlayerView
@@ -36,13 +36,13 @@ public class PlayerController : PlayerView
             _target = value;
         }
     }
-    public PlayerMovementView movementManager;
+    public PlayerMovementManager movementManager;
     public PlayerBallController ballController;
     public AbilitiesManager abilitiesManager;
 
     void Awake()
     {
-        movementManager = GetComponent<PlayerMovementView>();
+        movementManager = GetComponent<PlayerMovementManager>();
         abilitiesManager = GetComponent<AbilitiesManager>();
         ballController = GetComponent<PlayerBallController>();
     }
@@ -67,15 +67,11 @@ public class PlayerController : PlayerView
         CreateTarget(position);
     }
 
-    [MyRPC]
     public void CreateTarget(Vector3 position)
     {
-        if (Player.state == Player.State.PLAYING)
-        {
-            DestroyTarget();
-            target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
-            target.GetComponent<TargetCollisionDetector>().controller = this;
-        }
+        DestroyTarget();
+        target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
+        target.GetComponent<TargetCollisionDetector>().controller = this;
     }
 
     public void TargetHit()
@@ -163,7 +159,7 @@ public class PlayerController : PlayerView
 
     public void PutAtStartPosition()
     {
-        transform.position = MyComponents.Spawns.GetSpawn(Player.Team, Player.SpawnNumber);
+        transform.position = Player.SpawningPoint;
         transform.LookAt(Vector3.zero);
         if (MyComponents.NetworkManagement.isServer)
             StopMoving();

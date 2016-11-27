@@ -525,7 +525,7 @@ namespace BaseNetwork
         {
             Players.CreatePlayer(id);
             Players.myPlayerId = id;
-            Players.MyPlayer.Nickname = NicknamePanel.nickname;
+            Players.MyPlayer.Nickname = JavascriptAPI.nickname;
             Players.MyPlayer.SceneId = Scenes.currentSceneId;
             NavigationManager.FinishedLoadingScene += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
         }
