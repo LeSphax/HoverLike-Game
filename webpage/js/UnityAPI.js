@@ -13,11 +13,6 @@ $(function() {
     $("#configuration_content").html('At the moment, the game only works on Google chrome. ' +
       'Please change your browser or download the <a href="https://github.com/LeSphax/HoverLike-Game/raw/PC/Slideball.zip">PC version</a>.');
   }
-/*
- resizeCanvas();
- $(window).on('resize orientationChange', function(event) {
-  resizeCanvas();
-});*/
 
 if (cookie_nickname){
   console.log("Nickname was found " + cookie_nickname);
