@@ -19,11 +19,9 @@ namespace Navigation
 
         IEnumerator load()
         {
-            Debug.LogWarning("ASYNC LOAD STARTED FOR SCENE :  " + levelName +
-               " - DO NOT EXIT PLAY MODE UNTIL SCENE LOADS... UNITY WILL CRASH");
             async = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
             SceneManager.sceneLoaded += LevelLoaded;
-            async.allowSceneActivation = false;
+            async.allowSceneActivation = true;
             fading = false;
             yield return async;
         }
@@ -37,36 +35,29 @@ namespace Navigation
 
         private void Update()
         {
-            if (async != null && async.progress >= 0.9f)
-            {
-                if (!fading)
-                {
-                    fading = true;
-                    CameraFade.FinishedFade += ActivateScene;
-                    CameraFade.StartFade(CameraFade.FadeType.FADEIN);
-                }
-            }
+            //if (async != null && async.progress >= 0.9f)
+            //{
+            //    if (!fading)
+            //    {
+            //        fading = true;
+            //        //CameraFade.FinishedFade += ActivateScene;
+            //        //CameraFade.StartFade(CameraFade.FadeType.FADEIN);
+            //    }
+            //}
         }
 
         void LevelLoaded(Scene scene, LoadSceneMode mode)
         {
             if (FinishedLoading != null)
                 FinishedLoading.Invoke();
-            CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
+            // CameraFade.InstantFadeOut();
             async = null;
             SceneManager.sceneLoaded -= LevelLoaded;
         }
 
         private static Camera GetMainCamera()
         {
-            Camera targetCamera = Camera.main;
-            //if (Camera.main == null)
-            //{
-            //    targetCamera = GameObject.FindGameObjectWithTag(Tags.UICamera).GetComponent<Camera>();
-
-            //}
-
-            return targetCamera;
+            return Camera.main;
         }
     }
 }

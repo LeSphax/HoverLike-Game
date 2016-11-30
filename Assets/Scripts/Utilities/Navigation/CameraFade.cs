@@ -1,4 +1,5 @@
-﻿using CustomAnimations;
+﻿using System;
+using CustomAnimations;
 using UnityEngine;
 
 
@@ -18,8 +19,8 @@ public static class CameraFade
             if (_screenFader == null)
             {
                 GameObject screenFaderPrefab = Resources.Load<GameObject>(Paths.SCREEN_FADER);
-                _screenFader = Object.Instantiate(screenFaderPrefab);
-                Object.DontDestroyOnLoad(_screenFader);
+                _screenFader = UnityEngine.Object.Instantiate(screenFaderPrefab);
+                UnityEngine.Object.DontDestroyOnLoad(_screenFader);
             }
             return _screenFader;
         }
@@ -50,6 +51,11 @@ public static class CameraFade
     {
         currentAnimation = ScreenFaderAnimation.CreateScreenFaderAnimation(screenFader.transform.GetChild(0).gameObject, Color.clear, targetColor, 2.0F);
         currentAnimation.FinishedAnimating += FinishedFadeHandler;
+    }
+
+    internal static void InstantFadeOut()
+    {
+        screenFader.SetActive(false);
     }
 
     public static void StartFade(FadeType type, Color targetColor)
