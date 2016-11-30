@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class SpecialBuild
 {
-    private const string path = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/PC/Build.exe";
+    private const string path = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/PC/Slideball.exe";
     private const string path_WebGL = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/";
 
     private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
@@ -35,14 +35,12 @@ public class SpecialBuild
     [MenuItem("MyTools/EditorAsClient %h")]
     public static void BuildWithoutLobby()
     {
-        //BuildGame(new string[] { Paths.SCENE_MAIN });
+        PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.Enabled;
         if (BuildOnly())
         {
-            for (int i = 0; i < numberOfGamesToLaunch; i++)
-                RunGame();
-
             ChangeScene(Paths.SCENE_LOBBY);
         }
+        PlayerSettings.displayResolutionDialog = ResolutionDialogSetting.HiddenByDefault;
     }
 
     public static bool BuildOnly()
@@ -148,7 +146,7 @@ public class SpecialBuild
     [MenuItem("MyTools/KillGames %k")]
     private static void KillGames()
     {
-        foreach (System.Diagnostics.Process process in System.Diagnostics.Process.GetProcessesByName("Build"))
+        foreach (System.Diagnostics.Process process in System.Diagnostics.Process.GetProcessesByName("Slideball"))
         {
             process.Kill();
         }

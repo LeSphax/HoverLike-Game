@@ -68,7 +68,10 @@ namespace AbilitiesManagement
         private void Dash(Vector3 position)
         {
             if (CanUseAbility())
+            {
                 new DashPersistentEffect(this, position);
+                Steal(DashPersistentEffect.dashDuration * 2);
+            }
         }
 
         [MyRPC]

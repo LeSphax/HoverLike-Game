@@ -64,8 +64,6 @@ public class MyNetworkView : ANetworkView
 
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
     {
-        //Debug.Log(ViewId + "    " +  message);
-
         switch (message.type)
         {
             case MessageType.ViewPacket:
@@ -212,7 +210,6 @@ public class MyNetworkView : ANetworkView
 
     private bool HasSenderIdParameter(ParameterInfo[] methodParameters, Type[] callParameterTypes)
     {
-        //Debug.Log((methodParameters.Length == 0) + "  " + (callParameterTypes.Length == (methodParameters.Length - 1)) + "   " + (methodParameters[methodParameters.Length - 1].Name == "RPCSenderId") + " " + (methodParameters[methodParameters.Length - 1].ParameterType != typeof(ConnectionId)));
         if (methodParameters.Length == 0)
             return false;
         return (callParameterTypes.Length == methodParameters.Length - 1 && methodParameters[methodParameters.Length - 1].Name == "RPCSenderId" && methodParameters[methodParameters.Length - 1].ParameterType == typeof(ConnectionId));

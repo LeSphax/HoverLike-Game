@@ -231,6 +231,7 @@ namespace PlayerManagement
             READY,
             PLAYING,
             FROZEN,
+            NO_MOVEMENT,
         }
 
         public delegate void TeamChangeHandler(Team team);

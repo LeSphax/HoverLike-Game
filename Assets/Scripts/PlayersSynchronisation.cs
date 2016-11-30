@@ -63,7 +63,6 @@ public class PlayersSynchronisation : ANetworkView
             byte[] data = new byte[4] { syncIdData[0], syncIdData[1], connectionIdData[0], connectionIdData[1] };
             NetworkMessage message = new NetworkMessage(ViewId, MessageType.Synchronisation, data);
             MyComponents.NetworkManagement.SendData(message);
-            //Debug.Log("SendSynchronisation To " + ViewId + " net " + syncId +"   " + connectionId);
         }
         else
         {

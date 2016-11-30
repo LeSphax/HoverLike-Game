@@ -15,4 +15,9 @@ public class DashInput : AbilityInput
     {
         return Inputs.GetKeyForIcon(INPUT_NUMBER);
     }
+
+    protected override bool IsMovement()
+    {
+        return true;
+    }
 }

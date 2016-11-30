@@ -52,7 +52,7 @@ namespace Byn.Net
             Byn.Net.Native.NativeWebRtcNetworkFactory factory = new Byn.Net.Native.NativeWebRtcNetworkFactory();
             factory.Initialize(true);
             mFactory = factory;
-            Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
+            //Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
             
 #endif
 
@@ -85,7 +85,7 @@ namespace Byn.Net
         internal static void LogNativeSupportInfo()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            Debug.Log("Initializing native webrtc ...");
+            //Debug.Log("Initializing native webrtc ...");
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             Debug.LogWarning("Trying to initialize native webrtc. Note that support for your OSX is not yet stable!");
 #elif UNITY_ANDROID

@@ -45,10 +45,9 @@ public class KeepRoomAlive : MonoBehaviour
     /// </summary>
 	private void Start()
     {
-        Debug.Log("Setting up WebRtcNetworkFactory");
         WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
-        if (factory != null)
-            Debug.Log("WebRtcNetworkFactory created");
+        if (factory == null)
+            Debug.LogError("WebRtcNetworkFactory not created");
 
         InvokeRepeating("KeepConnectionAlive", 30, 30);
     }
@@ -65,15 +64,10 @@ public class KeepRoomAlive : MonoBehaviour
 
     private void Setup()
     {
-        Debug.Log("Initializing webrtc network");
         mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(uSignalingUrl, new string[] { uStunServer });
-        if (mNetwork != null)
+        if (mNetwork == null)
         {
-            Debug.Log("WebRTCNetwork created");
-        }
-        else
-        {
-            Debug.Log("Failed to access webrtc ");
+            Debug.LogError("Failed to access webrtc ");
         }
     }
 

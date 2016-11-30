@@ -12,4 +12,9 @@ public class MoveInput : AbilityInput
     {
         return false;
     }
+
+    protected override bool IsMovement()
+    {
+        return true;
+    }
 }

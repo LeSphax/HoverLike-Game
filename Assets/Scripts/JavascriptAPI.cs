@@ -4,6 +4,7 @@ using UnityEngine;
 public class JavascriptAPI : MonoBehaviour
 {
     public static string nickname = "Focus Graves";
+    public static bool isFirstGame = true;
 
     [DllImport("__Internal")]
     private static extern string GetRoomName();
@@ -37,7 +38,6 @@ public class JavascriptAPI : MonoBehaviour
     {
         for (int i = 0; i < inputs.Length; i++)
         {
-            Debug.LogError(inputs[i]);
             Inputs.Keys[i] = inputs[i].ToString();
         }
         TryConnectToRoom();
@@ -45,4 +45,10 @@ public class JavascriptAPI : MonoBehaviour
             WebGLInput.captureAllKeyboardInput = true; 
 #endif
     }
+
+    public void IsNotFirstGame()
+    {
+        isFirstGame = false;
+    }
+
 }

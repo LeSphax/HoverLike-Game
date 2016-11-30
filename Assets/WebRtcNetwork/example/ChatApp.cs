@@ -168,8 +168,6 @@ public class ChatApp : MonoBehaviour
 
     private void Reset()
     {
-        Debug.Log("Cleanup!");
-
         mIsServer = false;
         mConnections = new List<ConnectionId>();
         Cleanup();

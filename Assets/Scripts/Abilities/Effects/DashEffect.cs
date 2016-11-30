@@ -19,7 +19,7 @@ public class DashPersistentEffect : PersistentEffect
 {
     public float speed = 100f;
     public float endSpeed = 30f;
-    public float dashDuration = 0.25f;
+    public const float dashDuration = 0.25f;
 
     private Vector3 force;
     private Rigidbody myRigidbody;

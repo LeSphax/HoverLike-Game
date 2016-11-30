@@ -17,4 +17,16 @@
 
     public static string PASS_TARGETER = PREFAB_PATH + "PassTargeter";
     public static string TIME_SLOW_TARGETER = PREFAB_PATH + "TimeSlowTargeter";
+
+    public const string ABILITIES = "Abilities/";
+    public const string ABILITY_DISABLED = ABILITIES + "Disabled";
+    public const string ABILITY_COOLDOWN = ABILITIES + "Cooldown";
+
+
+    public const string LOCALIZATION = "Localization/";
+    public const string ENGLISH_LOC = LOCALIZATION + "English";
+    public const string FRENCH_LOC = LOCALIZATION + "French";
+
+    public const string UI = "UI/";
+    public const string TOOLTIP = UI + "Tooltip";
 }

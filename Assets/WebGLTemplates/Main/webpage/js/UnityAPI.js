@@ -9,22 +9,17 @@ var cookie_inputs = Cookies.get('inputs');
 $(function() {
 
   if (!isChrome){
-   $("#alert_chrome").css('display','inline');
-   $("#configuration").css('display','none');
-   $("#unity-player").css('display','none');
- } 
- else{
-  $("#alert_chrome").css('display','none');
-   $("#configuration").css('display','inline');
-   $("#unity-player").css('display','none');
- }
+    $("#configuration_content").empty();
+    $("#configuration_content").html('At the moment, the game only works on Google chrome. ' +
+      'Please change your browser or download the <a href="https://github.com/LeSphax/HoverLike-Game/raw/PC/Slideball.zip">PC version</a>.');
+  }
 /*
  resizeCanvas();
  $(window).on('resize orientationChange', function(event) {
   resizeCanvas();
 });*/
 
- if (cookie_nickname){
+if (cookie_nickname){
   console.log("Nickname was found " + cookie_nickname);
   $("#nickname_input").val(cookie_nickname);
 }

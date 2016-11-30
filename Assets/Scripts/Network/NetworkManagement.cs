@@ -162,7 +162,6 @@ namespace BaseNetwork
         /// </summary>
         private void Start()
         {
-            Debug.Log("Setting up WebRtcNetworkFactory");
             WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
             if (factory != null)
                 Debug.Log("WebRtcNetworkFactory created");
@@ -170,11 +169,9 @@ namespace BaseNetwork
 
         private void Setup()
         {
-            Debug.Log("Initializing webrtc network");
             mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(uSignalingUrl, new string[] { uStunServer });
             if (mNetwork != null)
             {
-                Debug.Log("WebRTCNetwork created");
                 if (addLatency)
                     latencySimulation = new LatencySimulation(mNetwork, NumberFramesLatency);
             }
@@ -193,13 +190,11 @@ namespace BaseNetwork
         public void BlockRoom()
         {
             Assert.IsTrue(isServer);
-            Debug.Log("Send Block Room " + RoomName);
             mNetwork.Connect(BLOCK_ROOMS_COMMAND + SPLIT_CHAR + RoomName);
         }
 
         public void Reset()
         {
-            Debug.Log("Reset !");
             Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
             stateCurrent = State.IDLE;
             mConnections = new List<ConnectionId>();
@@ -412,10 +407,6 @@ namespace BaseNetwork
             //This line of code is causing random crashes. 
             //It seems the crash occur when the time between creating and disposing is too short
             // buffer.Dispose();
-
-
-
-
         }
 
         public void SendData(short viewId, MessageType type, byte[] data)
@@ -501,7 +492,7 @@ namespace BaseNetwork
             mNetwork.StartServer(roomName);
             RoomName = roomName;
 
-            Debug.Log("StartServer " + roomName);
+            Debug.LogError("StartServer " + roomName);
         }
 
         #region host
@@ -529,6 +520,7 @@ namespace BaseNetwork
             Players.MyPlayer.SceneId = Scenes.currentSceneId;
             NavigationManager.FinishedLoadingScene += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
         }
+
         #endregion
     }
 }

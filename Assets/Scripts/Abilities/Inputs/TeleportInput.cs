@@ -14,4 +14,9 @@ public class TeleportInput : AbilityInput
     {
         return Inputs.GetKeyForIcon(INPUT_NUMBER);
     }
+
+    protected override bool IsMovement()
+    {
+        return true;
+    }
 }

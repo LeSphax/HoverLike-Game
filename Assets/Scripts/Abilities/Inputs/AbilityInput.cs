@@ -78,7 +78,7 @@ public abstract class AbilityInput : MonoBehaviour
     private void PlayerStateChanged(Player.State newState)
     {
         bool previousActivation = IsActivated;
-        StateIsPlaying = newState == Player.State.PLAYING;
+        StateIsPlaying = newState == Player.State.PLAYING || (newState == Player.State.NO_MOVEMENT && !IsMovement());
         if (previousActivation != IsActivated)
             InvokeCanBeActivatedChanged();
     }
@@ -100,4 +100,10 @@ public abstract class AbilityInput : MonoBehaviour
         if (Players.MyPlayer != null)
             Players.MyPlayer.StateChanged -= PlayerStateChanged;
     }
+
+    protected virtual bool IsMovement()
+    {
+        return false;
+    }
+
 }

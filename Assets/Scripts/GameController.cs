@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
         initialPosition = Camera.main.transform.localPosition;
         cameraPosition = Vector3.zero;
         Cursor.lockState = CursorLockMode.Confined;
-        Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
+      //  Cursor.SetCursor(cursor, Vector2.zero, CursorMode.Auto);
     }
 
 
