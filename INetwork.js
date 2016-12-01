@@ -15,6 +15,22 @@ var NetEventType;
     NetEventType[NetEventType["Log"] = 102] = "Log";
 })(NetEventType || (NetEventType = {}));
 exports.NetEventType = NetEventType;
+
+var NetEventMessage;
+(function (NetEventMessage) {
+    NetEventMessage[NetEventMessage["RoomDoesntExist"] = "0"] = "RoomDoesntExist";
+    NetEventMessage[NetEventMessage["WebsocketClosed"] = "1"] = "WebsocketClosed";
+    NetEventMessage[NetEventMessage["HostDisconnected"] = "2"] = "HostDisconnected";
+    NetEventMessage[NetEventMessage["RoomAlreadyExists"] = "3"] = "RoomAlreadyExists";
+    NetEventMessage[NetEventMessage["RoomBlocked"] = "4"] = "RoomBlocked";
+    NetEventMessage[NetEventMessage["ServerConnectionNot1"] = "5"] = "ServerConnectionNot1";
+    NetEventMessage[NetEventMessage["OtherConnection"] = "6"] = "OtherConnection";
+    NetEventMessage[NetEventMessage["Incoming"] = "7"] = "Incoming";
+    NetEventMessage[NetEventMessage["Outgoing"] = "8"] = "Outgoing";
+
+})(NetEventMessage || (NetEventMessage = {}));
+exports.NetEventMessage = NetEventMessage;
+
 var NetEventDataType;
 (function (NetEventDataType) {
     NetEventDataType[NetEventDataType["Null"] = 0] = "Null";
