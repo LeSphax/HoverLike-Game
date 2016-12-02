@@ -549,7 +549,7 @@ PlayerSettings:
   XboxOne::VR::enabledDevices: []
   iOS::VR::enabledDevices: []
   tvOS::VR::enabledDevices: []
-  cloudProjectId: 69638d57-39b8-43b2-86f5-2834678c5c50
-  projectName: Hover (3)
+  cloudProjectId: cf621626-1d40-4080-8ff4-e2de7d5d70de
+  projectName: Hover
   organizationId: lesph4x
   cloudEnabled: 0

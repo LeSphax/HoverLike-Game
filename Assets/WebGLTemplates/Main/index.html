@@ -32,7 +32,7 @@
       margin-left: auto;
       margin-right: auto; 
       width: 50%;/*whatever width you want*/;
-      background-color:#363636;
+      background-color:#0095FF;
       padding: 20px;
       border-radius: 25px;
     }
@@ -44,7 +44,7 @@
     }
   </style>
 </head>
-<body class="template" style="background-color:#0095FF;">
+<body class="template" style="background-color:#363636;">
 
  <div class="outer" id="configuration">
   <div class="middle">
@@ -72,7 +72,7 @@
 
 <div id="unity-player" style="display: none">
   <div class="template-wrap clear">
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" height="%UNITY_HEIGHT%px" width="%UNITY_WIDTH%px"></canvas>
   </div>
   %UNITY_WEBGL_LOADER_GLUE%
 </div>

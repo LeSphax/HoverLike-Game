@@ -150,6 +150,11 @@ public class LobbyManager : MonoBehaviour
         MyComponents.NetworkManagement.CreateRoom(inputField.text);
     }
 
+    public void JoinGame()
+    {
+        MyComponents.NetworkManagement.ConnectToRoom(inputField.text);
+    }
+
     public void RefreshServers()
     {
         if (MyState == State.ROOMLIST)

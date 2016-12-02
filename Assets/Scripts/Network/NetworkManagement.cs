@@ -162,6 +162,8 @@ namespace BaseNetwork
         /// </summary>
         private void Start()
         {
+            ConnectedToRoom += ClosePopUp;
+            RoomCreated += ClosePopUp;
             WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
             if (factory != null)
                 Debug.Log("WebRtcNetworkFactory created");
@@ -340,6 +342,7 @@ namespace BaseNetwork
                         case NetEventType.ConnectionFailed:
                             {
                                 Debug.LogError("Connection failed ");
+                                MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
                                 if (evt.RawData != null)
                                 {
                                     string rawdata = (string)evt.RawData;
@@ -497,7 +500,6 @@ namespace BaseNetwork
             RoomName = roomName;
             mNetwork.Connect(roomName);
             MyComponents.PopUp.Show("Connecting to Room ...");
-            ConnectedToRoom += ClosePopUp;
             Debug.LogError("Connecting to " + roomName + " ...");
         }
 
@@ -516,14 +518,12 @@ namespace BaseNetwork
             mNetwork.StartServer(roomName);
             RoomName = roomName;
             MyComponents.PopUp.Show("Connecting to server ...");
-            RoomCreated += ClosePopUp;
+            
             Debug.LogError("StartServer " + roomName);
         }
 
         private void ClosePopUp()
         {
-            RoomCreated -= ClosePopUp;
-            ConnectedToRoom -= ClosePopUp;
             MyComponents.PopUp.ClosePopUp();
         }
 
