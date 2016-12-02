@@ -13,6 +13,8 @@ public class BallState : SlideBall.MonoBehaviour
         }
     }
 
+    public ConnectionId IdPlayerOwningBall = NO_PLAYER_ID;
+
     public ConnectionId PassTarget = NO_PLAYER_ID;
 
     private bool uncatchable;
@@ -81,21 +83,30 @@ public class BallState : SlideBall.MonoBehaviour
     {
         if (MyComponents.NetworkManagement.isServer)
         {
-            MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, NO_PLAYER_ID);
+            IdPlayerOwningBall = NO_PLAYER_ID;
         }
 
         AttachBall(GetIdOfPlayerOwningBall());
 
     }
 
-    public void SetAttached(ConnectionId playerID)
+    public void SetAttached(ConnectionId playerId, bool sendUpdate = true)
     {
-        MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, playerID);
-
+        if (playerId != IdPlayerOwningBall)
+        {
+            ConnectionId previousId = IdPlayerOwningBall;
+            IdPlayerOwningBall = playerId;
+            MyComponents.Players.PlayerOwningBallChanged(previousId, playerId, sendUpdate);
+        }
     }
     public void Detach()
     {
-        MyComponents.Properties.SetProperty(PropertiesKeys.IdPlayerOwningBall, NO_PLAYER_ID);
+        if (NO_PLAYER_ID != IdPlayerOwningBall)
+        {
+            ConnectionId previousId = IdPlayerOwningBall;
+            IdPlayerOwningBall = NO_PLAYER_ID;
+            MyComponents.Players.PlayerOwningBallChanged(previousId, NO_PLAYER_ID, true);
+        }
     }
 
     public bool IsAttached()
@@ -105,14 +116,7 @@ public class BallState : SlideBall.MonoBehaviour
 
     public ConnectionId GetIdOfPlayerOwningBall()
     {
-        object attachedPlayerID;
-        MyComponents.Properties.TryGetProperty(PropertiesKeys.IdPlayerOwningBall, out attachedPlayerID);
-        if (attachedPlayerID == null)
-        {
-            return NO_PLAYER_ID;
-        }
-        else
-            return (ConnectionId)attachedPlayerID;
+        return IdPlayerOwningBall;
     }
 
     public GameObject GetAttachedPlayer()

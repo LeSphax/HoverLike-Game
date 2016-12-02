@@ -19,7 +19,7 @@
 //        BinaryFormatter binaryFormatter = new BinaryFormatter();
 //        FileStream fileStream;
 
-//        try
+//        
 //        {
 //            if (File.Exists(dataPath))
 //            {
@@ -50,7 +50,7 @@
 //        string gameDetails = null;
 //        string dataPath = string.Format("{0}/GameDetails.dat", Application.persistentDataPath);
 
-//        try
+//        
 //        {
 //            if (File.Exists(dataPath))
 //            {

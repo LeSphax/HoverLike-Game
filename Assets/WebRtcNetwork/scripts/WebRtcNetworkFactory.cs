@@ -35,7 +35,7 @@ namespace Byn.Net
         private WebRtcNetworkFactory()
         {
 
-            //try to setup (this also checks if the platform is even supported)
+            // to setup (this also checks if the platform is even supported)
             TryStaticInitialize();
             //setup failed? factory will be null so nothing can be created
             if (sStaticInitSuccessful == false)

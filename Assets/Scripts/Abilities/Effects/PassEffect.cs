@@ -25,7 +25,7 @@ public class PassPersistentEffect : PersistentEffect
 
     public PassPersistentEffect(AbilitiesManager manager, ConnectionId id, AnimationCurve curve) : base(manager)
     {
-        MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
+        MyComponents.BallState.Detach();
         MyComponents.BallState.UnPickable = true;
         MyComponents.BallState.PassTarget = id;
 

@@ -18,6 +18,9 @@ public class JavascriptAPI : MonoBehaviour
         WebGLInput.captureAllKeyboardInput = false; 
         UnityReady();
 #endif
+#if !UNITY_WEBGL || UNITY_EDITOR
+        isFirstGame = false;
+#endif
     }
 
     public static void TryConnectToRoom()

@@ -240,6 +240,14 @@ namespace BaseNetwork
                 while (mNetwork != null && mNetwork.Dequeue(out evt) && x < 100)
                 {
                     x++;
+                    if (evt.RawData != null)
+                    {
+                        if (NetEventMessage.CodesMeaning.ContainsKey((string)evt.RawData))
+                        {
+                            Debug.LogError(NetEventMessage.CodesMeaning[(string)evt.RawData]);
+                            MyComponents.PopUp.Show(evt.Type + "   " + NetEventMessage.CodesMeaning[(string)evt.RawData]);
+                        }
+                    }
                     switch (evt.Type)
                     {
                         case NetEventType.ServerInitialized:
@@ -259,9 +267,25 @@ namespace BaseNetwork
                         //maybe the user is offline or signaling server down?
                         case NetEventType.ServerInitFailed:
                             {
+                                Debug.LogError("Server Init Failed " + evt.RawData);
+                                
                                 if (evt.RawData != null)
                                 {
                                     string rawData = (string)evt.RawData;
+                                    if (rawData == NetEventMessage.ROOM_ALREADY_EXISTS)
+                                    {
+                                        if (ServerStartFailed != null)
+                                        {
+                                            Reset();
+                                            Setup();
+                                            ServerStartFailed.Invoke();
+                                        }
+                                        else
+                                        {
+                                            MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + "\n What about " + Random_Name_Generator.GetRandomName() + "?");
+                                        }
+                                    }
+                                   
                                     string[] rooms = rawData.Split(SPLIT_CHAR);
                                     if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
                                     {
@@ -270,19 +294,10 @@ namespace BaseNetwork
                                         else
                                             MyComponents.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
                                     }
-                                    else
-                                    {
-                                        Debug.LogError("Server start failed. " + evt.RawData);
-                                        if (ServerStartFailed != null)
-                                        {
-                                            ServerStartFailed.Invoke();
-                                        }
-                                        Reset();
-                                        Setup();
-                                    }
                                 }
                                 else
                                 {
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n " + Language.Instance.texts["Feedback"]);
                                     Debug.LogError("No internet connection ");
                                 }
                             }
@@ -299,6 +314,7 @@ namespace BaseNetwork
                                         Debug.LogError("Server closed. No incoming connections possible until restart.");
                                         break;
                                     case State.IDLE:
+                                        MyComponents.PopUp.Show("It was not possible to create the server." + "\n" + Language.Instance.texts["Feedback"]);
                                         Debug.LogError("Didn't manage to create the server " + RoomName + " retrying ...");
                                         CreateRoom(RoomName);
                                         break;
@@ -314,6 +330,7 @@ namespace BaseNetwork
                         case NetEventType.NewConnection:
                             {
                                 Debug.LogError("NewConnection " + evt.Info + "  " + evt.ConnectionId.id);
+
                                 mConnections.Add(evt.ConnectionId);
 
                                 if (isServer)
@@ -330,9 +347,24 @@ namespace BaseNetwork
                             break;
                         case NetEventType.ConnectionFailed:
                             {
-                                //Outgoing connection failed. Inform the user.
-                                Debug.LogError("Connection failed");
-                                //Reset();
+                                Debug.LogError("Connection failed ");
+                                if (evt.RawData != null)
+                                {
+                                    string rawdata = (string)evt.RawData;
+                                    if (rawdata == NetEventMessage.ROOM_DOESNT_EXIST)
+                                    {
+                                        MyComponents.PopUp.Show(Language.Instance.texts["Doesnt_Exist"]);
+                                    }
+                                    else if (rawdata == NetEventMessage.ROOM_BLOCKED)
+                                    {
+                                        MyComponents.PopUp.Show(Language.Instance.texts["Room_Blocked"]);
+                                    }
+                                    else if (rawdata == NetEventMessage.SERVER_CONNECTION_NOT_1)
+                                    {
+                                        MyComponents.PopUp.Show("Server Connection is not 1");
+                                    }
+                                    MyComponents.LobbyManager.RefreshServers();
+                                }
                             }
                             break;
                         case NetEventType.Disconnected:
@@ -345,15 +377,13 @@ namespace BaseNetwork
                                 if (isServer == false)
                                 {
                                     MyComponents.ResetNetworkComponents();
-                                    DisconnectedPopUp.ShowPopUp = true;
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Client_Disconnected"]);
                                 }
                                 else
                                 {
-                                    string userLeftMsg = "User " + evt.ConnectionId + " left the room.";
                                     mConnections.Remove(evt.ConnectionId);
                                     Players.Remove(evt.ConnectionId);
-                                    //show the server the message
-                                    Debug.LogError(userLeftMsg);
+                                    Debug.LogError("User " + evt.ConnectionId + " left the room.");
                                 }
                             }
                             break;
@@ -474,6 +504,8 @@ namespace BaseNetwork
             Setup();
             RoomName = roomName;
             mNetwork.Connect(roomName);
+            MyComponents.PopUp.Show("Connecting to Room ...");
+            ConnectedToRoom += ClosePopUp;
             Debug.LogError("Connecting to " + roomName + " ...");
         }
 
@@ -491,8 +523,16 @@ namespace BaseNetwork
             EnsureLength(roomName);
             mNetwork.StartServer(roomName);
             RoomName = roomName;
-
+            MyComponents.PopUp.Show("Connecting to server ...");
+            RoomCreated += ClosePopUp;
             Debug.LogError("StartServer " + roomName);
+        }
+
+        private void ClosePopUp()
+        {
+            RoomCreated -= ClosePopUp;
+            ConnectedToRoom -= ClosePopUp;
+            MyComponents.PopUp.ClosePopUp();
         }
 
         #region host

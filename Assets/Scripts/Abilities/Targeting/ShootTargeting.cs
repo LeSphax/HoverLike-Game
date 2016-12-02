@@ -17,20 +17,23 @@ public class ShootTargeting : AbilityTargeting
         isActivated = true;
     }
 
-    void Update()
+    public override void CancelTargeting()
     {
-        if (isActivated)
-            if (Input.GetMouseButtonUp(0) && powerBar.IsFilling())
-            {
-                isActivated = false;
-                Activate();
-                powerBar.Hide();
-            }
-            else if (Input.GetMouseButtonDown(1) && powerBar.IsFilling())
-            {
-                isActivated = false;
-                powerBar.Hide();
-            }
+        if (isActivated && powerBar.IsFilling())
+        {
+            isActivated = false;
+            powerBar.Hide();
+        }
+    }
+
+    public override void ReactivateTargeting()
+    {
+        if (isActivated && powerBar.IsFilling())
+        {
+            isActivated = false;
+            Activate();
+            powerBar.Hide();
+        }
     }
 
     private void Activate()

@@ -72,6 +72,11 @@ public class Ability : MonoBehaviour
                     targeting.CancelTargeting();
                     state = State.READY;
                 }
+                if (input.Reactivate())
+                {
+                    targeting.ReactivateTargeting();
+                    state = State.CHOOSINGTARGET;
+                }
                 break;
             case State.LOADING:
                 currentCooldown = Mathf.Max(0f, currentCooldown - Time.deltaTime);

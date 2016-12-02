@@ -18,9 +18,11 @@ public abstract class ANetworkView : MonoBehaviour
         }
     }
 
+    public bool isLocal = false;
+
     protected virtual void Start()
     {
-        if (!registered)
+        if (!registered && !isLocal)
         {
             MyComponents.NetworkViewsManagement.RegisterView(this);
         }

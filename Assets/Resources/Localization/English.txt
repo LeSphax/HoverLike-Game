@@ -14,3 +14,26 @@ PassTitle "Pass"
 StealTitle "Steal"
 TeleportTitle "Teleport"
 TimeSlowTitle "Time slow"
+Tuto_LC "If the ball is on the ground, you can catch it by walking on top of it.
+
+Press and hold left-click to throw the ball, the longer you hold the more powerful your shot."
+
+Tuto_RC "To move your character, right-click the ground to your target location"
+Tuto_Abilities "You also have special abilities on the bottom of the screen. 
+
+To cast an ability, press the corresponding button. 
+
+You can see a description for each ability by putting the mouse on it."
+
+Button_Next "Next"
+Button_Close "Close"
+Button_Cancel "Cancel"
+Button_Leave "Leave"
+Button_Ok "Ok"
+Exit_Dialog "Do you really want to leave the room?"
+Client_Disconnected "The game was stopped because the host has disconnected"
+Room_Exists "A room with this name already exists, please choose another name."
+Failed_Connect "The signaling server didn't respond."
+Feedback  "I would greatly appreciate it if you reported it at sbkerbrat@gmail.com :)"
+Doesnt_Exist "You cannot join this room because it doesn't exist anymore."
+Room_Blocked "You cannot join this room because the game has already started."

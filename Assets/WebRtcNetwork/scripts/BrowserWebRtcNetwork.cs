@@ -106,14 +106,14 @@ namespace Byn.Net
         /// <returns></returns>
         public static bool IsAvailable()
         {
-            try
-            {
+            //tries
+            //{
                 return UnityWebRtcNetworkIsAvailable();
-            }catch(EntryPointNotFoundException)
-            {
-                //not available at all
-                return false;
-            }
+            //}catch(EntryPointNotFoundException)
+            //{
+            //    //not available at all
+            //    return false;
+            //}
         }
 
 

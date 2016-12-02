@@ -12,6 +12,20 @@ namespace PlayerManagement
     {
         public static ConnectionId INVALID_PLAYER_ID = new ConnectionId(-100);
 
+        private bool ballOwnerChanged;
+
+        private ConnectionId IdPlayerOwningBall
+        {
+            get
+            {
+                if (MyComponents.BallState != null)
+                {
+                    return MyComponents.BallState.IdPlayerOwningBall;
+                }
+                return BallState.NO_PLAYER_ID;
+            }
+        }
+
         //The server is the only one having access to this dictionnary
         public static Dictionary<ConnectionId, Player> players = new Dictionary<ConnectionId, Player>();
 
@@ -43,22 +57,20 @@ namespace PlayerManagement
             myPlayerId = INVALID_PLAYER_ID;
             NewPlayerCreated = null;
             players.Clear();
-            MyComponents.Properties.AddListener(PropertiesKeys.IdPlayerOwningBall, MyComponents.Players.PlayerOwningBallChanged);
         }
 
-        public void PlayerOwningBallChanged(object previousPlayer, object newPlayer)
+        public void PlayerOwningBallChanged(ConnectionId previousPlayer, ConnectionId newPlayer, bool sendUpdate)
         {
-            ConnectionId newPlayerId = newPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)newPlayer;
-            ConnectionId previousPlayerId = previousPlayer == null ? BallState.NO_PLAYER_ID : (ConnectionId)previousPlayer;
+            ballOwnerChanged = sendUpdate;
 
-            if (newPlayerId != previousPlayerId)
+            if (newPlayer != previousPlayer)
             {
-                if (previousPlayerId != BallState.NO_PLAYER_ID)
-                    players[previousPlayerId].HasBall = false;
-                if (newPlayerId != BallState.NO_PLAYER_ID)
+                if (previousPlayer != BallState.NO_PLAYER_ID)
+                    players[previousPlayer].HasBall = false;
+                if (newPlayer != BallState.NO_PLAYER_ID)
                 {
-                    players[newPlayerId].HasBall = true;
-                    MyComponents.BallState.AttachBall(newPlayerId);
+                    players[newPlayer].HasBall = true;
+                    MyComponents.BallState.AttachBall(newPlayer);
                 }
                 else
                 {
@@ -70,44 +82,58 @@ namespace PlayerManagement
 
         public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
         {
-            int currentIndex = 3;
-            PlayerFlags flags = (PlayerFlags)message.data[0];
-            ConnectionId playerId = new ConnectionId(BitConverter.ToInt16(message.data, 1));
+            int currentIndex = 0;
+            if (MyComponents.BallState != null)
+                MyComponents.BallState.SetAttached(new ConnectionId(BitConverter.ToInt16(message.data, currentIndex)), false);
+            currentIndex += 2;
+            while (message.data.Length > currentIndex)
+                HandlePlayerPacket(message.data, ref currentIndex);
+        }
+
+        private static void HandlePlayerPacket(byte[] data, ref int currentIndex)
+        {
+
+            PlayerFlags flags = (PlayerFlags)data[currentIndex];
+            ConnectionId playerId = new ConnectionId(BitConverter.ToInt16(data, currentIndex + 1));
+            currentIndex += 3;
             Player player = GetOrCreatePlayer(playerId);
             if (flags.HasFlag(PlayerFlags.TEAM))
             {
-                player.Team = (Team)message.data[currentIndex];
+                player.Team = (Team)data[currentIndex];
                 currentIndex++;
             }
             if (flags.HasFlag(PlayerFlags.SPAWNINGPOINT))
             {
-                player.spawnNumber = BitConverter.ToInt16(message.data, currentIndex);
+                player.spawnNumber = BitConverter.ToInt16(data, currentIndex);
                 currentIndex += 2;
             }
             if (flags.HasFlag(PlayerFlags.SCENEID))
             {
-                player.SceneId = BitConverter.ToInt16(message.data, currentIndex);
+                player.SceneId = BitConverter.ToInt16(data, currentIndex);
                 currentIndex += 2;
             }
             if (flags.HasFlag(PlayerFlags.AVATAR_SETTINGS))
             {
-                player.avatarSettingsType = (AvatarSettings.AvatarSettingsTypes)message.data[currentIndex];
+                player.avatarSettingsType = (AvatarSettings.AvatarSettingsTypes)data[currentIndex];
                 currentIndex++;
             }
             if (flags.HasFlag(PlayerFlags.PLAY_AS_GOALIE))
             {
-                player.PlayAsGoalie = BitConverter.ToBoolean(message.data, currentIndex);
+                player.PlayAsGoalie = BitConverter.ToBoolean(data, currentIndex);
                 currentIndex++;
             }
             if (flags.HasFlag(PlayerFlags.STATE))
             {
-                player.state = (Player.State)message.data[currentIndex];
+                player.state = (Player.State)data[currentIndex];
                 player.NotifyStateChanged();
                 currentIndex++;
             }
             if (flags.HasFlag(PlayerFlags.NICKNAME))
             {
-                player.Nickname = Encoding.UTF8.GetString(message.data, currentIndex, message.data.Length - currentIndex);
+                short length = BitConverter.ToInt16(data, currentIndex);
+                currentIndex += 2;
+                player.Nickname = Encoding.UTF8.GetString(data, currentIndex, length);
+                currentIndex += length;
             }
         }
 
@@ -132,16 +158,16 @@ namespace PlayerManagement
             return player;
         }
 
-        public void UpdatePlayer(Player player, PlayerFlags flags)
+        public byte[] UpdatePlayer(Player player)
         {
-            byte[] data = CreatePlayerPacket(player, flags);
-            MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, data);
+            byte[] data = CreatePlayerPacket(player, player.flagsChanged);
+            player.flagsChanged = PlayerFlags.NONE;
+            return data;
         }
 
-        public void UpdatePlayer(Player player, PlayerFlags flags, ConnectionId recipientId)
+        public byte[] InitPlayer(Player player)
         {
-            byte[] data = CreatePlayerPacket(player, flags);
-            MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, data, recipientId);
+            return CreatePlayerPacket(player, PlayerFlags.ALL);
         }
 
         private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
@@ -174,8 +200,10 @@ namespace PlayerManagement
             }
             if (flags.HasFlag(PlayerFlags.NICKNAME))
             {
+                data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes((short)(Encoding.UTF8.GetBytes(player.Nickname).Length)));
                 data = ArrayExtensions.Concatenate(data, Encoding.UTF8.GetBytes(player.Nickname));
             }
+            //Debug.LogError("CreatePacket " + flags + "   " + data.Length);
             return data;
         }
 
@@ -192,16 +220,18 @@ namespace PlayerManagement
             return result;
         }
 
-        public void SendProperties(ConnectionId recipientId)
+        public void SendPlayersData(ConnectionId recipientId)
         {
+            byte[] packet = BitConverter.GetBytes(IdPlayerOwningBall.id);
             foreach (Player player in players.Values)
-                UpdatePlayer(player, PlayerFlags.NICKNAME | PlayerFlags.TEAM, recipientId);
+                packet = ArrayExtensions.Concatenate(packet, InitPlayer(player));
+            MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, packet, recipientId);
         }
 
         protected override void Start()
         {
             base.Start();
-            MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendProperties;
+            MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendPlayersData;
             Reset();
         }
 
@@ -211,18 +241,43 @@ namespace PlayerManagement
             Destroy(players[connectionId].gameobjectAvatar);
             players.Remove(connectionId);
         }
+
+        protected void FixedUpdate()
+        {
+            SendChanges();
+        }
+
+        public void SendChanges()
+        {
+            byte[] packet = new byte[0];
+            foreach (Player player in players.Values)
+            {
+                if (player.flagsChanged != PlayerFlags.NONE)
+                    packet = ArrayExtensions.Concatenate(packet, UpdatePlayer(player));
+            }
+            if (packet.Length > 0 || ballOwnerChanged)
+            {
+                packet = ArrayExtensions.Concatenate(BitConverter.GetBytes(IdPlayerOwningBall.id), packet);
+                ballOwnerChanged = false;
+                MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, packet);
+            }
+        }
     }
     [Flags]
     public enum PlayerFlags
     {
-        TEAM = 2,
-        NICKNAME = 4,
-        SPAWNINGPOINT = 8,
-        AVATAR_SETTINGS = 16,
-        STATE = 32,
-        SCENEID = 64,
-        PLAY_AS_GOALIE = 128,
+        NONE = 0,
+        PLAY_AS_GOALIE = 1 << 0,
+        TEAM = 1 << 1,
+        NICKNAME = 1 << 2,
+        SPAWNINGPOINT = 1 << 3,
+        AVATAR_SETTINGS = 1 << 4,
+        STATE = 1 << 5,
+        SCENEID = 1 << 6,
+        ALL = ~(~0 << 7),//PLAY_AS_GOALIE + TEAM + NICKNAME + SPAWNINGPOINT + AVATAR_SETTINGS + STATE + SCENEID,
     }
+
+
     public class Player
     {
         public enum State
@@ -249,6 +304,8 @@ namespace PlayerManagement
         public PlayerController controller;
         public PlayerBallController ballController;
         public GameObject gameobjectAvatar;
+
+        internal PlayerFlags flagsChanged;
 
         internal void NotifyTeamChanged()
         {
@@ -288,7 +345,7 @@ namespace PlayerManagement
             {
                 team = value;
                 if (id == Players.myPlayerId)
-                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.TEAM);
+                    flagsChanged |= PlayerFlags.TEAM;
                 NotifyTeamChanged();
             }
         }
@@ -303,7 +360,7 @@ namespace PlayerManagement
             {
                 nickname = value;
                 if (id == Players.myPlayerId)
-                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.NICKNAME);
+                    flagsChanged |= PlayerFlags.NICKNAME;
             }
         }
 
@@ -317,7 +374,7 @@ namespace PlayerManagement
             set
             {
                 spawnNumber = value;
-                MyComponents.Players.UpdatePlayer(this, PlayerFlags.SPAWNINGPOINT);
+                flagsChanged |= PlayerFlags.SPAWNINGPOINT;
             }
         }
 
@@ -332,7 +389,7 @@ namespace PlayerManagement
             {
                 sceneId = value;
                 if (id == Players.myPlayerId)
-                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.SCENEID);
+                    flagsChanged |= PlayerFlags.SCENEID;
                 NotifySceneChanged();
             }
         }
@@ -347,7 +404,7 @@ namespace PlayerManagement
             set
             {
                 state = value;
-                MyComponents.Players.UpdatePlayer(this, PlayerFlags.STATE);
+                flagsChanged |= PlayerFlags.STATE;
                 NotifyStateChanged();
             }
         }
@@ -362,7 +419,7 @@ namespace PlayerManagement
             set
             {
                 avatarSettingsType = value;
-                MyComponents.Players.UpdatePlayer(this, PlayerFlags.AVATAR_SETTINGS);
+                flagsChanged |= PlayerFlags.AVATAR_SETTINGS;
             }
         }
 
@@ -377,7 +434,7 @@ namespace PlayerManagement
             {
                 playAsGoalie = value;
                 if (id == Players.myPlayerId)
-                    MyComponents.Players.UpdatePlayer(this, PlayerFlags.PLAY_AS_GOALIE);
+                    flagsChanged |= PlayerFlags.PLAY_AS_GOALIE;
             }
         }
 

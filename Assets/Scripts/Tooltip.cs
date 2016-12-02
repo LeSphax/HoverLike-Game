@@ -31,4 +31,18 @@ public class Tooltip : MonoBehaviour {
             title.text = value;
         }
     }
+
+    [SerializeField]
+    private Image icon;
+    public Sprite Icon
+    {
+        get
+        {
+            return icon.sprite;
+        }
+        set
+        {
+            icon.sprite = value;
+        }
+    }
 }

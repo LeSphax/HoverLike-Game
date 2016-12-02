@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public static class MyComponents
 {
+
     public static void NullifyComponents()
     {
         if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
@@ -34,6 +35,21 @@ public static class MyComponents
                     networkManagement = go.GetComponent<NetworkManagement>();
             }
             return networkManagement;
+        }
+    }
+
+    private static PopUp popUp;
+    public static PopUp PopUp
+    {
+        get
+        {
+            if (popUp == null)
+            {
+                GameObject go;
+                if ((go = GameObject.FindGameObjectWithTag(Tags.PopUp)) != null)
+                    popUp = go.GetComponentInChildren<PopUp>();
+            }
+            return popUp;
         }
     }
 
@@ -71,7 +87,7 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+            //Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (ballState == null)
             {
                 GameObject ball = GameObject.FindGameObjectWithTag(Tags.Ball);
@@ -152,19 +168,6 @@ public static class MyComponents
         }
     }
 
-    private static NetworkProperties properties;
-    public static NetworkProperties Properties
-    {
-        get
-        {
-            if (properties == null)
-            {
-                properties = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<NetworkProperties>();
-            }
-            return properties;
-        }
-    }
-
     private static GameInitialization gameInitialization;
     public static GameInitialization GameInitialization
     {
@@ -186,7 +189,7 @@ public static class MyComponents
             Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (spawns == null)
             {
-                spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
+                    spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
             }
             return spawns;
         }
@@ -213,7 +216,6 @@ public static class MyComponents
     public static void ResetNetworkComponents()
     {
         NavigationManager.Reset();
-        Properties.Reset();
         Players.Reset();
         NetworkViewsManagement.PartialReset();
         GameInitialization.Reset();

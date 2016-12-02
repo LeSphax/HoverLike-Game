@@ -9,7 +9,7 @@ namespace Navigation
         public event EmptyEventHandler FinishedLoading;
         string levelName;
         AsyncOperation async;
-        bool fading = false;
+        //bool fading = false;
 
         public void StartLoading(string levelName)
         {
@@ -22,7 +22,7 @@ namespace Navigation
             async = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
             SceneManager.sceneLoaded += LevelLoaded;
             async.allowSceneActivation = true;
-            fading = false;
+            //fading = false;
             yield return async;
         }
 

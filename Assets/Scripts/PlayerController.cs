@@ -85,7 +85,7 @@ public class PlayerController : PlayerView
     }
 
     [MyRPC]
-    private void InitPlayer(ConnectionId id)
+    public void InitPlayer(ConnectionId id)
     {
         playerConnectionId = id;
         Player.controller = this;
@@ -117,6 +117,7 @@ public class PlayerController : PlayerView
 
         ConfigureColliders();
 
+        abilitiesManager.ResetAllEffects();
         MyComponents.AbilitiesFactory.RecreateAbilities();
     }
 

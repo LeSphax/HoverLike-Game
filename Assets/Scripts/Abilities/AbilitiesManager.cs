@@ -31,15 +31,13 @@ namespace AbilitiesManagement
             {
                 Destroy(go);
             }
+            visualEffects.Clear();
         }
 
-        public static void ResetAllEffects()
+        public void ResetAllEffects()
         {
             ResetVisualEffects();
-            foreach (var player in Players.players.Values)
-            {
-                player.controller.abilitiesManager.ResetPersistentEffects();
-            }
+            ResetPersistentEffects();
         }
 
         public static List<GameObject> visualEffects = new List<GameObject>();
@@ -78,8 +76,8 @@ namespace AbilitiesManagement
         private void Jump()
         {
             if (CanUseAbility())
-                new JumpPersistentEffect(this,jumpCurve);
-                    //controller.movementManager.Jump();
+                new JumpPersistentEffect(this, jumpCurve);
+            //controller.movementManager.Jump();
         }
 
         [MyRPC]

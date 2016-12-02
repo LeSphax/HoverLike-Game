@@ -116,6 +116,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
         SetPlayerRoles();
+        MyComponents.Players.SendChanges();
         MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
         spawner.View.RPC("ResetPlayers", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));

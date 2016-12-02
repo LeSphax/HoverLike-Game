@@ -1,15 +1,17 @@
 ﻿using AbilitiesManagement;
 using Byn.Net;
 using PlayerManagement;
+using UnityEngine;
+
 public class PlayerSpawner : SlideBall.MonoBehaviour
 {
     [MyRPC]
     public void DesactivatePlayers(short syncId)
     {
-        AbilitiesManager.ResetAllEffects();
         Players.players.Values.Map(player =>
         {
-            player.controller.gameObject.SetActive(false);
+            if (player.controller != null)
+                player.controller.gameObject.SetActive(false);
         });
         MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
@@ -19,7 +21,8 @@ public class PlayerSpawner : SlideBall.MonoBehaviour
     {
         Players.players.Values.Map(player =>
         {
-            player.controller.ResetPlayer();
+            if (player.controller != null)
+                player.controller.ResetPlayer();
         });
 
         MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
@@ -30,7 +33,8 @@ public class PlayerSpawner : SlideBall.MonoBehaviour
     {
         Players.players.Values.Map(player =>
         {
-            player.controller.gameObject.SetActive(true);
+            if (player.controller != null)
+                player.controller.gameObject.SetActive(true);
         });
         MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }

@@ -93,12 +93,12 @@ public class LobbyManager : MonoBehaviour
     private void InvokeConnectToDefaultRoom()
     {
         MyComponents.NetworkManagement.ServerStartFailed -= InvokeConnectToDefaultRoom;
-        Invoke("ConnectToDefaultRoom", 0.1f);
+        ConnectToDefaultRoom();
     }
 
     void CheckStartGame()
     {
-        if (MyComponents.NetworkManagement.isServer && (MyComponents.Properties.GetProperty<int>(PropertiesKeys.NumberPlayers) == NumberPlayersToStartGame || NumberPlayersToStartGame == 1))
+        if (MyComponents.NetworkManagement.isServer && (MyComponents.NetworkManagement.GetNumberPlayers() == NumberPlayersToStartGame || NumberPlayersToStartGame == 1))
         {
             Invoke("StartGame", 1f);
             CancelInvoke("CheckStartGame");
@@ -150,6 +150,14 @@ public class LobbyManager : MonoBehaviour
         MyComponents.NetworkManagement.CreateRoom(inputField.text);
     }
 
+    public void RefreshServers()
+    {
+        if (MyState == State.ROOMLIST)
+        {
+            ListServers();
+        }
+    }
+
     public void ListServers()
     {
         MyComponents.NetworkManagement.GetRooms();
@@ -166,17 +174,6 @@ public class LobbyManager : MonoBehaviour
     {
         MyState = State.ROOMLIST;
         RoomListPanel.UpdateRoomList(list);
-        if (StartGameImmediately)
-        {
-            if (list.Length == 0)
-            {
-                MyComponents.NetworkManagement.CreateRoom("DefaultRoom");
-            }
-            else
-            {
-                MyComponents.NetworkManagement.ConnectToRoom("DefaultRoom");
-            }
-        }
     }
 
     public void GoBack()

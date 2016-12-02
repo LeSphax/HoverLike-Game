@@ -51,7 +51,7 @@ public class MyNetworkView : ANetworkView
         if (update)
             foreach (ObservedComponent component in observedComponents)
             {
-                if (isMine)
+                if (isMine || isLocal)
                 {
                     component.OwnerUpdate();
                 }
@@ -109,13 +109,7 @@ public class MyNetworkView : ANetworkView
     {
         NetworkMessage message = new NetworkMessage(ViewId, 0, targets, new RPCCall(methodName, parameters).Serialize());
         //
-        if (targets.IsSent())
-            MyComponents.NetworkManagement.SendData(message);
-        //
-        if (targets.IsInvokedInPlace())
-        {
-            RPCCallReceived(message, ConnectionId.INVALID);
-        }
+        RPC(targets, message);
     }
 
     public void RPC(string methodName, RPCTargets targets, MessageFlags additionalFlags, params object[] parameters)
@@ -123,10 +117,15 @@ public class MyNetworkView : ANetworkView
         NetworkMessage message = new NetworkMessage(ViewId, 0, targets, new RPCCall(methodName, parameters).Serialize());
         message.flags = message.flags | additionalFlags;
         //
-        if (targets.IsSent())
+        RPC(targets, message);
+    }
+
+    private void RPC(RPCTargets targets, NetworkMessage message)
+    {
+        if (targets.IsSent() && !isLocal)
             MyComponents.NetworkManagement.SendData(message);
         //
-        if (targets.IsInvokedInPlace())
+        if (targets.IsInvokedInPlace() || isLocal)
         {
             RPCCallReceived(message, ConnectionId.INVALID);
         }

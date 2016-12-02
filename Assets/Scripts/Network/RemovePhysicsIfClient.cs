@@ -10,9 +10,10 @@ public class RemovePhysicsIfClient : MonoBehaviour
 
     void Awake()
     {
-        if (MyComponents.NetworkManagement.IsConnected && !MyComponents.NetworkManagement.isServer)
+        bool isLocal = GetComponent<MyNetworkView>() == null ? false : GetComponent<MyNetworkView>().isLocal;
+        if (MyComponents.NetworkManagement.IsConnected && !MyComponents.NetworkManagement.isServer && isLocal)
             DestroyPhysics();
-        else if (!MyComponents.NetworkManagement.IsConnected)
+        else if (!MyComponents.NetworkManagement.IsConnected && isLocal)
             MyComponents.NetworkManagement.ConnectedToRoom += DestroyPhysics;
     }
 

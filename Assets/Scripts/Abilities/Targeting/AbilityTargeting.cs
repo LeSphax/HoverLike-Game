@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public delegate void CastOnTarget(params object[] parameters);
 
@@ -12,5 +13,9 @@ public abstract class AbilityTargeting : MonoBehaviour
     public virtual void CancelTargeting()
     {
 
+    }
+
+    public virtual void ReactivateTargeting()
+    {
     }
 }

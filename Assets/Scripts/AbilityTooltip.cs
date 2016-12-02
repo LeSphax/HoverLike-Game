@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class AbilityTooltip : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class AbilityTooltip : MonoBehaviour
 
         tooltip.Content = Language.Instance.texts[key];
         tooltip.Title = Language.Instance.texts[key + "Title"];
-
+        tooltip.Icon = GetComponent<Image>().sprite;
 
     }
 

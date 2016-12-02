@@ -23,12 +23,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
     protected void Awake()
     {
         Reset();
-        MyComponents.NetworkManagement.NewPlayerConnectedToRoom += UpdateNumberPlayers;
-    }
-
-    private void UpdateNumberPlayers(ConnectionId id)
-    {
-        MyComponents.Properties.SetProperty(PropertiesKeys.NumberPlayers, MyComponents.NetworkManagement.GetNumberPlayers());
     }
 
     public void StartGame()
@@ -39,21 +33,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
     public IEnumerator CoStartGame()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer);
-        //short[] teamSpawns = new short[2] { 1, 1 };
-        //foreach (Player player in Players.players.Values)
-        //{
-        //    Assert.IsTrue(player.Team == Team.FIRST || player.Team == Team.SECOND);
-        //    player.SpawnNumber = teamSpawns[(int)player.Team];
-        //    if (player.SpawnNumber == 0)
-        //    {
-        //        player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
-        //    }
-        //    else
-        //    {
-        //        player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
-        //    }
-        //    teamSpawns[(int)player.Team]++;
-        //}
 
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         View.RPC("LoadRoom", RPCTargets.All, syncId);
@@ -74,6 +53,13 @@ public class GameInitialization : SlideBall.MonoBehaviour
         NavigationManager.LoadScene(Scenes.Main);
         Players.MyPlayer.SceneChanged += SendReady;
     }
+
+    //private void CreateTutorial(ConnectionId connectionId, short scene)
+    //{
+    //    GameObject tutorial = new GameObject("Tutorial");
+    //    tutorial.transform.position = Vector3.forward * 1000f;
+    //    tutorial.AddComponent<Tutorial>();
+    //}
 
     private void InstantiateNewObjects()
     {

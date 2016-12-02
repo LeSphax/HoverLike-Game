@@ -5,10 +5,11 @@ var isChrome = !!window.chrome && !!window.chrome.webstore;
 
 var cookie_nickname = Cookies.get('nickname');
 var cookie_inputs = Cookies.get('inputs');
+var isFirstGame = true;
 
 $(function() {
 
-  if (!isChrome){
+  if (false && !isChrome){
     $("#configuration_content").empty();
     $("#configuration_content").html('At the moment, the game only works on Google chrome. ' +
       'Please change your browser or download the <a href="https://github.com/LeSphax/HoverLike-Game/raw/PC/Slideball.zip">PC version</a>.');
@@ -22,6 +23,7 @@ $(function() {
 if (cookie_nickname){
   console.log("Nickname was found " + cookie_nickname);
   $("#nickname_input").val(cookie_nickname);
+  isFirstGame = false;
 }
 
 if (cookie_inputs){
@@ -79,6 +81,10 @@ function TryStartGame(){
   if (unity_ready && startGame){
     SendMessage("NetworkScripts", "SetNickname", nickname);
     SendMessage("NetworkScripts", "SetConfiguration", GetConfiguration());
+    if (!isFirstGame){
+    SendMessage("NetworkScripts", "IsNotFirstGame");
+
+    }
   }
 }
 

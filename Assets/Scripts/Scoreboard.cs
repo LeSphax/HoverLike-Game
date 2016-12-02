@@ -3,6 +3,8 @@ using UnityEngine.UI;
 public class Scoreboard : SlideBall.MonoBehaviour
 {
 
+    private static int[] scores = new int[2] { 0, 0 };
+
     private static Text textScoreLeft;
     private static Text textScoreRight;
 
@@ -33,10 +35,11 @@ public class Scoreboard : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    public void UpdateScoreBoard(bool playAudio)
+    public void UpdateScoreBoard(int[] scores, bool playAudio)
     {
-        textScoreLeft.text = "" + MyComponents.Properties.GetProperty<int>(PropertiesKeys.TeamScore[0]);
-        textScoreRight.text = "" + MyComponents.Properties.GetProperty<int>(PropertiesKeys.TeamScore[1]);
+        Scoreboard.scores = scores;
+        textScoreLeft.text = "" + scores[1];
+        textScoreRight.text = "" + scores[0];
         if (playAudio)
             Audio.Play();
     }
@@ -48,10 +51,8 @@ public class Scoreboard : SlideBall.MonoBehaviour
             if (Time.realtimeSinceStartup - timeLastGoal > 1)
             {
                 timeLastGoal = Time.realtimeSinceStartup;
-                string key = PropertiesKeys.TeamScore[teamNumber];
-                int newScore = MyComponents.Properties.GetProperty<int>(key) + 1;
-                MyComponents.Properties.SetProperty(key, newScore);
-                scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, true);
+                scores[teamNumber] += 1;
+                scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, scores, true);
             }
         }
 
@@ -59,9 +60,7 @@ public class Scoreboard : SlideBall.MonoBehaviour
 
     public static void ResetScore()
     {
-        MyComponents.Properties.SetProperty(PropertiesKeys.TeamScore[(int)Team.FIRST], 0);
-        MyComponents.Properties.SetProperty(PropertiesKeys.TeamScore[(int)Team.SECOND], 0);
-        scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, false);
+        scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, scores, false);
     }
 
 }

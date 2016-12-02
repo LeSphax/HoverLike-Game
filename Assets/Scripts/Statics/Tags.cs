@@ -27,6 +27,8 @@ public class Tags : MonoBehaviour
     public const string NavigationManager = "NavigationManager";
     public const string Countdown = "Countdown";
     public const string GoalZone = "GoalZone";
+    public const string Tutorial = "Tutorial";
+    public const string PopUp = "PopUp";
 
     public static bool IsPlayer(string tag)
     {

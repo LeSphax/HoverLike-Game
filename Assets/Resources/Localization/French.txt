@@ -14,3 +14,24 @@ Teleport "Après une canalisation de deux secondes,vous êtes téléporté devant vos
 TeleportTitle "Teleportation"
 TimeSlow "Créé une zone de ralentissement du temps à l'endroit ciblé, le temps à l'intérieur est ralenti pour les attaquants et la balle mais pas pour les gardiens de but"
 TimeSlowTitle "Zone de ralentissement"
+Tuto_LC "Si la balle est sur le sol, vous pouvez la récupérer en marchant dessus.
+
+Restez appuyé sur clic gauche pour lancer la balle, plus vous laissez appuyé longtemps, plus le tir est puissant."
+Tuto_RC "Pour vous déplacer faite un clic droit là où vous souhaitez aller."
+Tuto_Abilities "Vous avez aussi des compétences spéciales visibles en bas de l'écran.
+
+Pour lancer une compétences, appuyez sur la touche correspondante.
+
+Vous pouvez voir une description de chaque compétence en passant la souris dessus."
+Button_Next "Continuer"
+Button_Close "Fermer"
+Button_Cancel "Annuler"
+Button_Leave "Quitter"
+Button_Ok "Ok"
+Exit_Dialog "Etes vous sûr de vouloir quitter?"
+Client_Disconnected "La partie a été stoppée car l'hote s'est déconnecté"
+Room_Exists "Il existe déjà une salle avec ce nom, veuillez choisir un autre nom."
+Failed_Connect "Nous n'avons pas réussi à nous connecter au serveur."
+Feedback  "Ca m'aiderait beaucoup que vous me reportiez cet incident à sbkerbrat@gmail.com :)"
+Doesnt_Exist "Vous ne pouvez plus rejoindre cette salle car elle n'existe plus."
+Room_Blocked "Vous ne pouvez plus rejoindre cette salle, la partie a déjà commencé."
