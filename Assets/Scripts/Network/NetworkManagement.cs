@@ -240,14 +240,6 @@ namespace BaseNetwork
                 while (mNetwork != null && mNetwork.Dequeue(out evt) && x < 100)
                 {
                     x++;
-                    if (evt.RawData != null)
-                    {
-                        if (NetEventMessage.CodesMeaning.ContainsKey((string)evt.RawData))
-                        {
-                            Debug.LogError(NetEventMessage.CodesMeaning[(string)evt.RawData]);
-                            MyComponents.PopUp.Show(evt.Type + "   " + NetEventMessage.CodesMeaning[(string)evt.RawData]);
-                        }
-                    }
                     switch (evt.Type)
                     {
                         case NetEventType.ServerInitialized:
