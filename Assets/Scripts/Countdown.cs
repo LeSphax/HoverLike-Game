@@ -27,7 +27,7 @@ public class Countdown : SlideBall.MonoBehaviour
             else
             {
                 if (timeLeft > 60)
-                    if ((int)timeLeft % 60 > 10)
+                    if ((int)timeLeft % 60 >= 10)
                         text.text = "" + (int)timeLeft / 60 + ":" + (int)timeLeft % 60;
                     else
                         text.text = "" + (int)timeLeft / 60 + ":0" + (int)timeLeft % 60;

@@ -142,11 +142,10 @@ namespace BaseNetwork
         private const int MAX_CODE_LENGTH = 256;
         private const string GET_ROOMS_COMMAND = "___GetRooms";
         private const string BLOCK_ROOMS_COMMAND = "___BlockRoom";
-        private const char SPLIT_CHAR = '@';
+        private const char ROOM_SEPARATOR_CHAR = '@';
         private BufferedMessages bufferedMessages;
 
         public event EmptyEventHandler RoomCreated;
-        public event ConnectionEventHandler NewPlayerConnectedToRoom;
         public event EmptyEventHandler ConnectedToRoom;
         public event EmptyEventHandler ServerStartFailed;
 
@@ -192,7 +191,7 @@ namespace BaseNetwork
         public void BlockRoom()
         {
             Assert.IsTrue(isServer);
-            mNetwork.Connect(BLOCK_ROOMS_COMMAND + SPLIT_CHAR + RoomName);
+            mNetwork.Connect(BLOCK_ROOMS_COMMAND + ROOM_SEPARATOR_CHAR + RoomName);
         }
 
         public void Reset()
@@ -262,7 +261,7 @@ namespace BaseNetwork
                         case NetEventType.ServerInitFailed:
                             {
                                 Debug.LogError("Server Init Failed " + evt.RawData);
-                                
+
                                 if (evt.RawData != null)
                                 {
                                     string rawData = (string)evt.RawData;
@@ -279,20 +278,21 @@ namespace BaseNetwork
                                             MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + "\n What about " + Random_Name_Generator.GetRandomName() + "?");
                                         }
                                     }
-                                   
-                                    string[] rooms = rawData.Split(SPLIT_CHAR);
-                                    if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                                    else
                                     {
-                                        if (rooms.Length == 1)
-                                            MyComponents.LobbyManager.UpdateRoomList(new string[0]);
-                                        else
-                                            MyComponents.LobbyManager.UpdateRoomList(rooms.SubArray(1, rooms.Length - 1));
+                                        string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
+                                        if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                                        {
+                                            MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
+                                        }
                                     }
                                 }
                                 else
                                 {
+                                    Reset();
                                     MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n " + Language.Instance.texts["Feedback"]);
                                     Debug.LogError("No internet connection ");
+
                                 }
                             }
                             break;
@@ -329,8 +329,9 @@ namespace BaseNetwork
 
                                 if (isServer)
                                 {
+                                    MyComponents.NetworkViewsManagement.SendClientInstanciationInterval(evt.ConnectionId);
+                                    MyComponents.Players.SendPlayersData(evt.ConnectionId);
                                     View.RPC("SetConnectionId", evt.ConnectionId, evt.ConnectionId);
-                                    NewPlayerConnectedToRoom.Invoke(evt.ConnectionId);
                                 }
                                 else if (ConnectedToRoom != null)
                                 {
@@ -342,7 +343,8 @@ namespace BaseNetwork
                         case NetEventType.ConnectionFailed:
                             {
                                 Debug.LogError("Connection failed ");
-                                MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
+                                if (stateCurrent == State.IDLE)
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
                                 if (evt.RawData != null)
                                 {
                                     string rawdata = (string)evt.RawData;
@@ -518,7 +520,7 @@ namespace BaseNetwork
             mNetwork.StartServer(roomName);
             RoomName = roomName;
             MyComponents.PopUp.Show("Connecting to server ...");
-            
+
             Debug.LogError("StartServer " + roomName);
         }
 

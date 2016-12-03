@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class RoomListPanel : MonoBehaviour {
 
-    private string[] roomList = new string[0];
+    private List<RoomData> roomList = new List<RoomData>();
 
     public GameObject NoServerFound;
     public GameObject serverInfoPrefab;
@@ -12,10 +12,10 @@ public class RoomListPanel : MonoBehaviour {
     private List<GameObject> serverInfos = new List<GameObject>();
 
 
-    public void UpdateRoomList(string[] rooms)
+    public void UpdateRoomList(List<RoomData> rooms)
     {
         roomList = rooms;
-        if (roomList.Length == 0)
+        if (roomList.Count == 0)
         {
             NoServerFound.SetActive(true);
         }
@@ -23,12 +23,12 @@ public class RoomListPanel : MonoBehaviour {
         {
             NoServerFound.SetActive(false);
             int y = -90;
-            foreach (string room in roomList)
+            foreach (RoomData room in roomList)
             {
                 GameObject go = Instantiate(serverInfoPrefab);
                 serverInfos.Add(go);
                 go.transform.SetParent(transform, false);
-                go.GetComponent<ServerInfoPanel>().SetRoomName(room);
+                go.GetComponent<ServerInfoPanel>().SetRoomData(room);
                 go.GetComponent<RectTransform>().localPosition += y * new Vector3(0, 1, 0);
                 y -= 50;
             }

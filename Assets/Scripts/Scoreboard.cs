@@ -38,8 +38,8 @@ public class Scoreboard : SlideBall.MonoBehaviour
     public void UpdateScoreBoard(int[] scores, bool playAudio)
     {
         Scoreboard.scores = scores;
-        textScoreLeft.text = "" + scores[1];
-        textScoreRight.text = "" + scores[0];
+        textScoreLeft.text = "" + scores[0];
+        textScoreRight.text = "" + scores[1];
         if (playAudio)
             Audio.Play();
     }

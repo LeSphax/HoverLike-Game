@@ -135,6 +135,10 @@ namespace PlayerManagement
                 player.Nickname = Encoding.UTF8.GetString(data, currentIndex, length);
                 currentIndex += length;
             }
+            if (flags.HasFlag(PlayerFlags.DESTROYED))
+            {
+                Remove(player.id);
+            }
         }
 
         private static Player GetOrCreatePlayer(ConnectionId id)
@@ -163,11 +167,6 @@ namespace PlayerManagement
             byte[] data = CreatePlayerPacket(player, player.flagsChanged);
             player.flagsChanged = PlayerFlags.NONE;
             return data;
-        }
-
-        public byte[] InitPlayer(Player player)
-        {
-            return CreatePlayerPacket(player, PlayerFlags.ALL);
         }
 
         private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
@@ -224,22 +223,28 @@ namespace PlayerManagement
         {
             byte[] packet = BitConverter.GetBytes(IdPlayerOwningBall.id);
             foreach (Player player in players.Values)
-                packet = ArrayExtensions.Concatenate(packet, InitPlayer(player));
+                packet = ArrayExtensions.Concatenate(packet, CreatePlayerPacket(player, PlayerFlags.ALL));
             MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, packet, recipientId);
         }
 
         protected override void Start()
         {
             base.Start();
-            MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendPlayersData;
             Reset();
         }
 
         internal static void Remove(ConnectionId connectionId)
         {
-            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
             Destroy(players[connectionId].gameobjectAvatar);
-            players.Remove(connectionId);
+            if (MyComponents.NetworkManagement.isServer)
+            {
+                players[connectionId].flagsChanged = PlayerFlags.DESTROYED;
+            }
+            else
+            {
+                players.Remove(connectionId);
+            }
+
         }
 
         protected void FixedUpdate()
@@ -250,10 +255,15 @@ namespace PlayerManagement
         public void SendChanges()
         {
             byte[] packet = new byte[0];
-            foreach (Player player in players.Values)
+            foreach (Player player in new List<Player>(players.Values))
             {
+                bool destroyPlayer = player.flagsChanged.HasFlag(PlayerFlags.DESTROYED);
                 if (player.flagsChanged != PlayerFlags.NONE)
                     packet = ArrayExtensions.Concatenate(packet, UpdatePlayer(player));
+                if (destroyPlayer)
+                {
+                    players.Remove(player.id);
+                }
             }
             if (packet.Length > 0 || ballOwnerChanged)
             {
@@ -274,6 +284,7 @@ namespace PlayerManagement
         AVATAR_SETTINGS = 1 << 4,
         STATE = 1 << 5,
         SCENEID = 1 << 6,
+        DESTROYED = 1 << 7,
         ALL = ~(~0 << 7),//PLAY_AS_GOALIE + TEAM + NICKNAME + SPAWNINGPOINT + AVATAR_SETTINGS + STATE + SCENEID,
     }
 

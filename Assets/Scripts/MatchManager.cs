@@ -152,7 +152,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 if (potentialGoalies.Count == 0)
                     potentialGoalies = new List<Player>(players);
 
-                Player goalie = potentialGoalies[Random.Range(0, potentialGoalies.Count - 1)];
+                Player goalie = potentialGoalies[Random.Range(0, potentialGoalies.Count)];
                 oldGoalie.SpawnNumber = goalie.SpawnNumber;
                 goalie.SpawnNumber = 0;
                 goalie.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;

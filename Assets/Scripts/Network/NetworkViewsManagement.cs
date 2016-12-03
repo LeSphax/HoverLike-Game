@@ -40,11 +40,6 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         nextViewId++;
     }
 
-    void Awake()
-    {
-        MyComponents.NetworkManagement.NewPlayerConnectedToRoom += SendClientInstanciationInterval;
-    }
-
     public void PartialReset()
     {
         nextClientViewId = INVALID_VIEW_ID;
@@ -63,7 +58,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
     }
 
-    private void SendClientInstanciationInterval(ConnectionId id)
+    public void SendClientInstanciationInterval(ConnectionId id)
     {
         Assert.IsFalse(nextClientViewId == INVALID_VIEW_ID);
         View.RPC("SetInstanciationInterval", id, nextClientViewId);
@@ -159,7 +154,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
                 Debug.LogError("Message Sent to view " + message);
             networkViews[message.viewId].ReceiveNetworkMessage(connectionId, message);
         }
-        else if (message.isSceneDependant())
+        else if (networkViews.ContainsKey(message.viewId) && message.isSceneDependant())
         {
             Debug.LogError("Message received in wrong scene " + Scenes.currentSceneId + "  vs " + message.sceneId + "   " + message);
             RPCCall call = NetworkExtensions.Deserialize<RPCCall>(message.data);

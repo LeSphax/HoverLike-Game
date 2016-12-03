@@ -98,6 +98,11 @@ public class PlayerInfo : PlayerView
     public void InitView(object[] parameters)
     {
         playerConnectionId = (ConnectionId)parameters[0];
+        if (Player == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         PlayerName = Player.Nickname;
         if (Player.Team != Team.NONE)
             CurrentTeam = Player.Team;

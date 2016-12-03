@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
@@ -42,6 +43,7 @@ public class LobbyManager : MonoBehaviour
                     RoomManager.Reset();
                     //
                     Status.text = "In Lobby";
+                    Host.text = "";
                     break;
                 case State.ROOMLIST:
                     MainPanel.SetActive(false);
@@ -52,6 +54,7 @@ public class LobbyManager : MonoBehaviour
                     RoomManager.Reset();
                     //
                     Status.text = "Looking for Game";
+                    Host.text = "";
                     break;
                 case State.ROOM:
                     MainPanel.SetActive(false);
@@ -175,7 +178,7 @@ public class LobbyManager : MonoBehaviour
         MyComponents.GameInitialization.StartGame();
     }
 
-    public void UpdateRoomList(string[] list)
+    public void UpdateRoomList(List<RoomData> list)
     {
         MyState = State.ROOMLIST;
         RoomListPanel.UpdateRoomList(list);
