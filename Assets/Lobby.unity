@@ -2114,7 +2114,7 @@ Prefab:
     - target: {fileID: 114000010734802682, guid: 375771a16d25b7749b6ebcbac81d9ce7,
         type: 2}
       propertyPath: server
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114000012265847228, guid: 375771a16d25b7749b6ebcbac81d9ce7,
         type: 2}
