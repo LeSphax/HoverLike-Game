@@ -1,4 +1,5 @@
 ﻿// C# example.
+using BaseNetwork;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -97,10 +98,17 @@ public class SpecialBuild
     {
         PrepareBuild();
         ChangeScene(Paths.SCENE_LOBBY);
-        ((LobbyManager)UnityEngine.Object.FindObjectOfType(typeof(LobbyManager))).StartGameImmediately = false;
+        BeforeBuildWebGl();
+
         //((NicknamePanel)UnityEngine.Object.FindObjectOfType(typeof(NicknamePanel))).autoNickName = false;
         string x = BuildPipeline.BuildPlayer(levels, path_WebGL, BuildTarget.WebGL, BuildOptions.None);
         Debug.Log(x);
+    }
+
+    public static void BeforeBuildWebGl()
+    {
+        ((LobbyManager)UnityEngine.Object.FindObjectOfType(typeof(LobbyManager))).StartGameImmediately = false;
+        ((NetworkManagement)UnityEngine.Object.FindObjectOfType(typeof(NetworkManagement))).server = NetworkManagement.Server.HEROKU;
     }
 
     [MenuItem("MyTools/MakeViewIds %e")]

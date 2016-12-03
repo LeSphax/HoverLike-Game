@@ -139,7 +139,6 @@ public class MatchManager : SlideBall.MonoBehaviour
             {
                 players[0].SpawnNumber = players[0].PlayAsGoalie ? (short)0 : (short)1;
                 players[0].AvatarSettingsType = players[0].SpawnNumber == 0 ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
-
             }
             else if (players.Count > 1)
             {
