@@ -53,7 +53,7 @@ var PeerPool = (function () {
         var rooms = "___GetRooms@";
         for (var key in this.mServers) {
             if (this.blockedRooms.indexOf(key) == -1)
-                rooms+= key+"@";
+                rooms+= key+"|"+Object.keys(this.mServers[key][0].mConnections).length+"@";
         }
         //Remove the last @
         rooms = rooms.substring(0, rooms.length - 1);
@@ -66,7 +66,7 @@ var PeerPool = (function () {
         }
         this.mServers[address].push(client);
     };
-    PeerPool.prototype.removeServer = function (client, address) {
+    PeerPool.prototype.removeClientFromServer = function (client, address) {
         var index = this.mServers[address].indexOf(client);
         if (index != -1) {
             this.mServers[address].splice(index, 1);
@@ -114,11 +114,14 @@ var SignalingPeer = (function () {
         this.mConnectionPool = pool;
         this.mSocket = socket;
         this.mState = SignalingConnectionState.Connecting;
-        this.myInterval = setInterval(function(){
-            console.log("Send Staying alive");
-            var msg = inet.NetworkEvent.toByteArray(new inet.NetworkEvent(inet.NetEventType.Log, inet.ConnectionId.INVALID, "stayingAlive"));
-            socket.send(msg);
-        },10000);
+        function changeContext(){
+            var self = this;
+            self.myInterval = setInterval(function(){
+                console.log("Send Staying alive");
+                var msg = new inet.NetworkEvent(inet.NetEventType.Log, inet.ConnectionId.INVALID, "stayingAlive");
+                self.sendToClient(msg);
+            },10000);
+        }
 
         console.log("connected " + this.mSocket.upgradeReq.connection.remoteAddress + ":" + this.mSocket.upgradeReq.connection.remotePort);
 
@@ -144,6 +147,10 @@ var SignalingPeer = (function () {
         catch (err) {
             console.warn("Invalid message received: " + message + "  \n Error: " + err);
         }
+    };
+
+     SignalingPeer.prototype.getNumberClients = function () {
+        return this.mConnections.length
     };
 
     SignalingPeer.prototype.sendToClient = function (evt) {
@@ -176,7 +183,7 @@ var SignalingPeer = (function () {
         this.mState = SignalingConnectionState.Disconnected;
     };
     SignalingPeer.prototype.handleIncomingEvent = function (evt) {
-        console.log("handleIncomingEvent "+evt.Info);
+        console.log("handleIncomingEvent "+ evt.Type + "    " + evt.Info);
         var address = evt.Info;
         var newConnectionId = evt.ConnectionId;
         if (evt.Type == inet.NetEventType.NewConnection) {
@@ -204,7 +211,6 @@ var SignalingPeer = (function () {
         else if (evt.Type == inet.NetEventType.ServerInitialized) {
             console.log("Initialized " + evt.Info);
             this.startServer(evt.Info);
-
         }
         else if (evt.Type == inet.NetEventType.ServerInitFailed) {
         }
@@ -305,7 +311,7 @@ var SignalingPeer = (function () {
     SignalingPeer.prototype.stopServer = function (message) {
         console.log("Stop Server");
         if (this.mServerAddress != null) {
-            this.mConnectionPool.removeServer(this, this.mServerAddress);
+            this.mConnectionPool.removeClientFromServer(this, this.mServerAddress);
             this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerClosed, inet.ConnectionId.INVALID, message));
             this.mServerAddress = null;
         }
