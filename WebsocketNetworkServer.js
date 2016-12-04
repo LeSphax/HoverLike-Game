@@ -114,14 +114,9 @@ var SignalingPeer = (function () {
         this.mConnectionPool = pool;
         this.mSocket = socket;
         this.mState = SignalingConnectionState.Connecting;
-        function changeContext(){
-            var self = this;
-            self.myInterval = setInterval(function(){
-                console.log("Send Staying alive");
-                var msg = new inet.NetworkEvent(inet.NetEventType.Log, inet.ConnectionId.INVALID, "stayingAlive");
-                self.sendToClient(msg);
-            },10000);
-        }
+
+
+        this.changeContext();
 
         console.log("connected " + this.mSocket.upgradeReq.connection.remoteAddress + ":" + this.mSocket.upgradeReq.connection.remotePort);
 
@@ -138,6 +133,17 @@ var SignalingPeer = (function () {
         this.mState = SignalingConnectionState.Connected;
     }
 
+
+    SignalingPeer.prototype.changeContext = function(){
+        console.log("changeContext " + this);
+        var self = this;
+        self.myInterval = setInterval(function(){
+            console.log("Send Staying alive");
+            var msg = new inet.NetworkEvent(inet.NetEventType.Log, inet.ConnectionId.INVALID, "stayingAlive");
+            self.sendToClient(msg);
+        },30000);
+    };
+
     SignalingPeer.prototype.onMessage = function (message, flags) {
         try {
             var evt = inet.NetworkEvent.fromByteArray(message);
@@ -149,7 +155,7 @@ var SignalingPeer = (function () {
         }
     };
 
-     SignalingPeer.prototype.getNumberClients = function () {
+    SignalingPeer.prototype.getNumberClients = function () {
         return this.mConnections.length
     };
 
