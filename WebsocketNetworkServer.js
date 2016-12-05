@@ -65,6 +65,8 @@ var PeerPool = (function () {
             this.mServers[address] = new Array();
         }
         this.mServers[address].push(client);
+            console.log("ADD SERVER ------ " + address);
+
     };
     PeerPool.prototype.removeClientFromServer = function (client, address) {
         var index = this.mServers[address].indexOf(client);
@@ -76,6 +78,7 @@ var PeerPool = (function () {
             if (index != -1)
                 this.blockedRooms.splice(index,1);
             delete this.mServers[address];
+            console.log("REMOVE SERVER -------- " + address);
         }
     };
     PeerPool.prototype.removeConnection = function (client) {
