@@ -67,8 +67,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
         foreach (var id in Players.players.Keys)
         {
-            GameObject player = MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity);
-            player.GetComponent<PlayerController>().Init(id);
+            MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, id);
         }
     }
 

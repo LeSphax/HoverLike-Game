@@ -303,21 +303,23 @@ namespace BaseNetwork
                         //StopServer or the connection broke down
                         case NetEventType.ServerClosed:
                             {
-                                Reset();
                                 switch (stateCurrent)
                                 {
                                     case State.CONNECTED:
-                                        ConnectToRoom(RoomName);
+                                        Reset();
+                                        //ConnectToRoom(RoomName);
                                         Debug.LogError("Server closed. No incoming connections possible until restart.");
                                         break;
                                     case State.IDLE:
                                         MyComponents.PopUp.Show("It was not possible to create the server." + "\n" + Language.Instance.texts["Feedback"]);
                                         Debug.LogError("Didn't manage to create the server " + RoomName + " retrying ...");
-                                        CreateRoom(RoomName);
+                                        //Reset();
+                                        //CreateRoom(RoomName);
                                         break;
                                     case State.SERVER:
                                         Debug.LogError("Server closed. Restarting server");
-                                        CreateRoom(RoomName);
+                                        Reset();
+                                       // CreateRoom(RoomName);
                                         break;
                                 }
                             }
@@ -345,7 +347,7 @@ namespace BaseNetwork
                             break;
                         case NetEventType.ConnectionFailed:
                             {
-                                Debug.LogError("Connection failed ");
+                                Debug.LogError("Connection failed " + stateCurrent);
                                 if (stateCurrent == State.IDLE)
                                     MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
                                 if (evt.RawData != null)

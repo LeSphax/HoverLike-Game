@@ -9,7 +9,8 @@ namespace Navigation
         public event EmptyEventHandler FinishedLoading;
         string levelName;
         AsyncOperation async;
-        //bool fading = false;
+        bool fading = false;
+        bool finishedFade = false;
 
         public void StartLoading(string levelName)
         {
@@ -21,36 +22,49 @@ namespace Navigation
         {
             async = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
             SceneManager.sceneLoaded += LevelLoaded;
-            async.allowSceneActivation = true;
-            //fading = false;
+            async.allowSceneActivation = false;
             yield return async;
         }
 
-        public void ActivateScene()
+        public void FinishedFade()
         {
-            async.allowSceneActivation = true;
-            CameraFade.FinishedFade -= ActivateScene;
+            Debug.Log("FinishedFade");
+            finishedFade = true;
+            CameraFade.FinishedFade -= FinishedFade;
         }
 
 
         private void Update()
         {
-            //if (async != null && async.progress >= 0.9f)
-            //{
-            //    if (!fading)
-            //    {
-            //        fading = true;
-            //        //CameraFade.FinishedFade += ActivateScene;
-            //        //CameraFade.StartFade(CameraFade.FadeType.FADEIN);
-            //    }
-            //}
+            if (async != null)
+            {
+                if (!fading)
+                {
+                    fading = true;
+                    CameraFade.FinishedFade += FinishedFade;
+                    CameraFade.StartFade(CameraFade.FadeType.FADEIN);
+                }
+            }
+            if (finishedFade && async != null && async.progress >= 0.9f)
+            {
+                Debug.Log("FinishedFade");
+                async.allowSceneActivation = true;
+                fading = false;
+                finishedFade = false;
+                async = null;
+            }
+        }
+
+        public void ShowNewLevel()
+        {
+            Debug.Log("ShowNewLevel");
+            CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
         }
 
         void LevelLoaded(Scene scene, LoadSceneMode mode)
         {
             if (FinishedLoading != null)
                 FinishedLoading.Invoke();
-            // CameraFade.InstantFadeOut();
             async = null;
             SceneManager.sceneLoaded -= LevelLoaded;
         }

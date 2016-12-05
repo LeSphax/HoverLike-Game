@@ -43,6 +43,11 @@ namespace Navigation
             MyComponents.NullifyComponents();
         }
 
+        public static void ShowLevel()
+        {
+            loader.ShowNewLevel();
+        }
+
         public static void Reset()
         {
             FinishedLoadingScene = null;

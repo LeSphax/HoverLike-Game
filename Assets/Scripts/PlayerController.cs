@@ -79,19 +79,13 @@ public class PlayerController : PlayerView
         DestroyTarget();
     }
 
-    public void Init(ConnectionId id)
+    public void InitView(object[] parameters)
     {
-        View.RPC("InitPlayer", RPCTargets.AllBuffered, id);
-    }
-
-    [MyRPC]
-    public void InitPlayer(ConnectionId id)
-    {
-        playerConnectionId = id;
+        playerConnectionId = (ConnectionId)parameters[0];
         Player.controller = this;
         Player.gameobjectAvatar = gameObject;
         Player.ballController = GetComponent<PlayerBallController>();
-        GetComponent<PlayerBallController>().Init(id);
+        GetComponent<PlayerBallController>().Init(playerConnectionId);
     }
 
     [MyRPC]

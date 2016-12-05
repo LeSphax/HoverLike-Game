@@ -48,7 +48,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     public void ResetViews()
     {
-        foreach(var pair in networkViews)
+        foreach (var pair in networkViews)
         {
             if (pair.Value == null)
             {
@@ -146,6 +146,8 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
             go.SendMessage("InitView", initialisationParameters);
     }
 
+    int logCount = 0;
+
     internal void DistributeMessage(ConnectionId connectionId, NetworkMessage message)
     {
         if (networkViews.ContainsKey(message.viewId) && (Scenes.IsCurrentScene(message.sceneId) || !message.isSceneDependant()))
@@ -162,8 +164,11 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
         else
         {
-            Debug.LogError("No view was registered with this Id " + message.viewId);
-            PrintViews();
+            if (logCount < 5)
+            {
+                Debug.LogError("No view was registered with this Id " + message.viewId + "\n" + PrintViews());
+                logCount++;
+            }
         }
     }
 
@@ -193,13 +198,15 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
     }
 
-    public void PrintViews()
+    public string PrintViews()
     {
-        for (int i = 0; i < 500; i++)
+        string result = "";
+        foreach (var key in networkViews.Keys)
         {
-            if (networkViews.ContainsKey(i))
-                Debug.LogError(i + "-" + networkViews[i].ViewId + "   :" + networkViews[i]);
+            if (networkViews.ContainsKey(key))
+                result += key + "-" + networkViews[key].ViewId + "   :" + networkViews[key] + "\n";
         }
+        return result;
     }
 }
 

@@ -1,4 +1,4 @@
-Block "You create an explosion around you, pushing the ball away from your location."
+﻿Block "You create an explosion around you, pushing the ball away from your location."
 Brake "Reduce your speed."
 Dash "Dash to the cursor location, stealing the ball from other players along the way."
 Jump "Jump in the air, useful to dodge your opponents and shoot above them."

@@ -36,15 +36,17 @@ public class Language
 
     private void ParseLocalisationFile(TextAsset text)
     {
+        string s = "Connéxion au se'rv'eur";
+        Debug.Log(s.Trim());
         texts = new Dictionary<string, string>();
 
         string[] KeysAndValues = text.text.Split('"');
 
         //The last element of KeysAndValues is an empty string
-        for (int i = 0; i < KeysAndValues.Length-1; i += 2)
+        for (int i = 0; i < KeysAndValues.Length - 1; i += 2)
         {
             string key = KeysAndValues[i].TrimEnd().TrimStart();
-            string value = KeysAndValues[i+1].Trim();
+            string value = KeysAndValues[i + 1].Trim();
             texts.Add(key, value);
         }
     }

@@ -2129,7 +2129,7 @@ Prefab:
     - target: {fileID: 114000010734802682, guid: 375771a16d25b7749b6ebcbac81d9ce7,
         type: 2}
       propertyPath: NumberFramesLatency
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 114000012265847228, guid: 375771a16d25b7749b6ebcbac81d9ce7,
         type: 2}
@@ -4716,7 +4716,7 @@ MonoBehaviour:
   MainPanel: {fileID: 1302970282}
   RoomListPanel: {fileID: 1430882256}
   RoomManager: {fileID: 1378526610}
-  StartGameImmediately: 0
+  StartGameImmediately: 1
   NumberPlayersToStartGame: 2
   Status: {fileID: 300909095}
   Host: {fileID: 132524633}

@@ -1,4 +1,5 @@
 ﻿using Byn.Net;
+using Navigation;
 using PlayerManagement;
 using System.Collections;
 using System.Collections.Generic;
@@ -72,8 +73,8 @@ public class MatchManager : SlideBall.MonoBehaviour
     public void StartGame()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer && MyState == State.WARMUP);
-        Entry();
         StartCoroutine(Warmup());
+        Entry();
     }
 
     IEnumerator Warmup()
@@ -81,6 +82,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         matchCountdown.View.RPC("StartWarmup", RPCTargets.All, syncId);
         MyState = State.WARMUP;
+        //Wait until everyone press the ready button
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         matchCountdown.TimerFinished += EndMatch;
         matchCountdown.View.RPC("StartTimer", RPCTargets.All, MATCH_DURATION);
@@ -102,6 +104,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     IEnumerator CoEntry()
     {
+        Debug.Log("CoEntry");
         Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP);
         if (MyState == State.ENDING)
         {
@@ -127,6 +130,14 @@ public class MatchManager : SlideBall.MonoBehaviour
 
         MyComponents.BallState.PutAtStartPosition();
         //
+        if (MyState == State.WARMUP)
+            View.RPC("ShowGame", RPCTargets.All);
+    }
+
+    [MyRPC]
+    private static void ShowGame()
+    {
+        NavigationManager.ShowLevel();
     }
 
     private void SetPlayerRoles()

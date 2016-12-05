@@ -61,8 +61,9 @@ namespace PlayerManagement
 
         public void PlayerOwningBallChanged(ConnectionId previousPlayer, ConnectionId newPlayer, bool sendUpdate)
         {
-            ballOwnerChanged = sendUpdate;
-
+            //Debug.LogError("PlayerOwningBallChanged " + previousPlayer + "   " + newPlayer);
+            if (MyComponents.NetworkManagement.isServer)
+                ballOwnerChanged = sendUpdate;
             if (newPlayer != previousPlayer)
             {
                 if (previousPlayer != BallState.NO_PLAYER_ID)
@@ -83,20 +84,26 @@ namespace PlayerManagement
         public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
         {
             int currentIndex = 0;
-            if (MyComponents.BallState != null)
-                MyComponents.BallState.SetAttached(new ConnectionId(BitConverter.ToInt16(message.data, currentIndex)), false);
-            currentIndex += 2;
+            bool hasBallOwnerChanged = BitConverter.ToBoolean(message.data, currentIndex);
+            currentIndex++;
+            if (hasBallOwnerChanged)
+            {
+                Assert.IsTrue(!MyComponents.NetworkManagement.isServer);
+                if (MyComponents.BallState != null)
+                    MyComponents.BallState.SetAttached(new ConnectionId(BitConverter.ToInt16(message.data, currentIndex)), false);
+                currentIndex += 2;
+            }
             while (message.data.Length > currentIndex)
                 HandlePlayerPacket(message.data, ref currentIndex);
         }
 
         private static void HandlePlayerPacket(byte[] data, ref int currentIndex)
         {
-
             PlayerFlags flags = (PlayerFlags)data[currentIndex];
             ConnectionId playerId = new ConnectionId(BitConverter.ToInt16(data, currentIndex + 1));
             currentIndex += 3;
             Player player = GetOrCreatePlayer(playerId);
+            //Debug.LogError("Receive Packet " + flags + "   " + currentIndex);
             if (flags.HasFlag(PlayerFlags.TEAM))
             {
                 player.Team = (Team)data[currentIndex];
@@ -141,38 +148,11 @@ namespace PlayerManagement
             }
         }
 
-        private static Player GetOrCreatePlayer(ConnectionId id)
-        {
-            Player player;
-            if (!players.TryGetValue(id, out player))
-            {
-                player = CreatePlayer(id);
-            }
-
-            return player;
-        }
-
-        public static Player CreatePlayer(ConnectionId id)
-        {
-            Player player;
-            player = new Player(id);
-            players.Add(id, player);
-            if (NewPlayerCreated != null)
-                NewPlayerCreated.Invoke(id);
-            return player;
-        }
-
-        public byte[] UpdatePlayer(Player player)
-        {
-            byte[] data = CreatePlayerPacket(player, player.flagsChanged);
-            player.flagsChanged = PlayerFlags.NONE;
-            return data;
-        }
-
         private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
         {
             byte[] id = BitConverter.GetBytes(player.id.id);
             byte[] data = new byte[3] { (byte)flags, id[0], id[1] };
+            //Debug.LogError("Create Packet " + flags);
             if (flags.HasFlag(PlayerFlags.TEAM))
             {
                 data = ArrayExtensions.Concatenate(data, new byte[1] { (byte)player.Team });
@@ -206,6 +186,34 @@ namespace PlayerManagement
             return data;
         }
 
+        private static Player GetOrCreatePlayer(ConnectionId id)
+        {
+            Player player;
+            if (!players.TryGetValue(id, out player))
+            {
+                player = CreatePlayer(id);
+            }
+
+            return player;
+        }
+
+        public static Player CreatePlayer(ConnectionId id)
+        {
+            Player player;
+            player = new Player(id);
+            players.Add(id, player);
+            if (NewPlayerCreated != null)
+                NewPlayerCreated.Invoke(id);
+            return player;
+        }
+
+        public byte[] UpdatePlayer(Player player)
+        {
+            byte[] data = CreatePlayerPacket(player, player.flagsChanged);
+            player.flagsChanged = PlayerFlags.NONE;
+            return data;
+        }
+
         public static List<Player> GetPlayersInTeam(Team team)
         {
             List<Player> result = new List<Player>();
@@ -221,7 +229,8 @@ namespace PlayerManagement
 
         public void SendPlayersData(ConnectionId recipientId)
         {
-            byte[] packet = BitConverter.GetBytes(IdPlayerOwningBall.id);
+            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+            byte[] packet = BitConverter.GetBytes(false);
             foreach (Player player in players.Values)
                 packet = ArrayExtensions.Concatenate(packet, CreatePlayerPacket(player, PlayerFlags.ALL));
             MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, packet, recipientId);
@@ -235,6 +244,7 @@ namespace PlayerManagement
 
         internal static void Remove(ConnectionId connectionId)
         {
+            Debug.LogError("Remove " + connectionId);
             Destroy(players[connectionId].gameobjectAvatar);
             if (MyComponents.NetworkManagement.isServer)
             {
@@ -265,9 +275,16 @@ namespace PlayerManagement
                     players.Remove(player.id);
                 }
             }
-            if (packet.Length > 0 || ballOwnerChanged)
+            if (ballOwnerChanged)
             {
                 packet = ArrayExtensions.Concatenate(BitConverter.GetBytes(IdPlayerOwningBall.id), packet);
+            }
+            if (packet.Length > 0)
+            {
+                packet = ArrayExtensions.Concatenate(BitConverter.GetBytes(ballOwnerChanged), packet);
+                Assert.IsTrue(BitConverter.ToBoolean(packet, 0) == ballOwnerChanged);
+                if (ballOwnerChanged)
+                    Assert.IsTrue(BitConverter.ToInt16(packet, 1) == IdPlayerOwningBall.id);
                 ballOwnerChanged = false;
                 MyComponents.NetworkManagement.SendData(ViewId, MessageType.Properties, packet);
             }
