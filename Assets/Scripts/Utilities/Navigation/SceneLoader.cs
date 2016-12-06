@@ -9,12 +9,17 @@ namespace Navigation
         public event EmptyEventHandler FinishedLoading;
         string levelName;
         AsyncOperation async;
-        bool fading = false;
+
+        bool waitToShowNextLevel = false;
+        bool useFade = false;
+        bool isFading = false;
         bool finishedFade = false;
 
-        public void StartLoading(string levelName)
+        public void StartLoading(string levelName, bool useFade, bool waitToShowNextLevel)
         {
+            this.useFade = useFade;
             this.levelName = levelName;
+            this.waitToShowNextLevel = waitToShowNextLevel;
             StartCoroutine("load");
         }
 
@@ -22,7 +27,8 @@ namespace Navigation
         {
             async = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
             SceneManager.sceneLoaded += LevelLoaded;
-            async.allowSceneActivation = false;
+            if (useFade)
+                async.allowSceneActivation = false;
             yield return async;
         }
 
@@ -36,29 +42,33 @@ namespace Navigation
 
         private void Update()
         {
-            if (async != null)
+            if (useFade)
             {
-                if (!fading)
+                if (async != null)
                 {
-                    fading = true;
-                    CameraFade.FinishedFade += FinishedFade;
-                    CameraFade.StartFade(CameraFade.FadeType.FADEIN);
+                    if (!isFading)
+                    {
+                        isFading = true;
+                        CameraFade.FinishedFade += FinishedFade;
+                        CameraFade.StartFade(CameraFade.FadeType.FADEIN);
+                    }
                 }
-            }
-            if (finishedFade && async != null && async.progress >= 0.9f)
-            {
-                Debug.Log("FinishedFade");
-                async.allowSceneActivation = true;
-                fading = false;
-                finishedFade = false;
-                async = null;
+                if (finishedFade && async != null && async.progress >= 0.9f)
+                {
+                    async.allowSceneActivation = true;
+                    if (!waitToShowNextLevel)
+                        CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
+                    isFading = false;
+                    finishedFade = false;
+                    async = null;
+                }
             }
         }
 
         public void ShowNewLevel()
         {
-            Debug.Log("ShowNewLevel");
-            CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
+            if (CameraFade.IsBlack)
+                CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
         }
 
         void LevelLoaded(Scene scene, LoadSceneMode mode)

@@ -14,14 +14,6 @@ namespace Navigation
             loader.FinishedLoading += FinishedLoading;
         }
 
-        public void GoBack()
-        {
-            if (IsSceneMain())
-            {
-                LoadScene(Scenes.Main);
-            }
-        }
-
         private static bool IsSceneMain()
         {
             return SceneManager.GetActiveScene().buildIndex == Scenes.MainIndex;
@@ -29,7 +21,12 @@ namespace Navigation
 
         internal static void LoadScene(string scene)
         {
-            loader.StartLoading(scene);
+            loader.StartLoading(scene, false, false);
+        }
+
+        internal static void LoadScene(string scene, bool fading, bool waitToShowNextLevel)
+        {
+            loader.StartLoading(scene, fading, waitToShowNextLevel);
         }
 
         private static void FinishedLoading()

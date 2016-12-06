@@ -14,6 +14,7 @@ public class RoomListPanel : MonoBehaviour {
 
     public void UpdateRoomList(List<RoomData> rooms)
     {
+        Reset();
         roomList = rooms;
         if (roomList.Count == 0)
         {

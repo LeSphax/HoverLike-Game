@@ -63,7 +63,7 @@ public class Countdown : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    private void StopTimer()
+    protected void StopTimer()
     {
         TimerFinished = null;
         TimeLeft = 0;

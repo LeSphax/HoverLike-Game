@@ -4,6 +4,7 @@ using UnityEngine.Assertions;
 
 public class RoomManager : MonoBehaviour
 {
+    public TopPanel topPanel;
     public GameObject[] teamPanels;
     public GameObject StartButton;
 
@@ -12,7 +13,7 @@ public class RoomManager : MonoBehaviour
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.LobbyIndex));
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.RoomIndex));
             if (instance == null)
             {
                 instance = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
@@ -31,6 +32,26 @@ public class RoomManager : MonoBehaviour
         {
             StartButton.SetActive(false);
         }
+        MyComponents.NetworkManagement.ReceivedAllBufferedMessages += CreateMyPlayerInfo;
+    }
+
+    public void OnDisable()
+    {
+        MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreateMyPlayerInfo;
+    }
+
+    private void Start()
+    {
+        topPanel.Status = "In Game Room";
+        topPanel.RoomName = MyComponents.NetworkManagement.RoomName;
+        topPanel.BackPressed += GoBack;
+    }
+
+    public void StartGame()
+    {
+        MyComponents.NetworkManagement.BlockRoom();
+        //Debug.LogWarning("There could be a problem if a player connects before the block room message reaches the signaling server");
+        MyComponents.GameInitialization.StartGame();
     }
 
     public void PutPlayerInTeam(PlayerInfo player, Team team)
@@ -45,7 +66,9 @@ public class RoomManager : MonoBehaviour
 
     public void CreateMyPlayerInfo()
     {
-        MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Players.MyPlayer.id).GetComponent<PlayerInfo>();
+        Debug.LogError("CreateMyPlayerInfo " + Players.MyPlayer.id);
+        if (Players.MyPlayer.gameobjectAvatar == null)
+            Players.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Players.MyPlayer.id);
     }
 
     public void Reset()
@@ -57,6 +80,11 @@ public class RoomManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
+    }
+
+    public void GoBack()
+    {
+        MyComponents.ResetNetworkComponents();
     }
 
     protected void OnDestroy()

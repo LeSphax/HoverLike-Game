@@ -1,4 +1,5 @@
-﻿using BaseNetwork;
+﻿using System;
+using BaseNetwork;
 using Navigation;
 using PlayerManagement;
 using UnityEngine;
@@ -12,15 +13,32 @@ public static class MyComponents
     {
         if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
         {
-            matchManager = null;
-            abilitiesFactory = null;
-            ballState = null;
-            spawns = null;
+            NullifyMain();
         }
         else if (Scenes.IsCurrentScene(Scenes.MainIndex))
         {
-            lobbyManager = null;
+            NullifyLobby();
         }
+        else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
+        {
+            NullifyLobby();
+            NullifyMain();
+        }
+    }
+
+    private static void NullifyLobby()
+    {
+        lobbyManager = null;
+    }
+
+    private static void NullifyMain()
+    {
+        matchManager = null;
+        abilitiesFactory = null;
+        ballState = null;
+        spawns = null;
+        victoryPose = null;
+        victoryUI = null;
     }
 
     private static NetworkManagement networkManagement;
@@ -215,7 +233,7 @@ public static class MyComponents
             Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (spawns == null)
             {
-                    spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
+                spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
             }
             return spawns;
         }
@@ -241,15 +259,32 @@ public static class MyComponents
 
     public static void ResetNetworkComponents()
     {
+        Debug.Log("Reset Network Components");
         NavigationManager.Reset();
         Players.Reset();
         NetworkViewsManagement.PartialReset();
-        GameInitialization.Reset();
-        PlayersSynchronisation.Reset();
+        ResetGameComponents();
         TimeManagement.Reset();
         NetworkManagement.Reset();
     }
 
+    public static void ResetGameComponents()
+    {
+        ResetScene();
+        NetworkManagement.ResetBufferedMessages();
+        GameInitialization.Reset();
+        PlayersSynchronisation.Reset();
+    }
+
+    private static void ResetScene()
+    {
+        if (Scenes.IsCurrentScene(Scenes.MainIndex))
+            NavigationManager.LoadScene(Scenes.Room, true, false);
+        else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
+            NavigationManager.LoadScene(Scenes.Lobby);
+        else
+            MyComponents.LobbyManager.Reset();
+    }
 }
 
 

@@ -6,11 +6,13 @@ using UnityEngine.SceneManagement;
 public class Scenes
 {
 
-    public const string Main = "Main";
     public const string Lobby = "Lobby";
+    public const string Room = "Room";
+    public const string Main = "Main";
 
     public const short LobbyIndex = 0;
-    public const short MainIndex = 1;
+    public const short RoomIndex = 1;
+    public const short MainIndex = 2;
 
 
     public static bool IsCurrentScene(int sceneBuildIndex)
@@ -25,4 +27,5 @@ public class Scenes
             return (short)SceneManager.GetActiveScene().buildIndex;
         }
     }
+
 }

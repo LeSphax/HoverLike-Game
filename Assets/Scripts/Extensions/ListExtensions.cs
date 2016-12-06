@@ -8,4 +8,14 @@ public static class ListExtensions
     {
         return list.ElementAtOrDefault(index) != null;
     }
+
+    public static string PrintContent<T>(this List<T> list)
+    {
+        string result = "";
+        foreach (T elem in list)
+        {
+            result += elem + " \n";
+        }
+        return result;
+    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Navigation;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,20 +7,16 @@ public class LobbyManager : MonoBehaviour
 {
 
     public GameObject MainPanel;
+    public TopPanel topPanel;
     public RoomListPanel RoomListPanel;
-    public RoomManager RoomManager;
 
     public bool StartGameImmediately;
     public int NumberPlayersToStartGame;
-
-    public Text Status;
-    public Text Host;
 
     private enum State
     {
         IDLE,
         ROOMLIST,
-        ROOM,
     }
 
     private State state;
@@ -39,46 +36,20 @@ public class LobbyManager : MonoBehaviour
                     RoomListPanel.gameObject.SetActive(false);
                     RoomListPanel.Reset();
                     //
-                    RoomManager.gameObject.SetActive(false);
-                    RoomManager.Reset();
-                    //
-                    Status.text = "In Lobby";
-                    Host.text = "";
+                    topPanel.Status = "In Lobby";
                     break;
                 case State.ROOMLIST:
                     MainPanel.SetActive(false);
                     //
                     RoomListPanel.gameObject.SetActive(true);
                     //
-                    RoomManager.gameObject.SetActive(false);
-                    RoomManager.Reset();
-                    //
-                    Status.text = "Looking for Game";
-                    Host.text = "";
-                    break;
-                case State.ROOM:
-                    MainPanel.SetActive(false);
-                    //
-                    RoomListPanel.gameObject.SetActive(false);
-                    RoomListPanel.Reset();
-                    //
-                    RoomManager.gameObject.SetActive(true);
-                    //
-                    Status.text = "In Game Room";
-                    Host.text = MyComponents.NetworkManagement.RoomName;
+                    topPanel.Status = "Looking for Game";
                     break;
             }
             state = value;
         }
     }
 
-    public bool IsInRoom
-    {
-        get
-        {
-            return MyState == State.ROOM;
-        }
-    }
     public Text inputField;
     private const string DEFAULT_ROOM = "Da Room";
 
@@ -91,6 +62,7 @@ public class LobbyManager : MonoBehaviour
             MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
             InvokeRepeating("CheckStartGame", 0f, 0.2f);
         }
+        topPanel.RoomName = "";
     }
 
     private void InvokeConnectToDefaultRoom()
@@ -110,37 +82,24 @@ public class LobbyManager : MonoBehaviour
 
     protected void OnEnable()
     {
-        MyComponents.NetworkManagement.RoomCreated += RoomState;
-        MyComponents.NetworkManagement.RoomCreated += CreatePlayerInfo;
-        MyComponents.NetworkManagement.ConnectedToRoom += RoomState;
-        MyComponents.NetworkManagement.ConnectedToRoom += ListenToBufferedMessages;
+        MyComponents.NetworkManagement.RoomCreated += LoadRoom;
+        MyComponents.NetworkManagement.ConnectedToRoom += LoadRoom;
+        topPanel.BackPressed += GoBack;
     }
 
     protected void OnDisable()
     {
         if (MyComponents.NetworkManagement != null)
         {
-            MyComponents.NetworkManagement.RoomCreated -= RoomState;
-            MyComponents.NetworkManagement.RoomCreated -= CreatePlayerInfo;
-            MyComponents.NetworkManagement.ConnectedToRoom -= RoomState;
-            MyComponents.NetworkManagement.ConnectedToRoom -= ListenToBufferedMessages;
+            MyComponents.NetworkManagement.RoomCreated -= LoadRoom;
+            MyComponents.NetworkManagement.ConnectedToRoom -= LoadRoom;
+            topPanel.BackPressed += GoBack;
         }
     }
 
-    private void CreatePlayerInfo()
+    private void LoadRoom()
     {
-        MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreatePlayerInfo;
-        RoomManager.CreateMyPlayerInfo();
-    }
-
-    private void RoomState()
-    {
-        MyState = State.ROOM;
-    }
-
-    private void ListenToBufferedMessages()
-    {
-        MyComponents.NetworkManagement.ReceivedAllBufferedMessages += CreatePlayerInfo;
+        NavigationManager.LoadScene(Scenes.Room, false, false);
     }
 
     void ConnectToDefaultRoom()
@@ -169,13 +128,6 @@ public class LobbyManager : MonoBehaviour
     public void ListServers()
     {
         MyComponents.NetworkManagement.GetRooms();
-    }
-
-    public void StartGame()
-    {
-        MyComponents.NetworkManagement.BlockRoom();
-        //Debug.LogWarning("There could be a problem if a player connects before the block room message reaches the signaling server");
-        MyComponents.GameInitialization.StartGame();
     }
 
     public void UpdateRoomList(List<RoomData> list)

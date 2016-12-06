@@ -6,6 +6,7 @@
     public const string SCREEN_FADER = PREFAB_PATH + "ScreenFader";
     public const string PLAYER_INFO = PREFAB_PATH + "PlayerInfo";
     public const string SCENE_MAIN = ASSETS_PATH + "Main.unity";
+    public const string SCENE_ROOM = ASSETS_PATH + "Room.unity";
     public const string SCENE_LOBBY = ASSETS_PATH + "Lobby.unity";
 
     public const string KEY_TO_USE = PREFAB_PATH + "KeyToUse";

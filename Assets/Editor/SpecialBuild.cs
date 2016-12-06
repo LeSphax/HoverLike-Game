@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpecialBuild
 {
     private const string path = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/PC/Slideball.exe";
     private const string path_WebGL = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/";
 
-    private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
+    private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_ROOM, Paths.SCENE_MAIN };
 
     private static float startWaitingTime = -1;
 
@@ -116,8 +117,11 @@ public class SpecialBuild
     {
         Debug.Log("MakeViewIDS");
         short nextViewId = NetworkViewsManagement.INVALID_VIEW_ID + 1;
-        MakeViewIds(Paths.SCENE_LOBBY, ref nextViewId);
-        MakeViewIds(Paths.SCENE_MAIN, ref nextViewId);
+        foreach (string level in levels)
+        {
+            MakeViewIds(level, ref nextViewId);
+        }
+
         var NetworkSettings = Settings.GetSettings(Settings.NETWORK_SETTINGS);
         if (!NetworkSettings.ContainsKey(Settings.NEXT_VIEW_ID))
             NetworkSettings.Add(Settings.NEXT_VIEW_ID, "" + nextViewId);
@@ -164,17 +168,10 @@ public class SpecialBuild
 
     private static void ChangeScene(string sceneName)
     {
-        if (EditorSceneManager.GetActiveScene().name != sceneName)
+        if (SceneManager.GetActiveScene().name != sceneName)
         {
             EditorSceneManager.SaveOpenScenes();// SaveScene();// SaveCurrentModifiedScenesIfUserWantsTo();
             EditorSceneManager.OpenScene(sceneName);
         }
-    }
-
-    [MenuItem("MyTools/Save %i")]
-    public static void SaveScene()
-    {
-        ChangeScene(Paths.SCENE_MAIN);
-
     }
 }

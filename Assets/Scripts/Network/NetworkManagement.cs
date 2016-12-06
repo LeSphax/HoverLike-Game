@@ -83,10 +83,6 @@ namespace BaseNetwork
                 {
                     case State.IDLE:
                         bufferedMessages = null;
-                        if (!Scenes.IsCurrentScene(Scenes.LobbyIndex))
-                            NavigationManager.LoadScene(Scenes.Lobby);
-                        else
-                            MyComponents.LobbyManager.Reset();
                         break;
                     case State.CONNECTED:
                         bufferedMessages = null;
@@ -199,6 +195,7 @@ namespace BaseNetwork
 
         public void Reset()
         {
+            Debug.Log("Reset Network");
             Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
             stateCurrent = State.IDLE;
             mConnections = new List<ConnectionId>();
@@ -319,7 +316,7 @@ namespace BaseNetwork
                                     case State.SERVER:
                                         Debug.LogError("Server closed. Restarting server");
                                         Reset();
-                                       // CreateRoom(RoomName);
+                                        // CreateRoom(RoomName);
                                         break;
                                 }
                             }
@@ -497,7 +494,7 @@ namespace BaseNetwork
             else
                 mNetwork.SendData(id, data, 0, data.Length, reliable);
             if (!mConnections.Contains(id))
-                Debug.LogError("This isn't a valid connectionId");
+                Debug.LogError("This isn't a valid connectionId " + id + "    " + mConnections.Count + "   " + mConnections.PrintContent());
         }
 
 
@@ -534,15 +531,21 @@ namespace BaseNetwork
             MyComponents.PopUp.ClosePopUp();
         }
 
-#region host
+        #region host
         public int GetNumberPlayers()
         {
             Assert.IsTrue(isServer);
             return mConnections.Count + 1;
         }
-#endregion
 
-#region client
+        public void ResetBufferedMessages()
+        {
+            stateCurrent = stateCurrent;
+        }
+
+        #endregion
+
+        #region client
         [MyRPC]
         private void ReceivedAllBuffered()
         {
@@ -560,6 +563,6 @@ namespace BaseNetwork
             NavigationManager.FinishedLoadingScene += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
         }
 
-#endregion
+        #endregion
     }
 }

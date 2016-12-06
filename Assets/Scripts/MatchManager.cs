@@ -115,14 +115,15 @@ public class MatchManager : SlideBall.MonoBehaviour
         Team winningTeam = Scoreboard.GetWinningTeam();
         if (winningTeam == Team.NONE)
         {
-            Debug.LogError("SD");
             View.RPC("SuddenDeath", RPCTargets.All);
             MyState = State.SUDDEN_DEATH;
             Entry();
         }
         else
         {
-            Debug.LogError("Victory");
+            CancelInvoke("Entry");
+            getReadyCountdown.View.RPC("StopTimer", RPCTargets.All);
+            matchCountdown.View.RPC("StopTimer", RPCTargets.All);
             View.RPC("SetVictoryPose", RPCTargets.All, winningTeam);
         }
     }
@@ -136,12 +137,12 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void Entry()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH));
+        Debug.Log("Entry " + MyState);
         StartCoroutine(CoEntry());
     }
 
     IEnumerator CoEntry()
     {
-        Debug.Log("CoEntry " + MyState);
         Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH);
         if (MyState == State.ENDING)
         {

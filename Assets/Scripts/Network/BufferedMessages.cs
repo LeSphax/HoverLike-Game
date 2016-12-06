@@ -23,7 +23,7 @@ namespace BaseNetwork
         internal void SendBufferedMessages(ConnectionId id, short sceneId)
         {
             List<NetworkMessage> messages;
-            if (bufferedMessages.TryGetValue(sceneId, out messages))
+            if (!(id.id == -1) && bufferedMessages.TryGetValue(sceneId, out messages))
             {
                 foreach (NetworkMessage message in messages)
                 {

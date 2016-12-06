@@ -50,7 +50,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
     private void LoadRoom(short syncId)
     {
         this.syncId = syncId;
-        NavigationManager.LoadScene(Scenes.Main);
+        NavigationManager.LoadScene(Scenes.Main, true, true);
         Players.MyPlayer.SceneChanged += SendReady;
     }
 
@@ -87,5 +87,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
         started = false;
         syncId = PlayersSynchronisation.INVALID_SYNC_ID;
         AllObjectsCreated = null;
+        if (Players.MyPlayer != null)
+            Players.MyPlayer.SceneChanged -= SendReady;
     }
 }

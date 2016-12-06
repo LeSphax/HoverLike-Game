@@ -26,6 +26,8 @@ public static class CameraFade
         }
     }
 
+    public static bool IsBlack = false;
+
     public enum FadeType
     {
         FADEIN,
@@ -69,9 +71,13 @@ public static class CameraFade
         {
             case FadeType.FADEIN:
                 currentAnimation.StartAnimating();
+                IsBlack = true;
+                Debug.Log("IsBlack" + IsBlack);
                 break;
             case FadeType.FADEOUT:
                 currentAnimation.StartReverseAnimating();
+                IsBlack = false;
+                Debug.Log("IsBlack" + IsBlack);
                 break;
         }
 

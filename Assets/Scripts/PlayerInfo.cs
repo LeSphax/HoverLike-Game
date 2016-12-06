@@ -1,4 +1,5 @@
 ﻿using Byn.Net;
+using Navigation;
 using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -68,9 +69,11 @@ public class PlayerInfo : PlayerView
     void Start()
     {
         Latency = 0;
-        Player.gameobjectAvatar = gameObject;
         if (View.isMine)
-            View.RPC("GetInitialTeam", RPCTargets.Server, null);
+            if (Player.Team != Team.NONE)
+                SetInitialTeam(Player.Team);
+            else
+                View.RPC("GetInitialTeam", RPCTargets.Server, null);
         if (MyComponents.NetworkManagement.isServer)
         {
             MyComponents.TimeManagement.LatencyChanged += SetLatency;
@@ -93,7 +96,9 @@ public class PlayerInfo : PlayerView
     [MyRPC]
     public void SetInitialTeam(Team team)
     {
+        Debug.Log("SetInitialTeam");
         Players.MyPlayer.Team = team;
+        NavigationManager.ShowLevel();
     }
 
     public void InitView(object[] parameters)
@@ -107,12 +112,20 @@ public class PlayerInfo : PlayerView
         PlayerName = Player.Nickname;
         if (Player.Team != Team.NONE)
             CurrentTeam = Player.Team;
-        Player.TeamChanged += (value) => CurrentTeam = value;
+        Player.gameobjectAvatar = gameObject;
+        Player.TeamChanged += ChangeTeam;
+    }
+
+    private void ChangeTeam(Team newTeam)
+    {
+        CurrentTeam = newTeam;
     }
 
     void OnDestroy()
     {
         if (MyComponents.TimeManagement != null)
             MyComponents.TimeManagement.LatencyChanged -= SetLatency;
+        if (Player != null)
+            Player.TeamChanged -= ChangeTeam;
     }
 }
