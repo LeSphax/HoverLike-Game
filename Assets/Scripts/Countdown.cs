@@ -68,4 +68,16 @@ public class Countdown : SlideBall.MonoBehaviour
         TimerFinished = null;
         TimeLeft = 0;
     }
+
+    [MyRPC]
+    public void SetText(string newText)
+    {
+        text.text = newText;
+    }
+
+    //For debugging
+    public void SetTimeLeft(int timeLeft)
+    {
+        TimeLeft = timeLeft;
+    }
 }

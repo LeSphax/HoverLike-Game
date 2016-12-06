@@ -36,8 +36,6 @@ public class Language
 
     private void ParseLocalisationFile(TextAsset text)
     {
-        string s = "Connéxion au se'rv'eur";
-        Debug.Log(s.Trim());
         texts = new Dictionary<string, string>();
 
         string[] KeysAndValues = text.text.Split('"');

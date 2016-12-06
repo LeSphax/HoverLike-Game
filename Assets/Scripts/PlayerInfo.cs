@@ -18,6 +18,7 @@ public class PlayerInfo : PlayerView
     {
         set
         {
+            Assert.IsTrue(value != Team.NONE);
             GetComponent<Image>().color = Colors.Teams[(int)value];
             RoomManager.Instance.PutPlayerInTeam(this, value);
         }
@@ -81,10 +82,10 @@ public class PlayerInfo : PlayerView
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer);
         Team team;
-        if (Players.GetPlayersInTeam(Team.FIRST).Count <= Players.GetPlayersInTeam(Team.SECOND).Count)
-            team = Team.FIRST;
+        if (Players.GetPlayersInTeam(Team.BLUE).Count <= Players.GetPlayersInTeam(Team.RED).Count)
+            team = Team.BLUE;
         else
-            team = Team.SECOND;
+            team = Team.RED;
         View.RPC("SetInitialTeam", RPCSenderId, team);
         Players.players[RPCSenderId].Team = team;
     }

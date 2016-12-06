@@ -53,6 +53,32 @@ public static class MyComponents
         }
     }
 
+    private static VictoryPose victoryPose;
+    public static VictoryPose VictoryPose
+    {
+        get
+        {
+            if (victoryPose == null)
+            {
+                victoryPose = GetTaggedComponent<VictoryPose>(Tags.VictoryPose);
+            }
+            return victoryPose;
+        }
+    }
+
+    private static VictoryUI victoryUI;
+    public static VictoryUI VictoryUI
+    {
+        get
+        {
+            if (victoryUI == null)
+            {
+                victoryUI = GetTaggedComponent<VictoryUI>(Tags.VictoryUI);
+            }
+            return victoryUI;
+        }
+    }
+
     private static PlayersSynchronisation playersSynchronisation;
     public static PlayersSynchronisation PlayersSynchronisation
     {

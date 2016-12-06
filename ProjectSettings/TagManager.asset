@@ -25,6 +25,8 @@ TagManager:
   - NavigationManager
   - Tutorial
   - PopUp
+  - VictoryPose
+  - VictoryUI
   layers:
   - Default
   - TransparentFX

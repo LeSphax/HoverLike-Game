@@ -24,7 +24,7 @@ public class WarmupCountdown : Countdown
         warmupInfo.SetActive(false);
         readyButton.SetActive(true);
         this.syncId = syncId;
-        text.text = "Warmup";
+        text.text = Language.Instance.texts["Warmup"];
     }
 
     //Called by Ready button

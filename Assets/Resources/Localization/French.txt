@@ -36,3 +36,9 @@ Feedback  "Ca m'aiderait beaucoup que vous me reportiez cet incident à sbkerbra
 Doesnt_Exist "Vous ne pouvez plus rejoindre cette salle car elle n'existe plus."
 Room_Blocked "Vous ne pouvez plus rejoindre cette salle, la partie a déjà commencé."
 Connection_Failed "Nous n'avons pas pu nous connecter à la salle. Peut-être qu'elle n'existe pas ou que la partie a déjà commencé."
+
+Sudden_Death "Mort subite"
+Warmup "Echauffement"
+Won_Match "Les %s ont gagné !"
+Blue "Bleus"
+Red "Rouges"

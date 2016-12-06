@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class Tutorial : MonoBehaviour
 {
+    public GameObject tutorialPanel;
     public GameObject LeftClickGif;
     public GameObject RightClickGif;
     public GameObject AbilitiesImage;
@@ -27,7 +28,7 @@ public class Tutorial : MonoBehaviour
             switch (value)
             {
                 case State.RIGHT:
-                    gameObject.SetActive(true);
+                    tutorialPanel.SetActive(true);
                     LeftClickGif.SetActive(false);
                     RightClickGif.SetActive(true);
                     AbilitiesImage.SetActive(false);
@@ -35,7 +36,7 @@ public class Tutorial : MonoBehaviour
                     buttonContent.text = Language.Instance.texts["Button_Next"];
                     break;
                 case State.LEFT:
-                    gameObject.SetActive(true);
+                    tutorialPanel.SetActive(true);
                     LeftClickGif.SetActive(true);
                     RightClickGif.SetActive(false);
                     AbilitiesImage.SetActive(false);
@@ -43,7 +44,7 @@ public class Tutorial : MonoBehaviour
                     buttonContent.text = Language.Instance.texts["Button_Next"];
                     break;
                 case State.ABILITIES:
-                    gameObject.SetActive(true);
+                    tutorialPanel.SetActive(true);
                     LeftClickGif.SetActive(false);
                     RightClickGif.SetActive(false);
                     AbilitiesImage.SetActive(true);
@@ -51,7 +52,7 @@ public class Tutorial : MonoBehaviour
                     buttonContent.text = Language.Instance.texts["Button_Close"];
                     break;
                 case State.CLOSED:
-                    gameObject.SetActive(false);
+                    tutorialPanel.SetActive(false);
                     break;
                 default:
                     break;
@@ -99,31 +100,4 @@ public class Tutorial : MonoBehaviour
                 break;
         }
     }
-
-
-
-    //public PlayerController player;
-    //public GameObject ball;
-
-    //protected void Awake()
-    //{
-    //    gameObject.tag = Tags.Tutorial;
-
-    //}
-
-    //private void Start()
-    //{
-    //    this.InstantiateRessource("Terrain", transform);
-
-    //    player = this.InstantiateRessource("MyPlayer", transform).GetComponent<PlayerController>();
-    //    player.InitPlayer(Players.myPlayerId);
-    //    Destroy(player.GetComponent<RemovePhysicsIfClient>());
-
-    //    //ball = this.InstantiateRessource("Ball", transform);
-
-    //    player.GetComponent<MyNetworkView>().isLocal = true;
-    //    //ball.GetComponent<MyNetworkView>().isLocal = true;
-
-    //}
-
 }

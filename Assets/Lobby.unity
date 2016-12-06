@@ -4717,7 +4717,7 @@ MonoBehaviour:
   RoomListPanel: {fileID: 1430882256}
   RoomManager: {fileID: 1378526610}
   StartGameImmediately: 1
-  NumberPlayersToStartGame: 2
+  NumberPlayersToStartGame: 4
   Status: {fileID: 300909095}
   Host: {fileID: 132524633}
   inputField: {fileID: 234448980}

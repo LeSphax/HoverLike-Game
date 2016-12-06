@@ -38,3 +38,9 @@ Feedback  "I would greatly appreciate it if you reported it at sbkerbrat@gmail.c
 Doesnt_Exist "You cannot join this room because it doesn't exist anymore."
 Room_Blocked "You cannot join this room because the game has already started."
 Connection_Failed "It was not possible to connect to the room. Maybe the game has already started or the room doesn't exist."
+
+Sudden_Death "Sudden death"
+Warmup "Warmup"
+Won_Match "%s Team Wins!"
+Blue "Blue"
+Red "Red"

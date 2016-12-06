@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 public class Scoreboard : SlideBall.MonoBehaviour
 {
@@ -63,4 +64,19 @@ public class Scoreboard : SlideBall.MonoBehaviour
         scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, scores, false);
     }
 
+    internal static Team GetWinningTeam()
+    {
+        if (scores[0] > scores[1])
+        {
+            return Team.RED;
+        }
+        else if (scores[0] < scores[1])
+        {
+            return Team.BLUE;
+        }
+        else
+        {
+            return Team.NONE;
+        }
+    }
 }

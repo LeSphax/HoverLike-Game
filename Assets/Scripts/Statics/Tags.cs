@@ -29,6 +29,8 @@ public class Tags : MonoBehaviour
     public const string GoalZone = "GoalZone";
     public const string Tutorial = "Tutorial";
     public const string PopUp = "PopUp";
+    public const string VictoryPose = "VictoryPose";
+    public const string VictoryUI = "VictoryUI";
 
     public static bool IsPlayer(string tag)
     {

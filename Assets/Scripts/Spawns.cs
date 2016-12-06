@@ -24,10 +24,10 @@ public class Spawns : MonoBehaviour
         GameObject[] spawns;
         switch (teamNumber)
         {
-            case Team.FIRST:
+            case Team.BLUE:
                 spawns = team0;
                 break;
-            case Team.SECOND:
+            case Team.RED:
                 spawns = team1;
                 break;
             default:
