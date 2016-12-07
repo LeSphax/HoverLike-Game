@@ -263,9 +263,9 @@ public static class MyComponents
         NavigationManager.Reset();
         Players.Reset();
         NetworkViewsManagement.PartialReset();
+        NetworkManagement.Reset();
         ResetGameComponents();
         TimeManagement.Reset();
-        NetworkManagement.Reset();
     }
 
     public static void ResetGameComponents()
@@ -278,8 +278,10 @@ public static class MyComponents
 
     private static void ResetScene()
     {
-        if (Scenes.IsCurrentScene(Scenes.MainIndex))
+        if (Scenes.IsCurrentScene(Scenes.MainIndex) && NetworkManagement.IsConnected)
             NavigationManager.LoadScene(Scenes.Room, true, false);
+        else if (Scenes.IsCurrentScene(Scenes.MainIndex) && !NetworkManagement.IsConnected)
+            NavigationManager.LoadScene(Scenes.Lobby, true, false);
         else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
             NavigationManager.LoadScene(Scenes.Lobby);
         else
