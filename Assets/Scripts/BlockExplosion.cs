@@ -3,6 +3,7 @@ using System.Collections;
 using PlayerManagement;
 using Byn.Net;
 using AbilitiesManagement;
+using CustomAnimations;
 
 public class BlockExplosion : MonoBehaviour
 {
@@ -28,12 +29,21 @@ public class BlockExplosion : MonoBehaviour
     private void VisualEffects(Transform target)
     {
         transform.SetParent(target, false);
-        ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(gameObject, 20f, BLOCK_DIAMETER, 0.2f);
+        ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(gameObject, 10f, BLOCK_DIAMETER, 0.4f);
         animation.FinishedAnimating += DestroySphere;
         animation.StartAnimating();
+
+        GetComponentsFadeAnimation fadeAnimation = GetComponentsFadeAnimation.CreateGetComponentsFadeAnimation(gameObject, 0.2f);
+        fadeAnimation.FinishedAnimating += Disappear;
+        fadeAnimation.StartAnimating();
     }
 
-    private void DestroySphere(MonoBehaviour sender)
+    private void Disappear(MyAnimation sender)
+    {
+        sender.StartReverseAnimating();
+    }
+
+    private void DestroySphere(MyAnimation sender)
     {
         Destroy(gameObject);
     }

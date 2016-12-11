@@ -2,14 +2,24 @@
 
 namespace CustomAnimations
 {
-    public delegate void AnimationEventHandler(MonoBehaviour sender);
+    public delegate void AnimationEventHandler(MyAnimation sender);
 
     public abstract class MyAnimation : MonoBehaviour
     {
 
+        public bool IsCompleted
+        {
+            get
+            {
+                Debug.Log(state);
+                return state == State.COMPLETED;
+            }
+        }
+
         protected enum State
         {
             IDLE,
+            COMPLETED,
             ANIMATING,
             REVERSEANIMATING,
             WAITING_FOR_ANIMATION,
@@ -63,6 +73,7 @@ namespace CustomAnimations
             switch (state)
             {
                 case State.IDLE:
+                case State.COMPLETED:
                     completion = -1;
                     break;
                 case State.WAITING_FOR_ANIMATION:
@@ -115,10 +126,15 @@ namespace CustomAnimations
         protected virtual void FinishAnimation()
         {
             if (state == State.ANIMATING)
+            {
                 Animate(1);
+                state = State.COMPLETED;
+            }
             else if (state == State.REVERSEANIMATING)
+            {
                 Animate(0);
-            state = State.IDLE;
+                state = State.IDLE;
+            }
         }
 
         protected virtual float GetAnimationCompletion()

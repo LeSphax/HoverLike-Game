@@ -3,34 +3,42 @@ using System;
 using CustomAnimations;
 using UnityEngine;
 
-public class ScaleAnimation : MyAnimation
+namespace CustomAnimations
 {
-    private Vector3 initialScale;
-    private float sizeBeginning;
-    private float sizeEnd;
-
-    protected override void Animate(float completion)
+    public class ScaleAnimation : MyAnimation
     {
-        transform.localScale = initialScale * (completion * sizeEnd + (1 - completion) * sizeBeginning);
-    }
+        private Vector3 initialScale;
+        private float sizeBeginning;
+        private float sizeEnd;
+        private bool useBaseScale;
 
-    public void Init(float sizeBeginning, float sizeEnd)
-    {
-        this.sizeEnd = sizeEnd;
-        this.sizeBeginning = sizeBeginning;
-    }
+        protected override void Animate(float completion)
+        {
+            transform.localScale = initialScale * (completion * sizeEnd + (1 - completion) * sizeBeginning);
+        }
 
-    protected override void StartAnimation(bool reset)
-    {
-        base.StartAnimation(reset);
-        initialScale = transform.localScale;
-    }
+        public void Init(float sizeBeginning, float sizeEnd, bool useBaseScale)
+        {
+            this.sizeEnd = sizeEnd;
+            this.sizeBeginning = sizeBeginning;
+            this.useBaseScale = useBaseScale;
+        }
 
-    public static ScaleAnimation CreateScaleAnimation(GameObject animatedObject, float sizeBeginning, float sizeEnd, float duration)
-    {
-        ScaleAnimation animation = animatedObject.AddComponent<ScaleAnimation>();
-        animation.Init(sizeBeginning,sizeEnd);
-        animation.duration = duration;
-        return animation;
+        protected override void StartAnimation(bool reset)
+        {
+            base.StartAnimation(reset);
+            if (useBaseScale)
+                initialScale = transform.localScale;
+            else
+                initialScale = Vector3.one;
+        }
+
+        public static ScaleAnimation CreateScaleAnimation(GameObject animatedObject, float sizeBeginning, float sizeEnd, float duration, bool useBaseScale = true)
+        {
+            ScaleAnimation animation = animatedObject.AddComponent<ScaleAnimation>();
+            animation.Init(sizeBeginning, sizeEnd, useBaseScale);
+            animation.duration = duration;
+            return animation;
+        }
     }
 }

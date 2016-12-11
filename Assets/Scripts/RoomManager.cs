@@ -45,6 +45,19 @@ public class RoomManager : MonoBehaviour
         topPanel.Status = "In Game Room";
         topPanel.RoomName = MyComponents.NetworkManagement.RoomName;
         topPanel.BackPressed += GoBack;
+        if (EditorVariables.StartGameImmediately)
+        {
+            InvokeRepeating("CheckStartGame", 0f, 0.2f);
+        }
+    }
+
+    void CheckStartGame()
+    {
+        if (MyComponents.NetworkManagement.isServer && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
+        {
+            Invoke("StartGame", 1f);
+            CancelInvoke("CheckStartGame");
+        }
     }
 
     public void StartGame()
@@ -68,7 +81,7 @@ public class RoomManager : MonoBehaviour
     {
         Debug.LogError("CreateMyPlayerInfo " + Players.MyPlayer.id);
         if (Players.MyPlayer.gameobjectAvatar == null)
-            Players.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Players.MyPlayer.id);
+            Players.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Vector3.zero, Quaternion.identity, Players.MyPlayer.id);
     }
 
     public void Reset()

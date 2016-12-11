@@ -71,9 +71,9 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         this.nextViewId = nextViewId;
     }
 
-    public GameObject Instantiate(string path, params object[] initialisationParameters)
+    public GameObject Instantiate(string path)
     {
-        return Instantiate(path, Vector3.zero, Quaternion.identity, initialisationParameters);
+        return Instantiate(path, Vector3.zero, Quaternion.identity);
     }
 
     public void InstantiateOnServer(string path, Vector3 position, Quaternion rotation, params object[] initialisationParameters)

@@ -10,9 +10,6 @@ public class LobbyManager : MonoBehaviour
     public TopPanel topPanel;
     public RoomListPanel RoomListPanel;
 
-    public bool StartGameImmediately;
-    public int NumberPlayersToStartGame;
-
     private enum State
     {
         IDLE,
@@ -56,11 +53,10 @@ public class LobbyManager : MonoBehaviour
     protected void Awake()
     {
         MyState = State.IDLE;
-        if (StartGameImmediately)
+        if (EditorVariables.StartGameImmediately)
         {
             MyComponents.NetworkManagement.ServerStartFailed += InvokeConnectToDefaultRoom;
             MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
-            InvokeRepeating("CheckStartGame", 0f, 0.2f);
         }
         topPanel.RoomName = "";
     }
@@ -69,15 +65,6 @@ public class LobbyManager : MonoBehaviour
     {
         MyComponents.NetworkManagement.ServerStartFailed -= InvokeConnectToDefaultRoom;
         ConnectToDefaultRoom();
-    }
-
-    void CheckStartGame()
-    {
-        if (MyComponents.NetworkManagement.isServer && (MyComponents.NetworkManagement.GetNumberPlayers() == NumberPlayersToStartGame || NumberPlayersToStartGame == 1))
-        {
-            Invoke("StartGame", 1f);
-            CancelInvoke("CheckStartGame");
-        }
     }
 
     protected void OnEnable()

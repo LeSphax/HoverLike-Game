@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace AbilitiesManagement
 {
+    [RequireComponent(typeof(EffectsManager))]
     public class AbilitiesManager : SlideBall.MonoBehaviour
     {
         internal PlayerController controller;
@@ -15,6 +16,19 @@ namespace AbilitiesManagement
         public AnimationCurve jumpCurve;
 
         private const float BLOCK_POWER = 100;
+
+        private EffectsManager effectsManager;
+        internal EffectsManager EffectsManager
+        {
+            get
+            {
+                if (effectsManager == null)
+                {
+                    effectsManager = GetComponent<EffectsManager>();
+                }
+                return effectsManager;
+            }
+        }
 
         public void ResetPersistentEffects()
         {
@@ -69,6 +83,7 @@ namespace AbilitiesManagement
             {
                 new DashPersistentEffect(this, position);
                 Steal(DashPersistentEffect.dashDuration * 2);
+                EffectsManager.View.RPC("ShowSmoke", RPCTargets.All);
             }
         }
 
@@ -76,7 +91,9 @@ namespace AbilitiesManagement
         private void Jump()
         {
             if (CanUseAbility())
+            {
                 new JumpPersistentEffect(this, jumpCurve);
+            }
             //controller.movementManager.Jump();
         }
 
@@ -138,7 +155,7 @@ namespace AbilitiesManagement
 
                     }
                 }
-                MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", controller.playerConnectionId);
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", Vector3.zero, Quaternion.identity, controller.playerConnectionId);
             }
         }
 

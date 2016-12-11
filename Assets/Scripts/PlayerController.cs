@@ -36,8 +36,11 @@ public class PlayerController : PlayerView
             _target = value;
         }
     }
+    [HideInInspector]
     public PlayerMovementManager movementManager;
+    [HideInInspector]
     public PlayerBallController ballController;
+    [HideInInspector]
     public AbilitiesManager abilitiesManager;
 
     void Awake()

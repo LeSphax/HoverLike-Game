@@ -4,7 +4,7 @@ using UnityEngine;
 public class JavascriptAPI : MonoBehaviour
 {
     public static string nickname = "Focus Graves";
-    public static bool isFirstGame = true;
+    public static bool isFirstGame = false;
 
     [DllImport("__Internal")]
     private static extern string GetRoomName();
@@ -15,6 +15,7 @@ public class JavascriptAPI : MonoBehaviour
     protected void Awake()
     {
 #if !UNITY_EDITOR && UNITY_WEBGL
+        isFirstGame = true;
         WebGLInput.captureAllKeyboardInput = false; 
         UnityReady();
 #endif

@@ -62,6 +62,7 @@ public class Tutorial : MonoBehaviour
 
     public void Start()
     {
+        Debug.Log(JavascriptAPI.isFirstGame);
         if (JavascriptAPI.isFirstGame)
             Reset();
         else

@@ -40,8 +40,6 @@ namespace BaseNetwork
 
         public Server server;
 
-        public bool addLatency;
-        public int NumberFramesLatency;
         private LatencySimulation latencySimulation;
 
         public string uSignalingUrl
@@ -172,8 +170,8 @@ namespace BaseNetwork
             mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(uSignalingUrl, new string[] { uStunServer });
             if (mNetwork != null)
             {
-                if (addLatency)
-                    latencySimulation = new LatencySimulation(mNetwork, NumberFramesLatency);
+                if (EditorVariables.AddLatency)
+                    latencySimulation = new LatencySimulation(mNetwork, EditorVariables.NumberFramesLatency);
             }
             else
             {
@@ -227,7 +225,7 @@ namespace BaseNetwork
             //check if the network was created
             if (mNetwork != null)
             {
-                if (addLatency)
+                if (EditorVariables.AddLatency)
                     latencySimulation.NewFrame();
                 //first update it to read the data from the underlaying network system
                 mNetwork.Update();
@@ -489,7 +487,7 @@ namespace BaseNetwork
 
         private void SendToNetwork(byte[] data, ConnectionId id, bool reliable)
         {
-            if (addLatency)
+            if (EditorVariables.AddLatency)
                 latencySimulation.AddMessage(data, id, reliable);
             else
                 mNetwork.SendData(id, data, 0, data.Length, reliable);

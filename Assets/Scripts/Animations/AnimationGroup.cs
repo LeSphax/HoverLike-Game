@@ -3,10 +3,12 @@ using UnityEngine;
 
 namespace CustomAnimations
 {
-    class AnimationGroup : MonoBehaviour
+    public delegate void AnimationGroupEventHandler(AnimationGroup sender);
+
+    public class AnimationGroup : MonoBehaviour
     {
 
-        public event AnimationEventHandler FinishedAnimating;
+        public event AnimationGroupEventHandler FinishedAnimating;
         private List<MyAnimation> animations;
         private List<MyAnimation> executingAnimations;
 

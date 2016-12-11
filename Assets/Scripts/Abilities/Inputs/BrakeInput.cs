@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PlayerManagement;
+using UnityEngine;
 
 public class BrakeInput : AbilityInput
 {
@@ -6,12 +7,23 @@ public class BrakeInput : AbilityInput
 
     protected override bool FirstActivation()
     {
-        return Input.GetKey(Inputs.GetKeyCode(INPUT_NUMBER));
+        bool result = Input.GetKey(Inputs.GetKeyCode(INPUT_NUMBER));
+        if (result)
+            Players.MyPlayer.controller.abilitiesManager.EffectsManager.ActivateSlow(true);
+        return result;
     }
 
     public override string GetKey()
     {
         return Inputs.GetKeyForIcon(INPUT_NUMBER);
+    }
+
+    protected override bool Cancellation()
+    {
+        bool result = Input.GetKeyUp(Inputs.GetKeyCode(INPUT_NUMBER));
+        if (result)
+            Players.MyPlayer.controller.abilitiesManager.EffectsManager.ActivateSlow(false);
+        return result;
     }
 
     protected override bool IsMovement()

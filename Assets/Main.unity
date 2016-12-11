@@ -50,7 +50,7 @@ LightmapSettings:
     m_AlbedoBoost: 1
     m_TemporalCoherenceThreshold: 1
     m_EnvironmentLightingMode: 0
-    m_EnableBakedLightmaps: 1
+    m_EnableBakedLightmaps: 0
     m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
     serializedVersion: 4
@@ -71,7 +71,8 @@ LightmapSettings:
     m_FinalGatherFiltering: 1
     m_FinalGatherRayCount: 1024
     m_ReflectionCompression: 2
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000001, guid: 32d8313639749954d8f89dfeb15f87cb,
+    type: 2}
   m_RuntimeCPUUsage: 25
 --- !u!196 &4
 NavMeshSettings:
@@ -1254,7 +1255,6 @@ MonoBehaviour:
   frontPosition: {fileID: 1154015373}
   leftPosition: {fileID: 1419275952}
   rightPosition: {fileID: 1004200715}
-  victoryText: {fileID: 0}
 --- !u!1 &541507651
 GameObject:
   m_ObjectHideFlags: 0
@@ -2577,7 +2577,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1277210008
 Transform:
   m_ObjectHideFlags: 0
@@ -3898,6 +3898,130 @@ Prefab:
     - target: {fileID: 4000012296412242, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
       propertyPath: m_RootOrder
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000012523276010, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010146292156, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000012523276010, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010764333222, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010829322100, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000011564485294, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000014269276232, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010987256176, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Lightmapping
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010764333222, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_BounceIntensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010829322100, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_BounceIntensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000011564485294, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_BounceIntensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000014269276232, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_BounceIntensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010146292156, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_BounceIntensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010987256176, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_BounceIntensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010764333222, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010829322100, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000011564485294, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000014269276232, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010146292156, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 108000010987256176, guid: e9287a046b140fa4cac8249c8c46c7c0,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012169303802, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000013234077742, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000012407972660, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000013835316960, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000011889788518, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000013524874768, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}

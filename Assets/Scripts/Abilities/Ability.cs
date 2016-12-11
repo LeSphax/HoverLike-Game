@@ -65,6 +65,8 @@ public class Ability : MonoBehaviour
                 {
                     CastAbility();
                 }
+                //Used to stop the visual effect for the brake effect
+                input.Cancel();
                 break;
             case State.CHOOSINGTARGET:
                 if (input.Cancel())

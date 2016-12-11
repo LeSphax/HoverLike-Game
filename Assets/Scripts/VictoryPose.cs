@@ -13,8 +13,6 @@ public class VictoryPose : SlideBall.MonoBehaviour
     public Transform leftPosition;
     public Transform rightPosition;
 
-    public Text victoryText;
-
     private void Start()
     {
         victoryCamera.SetActive(false);

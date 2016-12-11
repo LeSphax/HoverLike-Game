@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.37356418, g: 0.3811201, b: 0.3588767, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -531,6 +531,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 315326828}
   - 114: {fileID: 315326829}
+  - 114: {fileID: 315326830}
   m_Layer: 0
   m_Name: DontDestroyOnLoad
   m_TagString: Untagged
@@ -568,6 +569,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   key: NavigationManager
+--- !u!114 &315326830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 315326827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d204d0d96c3ae354fa859990f9f64b3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startGameImmediately: 1
+  numberPlayersToStartGame: 1
+  addLatency: 0
+  numberFramesLatency: 0
 --- !u!1 &364225067
 GameObject:
   m_ObjectHideFlags: 0
@@ -2909,8 +2925,6 @@ MonoBehaviour:
   MainPanel: {fileID: 1302970282}
   topPanel: {fileID: 860537370}
   RoomListPanel: {fileID: 1430882256}
-  StartGameImmediately: 0
-  NumberPlayersToStartGame: 3
   inputField: {fileID: 234448980}
 --- !u!114 &1985506546
 MonoBehaviour:
