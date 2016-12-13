@@ -580,8 +580,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d204d0d96c3ae354fa859990f9f64b3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startGameImmediately: 1
-  numberPlayersToStartGame: 1
+  startGameImmediately: 0
+  numberPlayersToStartGame: 3
   addLatency: 0
   numberFramesLatency: 0
 --- !u!1 &364225067

@@ -81,7 +81,7 @@ Material:
       second: 1
     - first:
         name: _Dropoff
-      second: 0.99
+      second: 0.76
     - first:
         name: _DstBlend
       second: 0
@@ -108,7 +108,10 @@ Material:
       second: 0.02
     - first:
         name: _Radius
-      second: 0.344
+      second: 0.434
+    - first:
+        name: _Scale
+      second: 1
     - first:
         name: _SmoothnessTextureChannel
       second: 0
@@ -120,7 +123,7 @@ Material:
       second: 1
     - first:
         name: _Thickness
-      second: 0.012
+      second: 0.021
     - first:
         name: _UVSec
       second: 0
@@ -130,7 +133,7 @@ Material:
     m_Colors:
     - first:
         name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
+      second: {r: 1, g: 1, b: 1, a: 0.197}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}

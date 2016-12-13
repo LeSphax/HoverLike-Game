@@ -148,7 +148,15 @@ public class PlayerController : PlayerView
     {
         if (Player.IsMyPlayer)
         {
-            mesh.transform.GetChild(0).GetComponent<Renderer>().material = ResourcesGetter.OutLineMaterial();
+            foreach (Transform t in mesh.transform)
+            {
+                Renderer r = t.GetComponent<Renderer>();
+                if (r != null && r.material.name == "Player (Instance)")
+                {
+                    r.material.SetColor("_OutlineColor", Color.white);
+                    //  r.material = ResourcesGetter.OutLineMaterial();
+                }
+            }
         }
         Color teamColor = Colors.Teams[(int)Player.Team];
         foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { if (renderer.tag == Tags.TeamColored) renderer.material.color = teamColor; }

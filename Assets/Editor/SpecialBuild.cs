@@ -1,5 +1,5 @@
 ﻿// C# example.
-using BaseNetwork;
+using SlideBall;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -9,8 +9,8 @@ using UnityEngine.SceneManagement;
 
 public class SpecialBuild
 {
-    private const string path = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/PC/Slideball.exe";
-    private const string path_WebGL = "C:/Programmation/Workspace/UnityProjects/Hover/Builds/";
+    private const string path = "C:/Programmation/Workspace/UnityProjects/SlideBall/Builds/PC/Slideball.exe";
+    private const string path_WebGL = "C:/Programmation/Workspace/UnityProjects/SlideBall/Builds/";
 
     private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_ROOM, Paths.SCENE_MAIN };
 

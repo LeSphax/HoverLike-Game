@@ -12,6 +12,12 @@ public class EffectsManager : SlideBall.MonoBehaviour
         BlueSmoke.Play();
     }
 
+    [MyRPC]
+    public void ShowStealing(float duration)
+    {
+        GetComponentInChildren<StealRenderer>().StartAnimating(duration);
+    }
+
     public void ShockwaveOnPlayer(bool landing)
     {
         MyComponents.NetworkViewsManagement.Instantiate("Effects/Shockwave", transform.position, Quaternion.identity, landing);

@@ -79,7 +79,6 @@ public class RoomManager : MonoBehaviour
 
     public void CreateMyPlayerInfo()
     {
-        Debug.LogError("CreateMyPlayerInfo " + Players.MyPlayer.id);
         if (Players.MyPlayer.gameobjectAvatar == null)
             Players.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Vector3.zero, Quaternion.identity, Players.MyPlayer.id);
     }

@@ -67,6 +67,11 @@ namespace CustomAnimations
             startingTime = Time.time;
         }
 
+        public virtual void StopAnimating()
+        {
+            state = State.IDLE;
+        }
+
         protected virtual void Update()
         {
             float completion = -1;

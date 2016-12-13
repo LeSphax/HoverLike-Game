@@ -1,57 +1,86 @@
 ﻿using Byn.Net;
+using Navigation;
+using SlideBall.Networking;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace BaseNetwork
+namespace SlideBall.Networking
 {
 
     public class BufferedMessages
     {
         private NetworkManagement networkManagement;
 
-        private Dictionary<int, List<NetworkMessage>> bufferedMessages = new Dictionary<int, List<NetworkMessage>>();
+        private Dictionary<int, List<StoredMessage>> bufferedMessages = new Dictionary<int, List<StoredMessage>>();
 
 
         public BufferedMessages(NetworkManagement networkManagement)
         {
             Assert.IsTrue(networkManagement.isServer);
             this.networkManagement = networkManagement;
+            NavigationManager.FinishedLoadingScene += SceneChanged;
         }
 
         internal void SendBufferedMessages(ConnectionId id, short sceneId)
         {
-            List<NetworkMessage> messages;
-            if (!(id.id == -1) && bufferedMessages.TryGetValue(sceneId, out messages))
+            List<StoredMessage> messages;
+            if (bufferedMessages.TryGetValue(sceneId, out messages))
             {
-                foreach (NetworkMessage message in messages)
+
+                foreach (StoredMessage message in messages)
                 {
-                    networkManagement.SendData(message, id);
+                    if (id == NetworkManagement.SERVER_CONNECTION_ID)
+                    {
+                        MyComponents.NetworkViewsManagement.DistributeMessage(message.senderId, message.message);
+                    }
+                    else
+                    {
+                        networkManagement.SendData(message.message, id);
+                    }
                 }
             }
             networkManagement.View.RPC("ReceivedAllBuffered", id, null);
         }
 
-        internal void TryAddBuffered(NetworkMessage message)
+        internal void TryAddBuffered(ConnectionId senderId, NetworkMessage message)
         {
             if (message.isBuffered())
             {
                 message.flags = message.flags & ~MessageFlags.Buffered;
-                Buffer(message);
+                Buffer(senderId, message);
             }
         }
 
-        internal void Buffer(NetworkMessage message)
+        internal void Buffer(ConnectionId senderId, NetworkMessage message)
         {
-            List<NetworkMessage> list;
+            List<StoredMessage> list;
             if (!bufferedMessages.TryGetValue(message.sceneId, out list))
             {
-                list = new List<NetworkMessage>();
+                list = new List<StoredMessage>();
                 bufferedMessages.Add(message.sceneId, list);
             }
-            list.Add(message);
+            list.Add(new StoredMessage(senderId, message));
         }
 
+        private void SceneChanged(short previousSceneId, short currentSceneId)
+        {
+            Debug.Log("Remove Messages " + previousSceneId);
+            bufferedMessages.Remove(previousSceneId);
+        }
+
+    }
+}
+
+public class StoredMessage
+{
+    public NetworkMessage message;
+    public ConnectionId senderId;
+
+    public StoredMessage(ConnectionId senderId, NetworkMessage message)
+    {
+        this.senderId = senderId;
+        this.message = message;
     }
 }

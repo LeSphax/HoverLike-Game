@@ -107,6 +107,9 @@ Material:
         name: _SmoothnessTextureChannel
       second: 0
     - first:
+        name: _Spacing
+      second: 0.1
+    - first:
         name: _SpecularHighlights
       second: 1
     - first:
@@ -116,15 +119,33 @@ Material:
         name: _UVSec
       second: 0
     - first:
+        name: _Width
+      second: 0.03
+    - first:
         name: _Y
-      second: 0
+      second: 1.75
+    - first:
+        name: _Y1
+      second: 0.2
+    - first:
+        name: _Y2
+      second: -5
+    - first:
+        name: _Y3
+      second: -5
     - first:
         name: _ZWrite
       second: 0
     m_Colors:
     - first:
         name: _Color
-      second: {r: 0, g: 0.78676474, b: 0.3960955, a: 0.447}
+      second: {r: 0.19896188, g: 0.6764706, b: 0.07958477, a: 0.447}
+    - first:
+        name: _ColorM
+      second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
+        name: _ColorS
+      second: {r: 1, g: 1, b: 1, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}

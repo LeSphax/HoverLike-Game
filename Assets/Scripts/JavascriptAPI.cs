@@ -14,6 +14,7 @@ public class JavascriptAPI : MonoBehaviour
 
     protected void Awake()
     {
+        nickname = Functions.RandomString(10);
 #if !UNITY_EDITOR && UNITY_WEBGL
         isFirstGame = true;
         WebGLInput.captureAllKeyboardInput = false; 

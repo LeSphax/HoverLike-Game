@@ -1,6 +1,7 @@
 ﻿using Byn.Net;
 using System.Collections.Generic;
 using System;
+using SlideBall.Networking;
 
 public delegate void LatencyChange(float newLatency);
 public delegate void SpecificLatencyChange(ConnectionId id, float newLatency);

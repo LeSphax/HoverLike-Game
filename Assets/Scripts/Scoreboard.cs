@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class Scoreboard : SlideBall.MonoBehaviour
 {
 
-    private static int[] scores = new int[2] { 0, 0 };
+    private static int[] scores;
 
     private static Text textScoreLeft;
     private static Text textScoreRight;
@@ -30,6 +30,7 @@ public class Scoreboard : SlideBall.MonoBehaviour
 
     void Awake()
     {
+        scores = new int[2] { 0, 0 };
         scoreboard = gameObject;
         textScoreLeft = transform.GetChild(0).GetComponent<Text>();
         textScoreRight = transform.GetChild(1).gameObject.GetComponent<Text>();

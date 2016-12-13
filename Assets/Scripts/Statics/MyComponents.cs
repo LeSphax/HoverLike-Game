@@ -1,5 +1,5 @@
 ﻿using System;
-using BaseNetwork;
+using SlideBall;
 using Navigation;
 using PlayerManagement;
 using UnityEngine;
@@ -271,7 +271,6 @@ public static class MyComponents
     public static void ResetGameComponents()
     {
         ResetScene();
-        NetworkManagement.ResetBufferedMessages();
         GameInitialization.Reset();
         PlayersSynchronisation.Reset();
     }

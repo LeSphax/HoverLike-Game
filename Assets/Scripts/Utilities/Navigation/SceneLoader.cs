@@ -34,7 +34,6 @@ namespace Navigation
 
         public void FinishedFade()
         {
-            Debug.Log("FinishedFade");
             finishedFade = true;
             CameraFade.FinishedFade -= FinishedFade;
         }

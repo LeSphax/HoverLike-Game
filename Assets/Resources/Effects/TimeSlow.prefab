@@ -21,7 +21,7 @@ GameObject:
   - 4: {fileID: 4000012091239902}
   - 33: {fileID: 33000010351932066}
   - 23: {fileID: 23000014153317996}
-  - 114: {fileID: 114000013728288116}
+  - 114: {fileID: 114000013817577528}
   m_Layer: 0
   m_Name: TimeSlow
   m_TagString: Untagged
@@ -78,7 +78,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011630915930}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114000013728288116
+--- !u!114 &114000013817577528
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -86,6 +86,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000011630915930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e972f6d707be3b419f7d7077cf53763, type: 3}
+  m_Script: {fileID: 11500000, guid: 20d9e62ba02767043a83127ba6b52edb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

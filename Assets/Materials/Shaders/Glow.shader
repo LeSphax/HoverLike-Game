@@ -26,7 +26,7 @@
 
 		half rim = saturate(dot(normalize(IN.viewDir), o.Normal));
 		half tresh = step(0, rim) * step(rim, 0.1);
-		o.Alpha = rim*rim*rim;
+		o.Alpha = rim*rim*rim* IN.color.w;
 	}
 
 	ENDCG

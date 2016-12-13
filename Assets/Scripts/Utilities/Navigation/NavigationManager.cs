@@ -3,10 +3,13 @@ using UnityEngine.SceneManagement;
 
 namespace Navigation
 {
+    public delegate void SceneChangeEventHandler(short previousSceneId, short newSceneId);
+
     public class NavigationManager : MonoBehaviour
     {
+        public static short previousSceneIndex;
         public static SceneLoader loader;
-        public static event EmptyEventHandler FinishedLoadingScene;
+        public static event SceneChangeEventHandler FinishedLoadingScene;
 
         void Start()
         {
@@ -16,16 +19,17 @@ namespace Navigation
 
         private static bool IsSceneMain()
         {
-            return SceneManager.GetActiveScene().buildIndex == Scenes.MainIndex;
+            return Scenes.currentSceneId == Scenes.MainIndex;
         }
 
         internal static void LoadScene(string scene)
         {
-            loader.StartLoading(scene, false, false);
+            LoadScene(scene, false, false);
         }
 
         internal static void LoadScene(string scene, bool fading, bool waitToShowNextLevel)
         {
+            previousSceneIndex = Scenes.currentSceneId;
             loader.StartLoading(scene, fading, waitToShowNextLevel);
         }
 
@@ -33,7 +37,7 @@ namespace Navigation
         {
             if (FinishedLoadingScene != null)
             {
-                FinishedLoadingScene.Invoke();
+                FinishedLoadingScene.Invoke(previousSceneIndex,Scenes.currentSceneId);
             }
             if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
                 MyComponents.NetworkViewsManagement.ResetViews();

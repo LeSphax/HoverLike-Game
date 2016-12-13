@@ -67,7 +67,7 @@ public class BallState : SlideBall.MonoBehaviour
     [SerializeField]
     private GameObject protectionSphere;
 
-    public static Vector3 ballHoldingPosition = new Vector3(0f, 0f, 4f);
+    public static Vector3 ballHoldingPosition = new Vector3(0f, 0f, 4.5f);
 
     void Awake()
     {

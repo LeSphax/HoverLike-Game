@@ -41,11 +41,10 @@ namespace AbilitiesManagement
 
         public static void ResetVisualEffects()
         {
-            foreach (var go in visualEffects)
+            foreach (var vfx in visualEffects)
             {
-                Destroy(go);
+                vfx.ClearEffect();
             }
-            visualEffects.Clear();
         }
 
         public void ResetAllEffects()
@@ -54,7 +53,7 @@ namespace AbilitiesManagement
             ResetPersistentEffects();
         }
 
-        public static List<GameObject> visualEffects = new List<GameObject>();
+        public static List<IVisualEffect> visualEffects = new List<IVisualEffect>();
         internal List<PersistentEffect> persistentEffects = new List<PersistentEffect>();
 
         protected void Awake()
@@ -114,7 +113,10 @@ namespace AbilitiesManagement
         private void Steal(float duration)
         {
             if (CanUseAbility())
+            {
                 new StealPersistentEffect(this, duration);
+                EffectsManager.View.RPC("ShowStealing", RPCTargets.All, duration);
+            }
         }
 
         [MyRPC]

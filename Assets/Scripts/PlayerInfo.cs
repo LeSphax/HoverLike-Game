@@ -1,6 +1,7 @@
 ﻿using Byn.Net;
 using Navigation;
 using PlayerManagement;
+using SlideBall.Networking;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -96,7 +97,6 @@ public class PlayerInfo : PlayerView
     [MyRPC]
     public void SetInitialTeam(Team team)
     {
-        Debug.Log("SetInitialTeam");
         Players.MyPlayer.Team = team;
         NavigationManager.ShowLevel();
     }

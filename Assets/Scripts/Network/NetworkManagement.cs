@@ -1,20 +1,15 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using System.Text;
-using System;
-using Byn.Net;
-using System.Collections.Generic;
-using Byn.Common;
-using UnityEngine.Assertions;
-using PlayerManagement;
-using UnityEngine.SceneManagement;
+﻿using Byn.Net;
 using Navigation;
+using PlayerManagement;
+using SlideBall.Networking;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 public delegate void NetworkEventHandler(byte[] data, ConnectionId id);
 public delegate void ConnectionEventHandler(ConnectionId id);
 
-namespace BaseNetwork
+namespace SlideBall
 {
     public class NetworkManagement : SlideBall.MonoBehaviour
     {
@@ -24,7 +19,8 @@ namespace BaseNetwork
      * Please refer to the LICENSE file for license information
      */
 
-
+        public static ConnectionId SERVER_CONNECTION_ID = new ConnectionId(-1);
+        public static ConnectionId INVALID_CONNECTION_ID = new ConnectionId(-100);
 
         private const string HEROKU_URL = "ws://sphaxtest.herokuapp.com";
         private const string BCS_URL = "wss://because-why-not.com:12777/chatapp";
@@ -387,7 +383,7 @@ namespace BaseNetwork
                         case NetEventType.ReliableMessageReceived:
                         case NetEventType.UnreliableMessageReceived:
                             {
-                                HandleIncommingMessage(ref evt);
+                                HandleIncomingEvent(ref evt);
                             }
                             break;
                     }
@@ -408,10 +404,15 @@ namespace BaseNetwork
             Players.players[id].SceneChanged += (connectionId, sceneId) => { bufferedMessages.SendBufferedMessages(connectionId, sceneId); };
         }
 
-        private void HandleIncommingMessage(ref NetworkEvent evt)
+        private void HandleIncomingEvent(ref NetworkEvent evt)
         {
             MessageDataBuffer buffer = evt.MessageData;
             NetworkMessage message = NetworkExtensions.Deserialize<NetworkMessage>(buffer.Buffer);
+            HandleIncomingMessage(evt.ConnectionId, message);
+        }
+
+        private void HandleIncomingMessage(ConnectionId senderId, NetworkMessage message)
+        {
             if (message.traceMessage)
             {
                 Debug.LogError("HandleTracedMessage " + message);
@@ -420,16 +421,16 @@ namespace BaseNetwork
             {
                 foreach (ConnectionId id in mConnections)
                 {
-                    if (id != evt.ConnectionId)
+                    if (id != senderId)
                     {
                         SendData(message, id);
                     }
                 }
             }
             if (isServer)
-                bufferedMessages.TryAddBuffered(message);
+                bufferedMessages.TryAddBuffered(senderId, message);
 
-            MyComponents.NetworkViewsManagement.DistributeMessage(evt.ConnectionId, message);
+            MyComponents.NetworkViewsManagement.DistributeMessage(senderId, message);
 
             //This line of code is causing random crashes. 
             //It seems the crash occur when the time between creating and disposing is too short
@@ -480,7 +481,7 @@ namespace BaseNetwork
                 SendToNetwork(dataToSend, connectionIds[i], message.isReliable());
             }
             if (isServer)
-                bufferedMessages.TryAddBuffered(message);
+                bufferedMessages.TryAddBuffered(SERVER_CONNECTION_ID, message);
         }
 
 
@@ -536,11 +537,6 @@ namespace BaseNetwork
             return mConnections.Count + 1;
         }
 
-        public void ResetBufferedMessages()
-        {
-            stateCurrent = stateCurrent;
-        }
-
         #endregion
 
         #region client
@@ -558,7 +554,7 @@ namespace BaseNetwork
             Players.myPlayerId = id;
             Players.MyPlayer.Nickname = JavascriptAPI.nickname;
             Players.MyPlayer.SceneId = Scenes.currentSceneId;
-            NavigationManager.FinishedLoadingScene += () => { Players.MyPlayer.SceneId = Scenes.currentSceneId; };
+            NavigationManager.FinishedLoadingScene += (previousSceneId, currentSceneId) => { Players.MyPlayer.SceneId = currentSceneId; };
         }
 
         #endregion

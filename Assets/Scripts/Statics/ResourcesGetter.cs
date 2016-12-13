@@ -13,7 +13,7 @@ public class ResourcesGetter
 
     public static Material OutLineMaterial()
     {
-        return Resources.Load<Material>(MATERIALS_FOLDER + "Outline");
+        return Resources.Load<Material>(MATERIALS_FOLDER + "ToonLitOutline");
     }
 
 }
