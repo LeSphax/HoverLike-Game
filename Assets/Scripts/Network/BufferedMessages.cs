@@ -25,10 +25,11 @@ namespace SlideBall.Networking
 
         internal void SendBufferedMessages(ConnectionId id, short sceneId)
         {
+            Debug.Log("SendBuffered messages " + id + "   " + sceneId);
             List<StoredMessage> messages;
             if (bufferedMessages.TryGetValue(sceneId, out messages))
             {
-
+                Debug.Log("Number buffered messages " + messages.Count);
                 foreach (StoredMessage message in messages)
                 {
                     if (id == NetworkManagement.SERVER_CONNECTION_ID)

@@ -2,6 +2,7 @@
 using PlayerManagement;
 using System;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class BallState : SlideBall.MonoBehaviour
 {
@@ -67,7 +68,7 @@ public class BallState : SlideBall.MonoBehaviour
     [SerializeField]
     private GameObject protectionSphere;
 
-    public static Vector3 ballHoldingPosition = new Vector3(0f, 0f, 4.5f);
+    public static Vector3 ballHoldingPosition = new Vector3(0f, 0f, 0f);
 
     void Awake()
     {
@@ -119,12 +120,12 @@ public class BallState : SlideBall.MonoBehaviour
         return IdPlayerOwningBall;
     }
 
-    public GameObject GetAttachedPlayer()
+    public PlayerController GetAttachedPlayer()
     {
         foreach (Player player in Players.players.Values)
         {
             if (player.id == GetIdOfPlayerOwningBall())
-                return player.controller.gameObject;
+                return player.controller;
         }
         return null;
     }
@@ -133,11 +134,12 @@ public class BallState : SlideBall.MonoBehaviour
     public void AttachBall(ConnectionId playerId)
     {
         bool attach = playerId != NO_PLAYER_ID;
-        GameObject player = GetAttachedPlayer();
         if (attach)
         {
+            Assert.IsTrue(GetAttachedPlayer() != null);
+            Transform hand = GetAttachedPlayer().playerMesh.hand;
             UnPickable = false;
-            gameObject.transform.SetParent(player.transform);
+            gameObject.transform.SetParent(hand);
             TrySetKinematic();
             gameObject.transform.localPosition = ballHoldingPosition;
         }

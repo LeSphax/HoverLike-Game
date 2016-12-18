@@ -18,7 +18,7 @@ public class EditorVariables : MonoBehaviour
 
     private void Awake()
     {
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !UNITY_EDITOR
         StartGameImmediately = false;
         NumberFramesLatency = 0;
         NumberPlayersToStartGame = 0;

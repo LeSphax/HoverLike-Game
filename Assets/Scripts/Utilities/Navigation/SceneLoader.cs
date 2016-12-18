@@ -17,6 +17,7 @@ namespace Navigation
 
         public void StartLoading(string levelName, bool useFade, bool waitToShowNextLevel)
         {
+            Debug.Log("StartLoading");
             this.useFade = useFade;
             this.levelName = levelName;
             this.waitToShowNextLevel = waitToShowNextLevel;
@@ -25,10 +26,12 @@ namespace Navigation
 
         IEnumerator load()
         {
+            Debug.Log("load");
             async = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
             SceneManager.sceneLoaded += LevelLoaded;
             if (useFade)
                 async.allowSceneActivation = false;
+            Debug.Log("endLoad");
             yield return async;
         }
 
@@ -66,12 +69,14 @@ namespace Navigation
 
         public void ShowNewLevel()
         {
+            Debug.Log("ShowNewLevel");
             if (CameraFade.IsBlack)
                 CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
         }
 
         void LevelLoaded(Scene scene, LoadSceneMode mode)
         {
+            Debug.Log("LevelLoaded");
             if (FinishedLoading != null)
                 FinishedLoading.Invoke();
             async = null;

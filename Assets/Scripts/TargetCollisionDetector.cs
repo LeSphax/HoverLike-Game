@@ -7,13 +7,13 @@ public class TargetCollisionDetector : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (IsObjectInMyPlayer(other.transform))
+        //if (IsObjectInMyPlayer(other.transform))
+        //{
+        if (IsObjectInMesh(other.transform))
         {
-            if (IsObjectInMesh(other.transform))
-            {
-                controller.TargetHit();
-            }
+            controller.TargetHit();
         }
+        //}
     }
 
     private bool IsObjectInMyPlayer(Transform t)
@@ -37,6 +37,10 @@ public class TargetCollisionDetector : MonoBehaviour
         if (t.tag == Tags.Mesh)
         {
             return true;
+        }
+        else if (t.tag == Tags.Ball)
+        {
+            return false;
         }
         else if (t.parent != null)
         {

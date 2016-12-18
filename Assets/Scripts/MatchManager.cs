@@ -156,6 +156,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
+        MyComponents.BallState.PutAtStartPosition();
         SetPlayerRoles();
         MyComponents.Players.SendChanges();
         MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
@@ -166,7 +167,6 @@ public class MatchManager : SlideBall.MonoBehaviour
         spawner.View.RPC("ReactivatePlayers", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
-        MyComponents.BallState.PutAtStartPosition();
         //
         if (MyState == State.WARMUP)
             View.RPC("ShowGame", RPCTargets.All);
@@ -246,6 +246,10 @@ public class MatchManager : SlideBall.MonoBehaviour
                 View.RPC("ManualScoreGoal", RPCTargets.Server, 0);
             else if (Input.GetKeyDown(KeyCode.R))
                 View.RPC("ManualScoreGoal", RPCTargets.Server, 1);
+        }
+        if (Vector3.Distance(MyComponents.BallState.transform.position,Vector3.zero) > 300f)
+        {
+            View.RPC("ManualEntry", RPCTargets.Server);
         }
     }
 

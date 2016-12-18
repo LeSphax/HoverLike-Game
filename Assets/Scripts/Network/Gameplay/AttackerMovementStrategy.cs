@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AttackerMovementStrategy : PlayerMovementStrategy
 {
-    private const float BRAKE_AMOUNT = 30f;
+    private const float BRAKE_AMOUNT = 50f;
     private const float JUMP_FORCE = 60f;
 
     [SerializeField]

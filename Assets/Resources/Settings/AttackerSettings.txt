@@ -1,4 +1,4 @@
-MESH_NAME : AttackerMesh
+MESH_NAME : PlayerMesh
 acceleration : 70
 maxSpeed : 45
 catchColliderRadius : 3

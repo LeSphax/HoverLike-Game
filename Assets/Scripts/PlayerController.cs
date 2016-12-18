@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using PlayerManagement;
 using PlayerBallControl;
 using AbilitiesManagement;
+using UnityEngine.Assertions;
 
 [RequireComponent(typeof(PlayerMovementManager))]
 [RequireComponent(typeof(PlayerBallController))]
@@ -14,7 +15,8 @@ public class PlayerController : PlayerView
 
     private GameObject Mesh;
 
-    public Text playerName;
+    public BillBoard billboard;
+
 
     private GameObject _target;
     private GameObject target
@@ -42,7 +44,9 @@ public class PlayerController : PlayerView
     public PlayerBallController ballController;
     [HideInInspector]
     public AbilitiesManager abilitiesManager;
-
+    [HideInInspector]
+    public PlayerMesh playerMesh;
+    
     void Awake()
     {
         movementManager = GetComponent<PlayerMovementManager>();
@@ -108,7 +112,8 @@ public class PlayerController : PlayerView
         PutAtStartPosition();
 
         gameObject.name = Player.Nickname;
-        playerName.text = Player.Nickname;
+        billboard.Text = Player.Nickname;
+        billboard.SetHeight(16);
 
         CreateMesh();
 
@@ -127,7 +132,7 @@ public class PlayerController : PlayerView
             GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
         }
         int layer = -1;
-        if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE || Players.GetPlayersInTeam(Player.Team).Count == 1)
+        if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             layer = LayersGetter.players[(int)Player.Team];
         else if (Players.GetPlayersInTeam(Player.Team).Count == 1)
             layer = LayersGetter.attackers[(int)Player.Team];
@@ -140,27 +145,32 @@ public class PlayerController : PlayerView
     {
         GameObject meshPrefab = Resources.Load<GameObject>(Player.MyAvatarSettings.MESH_NAME);
         Mesh = Instantiate(meshPrefab);
+        playerMesh = Mesh.GetComponent<PlayerMesh>();
         Mesh.transform.SetParent(transform, false);
         SetMaterials(Mesh);
     }
 
     private void SetMaterials(GameObject mesh)
     {
-        if (Player.IsMyPlayer)
-        {
-            foreach (Transform t in mesh.transform)
-            {
-                Renderer r = t.GetComponent<Renderer>();
-                if (r != null && r.material.name == "Player (Instance)")
-                {
-                    r.material.SetColor("_OutlineColor", Color.white);
-                    //  r.material = ResourcesGetter.OutLineMaterial();
-                }
-            }
-        }
+        //if (Player.IsMyPlayer)
+        //{
+        //    foreach (Transform t in mesh.transform)
+        //    {
+        //        Renderer r = t.GetComponent<Renderer>();
+        //        if (r != null && t.name == "Body")
+        //        {
+        //           // r.material.SetColor("_OutlineColor", Color.white);
+        //            r.material = ResourcesGetter.OutLineMaterial();
+        //        }
+        //    }
+        //}
+        Assert.IsNotNull(playerMesh);
+        Assert.IsNotNull(Player);
+        playerMesh.SetOwner(Player.IsMyPlayer);
         Color teamColor = Colors.Teams[(int)Player.Team];
-        foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { if (renderer.tag == Tags.TeamColored) renderer.material.color = teamColor; }
-        playerName.color = teamColor;
+        playerMesh.SetTeam(Player.Team);
+        //foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { if (renderer.tag == Tags.TeamColored) renderer.material.color = teamColor; }
+        billboard.Color = teamColor;
     }
 
     public void PutAtStartPosition()

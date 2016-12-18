@@ -58,6 +58,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NoCooldown: 1
   cooldownDuration: 5
+  trace: 0
 --- !u!114 &114000011592179380
 MonoBehaviour:
   m_ObjectHideFlags: 1

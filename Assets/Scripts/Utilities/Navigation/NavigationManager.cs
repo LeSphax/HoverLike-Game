@@ -29,6 +29,7 @@ namespace Navigation
 
         internal static void LoadScene(string scene, bool fading, bool waitToShowNextLevel)
         {
+            Debug.Log("LoadScene");
             previousSceneIndex = Scenes.currentSceneId;
             loader.StartLoading(scene, fading, waitToShowNextLevel);
         }

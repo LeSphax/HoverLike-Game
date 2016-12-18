@@ -50,23 +50,28 @@ public class VictoryPose : SlideBall.MonoBehaviour
             foreach (Player player in players)
             {
                 player.CurrentState = Player.State.FROZEN;
+                player.controller.ResetPlayer();
                 if (player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
                 {
                     player.controller.transform.position = goaliePosition.position;
+                    player.controller.billboard.SetHeight(14);
                 }
                 else if (players.Count <= 2 || (players.Count == 4 && attackersPutInPlace == 0))
                 {
                     player.controller.transform.position = frontPosition.position;
+                    SetBillboardHeightAttacker(player);
                     attackersPutInPlace++;
                 }
                 else if ((players.Count == 3 && attackersPutInPlace == 0) || (players.Count == 4 && attackersPutInPlace == 1))
                 {
                     player.controller.transform.position = leftPosition.position;
+                    SetBillboardHeightAttacker(player);
                     attackersPutInPlace++;
                 }
                 else if ((players.Count == 3 && attackersPutInPlace == 1) || (players.Count == 4 && attackersPutInPlace == 2))
                 {
                     player.controller.transform.position = leftPosition.position;
+                    SetBillboardHeightAttacker(player);
                     attackersPutInPlace++;
                 }
             }
@@ -74,4 +79,8 @@ public class VictoryPose : SlideBall.MonoBehaviour
         }
     }
 
+    private static void SetBillboardHeightAttacker(Player player)
+    {
+        player.controller.billboard.SetHeight(-0.7f);
+    }
 }

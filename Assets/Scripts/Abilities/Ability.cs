@@ -13,6 +13,8 @@ public class Ability : MonoBehaviour
     public float cooldownDuration = 5;
     protected float currentCooldown = 0;
 
+    public bool trace;
+
     private enum State
     {
         READY,
@@ -58,6 +60,10 @@ public class Ability : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (trace)
+        {
+            Debug.LogWarning(state);
+        }
         switch (state)
         {
             case State.READY:
@@ -71,13 +77,13 @@ public class Ability : MonoBehaviour
             case State.CHOOSINGTARGET:
                 if (input.Cancel())
                 {
-                    targeting.CancelTargeting();
                     state = State.READY;
+                    targeting.CancelTargeting();
                 }
                 if (input.Reactivate())
                 {
-                    targeting.ReactivateTargeting();
                     state = State.CHOOSINGTARGET;
+                    targeting.ReactivateTargeting();
                 }
                 break;
             case State.LOADING:

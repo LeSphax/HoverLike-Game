@@ -27,6 +27,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     public void StartGame()
     {
+        Debug.Log("StartGame");
         StartCoroutine(CoStartGame());
     }
 
@@ -35,11 +36,14 @@ public class GameInitialization : SlideBall.MonoBehaviour
         Assert.IsTrue(MyComponents.NetworkManagement.isServer);
 
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
+        Debug.Log("LoadRoom");
         View.RPC("LoadRoom", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         //
+        Debug.Log("InstantiateObjects");
         syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         InstantiateNewObjects();
+        Debug.Log("AfterInstantiate");
         View.RPC("SendReady", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         //
@@ -49,9 +53,11 @@ public class GameInitialization : SlideBall.MonoBehaviour
     [MyRPC]
     private void LoadRoom(short syncId)
     {
+        Debug.Log("LoadRoom");
         this.syncId = syncId;
         NavigationManager.LoadScene(Scenes.Main, true, true);
         Players.MyPlayer.SceneChanged += SendReady;
+        Debug.Log("EndLoadRoom");
     }
 
     //private void CreateTutorial(ConnectionId connectionId, short scene)
@@ -73,6 +79,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
 
     private void SendReady(ConnectionId id, short newSceneId)
     {
+        Debug.Log("SendReady");
         SendReady(this.syncId);
     }
 
