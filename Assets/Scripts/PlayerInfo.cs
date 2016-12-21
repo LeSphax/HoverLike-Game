@@ -20,7 +20,7 @@ public class PlayerInfo : PlayerView
     {
         set
         {
-            Assert.IsTrue(value != Team.NONE);
+            Assert.IsTrue(value == Team.BLUE || value == Team.RED, "" + (int)value);
             GetComponent<Image>().color = Colors.Teams[(int)value];
             RoomManager.Instance.PutPlayerInTeam(this, value);
         }

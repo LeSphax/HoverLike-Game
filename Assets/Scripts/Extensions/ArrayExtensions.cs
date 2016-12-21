@@ -34,8 +34,12 @@ public static class ArrayExtensions
         return builder.ToString();
     }
 
-    public static T[] SubArray<T>(this T[] data, int index, int length)
+    public static T[] SubArray<T>(this T[] data, int index, int length = -1)
     {
+        if (length == -1)
+        {
+            length = data.Length - index;
+        }
         T[] result = new T[length];
         Array.Copy(data, index, result, 0, length);
         return result;

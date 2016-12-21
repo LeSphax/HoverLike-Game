@@ -55,6 +55,15 @@ namespace SlideBall.Networking
 
         public bool traceMessage = false;
 
+        private NetworkMessage(int id, bool traceMessage, MessageType type, MessageFlags flags, byte[] data)
+        {
+            this.id = id;
+            this.traceMessage = traceMessage;
+            this.type = type;
+            this.flags = flags;
+            this.data = data;
+        }
+
         protected NetworkMessage(short viewId, byte[] data)
         {
             this.sceneId = Scenes.currentSceneId;
@@ -230,13 +239,37 @@ namespace SlideBall.Networking
             }
         }
 
+        public byte[] Serialize()
+        {
+            byte[] serializedMessage = BitConverter.GetBytes(id);
+            serializedMessage = ArrayExtensions.Concatenate(serializedMessage, BitConverter.GetBytes(traceMessage));
+            serializedMessage = ArrayExtensions.Concatenate(serializedMessage, new byte[1] { (byte)type });
+            serializedMessage = ArrayExtensions.Concatenate(serializedMessage, new byte[1] { (byte)flags });
+            return ArrayExtensions.Concatenate(serializedMessage, data);
+        }
+
+        public static NetworkMessage Deserialize(byte[] data)
+        {
+            int currentIndex = 0;
+            int id = BitConverter.ToInt32(data, currentIndex);
+            currentIndex += 4;
+            bool traceMessage = BitConverter.ToBoolean(data, currentIndex);
+            currentIndex++;
+            MessageType type= (MessageType)data[currentIndex];
+            currentIndex++;
+            MessageFlags flags = (MessageFlags)data[currentIndex];
+            currentIndex++;
+            byte[] content = data.SubArray(currentIndex);
+            return new NetworkMessage(id, traceMessage, type, flags, content);
+        }
+
         public override string ToString()
         {
-            return "Id : " + sceneId + "-" + viewId + "-" + subId + ", type : " + type + " flags : " + flags + "  IsBuffered :" + isBuffered();
+            return "Id : " + sceneId + "-" + viewId + "-" + subId + ", length : "+ data.Length + ", type : " + type + " flags : " + flags + "  IsBuffered :" + isBuffered();
         }
     }
 
-    public enum MessageType
+    public enum MessageType : byte
     {
         ViewPacket,
         Properties,
@@ -245,7 +278,7 @@ namespace SlideBall.Networking
     }
 
     [Flags]
-    public enum MessageFlags
+    public enum MessageFlags : byte
     {
         None = 0,
         Reliable = 1,

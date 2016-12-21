@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AttackerMovementStrategy : PlayerMovementStrategy
 {
-    private const float BRAKE_AMOUNT = 50f;
+    private float BRAKE_AMOUNT;
     private const float JUMP_FORCE = 60f;
 
     [SerializeField]
@@ -14,6 +14,12 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
     private float MAX_VELOCITY = 45;
     [SerializeField]
     private float ANGULAR_SPEED = 800;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        BRAKE_AMOUNT = ACCELERATION * 5 / 7;
+    }
 
     public void ClampPlayerVelocity()
     {

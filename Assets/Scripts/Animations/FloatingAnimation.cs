@@ -41,11 +41,8 @@ namespace CustomAnimations.BallMazeAnimations
         {
             float positionCompletion = curve.Evaluate(completion);
             float deltaMovement = (positionCompletion - previousCompletion) * deltaHeight;
-            Debug.Log("Before " + transform.localPosition);
             transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + deltaMovement, transform.localPosition.z);
-            Debug.Log("After " + transform.localPosition);
             previousCompletion = positionCompletion;
-            Debug.Log("Animater " + completion +"   " + duration + "   " + deltaHeight + "   " + previousCompletion + "   " + deltaMovement);
         }
 
         protected override void FinishAnimation()

@@ -11,7 +11,7 @@ public abstract class PlayerMovementStrategy : MonoBehaviour
     internal GameObject target;
     internal PlayerMovementManager movementManager;
 
-    void Awake()
+    protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
         movementManager = GetComponent<PlayerMovementManager>();

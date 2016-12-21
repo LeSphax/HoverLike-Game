@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public enum Team
+public enum Team : byte
 {
-    NONE = -1,
+    NONE = 100,
     BLUE = 0,
     RED = 1,
 }

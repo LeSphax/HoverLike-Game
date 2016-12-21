@@ -96,11 +96,7 @@ public class PlayerMovementManager : ObservedComponent
 
     protected override byte[] CreatePacket(long sendId)
     {
-        PlayerPacket packet = new PlayerPacket();
-        packet.position = transform.position;
-        packet.rotation = transform.rotation;
-        packet.timeSent = TimeManagement.NetworkTimeInSeconds;
-        return packet.Serialize();
+        return new PlayerPacket(transform.position, transform.rotation,TimeManagement.NetworkTimeInSeconds).Serialize();
     }
 
     public override void SimulationUpdate()
@@ -133,7 +129,7 @@ public class PlayerMovementManager : ObservedComponent
 
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
-        PlayerPacket newPacket = NetworkExtensions.Deserialize<PlayerPacket>(data);
+        PlayerPacket newPacket = PlayerPacket.Deserialize(data);
         StateBuffer.Enqueue(newPacket);
     }
 
@@ -155,12 +151,34 @@ public class PlayerMovementManager : ObservedComponent
     }
 }
 
-[Serializable]
 public struct PlayerPacket
 {
     public Vector3 position;
     public Quaternion rotation;
     public float timeSent;
-    //public long id;
+
+    public PlayerPacket(Vector3 position, Quaternion rotation, float timeSent)
+    {
+        this.position = position;
+        this.rotation = rotation;
+        this.timeSent = timeSent;
+    }
+
+    public byte[] Serialize()
+    {
+        byte[] data = NetworkExtensions.SerializeVector3(position);
+        data = ArrayExtensions.Concatenate(data,NetworkExtensions.SerializeQuaternion(rotation));
+        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(timeSent));
+    }
+
+    public static PlayerPacket Deserialize(byte[] data)
+    {
+        int currentIndex = 0;
+        Vector3 position = NetworkExtensions.DeserializeVector3(data, ref currentIndex);
+        Quaternion rotation = NetworkExtensions.DeserializeQuaternion(data, ref currentIndex);
+        float timeSent = BitConverter.ToSingle(data, currentIndex);
+        return new PlayerPacket(position, rotation,timeSent);
+    }
+
 }
 

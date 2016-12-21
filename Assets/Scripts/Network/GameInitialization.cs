@@ -36,7 +36,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
         Assert.IsTrue(MyComponents.NetworkManagement.isServer);
 
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
-        Debug.Log("LoadRoom");
+        Debug.Log("Before LoadRoom");
         View.RPC("LoadRoom", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         //

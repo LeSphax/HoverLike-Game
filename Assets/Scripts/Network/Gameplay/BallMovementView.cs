@@ -91,12 +91,12 @@ class BallMovementView : ObservedComponent
 
     protected override byte[] CreatePacket(long sendId)
     {
-        return new BallPacket(sendId, transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
+        return new BallPacket(transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
     }
 
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
-        BallPacket newPacket = NetworkExtensions.Deserialize<BallPacket>(data);
+        BallPacket newPacket = BallPacket.Deserialize(data);
         StateBuffer.Enqueue(newPacket);
     }
 
@@ -110,13 +110,25 @@ class BallMovementView : ObservedComponent
     {
         public Vector3 position;
         public float timeSent;
-        public long id;
 
-        public BallPacket(long sendId, Vector3 position, float time) : this()
+        public BallPacket(Vector3 position, float time) : this()
         {
-            this.id = sendId;
             this.position = position;
             this.timeSent = time;
+        }
+
+        public byte[] Serialize()
+        {
+            byte[] data = NetworkExtensions.SerializeVector3(position);
+            return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(timeSent));
+        }
+
+        public static BallPacket Deserialize(byte[] data)
+        {
+            int currentIndex = 0;
+            Vector3 position = NetworkExtensions.DeserializeVector3(data, ref currentIndex);
+            float timeSent = BitConverter.ToSingle(data, currentIndex);
+            return new BallPacket(position, timeSent);
         }
     }
 }

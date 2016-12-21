@@ -160,8 +160,14 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         else if (networkViews.ContainsKey(message.viewId) && message.isSceneDependant())
         {
             Debug.LogError("Message received in wrong scene " + Scenes.currentSceneId + "  vs " + message.sceneId + "   " + message);
-            RPCCall call = NetworkExtensions.Deserialize<RPCCall>(message.data);
-            Debug.LogError(call.methodName);
+            if (networkViews.ContainsKey(message.viewId))
+            {
+                Debug.LogError(networkViews[message.viewId] + "   " + BitConverter.ToInt16(message.data,0));
+            }
+            else
+            {
+                Debug.LogError("View not registered in this scene");
+            }
         }
         else
         {

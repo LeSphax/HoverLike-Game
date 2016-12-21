@@ -2,6 +2,7 @@
 using Navigation;
 using PlayerManagement;
 using SlideBall.Networking;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -231,10 +232,8 @@ namespace SlideBall
 
                 //check for new messages and keep checking if mNetwork is available. it might get destroyed
                 //due to an event
-                int x = 0;
-                while (mNetwork != null && mNetwork.Dequeue(out evt) && x < 100)
+                while (mNetwork != null && mNetwork.Dequeue(out evt))
                 {
-                    x++;
                     switch (evt.Type)
                     {
                         case NetEventType.ServerInitialized:
@@ -388,10 +387,6 @@ namespace SlideBall
                             break;
                     }
                 }
-                if (x > 100)
-                {
-                    Debug.LogError("More than 100 messages in buffer");
-                }
 
                 //finish this update by flushing the messages out if the network wasn't destroyed during update
                 if (mNetwork != null)
@@ -407,7 +402,7 @@ namespace SlideBall
         private void HandleIncomingEvent(ref NetworkEvent evt)
         {
             MessageDataBuffer buffer = evt.MessageData;
-            NetworkMessage message = NetworkExtensions.Deserialize<NetworkMessage>(buffer.Buffer);
+            NetworkMessage message = NetworkMessage.Deserialize(buffer.Buffer.SubArray(0, buffer.ContentLength));
             HandleIncomingMessage(evt.ConnectionId, message);
         }
 
@@ -415,7 +410,7 @@ namespace SlideBall
         {
             if (message.traceMessage)
             {
-                Debug.LogError("HandleTracedMessage " + message);
+                Debug.LogError("HandleTracedMessage " + message + "   RPCID :" + BitConverter.ToInt16(message.data, 0));
             }
             if (isServer && message.isDistributed())
             {

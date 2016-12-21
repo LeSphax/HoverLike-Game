@@ -3,6 +3,7 @@ using System.Collections;
 using Byn.Common;
 using System.Text;
 using System;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class CustomConsole : MonoBehaviour
 {

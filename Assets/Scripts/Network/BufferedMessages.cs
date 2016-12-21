@@ -30,15 +30,15 @@ namespace SlideBall.Networking
             if (bufferedMessages.TryGetValue(sceneId, out messages))
             {
                 Debug.Log("Number buffered messages " + messages.Count);
-                foreach (StoredMessage message in messages)
+                foreach (StoredMessage storedMessage in messages)
                 {
                     if (id == NetworkManagement.SERVER_CONNECTION_ID)
                     {
-                        MyComponents.NetworkViewsManagement.DistributeMessage(message.senderId, message.message);
+                        MyComponents.NetworkViewsManagement.DistributeMessage(storedMessage.senderId, storedMessage.message);
                     }
                     else
                     {
-                        networkManagement.SendData(message.message, id);
+                        networkManagement.SendData(storedMessage.message, id);
                     }
                 }
             }

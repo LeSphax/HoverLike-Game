@@ -32,7 +32,7 @@ public class ClientTimeStrategy : TimeStrategy
             InvokeNewConnection(id);
         }
         Assert.IsTrue(id == otherId);
-        ServerTimePacket packet = NetworkExtensions.Deserialize<ServerTimePacket>(data);
+        ServerTimePacket packet = ServerTimePacket.Deserialize(data);
         latency = (Time.realtimeSinceStartup - packet.timeReceived) * 1000;
         networkTime = packet.networkTime;
         lastNetworkUpdate = Time.realtimeSinceStartup;
@@ -41,7 +41,7 @@ public class ClientTimeStrategy : TimeStrategy
 
     public override float GetLatencyInMiliseconds(ConnectionId id)
     {
-        Assert.IsTrue(id ==  otherId);
+        Assert.IsTrue(id == otherId);
         Debug.LogError("Shouldn't be called on a client");
         return latency;
     }
@@ -53,11 +53,10 @@ public class ClientTimeStrategy : TimeStrategy
 
     internal override float GetNetworkTimeInSeconds()
     {
-        return networkTime + Time.realtimeSinceStartup -lastNetworkUpdate;
+        return networkTime + Time.realtimeSinceStartup - lastNetworkUpdate;
     }
 }
 
-[Serializable]
 public struct ClientTimePacket
 {
     public float time;
@@ -67,5 +66,18 @@ public struct ClientTimePacket
     {
         this.time = time;
         this.latency = latency;
+    }
+
+    public byte[] Serialize()
+    {
+        byte[] data = BitConverter.GetBytes(time);
+        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(latency));
+    }
+
+    public static ClientTimePacket Deserialize(byte[] data)
+    {
+        float time = BitConverter.ToSingle(data, 0);
+        float latency = BitConverter.ToSingle(data, 4);
+        return new ClientTimePacket(time, latency);
     }
 }

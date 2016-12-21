@@ -13,7 +13,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     [SerializeField]
     private Countdown getReadyCountdown;
 
-    private enum State
+    public enum State : byte
     {
         WARMUP,
         STARTING,
@@ -136,14 +136,12 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void Entry()
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer && (MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH));
-        Debug.Log("Entry " + MyState);
         StartCoroutine(CoEntry());
     }
 
     IEnumerator CoEntry()
     {
-        Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH);
+        Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH, "The entry shouldn't happen in this case, maybe it was a manual entry?");
         if (MyState == State.ENDING)
         {
             getReadyCountdown.TimerFinished += SendInvokeStartRound;
@@ -247,7 +245,7 @@ public class MatchManager : SlideBall.MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.R))
                 View.RPC("ManualScoreGoal", RPCTargets.Server, 1);
         }
-        if (Vector3.Distance(MyComponents.BallState.transform.position,Vector3.zero) > 300f)
+        if (MyComponents.BallState != null && Vector3.Distance(MyComponents.BallState.transform.position,Vector3.zero) > 300f)
         {
             View.RPC("ManualEntry", RPCTargets.Server);
         }

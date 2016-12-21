@@ -26,7 +26,7 @@ public class ServerTimeStrategy : TimeStrategy
 
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
-        ClientTimePacket packet = NetworkExtensions.Deserialize<ClientTimePacket>(data);
+        ClientTimePacket packet = ClientTimePacket.Deserialize(data);
         if (!latencies.ContainsKey(id))
             InvokeNewConnection(id);
         latencies[id] = packet.latency;
@@ -61,5 +61,18 @@ public struct ServerTimePacket
     {
         this.networkTime = networkTime;
         this.timeReceived = timeReceived;
+    }
+
+    public byte[] Serialize()
+    {
+        byte[] data = BitConverter.GetBytes(networkTime);
+        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(timeReceived));
+    }
+
+    public static ServerTimePacket Deserialize(byte[] data)
+    {
+        float networkTime = BitConverter.ToSingle(data, 0);
+        float timeReceived = BitConverter.ToSingle(data, 4);
+        return new ServerTimePacket(networkTime, timeReceived);
     }
 }
