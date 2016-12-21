@@ -204,9 +204,17 @@ public class MatchManager : SlideBall.MonoBehaviour
                 goalie.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
                 players.Remove(goalie);
 
+                if (players[0].SpawnNumber == 0)
+                {
+                    short i = 1;
+                    players.Map(player => { player.SpawnNumber = i; i++; });
+                }
                 players.Map(player =>
                 {
-                    player.SpawnNumber = (short)(((player.SpawnNumber + 1) % (Players.GetPlayersInTeam(player.Team).Count - 1)) + 1);
+                    Debug.Log("Before " + player.SpawnNumber);
+                    int attackersNumber = Players.GetPlayersInTeam(player.Team).Count - 1;
+                    player.SpawnNumber = (short)(((player.SpawnNumber) % attackersNumber) + 1);
+                    Debug.Log("After " + player.SpawnNumber);
                     player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
                 });
             }
@@ -245,7 +253,7 @@ public class MatchManager : SlideBall.MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.R))
                 View.RPC("ManualScoreGoal", RPCTargets.Server, 1);
         }
-        if (MyComponents.BallState != null && Vector3.Distance(MyComponents.BallState.transform.position,Vector3.zero) > 300f)
+        if (MyComponents.BallState != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
         {
             View.RPC("ManualEntry", RPCTargets.Server);
         }
