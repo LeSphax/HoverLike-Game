@@ -28,7 +28,7 @@ public class DashPersistentEffect : PersistentEffect
     {
         myRigidbody = manager.GetComponent<Rigidbody>();
         //
-        manager.controller.DestroyTarget();
+        manager.controller.targetManager.CancelTarget();
         manager.transform.LookAt(position + Vector3.up * manager.transform.position.y);
         //
         force = new Vector3(position.x - manager.transform.position.x, 0, position.z - manager.transform.position.z);

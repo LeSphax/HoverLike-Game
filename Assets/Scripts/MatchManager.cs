@@ -204,6 +204,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 goalie.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
                 players.Remove(goalie);
 
+                //The spawns have never been assigned => all players have 0 as a spawnNumber
                 if (players[0].SpawnNumber == 0)
                 {
                     short i = 1;

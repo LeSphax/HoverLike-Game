@@ -66,6 +66,7 @@ public static class NetworkExtensions
                 deserializers.Add(typeof(InstantiationMessage), InstantiationMessageDeserializer);
                 deserializers.Add(typeof(Team), TeamDeserializer);
                 deserializers.Add(typeof(MatchManager.State), MMStateDeserializer);
+                deserializers.Add(typeof(Vector2), Vector2Deserializer);
 
             }
             return deserializers;
@@ -92,6 +93,7 @@ public static class NetworkExtensions
                 serializers.Add(typeof(InstantiationMessage), InstantiationMessageSerializer);
                 serializers.Add(typeof(Team), TeamSerializer);
                 serializers.Add(typeof(MatchManager.State), MMStateSerializer);
+                serializers.Add(typeof(Vector2), Vector2Serializer);
             }
             return serializers;
         }
@@ -229,6 +231,20 @@ public static class NetworkExtensions
             Debug.LogError("There are no serializers for this type " + type.GetElementType());
             return null;
         }
+    }
+
+    public static Vector2 DeserializeVector2(byte[] data, ref int currentIndex)
+    {
+        float x = BitConverter.ToSingle(data, currentIndex);
+        currentIndex += 4;
+        float y = BitConverter.ToSingle(data, currentIndex);
+        currentIndex += 4;
+        return new Vector2(x, y);
+    }
+
+    public static object Vector2Deserializer(byte[] data, ref int currentIndex)
+    {
+        return DeserializeVector2(data, ref currentIndex);
     }
 
 
@@ -379,6 +395,18 @@ public static class NetworkExtensions
     {
         MatchManager.State state = (MatchManager.State)parameter;
         return new byte[1] { (byte)state };
+    }
+
+    public static byte[] SerializeVector2(Vector2 v)
+    {
+        byte[] data = BitConverter.GetBytes(v.x);
+        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(v.y));
+    }
+
+    public static byte[] Vector2Serializer(object parameter)
+    {
+        Vector2 v = (Vector2)parameter;
+        return SerializeVector2(v);
     }
 
     public static byte[] ArraySerializer(object parameter)

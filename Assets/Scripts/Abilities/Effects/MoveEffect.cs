@@ -15,7 +15,7 @@ namespace PlayerBallControl
         {
             PlayerController controller = (PlayerController)parameters[0];
             Vector3 position = (Vector3)parameters[1];
-            controller.abilitiesManager.View.RPC("Move", RPCTargets.Server, position);
+            controller.abilitiesManager.View.RPC("Move", RPCTargets.Server, new Vector2(position.x,position.z));
             Instantiate(moveUIAnimationPrefab, position, Quaternion.identity);
         }
 

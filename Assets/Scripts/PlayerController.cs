@@ -1,6 +1,5 @@
 ﻿using Byn.Net;
 using UnityEngine;
-using UnityEngine.UI;
 using PlayerManagement;
 using PlayerBallControl;
 using AbilitiesManagement;
@@ -11,33 +10,12 @@ using UnityEngine.Assertions;
 [RequireComponent(typeof(AbilitiesManager))]
 public class PlayerController : PlayerView
 {
-    public GameObject targetPrefab;
-
     private GameObject Mesh;
 
     public BillBoard billboard;
 
-
-    private GameObject _target;
-    private GameObject target
-    {
-        get
-        {
-            return _target;
-        }
-        set
-        {
-            if (value == null)
-            {
-                movementManager.targetPosition = null;
-            }
-            else
-            {
-                movementManager.targetPosition = value.transform.position;
-            }
-            _target = value;
-        }
-    }
+    [HideInInspector]
+    public TargetManager targetManager;
     [HideInInspector]
     public PlayerMovementManager movementManager;
     [HideInInspector]
@@ -52,6 +30,8 @@ public class PlayerController : PlayerView
         movementManager = GetComponent<PlayerMovementManager>();
         abilitiesManager = GetComponent<AbilitiesManager>();
         ballController = GetComponent<PlayerBallController>();
+        targetManager = GetComponent<TargetManager>();
+        Debug.Log("Set TM " + targetManager);
     }
 
     void LateUpdate()
@@ -60,30 +40,6 @@ public class PlayerController : PlayerView
         {
             GameObject.FindGameObjectWithTag("GameController").transform.position = transform.position;
         }
-    }
-
-    internal void DestroyTarget()
-    {
-        Destroy(target);
-        target = null;
-    }
-
-    public void CreateTarget()
-    {
-        Vector3 position = Functions.GetMouseWorldPosition();
-        CreateTarget(position);
-    }
-
-    public void CreateTarget(Vector3 position)
-    {
-        DestroyTarget();
-        target = (GameObject)Instantiate(targetPrefab, position, Quaternion.identity);
-        target.GetComponent<TargetCollisionDetector>().controller = this;
-    }
-
-    public void TargetHit()
-    {
-        DestroyTarget();
     }
 
     public void InitView(object[] parameters)
@@ -99,8 +55,7 @@ public class PlayerController : PlayerView
     public void ResetPlayer()
     {
         movementManager.Reset(playerConnectionId);
-        Destroy(target);
-        target = null;
+        targetManager.CancelTarget();
         if (Mesh != null)
         {
             Destroy(Mesh);
@@ -184,6 +139,6 @@ public class PlayerController : PlayerView
     public void StopMoving()
     {
         GetComponent<Rigidbody>().velocity = Vector3.zero;
-        DestroyTarget();
+        targetManager.CancelTarget();
     }
 }

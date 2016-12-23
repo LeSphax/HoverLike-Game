@@ -62,10 +62,10 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
-        private void Move(Vector3 position)
+        private void Move(Vector2 position)
         {
             if (CanUseAbility())
-                controller.CreateTarget(position);
+                controller.targetManager.SetTarget(position);
         }
 
         [MyRPC]

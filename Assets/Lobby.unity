@@ -581,7 +581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startGameImmediately: 1
-  numberPlayersToStartGame: 6
+  numberPlayersToStartGame: 1
   addLatency: 0
   numberFramesLatency: 0
 --- !u!1 &364225067

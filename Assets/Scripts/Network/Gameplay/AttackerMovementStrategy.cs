@@ -5,15 +5,17 @@ using UnityEngine;
 public class AttackerMovementStrategy : PlayerMovementStrategy
 {
     private float BRAKE_AMOUNT;
+    private bool braking;
+    private bool hasBraked;
     private const float JUMP_FORCE = 60f;
 
     [SerializeField]
-    private float ACCELERATION = 140;
+    private float ACCELERATION = 70;
 
     [SerializeField]
     private float MAX_VELOCITY = 45;
     [SerializeField]
-    private float ANGULAR_SPEED = 800;
+    private float ANGULAR_SPEED = 500;
 
     protected override void Awake()
     {
@@ -39,20 +41,34 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
 
     internal void Brake()
     {
+        //If the player just started to brake, cancel his target.
+        if (!braking)
+        {
+            targetPosition = null;
+            braking = true;
+        }
+        hasBraked = true;
         Vector3 currentVelocity = myRigidbody.velocity;
         if (currentVelocity.magnitude != 0)
         {
             myRigidbody.velocity -= BRAKE_AMOUNT * Time.fixedDeltaTime * Vector3.Normalize(currentVelocity);
-            if (Vector3.Normalize(currentVelocity) != Vector3.Normalize(myRigidbody.velocity))
-            {
-                myRigidbody.velocity = Vector3.zero;
-                movementManager.controller.DestroyTarget();
-            }
+            //if (Vector3.Normalize(currentVelocity) != Vector3.Normalize(myRigidbody.velocity))
+            //{
+            //    myRigidbody.velocity = Vector3.zero;
+            //    targetPosition = null;
+            //}
         }
     }
 
     internal void Jump()
     {
         myRigidbody.AddForce(Vector3.up * JUMP_FORCE, ForceMode.VelocityChange);
+    }
+
+    private void LateUpdate()
+    {
+        if (!hasBraked)
+            braking = false;
+        hasBraked = false;
     }
 }

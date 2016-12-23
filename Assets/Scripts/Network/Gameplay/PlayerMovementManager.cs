@@ -52,6 +52,10 @@ public class PlayerMovementManager : ObservedComponent
 
     internal Vector3? targetPosition
     {
+        get
+        {
+            return strategy.targetPosition;
+        }
         set
         {
             strategy.targetPosition = value;

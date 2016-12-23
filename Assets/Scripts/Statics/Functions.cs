@@ -21,31 +21,37 @@ class Functions
         return Vector3.zero;
     }
 
-    public static byte[] ObjectToByteArray(object obj)
+    //Equation of the line : y = slope * x + constant
+    public static float DistanceFromLine(float slope, float constant,float x, float y)
     {
-        if (obj == null)
-            return null;
-        BinaryFormatter bf = new BinaryFormatter();
-        bf.SurrogateSelector = Vector3SerializationSurrogate.GetSurrogateSelector();
-        using (MemoryStream ms = new MemoryStream())
-        {
-            bf.Serialize(ms, obj);
-            return ms.ToArray();
-        }
+        return Mathf.Abs(slope * x - y + constant) / Mathf.Sqrt(slope * slope + 1);
     }
 
-    public static object ByteArrayToObject(byte[] arrBytes)
-    {
-        MemoryStream memStream = new MemoryStream();
-        BinaryFormatter binForm = new BinaryFormatter();
-        binForm.SurrogateSelector = Vector3SerializationSurrogate.GetSurrogateSelector();
+    //public static byte[] ObjectToByteArray(object obj)
+    //{
+    //    if (obj == null)
+    //        return null;
+    //    BinaryFormatter bf = new BinaryFormatter();
+    //    bf.SurrogateSelector = Vector3SerializationSurrogate.GetSurrogateSelector();
+    //    using (MemoryStream ms = new MemoryStream())
+    //    {
+    //        bf.Serialize(ms, obj);
+    //        return ms.ToArray();
+    //    }
+    //}
 
-        memStream.Write(arrBytes, 0, arrBytes.Length);
-        memStream.Seek(0, SeekOrigin.Begin);
-        object obj = (object)binForm.Deserialize(memStream);
+    //public static object ByteArrayToObject(byte[] arrBytes)
+    //{
+    //    MemoryStream memStream = new MemoryStream();
+    //    BinaryFormatter binForm = new BinaryFormatter();
+    //    binForm.SurrogateSelector = Vector3SerializationSurrogate.GetSurrogateSelector();
 
-        return obj;
-    }
+    //    memStream.Write(arrBytes, 0, arrBytes.Length);
+    //    memStream.Seek(0, SeekOrigin.Begin);
+    //    object obj = (object)binForm.Deserialize(memStream);
+
+    //    return obj;
+    //}
 
     public static void SetLayer(Transform transform, int layer)
     {
