@@ -63,7 +63,7 @@ function resizeCanvas(){
 }
 
 function startPlaying(){
-  nickname = $("#nickname_input").val() ? $("#nickname_input").val() : "Leroy Jenkins";
+  nickname = $("#nickname_input").val() ? $("#nickname_input").val() : "Leeroy Jenkins";
   Cookies.set('nickname', nickname);
   $("#configuration").css('display','none');
   $("#unity-player").css('display','inline');
