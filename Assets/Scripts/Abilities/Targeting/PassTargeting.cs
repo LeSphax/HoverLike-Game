@@ -25,6 +25,7 @@ public class PassTargeting : AbilityTargeting
         }
     }
 
+    //A circle showing the area on which the ability will be cast.
     private GameObject targeter;
 
     private CastOnTarget callback;
@@ -42,14 +43,15 @@ public class PassTargeting : AbilityTargeting
         if (targeter != null)
         {
             UpdateTargeterPosition();
-            if (Input.GetMouseButtonDown(0))
-            {
-                ConnectionId playerId = GetPlayerAtTargetPosition();
-                if (playerId != Players.INVALID_PLAYER_ID)
-                    callback.Invoke(playerId);
-                CancelTargeting();
-            }
         }
+    }
+
+    public override void ReactivateTargeting()
+    {
+        ConnectionId playerId = GetPlayerAtTargetPosition();
+        if (playerId != Players.INVALID_PLAYER_ID)
+            callback.Invoke(playerId);
+        CancelTargeting();
     }
 
     public override void CancelTargeting()
@@ -73,7 +75,7 @@ public class PassTargeting : AbilityTargeting
         foreach (Collider hit in colliders)
         {
             GameObject go = hit.gameObject;
-            PlayerController controller = GetParentController(go.transform);
+            PlayerController controller = GetParentPlayerController(go.transform);
             if (controller != null && controller.playerConnectionId != Players.myPlayerId && controller.Player.Team == Players.MyPlayer.Team)
             {
                 float distance = Vector3.Distance(targeter.transform.position, controller.transform.position);
@@ -91,7 +93,8 @@ public class PassTargeting : AbilityTargeting
             return Players.INVALID_PLAYER_ID;
     }
 
-    private PlayerController GetParentController(Transform t)
+    //Recursive function to catch the PlayerController of a gameObjects from one of its children.
+    private PlayerController GetParentPlayerController(Transform t)
     {
         PlayerController controller = t.GetComponent<PlayerController>();
         if (controller != null)
@@ -99,7 +102,7 @@ public class PassTargeting : AbilityTargeting
             return controller;
         }
         else if (t.parent != null)
-            return GetParentController(t.parent);
+            return GetParentPlayerController(t.parent);
         else
             return null;
     }

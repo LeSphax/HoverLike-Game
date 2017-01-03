@@ -4,7 +4,7 @@ using TimeSlow;
 using AbilitiesManagement;
 using CustomAnimations;
 
-public class RendererTimeSlow : IVisualEffect
+public class RendererTimeSlow : AVisualEffect
 {
 
     private Renderer m_Renderer;

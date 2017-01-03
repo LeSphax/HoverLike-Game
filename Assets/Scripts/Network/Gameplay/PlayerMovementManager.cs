@@ -172,7 +172,7 @@ public struct PlayerPacket
     {
         byte[] data = NetworkExtensions.SerializeVector3(position);
         data = ArrayExtensions.Concatenate(data,NetworkExtensions.SerializeQuaternion(rotation));
-        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(timeSent));
+        return data.Concatenate(BitConverter.GetBytes(timeSent));
     }
 
     public static PlayerPacket Deserialize(byte[] data)

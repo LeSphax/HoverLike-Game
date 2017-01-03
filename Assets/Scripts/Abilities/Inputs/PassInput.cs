@@ -5,12 +5,17 @@ public class PassInput : AbilityInputWithBall
 
     private const int INPUT_NUMBER = 3;
 
-    protected override bool FirstActivation()
+    public override bool FirstActivation()
     {
         return Input.GetKeyDown(Inputs.GetKeyCode(INPUT_NUMBER));
     }
 
-    protected override bool Cancellation()
+    public override bool SecondActivation()
+    {
+        return Input.GetMouseButtonDown(0);
+    }
+
+    public override bool Cancellation()
     {
         return Input.GetMouseButtonDown(1);
     }

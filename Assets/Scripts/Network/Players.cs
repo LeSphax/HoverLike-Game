@@ -68,11 +68,15 @@ namespace PlayerManagement
             if (newPlayer != previousPlayer)
             {
                 if (previousPlayer != BallState.NO_PLAYER_ID)
+                {
                     players[previousPlayer].HasBall = false;
+                    players[previousPlayer].controller.animator.SetBool("Catch", false);
+                }
                 if (newPlayer != BallState.NO_PLAYER_ID)
                 {
                     players[newPlayer].HasBall = true;
                     MyComponents.BallState.AttachBall(newPlayer);
+                    players[newPlayer].controller.animator.SetBool("Catch",true);
                 }
                 else
                 {
@@ -156,32 +160,32 @@ namespace PlayerManagement
             //Debug.LogError("Create Packet " + flags);
             if (flags.HasFlag(PlayerFlags.TEAM))
             {
-                data = ArrayExtensions.Concatenate(data, new byte[1] { (byte)player.Team });
+                data = data.Concatenate(new byte[1] { (byte)player.Team });
             }
             if (flags.HasFlag(PlayerFlags.SPAWNINGPOINT))
             {
-                data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(player.SpawnNumber));
+                data = data.Concatenate(BitConverter.GetBytes(player.SpawnNumber));
             }
             if (flags.HasFlag(PlayerFlags.SCENEID))
             {
-                data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(player.SceneId));
+                data = data.Concatenate(BitConverter.GetBytes(player.SceneId));
             }
             if (flags.HasFlag(PlayerFlags.AVATAR_SETTINGS))
             {
-                data = ArrayExtensions.Concatenate(data, new byte[1] { (byte)player.AvatarSettingsType });
+                data = data.Concatenate(new byte[1] { (byte)player.AvatarSettingsType });
             }
             if (flags.HasFlag(PlayerFlags.PLAY_AS_GOALIE))
             {
-                data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(player.PlayAsGoalie));
+                data = data.Concatenate(BitConverter.GetBytes(player.PlayAsGoalie));
             }
             if (flags.HasFlag(PlayerFlags.STATE))
             {
-                data = ArrayExtensions.Concatenate(data, new byte[1] { (byte)player.CurrentState });
+                data = data.Concatenate(new byte[1] { (byte)player.CurrentState });
             }
             if (flags.HasFlag(PlayerFlags.NICKNAME))
             {
-                data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes((short)(Encoding.UTF8.GetBytes(player.Nickname).Length)));
-                data = ArrayExtensions.Concatenate(data, Encoding.UTF8.GetBytes(player.Nickname));
+                data = data.Concatenate(BitConverter.GetBytes((short)(Encoding.UTF8.GetBytes(player.Nickname).Length)));
+                data = data.Concatenate(Encoding.UTF8.GetBytes(player.Nickname));
             }
             //Debug.LogError("CreatePacket " + flags + "   " + data.Length);
             return data;

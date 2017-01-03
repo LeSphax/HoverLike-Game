@@ -66,7 +66,7 @@ public struct ServerTimePacket
     public byte[] Serialize()
     {
         byte[] data = BitConverter.GetBytes(networkTime);
-        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(timeReceived));
+        return data.Concatenate(BitConverter.GetBytes(timeReceived));
     }
 
     public static ServerTimePacket Deserialize(byte[] data)

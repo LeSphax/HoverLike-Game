@@ -5,7 +5,7 @@ public class TeleportInput : AbilityInput
 
     private const int INPUT_NUMBER = 3;
 
-    protected override bool FirstActivation()
+    public override bool FirstActivation()
     {
         return Input.GetKeyDown(Inputs.GetKeyCode(INPUT_NUMBER));
     }

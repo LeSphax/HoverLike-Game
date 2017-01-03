@@ -53,7 +53,7 @@ namespace AbilitiesManagement
             ResetPersistentEffects();
         }
 
-        public static List<IVisualEffect> visualEffects = new List<IVisualEffect>();
+        public static List<AVisualEffect> visualEffects = new List<AVisualEffect>();
         internal List<PersistentEffect> persistentEffects = new List<PersistentEffect>();
 
         protected void Awake()
@@ -72,7 +72,10 @@ namespace AbilitiesManagement
         private void Shoot(Vector3 target, float power)
         {
             if (CanUseAbility())
+            {
                 controller.ballController.ThrowBall(target, power);
+                EffectsManager.View.RPC("ThrowBall", RPCTargets.All, controller.playerConnectionId);
+            }
         }
 
         [MyRPC]

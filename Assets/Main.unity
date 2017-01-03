@@ -919,7 +919,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 505168979}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31292b5237fed4f4aa663fc882859508, type: 3}
+  m_Script: {fileID: 11500000, guid: 850922beff1157c40951e9c12cd9a104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &509791304
@@ -2528,7 +2528,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 4
-  isLocal: 0
   observedComponents: []
   update: 1
 --- !u!114 &1281178778
@@ -2656,7 +2655,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 5
-  isLocal: 0
   observedComponents: []
   update: 1
 --- !u!1 &1345382434
@@ -3872,7 +3870,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 6
-  isLocal: 0
   observedComponents: []
   update: 1
 --- !u!82 &1790611701
@@ -4554,7 +4551,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 7
-  isLocal: 0
   observedComponents: []
   update: 1
 --- !u!114 &2110267382

@@ -3,7 +3,7 @@ using AbilitiesManagement;
 using CustomAnimations;
 using System.Collections.Generic;
 
-public class StealRenderer : IVisualEffect
+public class StealRenderer : AVisualEffect
 {
     public Color STEAL_COLOR = Color.white;
 

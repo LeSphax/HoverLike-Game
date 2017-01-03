@@ -6,7 +6,7 @@ public class DashInput : AbilityInput
     private const int INPUT_NUMBER = 0;
 
 
-    protected override bool FirstActivation()
+    public override bool FirstActivation()
     {
         return Input.GetKeyDown(Inputs.GetKeyCode(INPUT_NUMBER));
     }

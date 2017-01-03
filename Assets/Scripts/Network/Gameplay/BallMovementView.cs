@@ -120,7 +120,7 @@ class BallMovementView : ObservedComponent
         public byte[] Serialize()
         {
             byte[] data = NetworkExtensions.SerializeVector3(position);
-            return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(timeSent));
+            return data.Concatenate(BitConverter.GetBytes(timeSent));
         }
 
         public static BallPacket Deserialize(byte[] data)

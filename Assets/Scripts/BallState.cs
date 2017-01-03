@@ -137,7 +137,7 @@ public class BallState : SlideBall.MonoBehaviour
         if (attach)
         {
             Assert.IsTrue(GetAttachedPlayer() != null);
-            Transform hand = GetAttachedPlayer().playerMesh.hand;
+            Transform hand = GetAttachedPlayer().PlayerMesh.hand;
             UnPickable = false;
             gameObject.transform.SetParent(hand);
             TrySetKinematic();

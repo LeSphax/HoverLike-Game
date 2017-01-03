@@ -16,8 +16,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
 
     public void StartUpdating()
     {
-        if (!View.isLocal)
-            InvokeRepeating("SendPacket", 0, 1f / sendRate);
+        InvokeRepeating("SendPacket", 0, 1f / sendRate);
     }
 
     protected virtual void SendPacket()

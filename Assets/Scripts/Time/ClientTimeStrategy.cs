@@ -71,7 +71,7 @@ public struct ClientTimePacket
     public byte[] Serialize()
     {
         byte[] data = BitConverter.GetBytes(time);
-        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(latency));
+        return data.Concatenate(BitConverter.GetBytes(latency));
     }
 
     public static ClientTimePacket Deserialize(byte[] data)

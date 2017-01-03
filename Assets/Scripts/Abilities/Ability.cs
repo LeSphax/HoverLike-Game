@@ -3,6 +3,7 @@
 [RequireComponent(typeof(AbilityEffect))]
 [RequireComponent(typeof(AbilityTargeting))]
 [RequireComponent(typeof(AbilityInput))]
+//Manages the state of the ability and its cooldown. Links the input, targeting and effects components of the ability.
 public class Ability : MonoBehaviour
 {
     private AbilityInput input;
@@ -25,23 +26,6 @@ public class Ability : MonoBehaviour
     private State state = State.READY;
 
     protected bool isEnabled;
-    protected virtual bool Enabled
-    {
-        get
-        {
-            return isEnabled;
-        }
-        set
-        {
-            isEnabled = value;
-            if (!isEnabled)
-                if (state == State.CHOOSINGTARGET)
-                {
-                    targeting.CancelTargeting();
-                    state = State.READY;
-                }
-        }
-    }
 
     protected virtual void Awake()
     {
@@ -67,20 +51,20 @@ public class Ability : MonoBehaviour
         switch (state)
         {
             case State.READY:
-                if (input.Activate() && Enabled)
+                if (input.FirstActivation() && isEnabled)
                 {
                     CastAbility();
                 }
                 //Used to stop the visual effect for the brake effect
-                input.Cancel();
+                input.Cancellation();
                 break;
             case State.CHOOSINGTARGET:
-                if (input.Cancel())
+                if (input.Cancellation())
                 {
                     state = State.READY;
                     targeting.CancelTargeting();
                 }
-                if (input.Reactivate())
+                if (input.SecondActivation())
                 {
                     state = State.CHOOSINGTARGET;
                     targeting.ReactivateTargeting();
@@ -123,8 +107,14 @@ public class Ability : MonoBehaviour
         }
     }
 
-    private void EnableAbility(bool enable)
+    protected virtual void EnableAbility(bool enable)
     {
-        Enabled = enable;
+        isEnabled = enable;
+        if (!isEnabled)
+            if (state == State.CHOOSINGTARGET)
+            {
+                targeting.CancelTargeting();
+                state = State.READY;
+            }
     }
 }

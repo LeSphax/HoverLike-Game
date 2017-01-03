@@ -289,7 +289,7 @@ public static class NetworkExtensions
         byte[] s = System.Text.Encoding.UTF8.GetBytes((string)parameter);
         Assert.IsTrue(s.Length < short.MaxValue);
         byte[] length = BitConverter.GetBytes((short)s.Length);
-        return ArrayExtensions.Concatenate(length, s);
+        return length.Concatenate(s);
     }
 
     public static byte[] BooleanSerializer(object parameter)
@@ -322,8 +322,8 @@ public static class NetworkExtensions
     public static byte[] SerializeVector3(Vector3 v)
     {
         byte[] data = BitConverter.GetBytes(v.x);
-        data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(v.y));
-        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(v.z));
+        data = data.Concatenate(BitConverter.GetBytes(v.y));
+        return data.Concatenate(BitConverter.GetBytes(v.z));
     }
 
     public static byte[] Vector3Serializer(object parameter)
@@ -335,9 +335,9 @@ public static class NetworkExtensions
     public static byte[] SerializeQuaternion(Quaternion q)
     {
         byte[] data = BitConverter.GetBytes(q.x);
-        data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(q.y));
-        data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(q.z));
-        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(q.w));
+        data = data.Concatenate(BitConverter.GetBytes(q.y));
+        data = data.Concatenate(BitConverter.GetBytes(q.z));
+        return data.Concatenate(BitConverter.GetBytes(q.w));
     }
 
     public static byte[] QuaternionSerializer(object parameter)
@@ -350,10 +350,10 @@ public static class NetworkExtensions
     {
         InstantiationMessage iMessage = (InstantiationMessage)parameter;
         byte[] data = StringSerializer(iMessage.path);
-        data = ArrayExtensions.Concatenate(data, ShortSerializer(iMessage.newViewId));
-        data = ArrayExtensions.Concatenate(data, SerializeVector3(iMessage.position));
-        data = ArrayExtensions.Concatenate(data, QuaternionSerializer(iMessage.rotation));
-        data = ArrayExtensions.Concatenate(data, ObjectArraySerializer(iMessage.initialisationParameters));
+        data = data.Concatenate(ShortSerializer(iMessage.newViewId));
+        data = data.Concatenate(SerializeVector3(iMessage.position));
+        data = data.Concatenate(QuaternionSerializer(iMessage.rotation));
+        data = data.Concatenate(ObjectArraySerializer(iMessage.initialisationParameters));
         return data;
     }
 
@@ -369,8 +369,8 @@ public static class NetworkExtensions
                 Serializer serializer;
                 if (Serializers.TryGetValue(t, out serializer))
                 {
-                    data = ArrayExtensions.Concatenate(data, BitConverter.GetBytes(typeId));
-                    data = ArrayExtensions.Concatenate(data, serializer(parameter));
+                    data = data.Concatenate(BitConverter.GetBytes(typeId));
+                    data = data.Concatenate(serializer(parameter));
                 }
                 else
                 {
@@ -400,7 +400,7 @@ public static class NetworkExtensions
     public static byte[] SerializeVector2(Vector2 v)
     {
         byte[] data = BitConverter.GetBytes(v.x);
-        return ArrayExtensions.Concatenate(data, BitConverter.GetBytes(v.y));
+        return data.Concatenate(BitConverter.GetBytes(v.y));
     }
 
     public static byte[] Vector2Serializer(object parameter)
@@ -421,7 +421,7 @@ public static class NetworkExtensions
             data = ShortSerializer((short)array.Length);
             foreach (var element in array)
             {
-                data = ArrayExtensions.Concatenate(data, serializer(element));
+                data = data.Concatenate(serializer(element));
             }
         }
         else

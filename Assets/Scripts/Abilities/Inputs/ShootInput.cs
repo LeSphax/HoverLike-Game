@@ -3,17 +3,17 @@
 public class ShootInput : AbilityInputWithBall
 {
 
-    protected override bool FirstActivation()
+    public override bool FirstActivation()
     {
         return Input.GetMouseButtonDown(0) && !AbilityTargeting.IsTargeting;
     }
 
-    protected override bool SecondActivation()
+    public override bool SecondActivation()
     {
         return Input.GetMouseButtonUp(0);
     }
 
-    protected override bool Cancellation()
+    public override bool Cancellation()
     {
         return Input.GetMouseButtonDown(1);
     }

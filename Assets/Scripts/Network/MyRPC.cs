@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlideBall.Networking;
+using System;
 
 public class MyRPC : Attribute
 {
@@ -20,18 +21,6 @@ public enum RPCTargets
     AllBuffered,
     /// <summary>Sends the RPC to everyone. This client does not execute the RPC. New players get the RPC when they join as it's buffered (until this client leaves).</summary>
     OthersBuffered,
-    /// <summary>Sends the RPC to everyone (including this client) through the server.</summary>
-    /// <remarks>
-    /// This client executes the RPC like any other when it received it from the server.
-    /// Benefit: The server's order of sending the RPCs is the same on all clients.
-    /// </remarks>
-    //AllViaServer,
-    /// <summary>Sends the RPC to everyone (including this client) through the server and buffers it for players joining later.</summary>
-    /// <remarks>
-    /// This client executes the RPC like any other when it received it from the server.
-    /// Benefit: The server's order of sending the RPCs is the same on all clients.
-    /// </remarks>
-    //AllBufferedViaServer,
 }
 
 public static class RPCTargetsMethods
@@ -47,19 +36,65 @@ public static class RPCTargetsMethods
             case RPCTargets.Specified:
             case RPCTargets.OthersBuffered:
                 return false;
-            //case RPCTargets.AllViaServer:
             case RPCTargets.Server:
-            //case RPCTargets.AllBufferedViaServer:
                 return MyComponents.NetworkManagement.isServer;
             default:
                 throw new UnhandledSwitchCaseException(target);
         }
     }
 
-    public static bool IsSent(this RPCTargets target)
+    public static bool IsSentToNetwork(this RPCTargets target)
     {
         if (target == RPCTargets.Server && MyComponents.NetworkManagement.isServer)
             return false;
         return true;
+    }
+
+    public static MessageFlags GetFlags(this RPCTargets targets)
+    {
+        MessageFlags flags = MessageFlags.Reliable;
+        switch (targets)
+        {
+            case RPCTargets.All:
+            case RPCTargets.Others:
+            case RPCTargets.AllBuffered:
+            case RPCTargets.OthersBuffered:
+                break;
+            case RPCTargets.Specified:
+            case RPCTargets.Server:
+                flags |= MessageFlags.NotDistributed;
+                break;
+            default:
+                break;
+        }
+        switch (targets)
+        {
+            case RPCTargets.AllBuffered:
+            case RPCTargets.OthersBuffered:
+                flags |= MessageFlags.Buffered;
+                break;
+            case RPCTargets.All:
+            case RPCTargets.Others:
+            case RPCTargets.Specified:
+            case RPCTargets.Server:
+                break;
+            default:
+                break;
+        }
+        switch (targets)
+        {
+            case RPCTargets.AllBuffered:
+            case RPCTargets.OthersBuffered:
+                flags |= MessageFlags.SceneDependant;
+                break;
+            case RPCTargets.All:
+            case RPCTargets.Server:
+            case RPCTargets.Specified:
+            case RPCTargets.Others:
+                break;
+            default:
+                break;
+        }
+        return flags;
     }
 }

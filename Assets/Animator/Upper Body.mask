@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1011 &101100000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Upper Body
+  m_Mask: 00000000010000000100000000000000000000000100000001000000000000000100000000000000000000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: char_robotGuard_body
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_LeftUpLeg
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_LeftUpLeg/char_robotGuard_LeftLeg
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_LeftUpLeg/char_robotGuard_LeftLeg/char_robotGuard_LeftFoot
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_LeftUpLeg/char_robotGuard_LeftLeg/char_robotGuard_LeftFoot/char_robotGuard_LeftToeBase
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_RightUpLeg
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_RightUpLeg/char_robotGuard_RightLeg
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_RightUpLeg/char_robotGuard_RightLeg/char_robotGuard_RightFoot
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_RightUpLeg/char_robotGuard_RightLeg/char_robotGuard_RightFoot/char_robotGuard_RightToeBase
+    m_Weight: 0
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandIndex1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandIndex1/char_robotGuard_LeftHandIndex2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandIndex1/char_robotGuard_LeftHandIndex2/char_robotGuard_LeftHandIndex3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandMiddle1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandMiddle1/char_robotGuard_LeftHandMiddle2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandMiddle1/char_robotGuard_LeftHandMiddle2/char_robotGuard_LeftHandMiddle3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandPinky1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandPinky1/char_robotGuard_LeftHandPinky2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandPinky1/char_robotGuard_LeftHandPinky2/char_robotGuard_LeftHandPinky3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandRing1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandRing1/char_robotGuard_LeftHandRing2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandRing1/char_robotGuard_LeftHandRing2/char_robotGuard_LeftHandRing3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandThumb1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_LeftShoulder/char_robotGuard_LeftArm/char_robotGuard_LeftForeArm/char_robotGuard_LeftHand/char_robotGuard_LeftHandThumb1/char_robotGuard_LeftHandThumb2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_Neck
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_Neck/char_robotGuard_Head
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_Neck/char_robotGuard_Head/char_robotGuard_helmet
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandIndex1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandIndex1/char_robotGuard_RightHandIndex2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandIndex1/char_robotGuard_RightHandIndex2/char_robotGuard_RightHandIndex3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandMiddle1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandMiddle1/char_robotGuard_RightHandMiddle2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandMiddle1/char_robotGuard_RightHandMiddle2/char_robotGuard_RightHandMiddle3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandPinky1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandPinky1/char_robotGuard_RightHandPinky2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandPinky1/char_robotGuard_RightHandPinky2/char_robotGuard_RightHandPinky3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandRing1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandRing1/char_robotGuard_RightHandRing2
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandRing1/char_robotGuard_RightHandRing2/char_robotGuard_RightHandRing3
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandThumb1
+    m_Weight: 1
+  - m_Path: char_robotGuard_skeleton/char_robotGuard_Hips/char_robotGuard_Spine/char_robotGuard_RightShoulder/char_robotGuard_RightArm/char_robotGuard_RightForeArm/char_robotGuard_RightHand/char_robotGuard_RightHandThumb1/char_robotGuard_RightHandThumb2
+    m_Weight: 1

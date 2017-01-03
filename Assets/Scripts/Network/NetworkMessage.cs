@@ -86,54 +86,7 @@ namespace SlideBall.Networking
         {
             this.subId = subId;
             type = MessageType.RPC;
-            SetFlagsFromRPCTargets(targets);
-        }
-
-        private void SetFlagsFromRPCTargets(RPCTargets targets)
-        {
-            flags |= MessageFlags.Reliable;
-            switch (targets)
-            {
-                case RPCTargets.All:
-                case RPCTargets.Others:
-                case RPCTargets.AllBuffered:
-                case RPCTargets.OthersBuffered:
-                    break;
-                case RPCTargets.Specified:
-                case RPCTargets.Server:
-                    flags |= MessageFlags.NotDistributed;
-                    break;
-                default:
-                    break;
-            }
-            switch (targets)
-            {
-                case RPCTargets.AllBuffered:
-                case RPCTargets.OthersBuffered:
-                    flags |= MessageFlags.Buffered;
-                    break;
-                case RPCTargets.All:
-                case RPCTargets.Others:
-                case RPCTargets.Specified:
-                case RPCTargets.Server:
-                    break;
-                default:
-                    break;
-            }
-            switch (targets)
-            {
-                case RPCTargets.AllBuffered:
-                case RPCTargets.OthersBuffered:
-                    flags |= MessageFlags.SceneDependant;
-                    break;
-                case RPCTargets.All:
-                case RPCTargets.Server:
-                case RPCTargets.Specified:
-                case RPCTargets.Others:
-                    break;
-                default:
-                    break;
-            }
+            flags |= targets.GetFlags();
         }
 
         private void SetFlagsFromType()

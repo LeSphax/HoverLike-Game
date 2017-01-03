@@ -7,7 +7,7 @@ public static class ArrayExtensions
 {
     public delegate void Mapper<T>(T element);
 
-    public static T[] Concatenate<T>(T[] array1, T[] array2)
+    public static T[] Concatenate<T>(this T[] array1, T[] array2)
     {
         if (array1.Length == 0)
         {

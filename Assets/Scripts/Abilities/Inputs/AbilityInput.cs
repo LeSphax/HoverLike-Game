@@ -7,15 +7,16 @@ using UnityEngine.UI;
 
 public delegate void ActivationHandler(bool activated);
 
+//Manage when an ability can be activated (The game is p
 public abstract class AbilityInput : MonoBehaviour
 {
-    protected bool StateIsPlaying;
+    protected bool CurrentStateAllowActivation;
 
     protected bool IsActivated
     {
         get
         {
-            return StateIsPlaying && CanBeActivated();
+            return CurrentStateAllowActivation && AdditionalActivationRequirementsAreMet();
         }
     }
 
@@ -27,7 +28,7 @@ public abstract class AbilityInput : MonoBehaviour
         CanBeActivatedChanged.Invoke(IsActivated);
     }
 
-    protected virtual bool CanBeActivated()
+    protected virtual bool AdditionalActivationRequirementsAreMet()
     {
         return true;
     }
@@ -38,33 +39,20 @@ public abstract class AbilityInput : MonoBehaviour
         return true;
     }
 
-    public bool Activate()
-    {
-        return FirstActivation();
-    }
+    public abstract bool FirstActivation();
 
-    public bool Reactivate()
-    {
-        return SecondActivation();
-    }
-
-    public bool Cancel()
-    {
-        return Cancellation();
-    }
-
-    protected abstract bool FirstActivation();
-
-    protected virtual bool SecondActivation()
+    //Sometimes, 
+    public virtual bool SecondActivation()
     {
         return false;
     }
 
-    protected virtual bool Cancellation()
+    public virtual bool Cancellation()
     {
         return false;
     }
 
+    //The letter that should be shown if the ability has an icon
     public virtual string GetKey()
     {
         return "";
@@ -75,16 +63,18 @@ public abstract class AbilityInput : MonoBehaviour
         Players.MyPlayer.StateChanged += PlayerStateChanged;
     }
 
+    //Check if the ability can be activated depending on the new state of the player.
     private void PlayerStateChanged(Player.State newState)
     {
         bool previousActivation = IsActivated;
-        StateIsPlaying = newState == Player.State.PLAYING || (newState == Player.State.NO_MOVEMENT && !IsMovement());
+        CurrentStateAllowActivation = newState == Player.State.PLAYING || (newState == Player.State.NO_MOVEMENT && !IsMovement());
         if (previousActivation != IsActivated)
             InvokeCanBeActivatedChanged();
     }
 
     protected virtual void Start()
     {
+        //If the ability has an icon, add a small GUI rectangle with the letter corresponding to the key.
         if (HasIcon())
         {
             GameObject keyToUsePrefab = Resources.Load<GameObject>(Paths.KEY_TO_USE);

@@ -3,7 +3,7 @@
 public class MoveInput : AbilityInput
 {
 
-    protected override bool FirstActivation()
+    public override bool FirstActivation()
     {
         return Input.GetMouseButtonDown(1);
     }

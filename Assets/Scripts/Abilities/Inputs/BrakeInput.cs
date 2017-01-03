@@ -5,7 +5,7 @@ public class BrakeInput : AbilityInput
 {
     private const int INPUT_NUMBER = 1;
 
-    protected override bool FirstActivation()
+    public override bool FirstActivation()
     {
         bool result = Input.GetKey(Inputs.GetKeyCode(INPUT_NUMBER));
         if (result)
@@ -18,7 +18,7 @@ public class BrakeInput : AbilityInput
         return Inputs.GetKeyForIcon(INPUT_NUMBER);
     }
 
-    protected override bool Cancellation()
+    public override bool Cancellation()
     {
         bool result = Input.GetKeyUp(Inputs.GetKeyCode(INPUT_NUMBER));
         if (result)

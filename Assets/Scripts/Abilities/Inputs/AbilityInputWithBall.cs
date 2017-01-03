@@ -20,7 +20,7 @@ public abstract class AbilityInputWithBall : AbilityInput
             InvokeCanBeActivatedChanged();
     }
 
-    protected override bool CanBeActivated()
+    protected override bool AdditionalActivationRequirementsAreMet()
     {
         return hasBall;
     }

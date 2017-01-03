@@ -22,16 +22,36 @@ public class PlayerController : PlayerView
     public PlayerBallController ballController;
     [HideInInspector]
     public AbilitiesManager abilitiesManager;
+    private PlayerMesh playerMesh;
+    public PlayerMesh PlayerMesh
+    {
+        get
+        {
+            return playerMesh;
+        }
+        set
+        {
+            Debug.Log("SetPlayerMesh");
+            playerMesh = value;
+            if (playerMesh == null)
+            {
+                animator = null;
+            }
+            else
+            {
+                animator = playerMesh.GetComponentInChildren<Animator>();
+            }
+        }
+    }
     [HideInInspector]
-    public PlayerMesh playerMesh;
-    
+    public Animator animator;
+
     void Awake()
     {
         movementManager = GetComponent<PlayerMovementManager>();
         abilitiesManager = GetComponent<AbilitiesManager>();
         ballController = GetComponent<PlayerBallController>();
         targetManager = GetComponent<TargetManager>();
-        Debug.Log("Set TM " + targetManager);
     }
 
     void LateUpdate()
@@ -100,7 +120,7 @@ public class PlayerController : PlayerView
     {
         GameObject meshPrefab = Resources.Load<GameObject>(Player.MyAvatarSettings.MESH_NAME);
         Mesh = Instantiate(meshPrefab);
-        playerMesh = Mesh.GetComponent<PlayerMesh>();
+        PlayerMesh = Mesh.GetComponent<PlayerMesh>();
         Mesh.transform.SetParent(transform, false);
         SetMaterials(Mesh);
     }
@@ -119,11 +139,11 @@ public class PlayerController : PlayerView
         //        }
         //    }
         //}
-        Assert.IsNotNull(playerMesh);
+        Assert.IsNotNull(PlayerMesh);
         Assert.IsNotNull(Player);
-        playerMesh.SetOwner(Player.IsMyPlayer);
+        PlayerMesh.SetOwner(Player.IsMyPlayer);
         Color teamColor = Colors.Teams[(int)Player.Team];
-        playerMesh.SetTeam(Player.Team);
+        PlayerMesh.SetTeam(Player.Team);
         //foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { if (renderer.tag == Tags.TeamColored) renderer.material.color = teamColor; }
         billboard.Color = teamColor;
     }
