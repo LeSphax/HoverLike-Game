@@ -74,7 +74,7 @@ namespace AbilitiesManagement
             if (CanUseAbility())
             {
                 controller.ballController.ThrowBall(target, power);
-                EffectsManager.View.RPC("ThrowBall", RPCTargets.All, controller.playerConnectionId);
+                EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }
         }
 
@@ -118,7 +118,7 @@ namespace AbilitiesManagement
             if (CanUseAbility())
             {
                 new StealPersistentEffect(this, duration);
-                EffectsManager.View.RPC("ShowStealing", RPCTargets.All, duration);
+                EffectsManager.View.RPC("ShowStealing", RPCTargets.All);
             }
         }
 

@@ -1,17 +1,23 @@
-﻿using Byn.Net;
-using PlayerManagement;
-using UnityEngine;
+﻿using UnityEngine;
 
+[RequireComponent(typeof(PlayerController))]
 public class EffectsManager : SlideBall.MonoBehaviour
 {
 
     public ParticleSystem BlueSmoke;
     public ParticleSystem Slow;
 
-    [MyRPC]
-    public void ThrowBall(ConnectionId id)
+    private PlayerController controller;
+
+    private void Awake()
     {
-        Players.players[id].controller.animator.SetTrigger("Throw");
+        controller = GetComponent<PlayerController>();
+    }
+
+    [MyRPC]
+    public void ThrowBall()
+    {
+        controller.animator.SetTrigger("Throw");
     }
 
     [MyRPC]
@@ -21,9 +27,9 @@ public class EffectsManager : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    public void ShowStealing(float duration)
+    public void ShowStealing()
     {
-        GetComponentInChildren<StealRenderer>().StartAnimating(duration);
+        controller.animator.SetTrigger("Steal");
     }
 
     public void ShockwaveOnPlayer(bool landing)
