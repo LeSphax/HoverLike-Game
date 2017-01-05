@@ -62,7 +62,7 @@ public class Tutorial : MonoBehaviour
 
     public void Start()
     {
-        if (JavascriptAPI.isFirstGame)
+        if (UserSettings.IsFirstGame)
             Reset();
         else
         {

@@ -9,7 +9,17 @@ public class TopPanel : MonoBehaviour {
 
     public event EmptyEventHandler BackPressed;
 
-	public string Status
+    public UserSettingsPanel settingsPanel;
+
+    private void Awake()
+    {
+        if (UserSettings.IsFirstGame)
+            settingsPanel.Open();
+        else
+            settingsPanel.Close();
+    }
+
+    public string Status
     {
         get
         {
@@ -36,5 +46,10 @@ public class TopPanel : MonoBehaviour {
     public void BackButton()
     {
         BackPressed.Invoke();
+    }
+
+    public void SettingsButton()
+    {
+        settingsPanel.Open();
     }
 }

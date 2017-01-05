@@ -32,12 +32,17 @@ Button_Leave "Leave"
 Button_Ok "Ok"
 Exit_Dialog "Do you really want to leave the room?"
 Client_Disconnected "The game was stopped because the host has disconnected"
-Room_Exists "A room with this name already exists, please choose another name."
+Room_Exists "A room with this name already exists, please choose another name. %e%e What about "
 Failed_Connect "The signaling server didn't respond."
+Cant_Create "It was not possible to create the server."
+Connecting "Connecting ... %e%e It should take less than 30 seconds."
 Feedback  "I would greatly appreciate it if you reported it at sbkerbrat@gmail.com :)"
 Doesnt_Exist "You cannot join this room because it doesn't exist anymore."
 Room_Blocked "You cannot join this room because the game has already started."
 Connection_Failed "It was not possible to connect to the room. Maybe the game has already started or the room doesn't exist."
+
+Settings_Problem "Some controls weren't assigned. %e%e Ok, we get it, you're a badass and you don't need every ability to win.%e I've got what you need, for more challenge try the combination Q,X,N,M,$"
+
 
 Sudden_Death "Sudden death"
 Warmup "Warmup"

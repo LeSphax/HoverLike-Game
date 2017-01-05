@@ -14,6 +14,7 @@ public class LobbyManager : MonoBehaviour
     {
         IDLE,
         ROOMLIST,
+        SETTINGS,
     }
 
     private State state;
@@ -42,6 +43,13 @@ public class LobbyManager : MonoBehaviour
                     //
                     topPanel.Status = "Looking for Game";
                     break;
+                case State.SETTINGS:
+                    MainPanel.SetActive(false);
+                    //
+                    RoomListPanel.gameObject.SetActive(false);
+                    //
+                    topPanel.Status = "Setting Settings int the Settings Panel";
+                    break;
             }
             state = value;
         }
@@ -59,6 +67,14 @@ public class LobbyManager : MonoBehaviour
             MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
         }
         topPanel.RoomName = "";
+    }
+
+    private void Start()
+    {
+        if (RequestParameters.HasKey("RoomName"))
+        {
+            MyComponents.NetworkManagement.ConnectToRoom(RequestParameters.GetValue("RoomName"));
+        }
     }
 
     private void InvokeConnectToDefaultRoom()
@@ -80,7 +96,7 @@ public class LobbyManager : MonoBehaviour
         {
             MyComponents.NetworkManagement.RoomCreated -= LoadRoom;
             MyComponents.NetworkManagement.ConnectedToRoom -= LoadRoom;
-            topPanel.BackPressed += GoBack;
+            topPanel.BackPressed -= GoBack;
         }
     }
 
@@ -127,6 +143,7 @@ public class LobbyManager : MonoBehaviour
     {
         Reset();
         MyComponents.ResetNetworkComponents();
+        MyState = State.IDLE;
     }
 
     internal void Reset()

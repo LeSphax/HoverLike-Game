@@ -65,12 +65,12 @@ public class SpecialBuild
     {
         PrepareBuild();
         ChangeScene(Paths.SCENE_LOBBY);
-        EditorVariables lobbyManager = ((EditorVariables)UnityEngine.Object.FindObjectOfType(typeof(EditorVariables)));
-        if (lobbyManager.numberPlayersToStartGame < 2)
+        EditorVariables editorVariables = ((EditorVariables)UnityEngine.Object.FindObjectOfType(typeof(EditorVariables)));
+        if (editorVariables.numberPlayersToStartGame < 2)
         {
-            lobbyManager.numberPlayersToStartGame = 2;
+            editorVariables.numberPlayersToStartGame = 2;
         }
-        numberOfGamesToLaunch = lobbyManager.numberPlayersToStartGame - 1;
+        numberOfGamesToLaunch = editorVariables.numberPlayersToStartGame - 1;
 
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
@@ -108,8 +108,6 @@ public class SpecialBuild
 
     public static void BeforeBuildWebGl()
     {
-        ((EditorVariables)UnityEngine.Object.FindObjectOfType(typeof(EditorVariables))).startGameImmediately = false;
-        ((NetworkManagement)UnityEngine.Object.FindObjectOfType(typeof(NetworkManagement))).server = NetworkManagement.Server.HEROKU;
     }
 
     [MenuItem("MyTools/MakeViewIds %e")]

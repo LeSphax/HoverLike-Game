@@ -45,6 +45,7 @@ public class Language
         {
             string key = KeysAndValues[i].TrimEnd().TrimStart();
             string value = KeysAndValues[i + 1].Trim();
+            value = value.Replace("%e", "\n");
             texts.Add(key, value);
         }
     }

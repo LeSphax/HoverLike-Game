@@ -7,11 +7,11 @@ public class StealInput : AbilityInput
 
     public override bool FirstActivation()
     {
-        return Input.GetKeyDown(Inputs.GetKeyCode(INPUT_NUMBER));
+        return Input.GetKeyDown(UserSettings.GetKeyCode(INPUT_NUMBER));
     }
 
     public override string GetKey()
     {
-        return Inputs.GetKeyForIcon(INPUT_NUMBER);
+        return UserSettings.GetKeyForIcon(INPUT_NUMBER);
     }
 }

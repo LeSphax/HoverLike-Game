@@ -7,7 +7,7 @@ public class BrakeInput : AbilityInput
 
     public override bool FirstActivation()
     {
-        bool result = Input.GetKey(Inputs.GetKeyCode(INPUT_NUMBER));
+        bool result = Input.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER));
         if (result)
             Players.MyPlayer.controller.abilitiesManager.EffectsManager.ActivateSlow(true);
         return result;
@@ -15,12 +15,12 @@ public class BrakeInput : AbilityInput
 
     public override string GetKey()
     {
-        return Inputs.GetKeyForIcon(INPUT_NUMBER);
+        return UserSettings.GetKeyForIcon(INPUT_NUMBER);
     }
 
     public override bool Cancellation()
     {
-        bool result = Input.GetKeyUp(Inputs.GetKeyCode(INPUT_NUMBER));
+        bool result = Input.GetKeyUp(UserSettings.GetKeyCode(INPUT_NUMBER));
         if (result)
             Players.MyPlayer.controller.abilitiesManager.EffectsManager.ActivateSlow(false);
         return result;

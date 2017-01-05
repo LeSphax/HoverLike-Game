@@ -333,12 +333,19 @@ namespace PlayerManagement
         public event SceneChangeHandler SceneChanged;
         public event StateChangeHandler StateChanged;
         public event HasBallChangeHandler HasBallChanged;
+        public event NicknameChangeHandler NicknameChanged;
 
         public PlayerController controller;
         public PlayerBallController ballController;
         public GameObject gameobjectAvatar;
 
         internal PlayerFlags flagsChanged;
+
+        internal void NotifyNicknameChanged()
+        {
+            if (NicknameChanged != null)
+                NicknameChanged.Invoke(nickname);
+        }
 
         internal void NotifyTeamChanged()
         {
@@ -394,6 +401,7 @@ namespace PlayerManagement
                 nickname = value;
                 if (id == Players.myPlayerId)
                     flagsChanged |= PlayerFlags.NICKNAME;
+                NotifyNicknameChanged();
             }
         }
 

@@ -113,6 +113,7 @@ public class PlayerInfo : PlayerView
         if (Player.Team != Team.NONE)
             CurrentTeam = Player.Team;
         Player.gameobjectAvatar = gameObject;
+        Player.NicknameChanged += ChangeNickname;
         Player.TeamChanged += ChangeTeam;
     }
 
@@ -121,11 +122,17 @@ public class PlayerInfo : PlayerView
         CurrentTeam = newTeam;
     }
 
+    private void ChangeNickname(string nickname)
+    {
+        PlayerName = nickname;
+    }
+
     void OnDestroy()
     {
         if (MyComponents.TimeManagement != null)
             MyComponents.TimeManagement.LatencyChanged -= SetLatency;
         if (Player != null)
             Player.TeamChanged -= ChangeTeam;
+        Player.NicknameChanged -= ChangeNickname;
     }
 }

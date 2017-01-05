@@ -84,7 +84,7 @@ namespace AbilitiesManagement
             if (CanUseAbility())
             {
                 new DashPersistentEffect(this, position);
-                Steal(DashPersistentEffect.dashDuration * 2);
+                new StealPersistentEffect(this, DashPersistentEffect.dashDuration * 2);
                 EffectsManager.View.RPC("ShowSmoke", RPCTargets.All);
             }
         }
@@ -126,7 +126,10 @@ namespace AbilitiesManagement
         private void Pass(ConnectionId id)
         {
             if (CanUseAbility())
+            {
                 new PassPersistentEffect(this, id, passCurve);
+                EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
+            }
         }
 
         [MyRPC]

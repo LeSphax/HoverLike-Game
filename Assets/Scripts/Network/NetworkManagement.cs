@@ -23,39 +23,7 @@ namespace SlideBall
         public static ConnectionId SERVER_CONNECTION_ID = new ConnectionId(-1);
         public static ConnectionId INVALID_CONNECTION_ID = new ConnectionId(-100);
 
-        private const string HEROKU_URL = "ws://sphaxtest.herokuapp.com";
-        private const string BCS_URL = "wss://because-why-not.com:12777/chatapp";
-
-        private const string LOCALHOST_URL = "ws://localhost:5000";
-
-        public enum Server
-        {
-            LOCALHOST,
-            HEROKU,
-            BCS,
-        }
-
-        public Server server;
-
         private LatencySimulation latencySimulation;
-
-        public string uSignalingUrl
-        {
-            get
-            {
-                switch (server)
-                {
-                    case Server.LOCALHOST:
-                        return LOCALHOST_URL;
-                    case Server.HEROKU:
-                        return HEROKU_URL;
-                    case Server.BCS:
-                        return BCS_URL;
-                    default:
-                        throw new UnhandledSwitchCaseException(server);
-                }
-            }
-        }
 
         private enum State
         {
@@ -144,9 +112,6 @@ namespace SlideBall
 
         private void Awake()
         {
-#if UNITY_WEBGL
-            server = Server.HEROKU;
-#endif
             Reset();
         }
 
@@ -164,7 +129,7 @@ namespace SlideBall
 
         private void Setup()
         {
-            mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(uSignalingUrl, new string[] { uStunServer });
+            mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(EditorVariables.ServerURL, new string[] { uStunServer });
             if (mNetwork != null)
             {
                 if (EditorVariables.AddLatency)
@@ -268,7 +233,7 @@ namespace SlideBall
                                         }
                                         else
                                         {
-                                            MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + "\n What about " + Random_Name_Generator.GetRandomName() + "?");
+                                            MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + Random_Name_Generator.GetRandomName() + "?");
                                         }
                                     }
                                     else
@@ -301,8 +266,8 @@ namespace SlideBall
                                         Debug.LogError("Server closed. No incoming connections possible until restart.");
                                         break;
                                     case State.IDLE:
-                                        MyComponents.PopUp.Show("It was not possible to create the server." + "\n" + Language.Instance.texts["Feedback"]);
-                                        Debug.LogError("Didn't manage to create the server " + RoomName + " retrying ...");
+                                        MyComponents.PopUp.Show(Language.Instance.texts["Cant_Create"] + "\n" + Language.Instance.texts["Feedback"]);
+                                        Debug.LogError("Didn't manage to create the server " + RoomName);
                                         //Reset();
                                         //CreateRoom(RoomName);
                                         break;
@@ -497,7 +462,7 @@ namespace SlideBall
             Setup();
             RoomName = roomName;
             mNetwork.Connect(roomName);
-            MyComponents.PopUp.Show("Connecting to Room ...");
+            MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
             Debug.LogError("Connecting to " + roomName + " ...");
         }
 
@@ -515,7 +480,7 @@ namespace SlideBall
             EnsureLength(roomName);
             mNetwork.StartServer(roomName);
             RoomName = roomName;
-            MyComponents.PopUp.Show("Connecting to server ...");
+            MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
 
             Debug.LogError("StartServer " + roomName);
         }
@@ -547,7 +512,7 @@ namespace SlideBall
         {
             Players.CreatePlayer(id);
             Players.myPlayerId = id;
-            Players.MyPlayer.Nickname = JavascriptAPI.nickname;
+            Players.MyPlayer.Nickname = UserSettings.Nickname;
             Players.MyPlayer.SceneId = Scenes.currentSceneId;
             NavigationManager.FinishedLoadingScene += (previousSceneId, currentSceneId) => { Players.MyPlayer.SceneId = currentSceneId; };
         }

@@ -19,7 +19,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 4000012997677428}
-  - 95: {fileID: 95000013038510066}
   m_Layer: 0
   m_Name: Skate
   m_TagString: Untagged
@@ -2113,28 +2112,11 @@ Animator:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000013785057580}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 38a594e078640ae41b9ff92fc6616303, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 3974b181f8f59754ca61fd0985a39b73, type: 3}
   m_Controller: {fileID: 9100000, guid: d1f7b1499029185448fdad584a9c8167, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
---- !u!95 &95000013038510066
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010179749582}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 7b3d658a34f2cc14b9ee6439f8686db5, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
