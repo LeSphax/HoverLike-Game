@@ -1,4 +1,4 @@
-var nickname = "Leroy Jenkins";
+var nickname = "Leeroy Jenkins";
 var unity_ready = false;
 var startGame = false;
 var isChrome = !!window.chrome && !!window.chrome.webstore;
@@ -8,7 +8,7 @@ var cookie_inputs = Cookies.get('inputs');
 var isFirstGame = true;
 
 $(function() {
-
+  $("#configuration").css('display','none');
   if (false && !isChrome){
     $("#configuration_content").empty();
     $("#configuration_content").html('At the moment, the game only works on Google chrome. ' +
@@ -57,6 +57,8 @@ $(".input_button").each(function(){
 });
 });
 
+startPlaying();
+
 function resizeCanvas(){
   $("#canvas").attr('width', $(document).width());
   $("#canvas").attr('height', $(document).height());
@@ -82,7 +84,7 @@ function TryStartGame(){
     SendMessage("NetworkScripts", "SetNickname", nickname);
     SendMessage("NetworkScripts", "SetConfiguration", GetConfiguration());
     if (!isFirstGame){
-    SendMessage("NetworkScripts", "IsNotFirstGame");
+      SendMessage("NetworkScripts", "IsNotFirstGame");
 
     }
   }
