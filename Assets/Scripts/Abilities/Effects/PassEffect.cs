@@ -8,7 +8,8 @@ public class PassEffect : AbilityEffect
     public override void ApplyOnTarget(params object[] parameters)
     {
         ConnectionId targetId = (ConnectionId)parameters[0];
-        Players.MyPlayer.controller.View.RPC("Pass", RPCTargets.Server, targetId);
+        if (targetId != Players.INVALID_PLAYER_ID)
+            Players.MyPlayer.controller.View.RPC("Pass", RPCTargets.Server, targetId);
     }
 
 

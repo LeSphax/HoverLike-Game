@@ -9,7 +9,8 @@ public class Goal : MonoBehaviour
     {
         if (MyComponents.NetworkManagement.isServer && collider.gameObject.tag == Tags.Ball)
         {
-            MyComponents.MatchManager.TeamScored(teamNumber);
+            if (!MyComponents.BallState.IsAttached())
+                MyComponents.MatchManager.TeamScored(teamNumber);
         }
     }
 

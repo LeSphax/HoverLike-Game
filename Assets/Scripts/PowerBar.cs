@@ -6,7 +6,7 @@ public class PowerBar : MonoBehaviour
 {
 
     public float powerValue;
-    public const float FILLING_INCREMENT = 1.5f;
+    public const float FILLING_INCREMENT = 2.5f;
     public GameObject sliderPrefab;
 
     private Slider slider;

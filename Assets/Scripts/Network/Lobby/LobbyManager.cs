@@ -63,7 +63,7 @@ public class LobbyManager : MonoBehaviour
         MyState = State.IDLE;
         if (EditorVariables.StartGameImmediately)
         {
-            MyComponents.NetworkManagement.ServerStartFailed += InvokeConnectToDefaultRoom;
+            MyComponents.NetworkManagement.ServerStartFailed += ConnectToDefaultRoom;
             MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
         }
         topPanel.RoomName = "";
@@ -77,10 +77,10 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    private void InvokeConnectToDefaultRoom()
+    private void ConnectToDefaultRoom()
     {
-        MyComponents.NetworkManagement.ServerStartFailed -= InvokeConnectToDefaultRoom;
-        ConnectToDefaultRoom();
+        MyComponents.NetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
+        MyComponents.NetworkManagement.ConnectToRoom(DEFAULT_ROOM);
     }
 
     protected void OnEnable()
@@ -103,11 +103,6 @@ public class LobbyManager : MonoBehaviour
     private void LoadRoom()
     {
         NavigationManager.LoadScene(Scenes.Room, false, false);
-    }
-
-    void ConnectToDefaultRoom()
-    {
-        MyComponents.NetworkManagement.ConnectToRoom(DEFAULT_ROOM);
     }
 
     public void CreateGame()

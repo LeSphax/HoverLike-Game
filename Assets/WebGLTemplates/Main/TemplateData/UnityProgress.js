@@ -31,6 +31,7 @@ function UnityProgress (dom) {
 
 	this.Clear = function() {
 		document.getElementById("loadingBox").style.display = "none";
+		document.getElementById("unity-player").style.display = "inline";
 	}
 
 	this.Update = function() {
