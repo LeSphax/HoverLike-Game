@@ -8,9 +8,9 @@
   <link rel="shortcut icon" href="TemplateData/favicon.ico" />
   <link href="webpage/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   
-  <script type="text/javascript" src="https://code.createjs.com/tweenjs-0.6.1.min.js"></script>
-    <script type="text/javascript" src="TemplateData/CSSPlugin.js"></script>
-    <script src="TemplateData/UnityProgress.js"></script>
+  <link rel="stylesheet" href="TemplateData/ProgressBar.css">
+  <script src="webpage/jquery/jquery.min.js"></script>
+  <script src="TemplateData/UnityProgress.js"></script>
   <style>
     .center {
       margin: 0 auto;
@@ -49,23 +49,22 @@
 </head>
 <body class="template" style="background-color:#363636;">
 
-<div id="unity-player" style="display: inline">
-  <div class="template-wrap clear">
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" height="%UNITY_HEIGHT%px" width="%UNITY_WIDTH%px"></canvas>
-  </div>
-    <div id="loadingBox">
-      <div id="bgBar"></div>
-      <div id="progressBar"></div>
-      <img id="spinner" src="TemplateData/spinner.gif" style="display: none; margin: 0 auto" />
-      <p id="loadingInfo">Loading...</p>
+  <div id="unity-player" style="display: inline">
+    <div class="template-wrap clear">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" height="%UNITY_HEIGHT%px" width="%UNITY_WIDTH%px"></canvas>
     </div>
-  %UNITY_WEBGL_LOADER_GLUE%
-</div>
+    <div class="unity_progress">
+      <b class="progress__bar">
+        <span class="progress__text">
+          Progress: <em>0%</em>
+        </span>
+      </b>
+    </div>
+    %UNITY_WEBGL_LOADER_GLUE%
+  </div>
 
-<script src="webpage/jquery/jquery.min.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="webpage/bootstrap/js/bootstrap.min.js"></script>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="webpage/bootstrap/js/bootstrap.min.js"></script>
 
 </body>
 </html>

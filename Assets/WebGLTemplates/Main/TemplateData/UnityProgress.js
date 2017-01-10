@@ -2,14 +2,65 @@ function init() {
 
 }
 
+
+var percent = 0,
+update,
+resetColors,
+speed = 200,
+orange = 30,
+yellow = 55,
+green = 85,
+timer;
+
+resetColors = function() {
+
+  $(".progress__bar")
+  .removeClass("progress__bar--green")
+  .removeClass("progress__bar--yellow")
+  .removeClass("progress__bar--orange")
+  .removeClass("progress__bar--blue");
+  
+  $(".unity_progress")
+  .removeClass("progress--complete");
+  
+};
+
+function update(currentProgress) {
+  $(".unity_progress").addClass("progress--active");
+  var percent = parseFloat( currentProgress.toFixed(1) ) * 100;
+
+  $(".progress__text").find("em").text( percent + "%" );
+
+  if( percent >= 100 ) {
+
+    percent = 100;
+    $(".unity_progress").addClass("progress--complete");
+    $(".progress__bar").addClass("progress__bar--blue");
+    $(".progress__text").find("em").text( "Complete" );
+
+  } else {
+
+    if( percent >= green ) {
+      $(".progress__bar").addClass("progress__bar--green");
+    }
+
+    else if( percent >= yellow ) {
+      $(".progress__bar").addClass("progress__bar--yellow");
+    }
+
+    else if( percent >= orange ) {
+      $(".progress__bar").addClass("progress__bar--orange");
+    }
+  }
+
+  $(".progress__bar").css({ width: percent + "%" });
+};
+
 function UnityProgress (dom) {
 	this.progress = 0.0;
 	this.message = "";
 	this.dom = dom;
 	var parent = dom.parentNode;
-
-	createjs.CSSPlugin.install(createjs.Tween);
-	createjs.Ticker.setFPS(60);
 
 	this.SetProgress = function (progress) { 
 		if (this.progress < progress) {
@@ -17,31 +68,29 @@ function UnityProgress (dom) {
 		}
 		if (progress == 1) {
 			this.SetMessage("Preparing...");
-			document.getElementById("spinner").style.display = "inherit";
-			document.getElementById("bgBar").style.display = "none";
-			document.getElementById("progressBar").style.display = "none";
-		} 
-		this.Update();
-	}
+      $(".unity_progress").css("display","none");
+    } 
+    this.Update();
+  }
 
-	this.SetMessage = function (message) { 
-		this.message = message; 
-		this.Update();
-	}
+  this.SetMessage = function (message) { 
+    this.message = message; 
+    this.Update();
+  }
 
-	this.Clear = function() {
-		document.getElementById("loadingBox").style.display = "none";
-		document.getElementById("unity-player").style.display = "inline";
-	}
+  this.Clear = function() {
+    $(".unity_progress").css("display","none");
+  }
 
-	this.Update = function() {
-		var length = 200 * Math.min(this.progress, 1);
-		bar = document.getElementById("progressBar");
-		createjs.Tween.removeTweens(bar);
-		createjs.Tween.get(bar).to({width: length}, 500, createjs.Ease.sineOut);
-		bar.style.width = length + "px";
-		document.getElementById("loadingInfo").innerHTML = this.message;
-	}
+  this.Update = function() {
+    update(this.progress);
+    $(".progress__text").html(this.message);
+  }
 
-	this.Update();
+  this.Update();
 }
+
+
+
+
+
