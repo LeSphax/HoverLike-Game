@@ -43,8 +43,7 @@
   background-size: 100px 30px, 130px 30px, 130px 30px;
   background-position: -20% center, right center, left center;
   background-repeat: no-repeat, no-repeat, no-repeat;
-  -webkit-transition: opacity 0.2s ease, width 0.8s ease-out, background-color 1s ease, border-color 0.3s ease, box-shadow 1s ease;
-  transition: opacity 0.2s ease, width 0.8s ease-out, background-color 1s ease, border-color 0.3s ease, box-shadow 1s ease;
+
   -webkit-animation: pulse 2s ease-out infinite;
           animation: pulse 2s ease-out infinite;
   background-color: rgba(201, 4, 20, 0.95);
