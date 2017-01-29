@@ -15,7 +15,7 @@ namespace AbilitiesManagement
         public AnimationCurve passCurve;
         public AnimationCurve jumpCurve;
 
-        private const float BLOCK_POWER = 100;
+        private const float BLOCK_POWER = 250;
 
         private EffectsManager effectsManager;
         internal EffectsManager EffectsManager

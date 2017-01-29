@@ -62,8 +62,11 @@ public class Tutorial : MonoBehaviour
 
     public void Start()
     {
-        if (UserSettings.IsFirstGame)
+        if (!UserSettings.SeenTutorial)
+        {
             Reset();
+            UserSettings.SeenTutorial = true;
+        }
         else
         {
             MyState = State.CLOSED;

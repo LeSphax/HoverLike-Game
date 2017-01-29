@@ -39,6 +39,6 @@ public class ShootTargeting : AbilityTargeting
     private void Activate()
     {
         Vector3 position = Functions.GetMouseWorldPosition();
-        callback.Invoke(Players.MyPlayer.controller, position);
+        callback.Invoke(true,Players.MyPlayer.controller, position);
     }
 }

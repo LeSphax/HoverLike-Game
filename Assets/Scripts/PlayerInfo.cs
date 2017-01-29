@@ -132,7 +132,9 @@ public class PlayerInfo : PlayerView
         if (MyComponents.TimeManagement != null)
             MyComponents.TimeManagement.LatencyChanged -= SetLatency;
         if (Player != null)
+        {
             Player.TeamChanged -= ChangeTeam;
-        Player.NicknameChanged -= ChangeNickname;
+            Player.NicknameChanged -= ChangeNickname;
+        }
     }
 }

@@ -96,7 +96,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         //Wait until everyone press the ready button
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         matchCountdown.TimerFinished += EndMatch;
-        matchCountdown.View.RPC("StartTimer", RPCTargets.All, MATCH_DURATION);
+        matchCountdown.View.RPC("StartMatch", RPCTargets.All, MATCH_DURATION, 10);
         MyState = State.ENDING;
         Scoreboard.ResetScore();
         Entry();
@@ -145,7 +145,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         if (MyState == State.ENDING)
         {
             getReadyCountdown.TimerFinished += SendInvokeStartRound;
-            getReadyCountdown.View.RPC("StartTimer", RPCTargets.All, ENTRY_DURATION);
+            getReadyCountdown.View.RPC("StartTimer", RPCTargets.All, ENTRY_DURATION, "Go !");
             MyState = State.STARTING;
         }
         PlayerSpawner spawner = gameObject.GetComponent<PlayerSpawner>();
@@ -239,41 +239,20 @@ public class MatchManager : SlideBall.MonoBehaviour
         MyState = State.PLAYING;
     }
 
-    void Update()
+    [MyRPC]
+    public void ManualEnd()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift))
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-                View.RPC("SetReady", RPCTargets.All);
-            else if (Input.GetKeyDown(KeyCode.E))
-                View.RPC("ManualEnd", RPCTargets.All);
-            else if (Input.GetKeyDown(KeyCode.M))
-                View.RPC("ManualEntry", RPCTargets.Server);
-            else if (Input.GetKeyDown(KeyCode.B))
-                View.RPC("ManualScoreGoal", RPCTargets.Server, 0);
-            else if (Input.GetKeyDown(KeyCode.R))
-                View.RPC("ManualScoreGoal", RPCTargets.Server, 1);
-        }
-        if (MyComponents.BallState != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
-        {
-            View.RPC("ManualEntry", RPCTargets.Server);
-        }
+        matchCountdown.TimeLeft = 2;
     }
 
     [MyRPC]
-    private void ManualEnd()
-    {
-        matchCountdown.SetTimeLeft(2);
-    }
-
-    [MyRPC]
-    private void ManualScoreGoal(int teamNumber)
+    public void ManualScoreGoal(int teamNumber)
     {
         TeamScored(teamNumber);
     }
 
     [MyRPC]
-    private void ManualEntry()
+    public void ManualEntry()
     {
         MyState = State.ENDING;
         getReadyCountdown.View.RPC("StopTimer", RPCTargets.All);

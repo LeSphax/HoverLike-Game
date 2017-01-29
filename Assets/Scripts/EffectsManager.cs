@@ -5,7 +5,7 @@ public class EffectsManager : SlideBall.MonoBehaviour
 {
 
     public ParticleSystem BlueSmoke;
-    public ParticleSystem Slow;
+    public ParticleSystem Braking;
 
     private PlayerController controller;
 
@@ -39,13 +39,13 @@ public class EffectsManager : SlideBall.MonoBehaviour
 
     public void ActivateSlow(bool activate)
     {
-        if (activate && !Slow.isPlaying)
+        if (activate && !Braking.isPlaying)
         {
-            Slow.Play();
+            Braking.Play();
         }
-        else if (!activate && Slow.isPlaying)
+        else if (!activate && Braking.isPlaying)
         {
-            Slow.Stop();
+            Braking.Stop();
         }
     }
 

@@ -13,7 +13,7 @@ namespace AbilitiesManagement
 {
     public class JumpPersistentEffect : PersistentEffect
     {
-
+        
         float lowestPoint;
         const float highestPoint = 20f;
 
@@ -26,7 +26,6 @@ namespace AbilitiesManagement
             lowestPoint = manager.controller.Player.SpawningPoint.y;
             manager.controller.GetComponent<Rigidbody>().useGravity = false;
             manager.EffectsManager.ShockwaveOnPlayer(false);
-
         }
 
         public override void StopEffect()

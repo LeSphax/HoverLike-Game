@@ -1,7 +1,14 @@
-﻿public class NotInitializedStrategy : PlayerMovementStrategy
+﻿using System;
+
+public class NotInitializedStrategy : PlayerMovementStrategy
 {
     protected override void Move()
     {
-//DoNothing
+        //DoNothing
+    }
+
+    protected override void StopMoving()
+    {
+        //DoNothing
     }
 }

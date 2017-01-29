@@ -31,7 +31,6 @@ public class PlayerController : PlayerView
         }
         set
         {
-            Debug.Log("SetPlayerMesh");
             playerMesh = value;
             if (playerMesh == null)
             {
@@ -52,14 +51,6 @@ public class PlayerController : PlayerView
         abilitiesManager = GetComponent<AbilitiesManager>();
         ballController = GetComponent<PlayerBallController>();
         targetManager = GetComponent<TargetManager>();
-    }
-
-    void LateUpdate()
-    {
-        if (Player != null && Player.IsMyPlayer)
-        {
-            GameObject.FindGameObjectWithTag("GameController").transform.position = transform.position;
-        }
     }
 
     public void InitView(object[] parameters)

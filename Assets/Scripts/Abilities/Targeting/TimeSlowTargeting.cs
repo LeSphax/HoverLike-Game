@@ -42,7 +42,7 @@ public class TimeSlowTargeting : AbilityTargeting
             UpdateTargeterPosition();
             if (Input.GetMouseButtonDown(0))
             {
-                callback.Invoke(targeter.transform.position - (targeter.transform.position.y - Constants.GROUND_LEVEL) * Vector3.up);
+                callback.Invoke(true,targeter.transform.position - (targeter.transform.position.y - Constants.GROUND_LEVEL) * Vector3.up);
                 CancelTargeting();
             }
         }

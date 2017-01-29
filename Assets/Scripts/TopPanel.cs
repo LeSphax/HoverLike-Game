@@ -13,7 +13,7 @@ public class TopPanel : MonoBehaviour {
 
     private void Awake()
     {
-        if (UserSettings.IsFirstGame)
+        if (UserSettings.Nickname == "")
             settingsPanel.Open();
         else
             settingsPanel.Close();

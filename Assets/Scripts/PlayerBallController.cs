@@ -112,7 +112,7 @@ namespace PlayerBallControl
             }
         }
 
-        private void SetBallSpeed(Vector3 target, float power)
+        public void SetBallSpeed(Vector3 target, float power)
         {
             PrepareForThrowing();
             Ball.GetComponent<BallMovementView>().Throw(target, power);

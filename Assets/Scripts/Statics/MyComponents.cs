@@ -48,8 +48,8 @@ public static class MyComponents
         {
             if (networkManagement == null)
             {
-                GameObject go;
-                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
+                GameObject go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts);
+                if (go != null)
                     networkManagement = go.GetComponent<NetworkManagement>();
             }
             return networkManagement;
@@ -147,10 +147,12 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+            //Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (matchManager == null)
             {
-                matchManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<MatchManager>();
+                GameObject go = GameObject.FindGameObjectWithTag(Tags.Room);
+                if (go != null)
+                    matchManager = go.GetComponent<MatchManager>();
             }
             return matchManager;
         }

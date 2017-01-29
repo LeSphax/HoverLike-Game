@@ -49,7 +49,7 @@ public class PassTargeting : AbilityTargeting
     public override void ReactivateTargeting()
     {
         ConnectionId playerId = GetPlayerAtTargetPosition();
-        callback.Invoke(playerId);
+        callback.Invoke(playerId != Players.INVALID_PLAYER_ID, playerId);
         CancelTargeting();
     }
 

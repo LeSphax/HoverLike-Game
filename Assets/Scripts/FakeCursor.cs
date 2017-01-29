@@ -21,14 +21,14 @@ public class FakeCursor : BaseInputModule
     public GameObject cursorObject = null;
 
     // The same event system used on the Canvas
-    public EventSystem eventSystem = null;
+    public EventSystem m_eventSystem = null;
     //private GameObject targetObject = null;
 
     // Use this for initialization
     protected override void Start()
     {
         base.Start();
-        if (cursorObject == null || eventSystem == null)
+        if (cursorObject == null || m_eventSystem == null)
         {
             Debug.LogError("Set the game objects in the cursor module.");
             GameObject.Destroy(gameObject);
@@ -37,7 +37,7 @@ public class FakeCursor : BaseInputModule
 
     protected virtual void Update()
     {
-        cursorObject.transform.position =cursorObject.GetComponent<RectTransform>().position + 10f * Vector3.right * (Input.GetAxis("Mouse X"));
+        cursorObject.transform.position = cursorObject.GetComponent<RectTransform>().position + 10f * Vector3.right * (Input.GetAxis("Mouse X"));
         cursorObject.transform.position = cursorObject.GetComponent<RectTransform>().position + 10f * Vector3.up * (Input.GetAxis("Mouse Y"));
     }
 
@@ -56,9 +56,9 @@ public class FakeCursor : BaseInputModule
         Vector2 rectPosition = new Vector2(screenPos.x * scaleFactorX, screenPos.y * scaleFactorY);
 
         // Raycasting
-        PointerEventData pointer = new PointerEventData(eventSystem);
+        PointerEventData pointer = new PointerEventData(m_eventSystem);
         pointer.position = rectPosition;
-        eventSystem.RaycastAll(pointer, rayResults);
+        m_eventSystem.RaycastAll(pointer, rayResults);
 
         if (rayResults.Count > 0)
         {

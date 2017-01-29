@@ -1,0 +1,163 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: UsedShader
+  m_Shaders:
+    data:
+      first: {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 66, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: DIRECTIONAL
+          passType: 4
+        - keywords: DIRECTIONAL _EMISSION
+          passType: 4
+        - keywords: DIRECTIONAL _ALPHAPREMULTIPLY_ON _EMISSION
+          passType: 4
+        - keywords: DIRECTIONAL _EMISSION _NORMALMAP
+          passType: 4
+        - keywords: DIRECTIONAL _NORMALMAP
+          passType: 5
+        - keywords: POINT _NORMALMAP
+          passType: 5
+        - keywords: SHADOWS_DEPTH
+          passType: 8
+        - keywords: SHADOWS_DEPTH _ALPHAPREMULTIPLY_ON
+          passType: 8
+    data:
+      first: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: DIRECTIONAL
+          passType: 4
+    data:
+      first: {fileID: 106, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: _SUNDISK_SIMPLE
+          passType: 0
+    data:
+      first: {fileID: 200, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 202, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 207, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 9000, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 9001, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 9002, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 9003, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 10720, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 10750, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: c7e45cea273234c4ba74499b7f36ace0, type: 3}
+      second:
+        variants:
+        - keywords: DIRECTIONAL DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF LIGHTMAP_OFF
+          passType: 4
+        - keywords: DIRECTIONAL DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF LIGHTMAP_OFF
+          passType: 5
+        - keywords: DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF LIGHTMAP_OFF POINT
+          passType: 5
+        - keywords: SHADOWS_DEPTH
+          passType: 8
+    data:
+      first: {fileID: 4800000, guid: 5412e908c39e0744d9e19aebdbc1ef7d, type: 3}
+      second:
+        variants:
+        - keywords: DIRECTIONAL
+          passType: 4
+        - keywords: POINT
+          passType: 5
+    data:
+      first: {fileID: 4800000, guid: 8177f3e11b593f84d876b1bcb6e3a885, type: 3}
+      second:
+        variants:
+        - keywords: DIRECTIONAL
+          passType: 4
+    data:
+      first: {fileID: 4800000, guid: be1c2af9665106e4f872196ae7d7ea9d, type: 3}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+        - keywords: DIRECTIONAL
+          passType: 4
+        - keywords: POINT
+          passType: 5
+    data:
+      first: {fileID: 4800000, guid: 21df5326bee9cfc469ef92bbc043c91c, type: 3}
+      second:
+        variants:
+        - keywords: 
+          passType: 0
+    data:
+      first: {fileID: 4800000, guid: f6ae87e1501b419428612d78248fd0b2, type: 3}
+      second:
+        variants:
+        - keywords: DIRECTIONAL
+          passType: 4
+        - keywords: SHADOWS_DEPTH
+          passType: 8

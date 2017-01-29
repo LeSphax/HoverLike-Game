@@ -6,19 +6,24 @@ using UnityEngine.Assertions;
 
 public class UserSettings
 {
-    private static bool? isFirstGame = null;
-    public static bool IsFirstGame
+    private static bool? seenTutorial = null;
+    public static bool SeenTutorial
     {
         get
         {
-            if (isFirstGame == null)
+            if (seenTutorial == null)
             {
-                int value = PlayerPrefs.GetInt("IsFirstGame", 1);
-                isFirstGame = value == 1;
-                PlayerPrefs.SetInt("IsFirstGame", 0);
+                int value = PlayerPrefs.GetInt("SeenTutorial", 1);
+                seenTutorial = value == 1;
                 PlayerPrefs.Save();
             }
-            return isFirstGame.Value;
+            return seenTutorial.Value;
+        }
+        set
+        {
+            seenTutorial = value;
+            PlayerPrefs.SetInt("SeenTutorial", value ? 1 : 0);
+            PlayerPrefs.Save();
         }
     }
 
@@ -39,7 +44,7 @@ public class UserSettings
             PlayerPrefs.SetString("Nickname", nickname);
             PlayerPrefs.Save();
             if (Players.MyPlayer != null)
-            Players.MyPlayer.Nickname = nickname;
+                Players.MyPlayer.Nickname = nickname;
         }
     }
 
@@ -50,8 +55,10 @@ public class UserSettings
         if (keys == null)
         {
             string defaultKeys = "QWER ";
+            Debug.Log("---------LANGUAGE " + Application.systemLanguage);
             if (Application.systemLanguage == SystemLanguage.French)
             {
+                Debug.Log("Language is French !");
                 defaultKeys = "AZER ";
             }
             keys = PlayerPrefs.GetString("Keys", defaultKeys);

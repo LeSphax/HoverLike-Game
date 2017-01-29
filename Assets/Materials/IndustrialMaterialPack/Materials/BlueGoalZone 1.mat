@@ -7,10 +7,10 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: BlueGoalZone 1
-  m_Shader: {fileID: 4800000, guid: c7e45cea273234c4ba74499b7f36ace0, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: _NORMALMAP
   m_LightmapFlags: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
@@ -107,8 +107,14 @@ Material:
         name: _Gloss
       second: 0.72
     - first:
+        name: _GlossMapScale
+      second: 1
+    - first:
         name: _Glossiness
       second: 0.5
+    - first:
+        name: _GlossyReflections
+      second: 1
     - first:
         name: _MaxRoughness
       second: 0.8
@@ -141,6 +147,12 @@ Material:
       second: 0.02
     - first:
         name: _RoughnessValue
+      second: 1
+    - first:
+        name: _SmoothnessTextureChannel
+      second: 0
+    - first:
+        name: _SpecularHighlights
       second: 1
     - first:
         name: _SrcBlend

@@ -50,6 +50,16 @@ public class EditorVariables : MonoBehaviour
 
     public int numberFramesLatency;
     public static int NumberFramesLatency;
+    internal static bool CanScoreGoals;
+
+    public bool playAsGoalieInitialValue;
+    internal static bool PlayAsGoalieInitialValue;
+
+    public bool noCooldowns;
+    internal static bool NoCooldowns;
+
+    public float editorFloat;
+    public static float EditorFloat;
 
     private void Awake()
     {
@@ -60,6 +70,8 @@ public class EditorVariables : MonoBehaviour
         AddLatency = false;
         testURLParameters = false;
         serverURL = Server.HEROKU;
+        playAsGoalieInitialValue = false;
+        NoCooldowns = false;
 #else
         StartGameImmediately = startGameImmediately;
         NumberFramesLatency = numberFramesLatency;
@@ -67,6 +79,10 @@ public class EditorVariables : MonoBehaviour
         AddLatency = addLatency;
         TestURLParameters = testURLParameters;
         serverURL = server;
+        PlayAsGoalieInitialValue = playAsGoalieInitialValue;
+        NoCooldowns = noCooldowns;
+        EditorFloat = editorFloat;
 #endif
+        CanScoreGoals = true;
     }
 }

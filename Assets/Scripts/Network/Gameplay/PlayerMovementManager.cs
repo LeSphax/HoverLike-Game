@@ -54,11 +54,11 @@ public class PlayerMovementManager : ObservedComponent
     {
         get
         {
-            return strategy.targetPosition;
+            return strategy.TargetPosition;
         }
         set
         {
-            strategy.targetPosition = value;
+            strategy.TargetPosition = value;
         }
     }
 

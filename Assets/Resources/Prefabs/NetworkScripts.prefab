@@ -16,18 +16,17 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 4: {fileID: 4000010820263728}
-  - 114: {fileID: 114000013244047462}
-  - 114: {fileID: 114000012868509660}
-  - 114: {fileID: 114000010300110308}
-  - 114: {fileID: 114000010734802682}
-  - 114: {fileID: 114000013987283638}
-  - 114: {fileID: 114000010188588954}
-  - 114: {fileID: 114000012265847228}
-  - 114: {fileID: 114000014177680376}
-  - 114: {fileID: 114000013209635198}
+  - component: {fileID: 4000010820263728}
+  - component: {fileID: 114000013244047462}
+  - component: {fileID: 114000012868509660}
+  - component: {fileID: 114000010300110308}
+  - component: {fileID: 114000010734802682}
+  - component: {fileID: 114000013987283638}
+  - component: {fileID: 114000010188588954}
+  - component: {fileID: 114000012265847228}
+  - component: {fileID: 114000014177680376}
   m_Layer: 0
   m_Name: NetworkScripts
   m_TagString: NetworkScripts
@@ -44,10 +43,10 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -16.40625, y: -6.5, z: 5.453125}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114000010188588954
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -60,7 +59,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 2
-  isLocal: 0
 --- !u!114 &114000010300110308
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -84,7 +82,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1183f29d448b6b547ab10053f0666423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server: 1
   RoomName: 
   uStunServer: stun:stun.l.google.com:19302
 --- !u!114 &114000012265847228
@@ -111,17 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c3e7d7800cebc54d95d0fcd4dba00f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114000013209635198
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011417641084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a44f8221654a6d24d97c4faa04dc17bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114000013244047462
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -134,7 +120,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 3
-  isLocal: 0
   observedComponents:
   - {fileID: 114000010300110308}
   update: 1
@@ -161,4 +146,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 1
-  isLocal: 0

@@ -30,7 +30,7 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
 
     protected override void Move()
     {
-        var lookPos = targetPosition.Value - transform.position;
+        var lookPos = TargetPosition.Value - transform.position;
         lookPos.y = 0;
         var targetRotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.fixedDeltaTime * ANGULAR_SPEED);
@@ -39,12 +39,16 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
         ClampPlayerVelocity();
     }
 
+    protected override void StopMoving()
+    {
+    }
+
     internal void Brake()
     {
         //If the player just started to brake, cancel his target.
         if (!braking)
         {
-            targetPosition = null;
+            TargetPosition = null;
             braking = true;
         }
         hasBraked = true;

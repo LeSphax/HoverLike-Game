@@ -7,8 +7,24 @@ public class WarmupCountdown : Countdown
     private GameObject readyButton;
     [SerializeField]
     private GameObject warmupInfo;
+    [SerializeField]
+    private Countdown matchEndCountdown;
 
     private short syncId;
+    private int matchEndCountdownDuration = -1;
+
+    public override float TimeLeft
+    {
+        set
+        {
+            base.TimeLeft = value;
+            if ((int)base.TimeLeft == matchEndCountdownDuration)
+            {
+                matchEndCountdownDuration = -1;
+                matchEndCountdown.TimeLeft = base.TimeLeft;
+            }
+        }
+    }
 
     protected override void Awake()
     {
@@ -36,9 +52,10 @@ public class WarmupCountdown : Countdown
     }
 
     [MyRPC]
-    protected override void StartTimer(float timeLeft)
+    protected void StartMatch(float timeLeft, int matchEndCountdownDuration)
     {
-        base.StartTimer(timeLeft);
+        base.StartTimer(timeLeft, "0");
+        this.matchEndCountdownDuration = matchEndCountdownDuration;
         warmupInfo.SetActive(false);
     }
 }

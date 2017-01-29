@@ -33,10 +33,12 @@ public class Ability : MonoBehaviour
         input.CanBeActivatedChanged += EnableAbility;
         targeting = GetComponent<AbilityTargeting>();
         effects = GetComponents<AbilityEffect>();
+        if (EditorVariables.NoCooldowns)
+            cooldownDuration = Mathf.Min(cooldownDuration, 1);
     }
 
 
-    protected void OnDestroy()
+    protected virtual void OnDestroy()
     {
         input.CanBeActivatedChanged -= EnableAbility;
     }
@@ -44,10 +46,12 @@ public class Ability : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+#if UNITY_EDITOR
         if (trace)
         {
             Debug.LogWarning(state);
         }
+#endif
         switch (state)
         {
             case State.READY:
@@ -94,16 +98,23 @@ public class Ability : MonoBehaviour
         }
     }
 
-    private void CastOnTarget(params object[] parameters)
+    private void CastOnTarget(bool wasUsed, params object[] parameters)
     {
-        foreach (AbilityEffect effect in effects)
-            effect.ApplyOnTarget(parameters);
-        if (NoCooldown)
-            state = State.READY;
+        if (wasUsed)
+        {
+            foreach (AbilityEffect effect in effects)
+                effect.ApplyOnTarget(parameters);
+            if (NoCooldown)
+                state = State.READY;
+            else
+            {
+                currentCooldown = cooldownDuration;
+                state = State.LOADING;
+            }
+        }
         else
         {
-            currentCooldown = cooldownDuration;
-            state = State.LOADING;
+            state = State.READY;
         }
     }
 

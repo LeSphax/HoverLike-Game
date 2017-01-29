@@ -6,6 +6,6 @@ public class MoveTargeting : AbilityTargeting
     public override void ChooseTarget(CastOnTarget callback)
     {
         Vector3 position = Functions.GetMouseWorldPosition();
-        callback.Invoke(Players.MyPlayer.controller, position);
+        callback.Invoke(true, Players.MyPlayer.controller, position);
     }
 }

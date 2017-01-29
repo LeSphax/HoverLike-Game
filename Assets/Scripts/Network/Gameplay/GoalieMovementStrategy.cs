@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class GoalieMovementStrategy : PlayerMovementStrategy
 {
@@ -11,12 +12,20 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
 
     protected override void Move()
     {
-        var lookPos = targetPosition.Value - transform.position;
+        var lookPos = TargetPosition.Value - transform.position;
         lookPos.y = 0;
         var targetRotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, FRAME_DURATION * ANGULAR_SPEED);
-        if (Mathf.Approximately(Quaternion.Angle(transform.rotation, targetRotation), 0f))
+
+        if (Quaternion.Angle(transform.rotation, targetRotation) < 0.05f)
+        {
             myRigidbody.velocity = transform.forward * SPEED * (1 + 0.4f * inZone);
+        }
+    }
+
+    protected override void StopMoving()
+    {
+        myRigidbody.velocity = Vector3.zero;
     }
 
     void OnTriggerEnter(Collider other)

@@ -53,4 +53,10 @@ public class AbilityTooltip : MonoBehaviour
         tooltip.transform.position = Input.mousePosition;
     }
 
+    private void OnDestroy()
+    {
+        if (tooltip != null)
+            Destroy(tooltip.gameObject);
+    }
+
 }

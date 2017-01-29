@@ -29,6 +29,7 @@ public class LobbyManager : MonoBehaviour
             switch (value)
             {
                 case State.IDLE:
+                    MyComponents.PopUp.ClosePopUp();
                     MainPanel.SetActive(true);
                     //
                     RoomListPanel.gameObject.SetActive(false);
@@ -37,6 +38,7 @@ public class LobbyManager : MonoBehaviour
                     topPanel.Status = "In Lobby";
                     break;
                 case State.ROOMLIST:
+                    MyComponents.PopUp.ClosePopUp();
                     MainPanel.SetActive(false);
                     //
                     RoomListPanel.gameObject.SetActive(true);
@@ -44,6 +46,7 @@ public class LobbyManager : MonoBehaviour
                     topPanel.Status = "Looking for Game";
                     break;
                 case State.SETTINGS:
+                    MyComponents.PopUp.ClosePopUp();
                     MainPanel.SetActive(false);
                     //
                     RoomListPanel.gameObject.SetActive(false);
@@ -126,6 +129,7 @@ public class LobbyManager : MonoBehaviour
     public void ListServers()
     {
         MyComponents.NetworkManagement.GetRooms();
+        MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
     }
 
     public void UpdateRoomList(List<RoomData> list)

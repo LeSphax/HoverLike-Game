@@ -24,7 +24,7 @@ public class RPCManager : SlideBall.MonoBehaviour
             Dictionary<string, RPCHandler> dico = new Dictionary<string, RPCHandler>();
             for (int i = 0; i < methods.Length; i++)
             {
-                Assert.IsFalse(dico.ContainsKey(methods[i].Name),"Two RPCs on the same GameObject shouldn't have the same name");
+                Assert.IsFalse(dico.ContainsKey(methods[i].Name),this + " : Two RPCs on the same GameObject shouldn't have the same name");
                 dico.Add(methods[i].Name, new RPCHandler(component, methods[i]));
             }
             List<string> list = new List<string>(dico.Keys);

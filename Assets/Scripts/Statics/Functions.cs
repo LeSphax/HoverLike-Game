@@ -22,36 +22,24 @@ class Functions
     }
 
     //Equation of the line : y = slope * x + constant
-    public static float DistanceFromLine(float slope, float constant,float x, float y)
+    public static float DistanceFromLine(float slope, float constant, float x, float y)
     {
         return Mathf.Abs(slope * x - y + constant) / Mathf.Sqrt(slope * slope + 1);
     }
 
-    //public static byte[] ObjectToByteArray(object obj)
-    //{
-    //    if (obj == null)
-    //        return null;
-    //    BinaryFormatter bf = new BinaryFormatter();
-    //    bf.SurrogateSelector = Vector3SerializationSurrogate.GetSurrogateSelector();
-    //    using (MemoryStream ms = new MemoryStream())
-    //    {
-    //        bf.Serialize(ms, obj);
-    //        return ms.ToArray();
-    //    }
-    //}
+    public static Vector3 GetRandomPointInCube(GameObject cube)
+    {
+        Vector3 min = Vector3.Scale(cube.GetComponent<MeshFilter>().mesh.bounds.min, cube.transform.localScale);
+        Vector3 max = Vector3.Scale(cube.GetComponent<MeshFilter>().mesh.bounds.max, cube.transform.localScale);
+        return GetRandomPointInVolume(cube.transform.position,min, max);
+    }
 
-    //public static object ByteArrayToObject(byte[] arrBytes)
-    //{
-    //    MemoryStream memStream = new MemoryStream();
-    //    BinaryFormatter binForm = new BinaryFormatter();
-    //    binForm.SurrogateSelector = Vector3SerializationSurrogate.GetSurrogateSelector();
-
-    //    memStream.Write(arrBytes, 0, arrBytes.Length);
-    //    memStream.Seek(0, SeekOrigin.Begin);
-    //    object obj = (object)binForm.Deserialize(memStream);
-
-    //    return obj;
-    //}
+    public static Vector3 GetRandomPointInVolume(Vector3 origin, Vector3 min, Vector3 max)
+    {
+        return origin - new Vector3((Random.Range(min.x, max.x)),
+                    (Random.Range(min.y, max.y)),
+                    (Random.Range(min.z, max.z)));
+    }
 
     public static void SetLayer(Transform transform, int layer)
     {
