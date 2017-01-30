@@ -461,7 +461,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   server: 1
   testURLParameters: 0
-  startGameImmediately: 1
+  startGameImmediately: 0
   numberPlayersToStartGame: 3
   addLatency: 0
   numberFramesLatency: 0

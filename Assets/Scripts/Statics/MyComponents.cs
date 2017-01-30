@@ -279,10 +279,11 @@ public static class MyComponents
 
     private static void ResetScene()
     {
-        if (Scenes.IsCurrentScene(Scenes.MainIndex) && NetworkManagement.IsConnected)
+        Debug.Log(NetworkManagement.IsConnected);
+        if (Scenes.IsCurrentScene(Scenes.MainIndex))
             NavigationManager.LoadScene(Scenes.Room, true, false);
-        else if (Scenes.IsCurrentScene(Scenes.MainIndex) && !NetworkManagement.IsConnected)
-            NavigationManager.LoadScene(Scenes.Lobby, true, false);
+        //else if (Scenes.IsCurrentScene(Scenes.MainIndex) && !NetworkManagement.IsConnected)
+        //    NavigationManager.LoadScene(Scenes.Lobby, true, false);
         else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
             NavigationManager.LoadScene(Scenes.Lobby);
         else
