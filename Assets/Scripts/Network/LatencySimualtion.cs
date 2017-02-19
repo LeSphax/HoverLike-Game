@@ -8,9 +8,9 @@ public class LatencySimulation
     private Queue<List<Message>> messagesWaitingToBeSent = new Queue<List<Message>>();
     private List<Message> currentList = new List<Message>();
 
-    private IBasicNetwork network;
+    private WebRtcNetwork network;
 
-    public LatencySimulation(IBasicNetwork network, int numberFramesToWait)
+    public LatencySimulation(WebRtcNetwork network, int numberFramesToWait)
     {
         this.network = network;
         this.numberFramesToWait = numberFramesToWait;
@@ -24,7 +24,7 @@ public class LatencySimulation
             List<Message> messages = messagesWaitingToBeSent.Dequeue();
             foreach (var message in messages)
             {
-                network.SendData(message.id, message.data, 0, message.data.Length, message.reliable);
+                network.peerNetwork.SendData(message.id, message.data, 0, message.data.Length, message.reliable);
             }
         }
         currentList.Clear();

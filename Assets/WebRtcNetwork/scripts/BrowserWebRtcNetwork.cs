@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using Byn.Net.Native;
 using UnityEngine;
 
 namespace Byn.Net
@@ -25,7 +26,7 @@ namespace Byn.Net
     /// To send messages use SendData.
     /// You will need to handle incoming events by polling the Dequeue method.
     /// </summary>
-    public class BrowserWebRtcNetwork : IWebRtcNetwork
+    public class BrowserWebRtcNetwork : IPeerNetwork, IServerConnection
     {
 
         //these are functions implemented in the java script plugin file WebRtcNetwork.jslib
@@ -106,14 +107,14 @@ namespace Byn.Net
         /// <returns></returns>
         public static bool IsAvailable()
         {
-            //tries
-            //{
+            try
+            {
                 return UnityWebRtcNetworkIsAvailable();
-            //}catch(EntryPointNotFoundException)
-            //{
-            //    //not available at all
-            //    return false;
-            //}
+            }catch(EntryPointNotFoundException)
+            {
+                //not available at all
+                return false;
+            }
         }
 
 
@@ -225,7 +226,7 @@ namespace Byn.Net
         /// 
         /// Read the ServerInitialized events Info property to get the address name.
         /// </summary>
-        public void StartServer()
+        public void ConnectToServer()
         {
             StartServer("" + UnityEngine.Random.Range(0, 16777216));
         }
@@ -250,7 +251,7 @@ namespace Byn.Net
             UnityWebRtcNetworkStartServer(mReference, name);
         }
 
-        public void StopServer()
+        public void Disconnect()
         {
             UnityWebRtcNetworkStopServer(mReference);
         }
@@ -263,14 +264,14 @@ namespace Byn.Net
         /// <returns>
         /// The connection id. (WebRTCNetwork doesn't allow multiple connections yet! So you can ignore this for now)
         /// </returns>
-        public ConnectionId Connect(string name)
+        public ConnectionId ConnectToRoom(string name)
         {
             //until fully supported -> block connecting to others while running a server
-            //if (this.mIsServer == true)
-            //{
-            //    UnityEngine.Debug.LogError("Can't create outgoing connections while in server mode!");
-            //    return ConnectionId.INVALID;
-            //}
+            if (this.mIsServer == true)
+            {
+                UnityEngine.Debug.LogError("Can't create outgoing connections while in server mode!");
+                return ConnectionId.INVALID;
+            }
 
             ConnectionId id = new ConnectionId();
             id.id = (short)UnityWebRtcNetworkConnect(mReference, name);
@@ -325,7 +326,7 @@ namespace Byn.Net
 
 
                 evt = new NetworkEvent(type, id, data);
-                //UnityEngine.Debug.Log("event" + type + " received");
+                UnityEngine.Debug.Log("event" + type + " received");
                 HandleEventInternally(ref evt);
                 return eventFound;
             }
@@ -350,7 +351,7 @@ namespace Byn.Net
             {
                 mIsServer = true;
             }
-            else if (evt.Type == NetEventType.ServerClosed || evt.Type == NetEventType.ServerInitFailed)
+            else if (evt.Type == NetEventType.ServerClosed || evt.Type == NetEventType.ServerConnectionFailed)
             {
                 mIsServer = false;
             }
@@ -442,5 +443,34 @@ namespace Byn.Net
             UnityWebRtcNetworkDisconnect(mReference, id.id);
         }
 
+        public void CreateRoom(string address = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LeaveRoom()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetPeerNetwork(IPeerNetwork network)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CheckSignalingState()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdatePeers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Queue<NetworkEvent> UpdateNetwork()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

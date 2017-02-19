@@ -11,6 +11,7 @@ using System;
 using Byn.Net;
 using System.Collections.Generic;
 using Byn.Common;
+using Byn.Net.Native;
 
 /// <summary>
 /// Contains a complete chat example.
@@ -35,7 +36,7 @@ public class ChatApp : MonoBehaviour
     /// <summary>
     /// This is a test server. Don't use in production! The server code is in a zip file in WebRtcNetwork
     /// </summary>
-    public string uSignalingUrl = "wss://because-why-not.com:12777/chatapp";
+    public string uSignalingUrl = "ws://sphaxtest.herokuapp.com";
 
     /// <summary>
     /// Mozilla stun server. Used to get trough the firewall and establish direct connections.
@@ -95,7 +96,7 @@ public class ChatApp : MonoBehaviour
     /// This can be native webrtc or the browser webrtc version.
     /// (Can also be the old or new unity network but this isn't part of this package)
     /// </summary>
-    private IBasicNetwork mNetwork = null;
+    private WebRtcNetwork mNetwork = null;
 
     /// <summary>
     /// True if the user opened an own room allowing incoming connections
@@ -115,12 +116,12 @@ public class ChatApp : MonoBehaviour
     /// <summary>
     /// Will setup webrtc and create the network object
     /// </summary>
-	private void Start ()
+	private void Start()
     {
         //shows the console on all platforms. for debugging only
-        if(uDebugConsole)
+        if (uDebugConsole)
             DebugHelper.ActivateConsole();
-        if(uLog)
+        if (uLog)
             SLog.SetLogger(OnLog);
 
         SLog.LV("Verbose log is active!");
@@ -128,19 +129,17 @@ public class ChatApp : MonoBehaviour
 
         Append("Setting up WebRtcNetworkFactory");
         WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
-        if(factory != null)
+        if (factory != null)
             Append("WebRtcNetworkFactory created");
 
     }
     private void OnLog(object msg, string[] tags)
     {
         StringBuilder builder = new StringBuilder();
-        TimeSpan time = DateTime.Now - DateTime.Today;
-        builder.Append(time);
         builder.Append("[");
-        for (int i = 0; i< tags.Length; i++)
+        for (int i = 0; i < tags.Length; i++)
         {
-            if(i != 0)
+            if (i != 0)
                 builder.Append(",");
             builder.Append(tags[i]);
         }
@@ -158,6 +157,7 @@ public class ChatApp : MonoBehaviour
         if (mNetwork != null)
         {
             Append("WebRTCNetwork created");
+            mNetwork.serverConnection.ConnectToServer();
         }
         else
         {
@@ -168,6 +168,8 @@ public class ChatApp : MonoBehaviour
 
     private void Reset()
     {
+        Debug.Log("Cleanup!");
+
         mIsServer = false;
         mConnections = new List<ConnectionId>();
         Cleanup();
@@ -195,110 +197,120 @@ public class ChatApp : MonoBehaviour
     {
         //check each fixed update if we have got new events
         HandleNetwork();
+        //SendString("Hey");
+        //SendString("bro");
     }
     private void HandleNetwork()
     {
         //check if the network was created
         if (mNetwork != null)
         {
-            //first update it to read the data from the underlaying network system
-            mNetwork.Update();
+            NetworkUpdateResult currentUpdate = mNetwork.UpdateNetwork();
 
-            //handle all new events that happened since the last update
-            NetworkEvent evt;
-            //check for new messages and keep checking if mNetwork is available. it might get destroyed
-            //due to an event
-            while (mNetwork != null && mNetwork.Dequeue(out evt))
-            {
-                //print to the console for debugging
-                Debug.Log(evt);
+            ProcessSignalingEvents(currentUpdate.signalingEvents);
 
-                //check every message
-                switch (evt.Type)
-                {
-                    case NetEventType.ServerInitialized:
-                        {
-                            //server initialized message received
-                            //this is the reaction to StartServer -> switch GUI mode
-                            mIsServer = true;
-                            string address = evt.Info;
-                            Append("Server started. Address: " + address);
-                            uRoomName.text = "" + address;
-                        } break;
-                    case NetEventType.ServerInitFailed:
-                        {
-                            //user tried to start the server but it failed
-                            //maybe the user is offline or signaling server down?
-                            mIsServer = false;
-                            Append("Server start failed.");
-                            Reset();
-                        } break;
-                    case NetEventType.ServerClosed:
-                        {
-                            //server shut down. reaction to "Shutdown" call or
-                            //StopServer or the connection broke down
-                            mIsServer = false;
-                            Append("Server closed. No incoming connections possible until restart.");
-                        } break;
-                    case NetEventType.NewConnection:
-                        {
-                            mConnections.Add(evt.ConnectionId);
-                            //either user runs a client and connected to a server or the
-                            //user runs the server and a new client connected
-                            Append("New local connection! ID: " + evt.ConnectionId);
+            ProcessPeerEvents(currentUpdate.peerEvents);
 
-                            //if server -> send announcement to everyone and use the local id as username
-                            if(mIsServer)
-                            {
-                                //user runs a server. announce to everyone the new connection
-                                //using the server side connection id as identification
-                                string msg = "New user " + evt.ConnectionId + " joined the room.";
-                                Append(msg);
-                                SendString(msg);
-                            }
-                        } break;
-                    case NetEventType.ConnectionFailed:
-                        {
-                            //Outgoing connection failed. Inform the user.
-                            Append("Connection failed");
-                            Reset();
-                        } break;
-                    case NetEventType.Disconnected:
-                        {
-                            mConnections.Remove(evt.ConnectionId);
-                            //A connection was disconnected
-                            //If this was the client then he was disconnected from the server
-                            //if it was the server this just means that one of the clients left
-                            Append("Local Connection ID " + evt.ConnectionId + " disconnected");
-                            if (mIsServer == false)
-                            {
-                                Reset();
-                            }
-                            else
-                            {
-                                string userLeftMsg = "User " + evt.ConnectionId + " left the room.";
-
-                                //show the server the message
-                                Append(userLeftMsg);
-
-                                //other users left? inform them 
-                                if (mConnections.Count > 0)
-                                {
-                                    SendString(userLeftMsg);
-                                }
-                            }
-                        } break;
-                    case NetEventType.ReliableMessageReceived:
-                    case NetEventType.UnreliableMessageReceived:
-                        {
-                            HandleIncommingMessage(ref evt);
-                        } break;
-                }
-            }
-
-            //finish this update by flushing the messages out if the network wasn't destroyed during update
-            if(mNetwork != null)
+            if (mNetwork != null)
                 mNetwork.Flush();
+        }
+    }
+
+    private void ProcessPeerEvents(Queue<NetworkEvent> peerEvents)
+    {
+        NetworkEvent evt;
+        while (peerEvents.Count != 0)
+        {
+            evt = peerEvents.Dequeue();
+            switch (evt.Type)
+            {
+                case NetEventType.NewConnection:
+                    {
+                        mConnections.Add(evt.ConnectionId);
+                        Append("New local connection! ID: " + evt.ConnectionId);
+                        if (mIsServer)
+                        {
+                            string msg = "New user " + evt.ConnectionId + " joined the room.";
+                            Append(msg);
+                            SendString(msg);
+                        }
+                    }
+                    break;
+                case NetEventType.ConnectionFailed:
+                    {
+                        Append("Connection failed");
+                        Reset();
+                    }
+                    break;
+                case NetEventType.Disconnected:
+                    {
+                        mConnections.Remove(evt.ConnectionId);
+                        Append("Local Connection ID " + evt.ConnectionId + " disconnected");
+                        if (mIsServer == false)
+                        {
+                            Reset();
+                        }
+                        else
+                        {
+                            string userLeftMsg = "User " + evt.ConnectionId + " left the room.";
+                            Append(userLeftMsg);
+                            if (mConnections.Count > 0)
+                            {
+                                SendString(userLeftMsg);
+                            }
+                        }
+                    }
+                    break;
+                case NetEventType.ReliableMessageReceived:
+                case NetEventType.UnreliableMessageReceived:
+                    {
+                        HandleIncommingMessage(ref evt);
+                    }
+                    break;
+                default:
+                    Debug.LogError("The peer network shouldn't receive that type of events " + evt.Type + "   " + evt.Info + "    " + evt.MessageData);
+                    break;
+            }
+        }
+    }
+
+    private void ProcessSignalingEvents(Queue<NetworkEvent> signalingEvents)
+    {
+        NetworkEvent evt;
+        while (signalingEvents.Count != 0)
+        {
+            evt = signalingEvents.Dequeue();
+            switch (evt.Type)
+            {
+                case NetEventType.ServerInitialized:
+                    {
+                        //server initialized message received
+                        //this is the reaction to StartServer -> switch GUI mode
+                        mIsServer = true;
+                        string address = evt.Info;
+                        Append("Server started. Address: " + address);
+                        uRoomName.text = "" + address;
+                    }
+                    break;
+                case NetEventType.ServerConnectionFailed:
+                    {
+                        //user tried to start the server but it failed
+                        //maybe the user is offline or signaling server down?
+                        mIsServer = false;
+                        Append("Server start failed.");
+                        Reset();
+                    }
+                    break;
+                case NetEventType.ServerClosed:
+                    {
+                        mIsServer = false;
+                        Append("Server closed. No incoming connections possible until restart.");
+                    }
+                    break;
+                default:
+                    Debug.LogError("The peer network shouldn't receive that type of events " + evt.Type + "   " + evt.Info + "    " + evt.MessageData.ContentLength);
+                    break;
+            }
         }
     }
 
@@ -308,7 +320,7 @@ public class ChatApp : MonoBehaviour
 
         string msg = Encoding.UTF8.GetString(buffer.Buffer, 0, buffer.ContentLength);
 
-        //if server -> forward the message to everyone else including the sender
+        ////if server -> forward the message to everyone else including the sender
         if (mIsServer)
         {
             //we use the server side connection id to identify the client
@@ -322,7 +334,7 @@ public class ChatApp : MonoBehaviour
             Append(msg);
         }
 
-        //return the buffer so the network can reuse it
+        ////return the buffer so the network can reuse it
         buffer.Dispose();
     }
 
@@ -343,7 +355,7 @@ public class ChatApp : MonoBehaviour
             byte[] msgData = Encoding.UTF8.GetBytes(msg);
             foreach (ConnectionId id in mConnections)
             {
-                mNetwork.SendData(id, msgData, 0, msgData.Length, reliable);
+                mNetwork.peerNetwork.SendData(id, msgData, 0, msgData.Length, reliable);
             }
         }
     }
@@ -364,7 +376,6 @@ public class ChatApp : MonoBehaviour
     /// <param name="text"></param>
     private void Append(string text)
     {
-        Debug.Log("chat: " + text);
         uOutput.AddTextEntry(text);
     }
 
@@ -390,12 +401,12 @@ public class ChatApp : MonoBehaviour
     public void JoinRoomButtonPressed()
     {
         Setup();
-        mNetwork.Connect(uRoomName.text);
+        mNetwork.serverConnection.ConnectToRoom(uRoomName.text);
         Append("Connecting to " + uRoomName.text + " ...");
     }
     private void EnsureLength()
     {
-        if(uRoomName.text.Length > MAX_CODE_LENGTH)
+        if (uRoomName.text.Length > MAX_CODE_LENGTH)
         {
             uRoomName.text = uRoomName.text.Substring(0, MAX_CODE_LENGTH);
         }
@@ -418,8 +429,8 @@ public class ChatApp : MonoBehaviour
     {
         Setup();
         EnsureLength();
-        mNetwork.StartServer(uRoomName.text);
-        
+        mNetwork.serverConnection.CreateRoom(uRoomName.text);
+
         Debug.Log("StartServer " + uRoomName.text);
     }
 
@@ -443,18 +454,18 @@ public class ChatApp : MonoBehaviour
         if (msg.StartsWith("/disconnect"))
         {
             string[] slt = msg.Split(' ');
-            if(slt.Length >= 2)
+            if (slt.Length >= 2)
             {
                 ConnectionId conId;
                 if (short.TryParse(slt[1], out conId.id))
                 {
-                    mNetwork.Disconnect(conId);
+                    mNetwork.serverConnection.Disconnect(conId);
                 }
             }
         }
 
         //if we are the server -> add 0 in front as the server id
-        if(mIsServer)
+        if (mIsServer)
         {
             //the server has the authority thus -> we can print it directly adding the 0 as server id
             msg = "0:" + msg;

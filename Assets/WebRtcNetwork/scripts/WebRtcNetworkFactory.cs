@@ -21,8 +21,8 @@ namespace Byn.Net
         /// </summary>
         private static bool sStaticInitSuccessful = false;
 
-        private IWebRtcNetworkFactory mFactory = null;
-        private List<IBasicNetwork> mCreatedNetworks = new List<IBasicNetwork>();
+        private AWebRtcNetworkFactory mFactory = null;
+        private List<WebRtcNetwork> mCreatedNetworks = new List<WebRtcNetwork>();
 
         public static bool StaticInitSuccessful
         {
@@ -35,7 +35,7 @@ namespace Byn.Net
         private WebRtcNetworkFactory()
         {
 
-            // to setup (this also checks if the platform is even supported)
+            //try to setup (this also checks if the platform is even supported)
             TryStaticInitialize();
             //setup failed? factory will be null so nothing can be created
             if (sStaticInitSuccessful == false)
@@ -52,7 +52,7 @@ namespace Byn.Net
             Byn.Net.Native.NativeWebRtcNetworkFactory factory = new Byn.Net.Native.NativeWebRtcNetworkFactory();
             factory.Initialize(true);
             mFactory = factory;
-            //Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
+            Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
             
 #endif
 
@@ -85,7 +85,7 @@ namespace Byn.Net
         internal static void LogNativeSupportInfo()
         {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            //Debug.Log("Initializing native webrtc ...");
+            Debug.Log("Initializing native webrtc ...");
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             Debug.LogWarning("Trying to initialize native webrtc. Note that support for your OSX is not yet stable!");
 #elif UNITY_ANDROID
@@ -170,9 +170,9 @@ namespace Byn.Net
             return successful;
         }
 
-        public IBasicNetwork CreateDefault(string websocketUrl, string[] urls = null)
+        public WebRtcNetwork CreateDefault(string websocketUrl, string[] urls = null)
         {
-            IBasicNetwork network = mFactory.CreateDefault(websocketUrl, urls);
+            WebRtcNetwork network = mFactory.CreateDefault(websocketUrl, urls);
             mCreatedNetworks.Add(network);
             return network;
         }
@@ -183,7 +183,7 @@ namespace Byn.Net
             base.OnDestroy();
 
             Debug.Log("Network factory is being destroyed. All created basic networks will be destroyed as well!");
-            foreach (IBasicNetwork net in mCreatedNetworks)
+            foreach (WebRtcNetwork net in mCreatedNetworks)
             {
                 net.Dispose();
             }

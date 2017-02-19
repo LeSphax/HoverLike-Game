@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Byn.Net
 {
-    public class BrowserWebRtcNetworkFactory : IWebRtcNetworkFactory
+    public class BrowserWebRtcNetworkFactory : AWebRtcNetworkFactory
     {
         private bool disposedValue = false;
 
 
-        public IBasicNetwork CreateDefault(string websocketUrl, string[] iceUrls = null)
+        public override WebRtcNetwork CreateDefault(string websocketUrl, string[] iceUrls = null)
         {
 
             if (iceUrls == null)
@@ -36,10 +33,10 @@ namespace Byn.Net
                 conf = "{ \"signaling\" :  { \"class\": \"WebsocketNetwork\", \"param\" : \"" + websocketUrl + "\"}, \"iceServers\":[" + iceUrlsJson + "]}";
             }
 
-
-            return new BrowserWebRtcNetwork(conf);
+            BrowserWebRtcNetwork bn = new BrowserWebRtcNetwork(conf);
+            return new WebRtcNetwork(bn, bn, this);
         }
-        
+
 
         protected virtual void Dispose(bool disposing)
         {
@@ -54,10 +51,14 @@ namespace Byn.Net
                 disposedValue = true;
             }
         }
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
         }
 
+        internal override void OnNetworkDestroyed(WebRtcNetwork network)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

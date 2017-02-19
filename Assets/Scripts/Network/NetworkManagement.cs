@@ -73,7 +73,7 @@ namespace SlideBall
         /// This can be native webrtc or the browser webrtc version.
         /// (Can also be the old or new unity network but this isn't part of this package)
         /// </summary>
-        private IBasicNetwork mNetwork = null;
+        private WebRtcNetwork mNetwork = null;
 
         /// <summary>
         /// True if the user opened an own room allowing incoming connections
@@ -134,6 +134,7 @@ namespace SlideBall
             {
                 if (EditorVariables.AddLatency)
                     latencySimulation = new LatencySimulation(mNetwork, EditorVariables.NumberFramesLatency);
+                mNetwork.serverConnection.ConnectToServer();
             }
             else
             {
@@ -144,13 +145,13 @@ namespace SlideBall
         public void GetRooms()
         {
             Setup();
-            mNetwork.Connect(GET_ROOMS_COMMAND);
+            mNetwork.serverConnection.ConnectToRoom(GET_ROOMS_COMMAND);
         }
 
         public void BlockRoom()
         {
             Assert.IsTrue(isServer);
-            mNetwork.Connect(BLOCK_ROOMS_COMMAND + ROOM_SEPARATOR_CHAR + RoomName);
+            mNetwork.serverConnection.ConnectToRoom(BLOCK_ROOMS_COMMAND + ROOM_SEPARATOR_CHAR + RoomName);
         }
 
         public void Reset()
@@ -180,182 +181,204 @@ namespace SlideBall
         }
         private void FixedUpdate()
         {
-            HandleNetwork();
-        }
-        private void HandleNetwork()
-        {
             //check if the network was created
             if (mNetwork != null)
             {
                 if (EditorVariables.AddLatency)
                     latencySimulation.NewFrame();
                 //first update it to read the data from the underlaying network system
-                mNetwork.Update();
+                NetworkUpdateResult lastEvents = mNetwork.UpdateNetwork();
 
-                //handle all new events that happened since the last updateef
-                NetworkEvent evt;
-
-                //check for new messages and keep checking if mNetwork is available. it might get destroyed
-                //due to an event
-                while (mNetwork != null && mNetwork.Dequeue(out evt))
-                {
-                    switch (evt.Type)
-                    {
-                        case NetEventType.ServerInitialized:
-                            {
-                                //server initialized message received
-                                Debug.LogError("Server started. Address: " + RoomName + "   " + evt.ConnectionId.id);
-                                if (stateCurrent == State.IDLE)
-                                {
-                                    stateCurrent = State.SERVER;
-                                    Players.NewPlayerCreated += SendBufferedMessagesOnSceneChange;
-                                    SetConnectionId(ConnectionId.INVALID);
-                                    RoomCreated.Invoke();
-                                }
-                            }
-                            break;
-                        //user tried to start the server but it failed
-                        //maybe the user is offline or signaling server down?
-                        case NetEventType.ServerInitFailed:
-                            {
-                                Debug.LogError("Server Init Failed " + evt.RawData);
-
-                                if (evt.RawData != null)
-                                {
-                                    string rawData = (string)evt.RawData;
-                                    if (rawData == NetEventMessage.ROOM_ALREADY_EXISTS)
-                                    {
-                                        if (ServerStartFailed != null)
-                                        {
-                                            Reset();
-                                            Setup();
-                                            ServerStartFailed.Invoke();
-                                        }
-                                        else
-                                        {
-                                            MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + Random_Name_Generator.GetRandomName() + "?");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
-                                        if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
-                                        {
-                                            MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    Reset();
-                                    MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n " + Language.Instance.texts["Feedback"]);
-                                    Debug.LogError("No internet connection ");
-
-                                }
-                            }
-                            break;
-                        //server shut down. reaction to "Shutdown" call or
-                        //StopServer or the connection broke down
-                        case NetEventType.ServerClosed:
-                            {
-                                switch (stateCurrent)
-                                {
-                                    case State.CONNECTED:
-                                        Reset();
-                                        //ConnectToRoom(RoomName);
-                                        Debug.LogError("Server closed. No incoming connections possible until restart.");
-                                        break;
-                                    case State.IDLE:
-                                        MyComponents.PopUp.Show(Language.Instance.texts["Cant_Create"] + "\n" + Language.Instance.texts["Feedback"]);
-                                        Debug.LogError("Didn't manage to create the server " + RoomName);
-                                        //Reset();
-                                        //CreateRoom(RoomName);
-                                        break;
-                                    case State.SERVER:
-                                        Debug.LogError("Server closed. Restarting server");
-                                        Reset();
-                                        // CreateRoom(RoomName);
-                                        break;
-                                }
-                            }
-                            break;
-                        //either user runs a client and connected to a server or the
-                        //user runs the server and a new client connected
-                        case NetEventType.NewConnection:
-                            {
-                                Debug.LogError("NewConnection " + evt.Info + "  " + evt.ConnectionId.id);
-
-                                mConnections.Add(evt.ConnectionId);
-
-                                if (isServer)
-                                {
-                                    MyComponents.NetworkViewsManagement.SendClientInstanciationInterval(evt.ConnectionId);
-                                    MyComponents.Players.SendPlayersData(evt.ConnectionId);
-                                    View.RPC("SetConnectionId", evt.ConnectionId, evt.ConnectionId);
-                                }
-                                else if (ConnectedToRoom != null)
-                                {
-                                    stateCurrent = State.CONNECTED;
-                                    ConnectedToRoom.Invoke();
-                                }
-                            }
-                            break;
-                        case NetEventType.ConnectionFailed:
-                            {
-                                Debug.LogError("Connection failed " + stateCurrent);
-                                if (stateCurrent == State.IDLE)
-                                    MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
-                                if (evt.RawData != null)
-                                {
-                                    string rawdata = (string)evt.RawData;
-                                    if (rawdata == NetEventMessage.ROOM_DOESNT_EXIST)
-                                    {
-                                        MyComponents.PopUp.Show(Language.Instance.texts["Doesnt_Exist"]);
-                                    }
-                                    else if (rawdata == NetEventMessage.ROOM_BLOCKED)
-                                    {
-                                        MyComponents.PopUp.Show(Language.Instance.texts["Room_Blocked"]);
-                                    }
-                                    else if (rawdata == NetEventMessage.SERVER_CONNECTION_NOT_1)
-                                    {
-                                        MyComponents.PopUp.Show("Server Connection is not 1");
-                                    }
-                                    MyComponents.LobbyManager.RefreshServers();
-                                }
-                            }
-                            break;
-                        case NetEventType.Disconnected:
-                            {
-                                mConnections.Remove(evt.ConnectionId);
-                                //A connection was disconnected
-                                //If this was the client then he was disconnected from the server
-                                //if it was the server this just means that one of the clients left
-                                Debug.LogError("Local Connection ID " + evt.ConnectionId + " disconnected");
-                                if (isServer == false)
-                                {
-                                    MyComponents.ResetNetworkComponents();
-                                    MyComponents.PopUp.Show(Language.Instance.texts["Client_Disconnected"]);
-                                }
-                                else
-                                {
-                                    mConnections.Remove(evt.ConnectionId);
-                                    Players.Remove(evt.ConnectionId);
-                                    Debug.LogError("User " + evt.ConnectionId + " left the room.");
-                                }
-                            }
-                            break;
-                        case NetEventType.ReliableMessageReceived:
-                        case NetEventType.UnreliableMessageReceived:
-                            {
-                                HandleIncomingEvent(ref evt);
-                            }
-                            break;
-                    }
-                }
+                ProcessSignalingEvents(lastEvents.signalingEvents);
+                ProcessPeerEvents(lastEvents.peerEvents);
 
                 //finish this update by flushing the messages out if the network wasn't destroyed during update
                 if (mNetwork != null)
                     mNetwork.Flush();
+            }
+        }
+
+        private void ProcessSignalingEvents(Queue<NetworkEvent> signalingEvents)
+        {
+            //handle all new events that happened since the last updateef
+            NetworkEvent evt;
+
+            //check for new messages and keep checking if mNetwork is available. it might get destroyed
+            //due to an event
+            while (signalingEvents.Count != 0)
+            {
+                evt = signalingEvents.Dequeue();
+                switch (evt.Type)
+                {
+                    case NetEventType.ServerInitialized:
+                        {
+                            //server initialized message received
+                            Debug.LogError("Server started. Address: " + RoomName + "   " + evt.ConnectionId.id);
+                            if (stateCurrent == State.IDLE)
+                            {
+                                stateCurrent = State.SERVER;
+                                Players.NewPlayerCreated += SendBufferedMessagesOnSceneChange;
+                                SetConnectionId(ConnectionId.INVALID);
+                                RoomCreated.Invoke();
+                            }
+                        }
+                        break;
+                    //user tried to start the server but it failed
+                    //maybe the user is offline or signaling server down?
+                    case NetEventType.ServerConnectionFailed:
+                        {
+                            Debug.LogError("Server Init Failed " + evt.RawData);
+
+                            if (evt.RawData != null)
+                            {
+                                string rawData = (string)evt.RawData;
+                                if (rawData == NetEventMessage.ROOM_ALREADY_EXISTS)
+                                {
+                                    if (ServerStartFailed != null)
+                                    {
+                                        Reset();
+                                        Setup();
+                                        ServerStartFailed.Invoke();
+                                    }
+                                    else
+                                    {
+                                        MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + Random_Name_Generator.GetRandomName() + "?");
+                                    }
+                                }
+                                else
+                                {
+                                    string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
+                                    if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                                    {
+                                        MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Reset();
+                                MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n " + Language.Instance.texts["Feedback"]);
+                                Debug.LogError("No internet connection ");
+
+                            }
+                        }
+                        break;
+                    //server shut down. reaction to "Shutdown" call or
+                    //StopServer or the connection broke down
+                    case NetEventType.ServerClosed:
+                        {
+                            switch (stateCurrent)
+                            {
+                                case State.CONNECTED:
+                                    Reset();
+                                    //ConnectToRoom(RoomName);
+                                    Debug.LogError("Server closed. No incoming connections possible until restart.");
+                                    break;
+                                case State.IDLE:
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Cant_Create"] + "\n" + Language.Instance.texts["Feedback"]);
+                                    Debug.LogError("Didn't manage to create the server " + RoomName);
+                                    //Reset();
+                                    //CreateRoom(RoomName);
+                                    break;
+                                case State.SERVER:
+                                    Debug.LogError("Server closed. Restarting server");
+                                    Reset();
+                                    // CreateRoom(RoomName);
+                                    break;
+                            }
+                        }
+                        break;
+                    default:
+                        Debug.LogError("The signaling network shouldn't receive that type of events " + evt.Type + "   " + evt.Info + "    " + evt.MessageData);
+                        break;
+
+                }
+            }
+        }
+
+        private void ProcessPeerEvents(Queue<NetworkEvent> peerEvents)
+        {
+            NetworkEvent evt;
+            while (peerEvents.Count != 0)
+            {
+                evt = peerEvents.Dequeue();
+                switch (evt.Type)
+                {
+                    //either user runs a client and connected to a server or the
+                    //user runs the server and a new client connected
+                    case NetEventType.NewConnection:
+                        {
+                            Debug.LogError("NewConnection " + evt.Info + "  " + evt.ConnectionId.id);
+
+                            mConnections.Add(evt.ConnectionId);
+
+                            if (isServer)
+                            {
+                                MyComponents.NetworkViewsManagement.SendClientInstanciationInterval(evt.ConnectionId);
+                                MyComponents.Players.SendPlayersData(evt.ConnectionId);
+                                View.RPC("SetConnectionId", evt.ConnectionId, evt.ConnectionId);
+                            }
+                            else if (ConnectedToRoom != null)
+                            {
+                                stateCurrent = State.CONNECTED;
+                                ConnectedToRoom.Invoke();
+                            }
+                        }
+                        break;
+                    case NetEventType.ConnectionFailed:
+                        {
+                            Debug.LogError("Connection failed " + stateCurrent);
+                            if (stateCurrent == State.IDLE)
+                                MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
+                            if (evt.RawData != null)
+                            {
+                                string rawdata = (string)evt.RawData;
+                                if (rawdata == NetEventMessage.ROOM_DOESNT_EXIST)
+                                {
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Doesnt_Exist"]);
+                                }
+                                else if (rawdata == NetEventMessage.ROOM_BLOCKED)
+                                {
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Room_Blocked"]);
+                                }
+                                else if (rawdata == NetEventMessage.SERVER_CONNECTION_NOT_1)
+                                {
+                                    MyComponents.PopUp.Show("Server Connection is not 1");
+                                }
+                                MyComponents.LobbyManager.RefreshServers();
+                            }
+                        }
+                        break;
+                    case NetEventType.Disconnected:
+                        {
+                            mConnections.Remove(evt.ConnectionId);
+                            //A connection was disconnected
+                            //If this was the client then he was disconnected from the server
+                            //if it was the server this just means that one of the clients left
+                            Debug.LogError("Local Connection ID " + evt.ConnectionId + " disconnected");
+                            if (isServer == false)
+                            {
+                                MyComponents.ResetNetworkComponents();
+                                MyComponents.PopUp.Show(Language.Instance.texts["Client_Disconnected"]);
+                            }
+                            else
+                            {
+                                mConnections.Remove(evt.ConnectionId);
+                                Players.Remove(evt.ConnectionId);
+                                Debug.LogError("User " + evt.ConnectionId + " left the room.");
+                            }
+                        }
+                        break;
+                    case NetEventType.ReliableMessageReceived:
+                    case NetEventType.UnreliableMessageReceived:
+                        {
+                            HandleIncomingEvent(ref evt);
+                        }
+                        break;
+                    default:
+                        Debug.LogError("The peer network shouldn't receive that type of events " + evt.Type + "   " + evt.Info + "    " + evt.MessageData);
+                        break;
+                }
             }
         }
 
@@ -451,7 +474,7 @@ namespace SlideBall
             if (EditorVariables.AddLatency)
                 latencySimulation.AddMessage(data, id, reliable);
             else
-                mNetwork.SendData(id, data, 0, data.Length, reliable);
+                mNetwork.peerNetwork.SendData(id, data, 0, data.Length, reliable);
             if (!mConnections.Contains(id))
                 Debug.LogError("This isn't a valid connectionId " + id + "    " + mConnections.Count + "   " + mConnections.PrintContent());
         }
@@ -461,7 +484,7 @@ namespace SlideBall
         {
             Setup();
             RoomName = roomName;
-            mNetwork.Connect(roomName);
+            mNetwork.serverConnection.ConnectToRoom(roomName);
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
             Debug.LogError("Connecting to " + roomName + " ...");
         }
@@ -478,7 +501,7 @@ namespace SlideBall
         {
             Setup();
             EnsureLength(roomName);
-            mNetwork.StartServer(roomName);
+            mNetwork.serverConnection.CreateRoom(roomName);
             RoomName = roomName;
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
 
