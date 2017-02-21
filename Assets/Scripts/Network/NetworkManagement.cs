@@ -73,7 +73,7 @@ namespace SlideBall
         /// This can be native webrtc or the browser webrtc version.
         /// (Can also be the old or new unity network but this isn't part of this package)
         /// </summary>
-        private WebRtcNetwork mNetwork = null;
+        private IWebRtcNetwork mNetwork = null;
 
         /// <summary>
         /// True if the user opened an own room allowing incoming connections
@@ -134,7 +134,7 @@ namespace SlideBall
             {
                 if (EditorVariables.AddLatency)
                     latencySimulation = new LatencySimulation(mNetwork, EditorVariables.NumberFramesLatency);
-                mNetwork.serverConnection.ConnectToServer();
+                mNetwork.ConnectToServer();
             }
             else
             {
@@ -145,13 +145,13 @@ namespace SlideBall
         public void GetRooms()
         {
             Setup();
-            mNetwork.serverConnection.ConnectToRoom(GET_ROOMS_COMMAND);
+            mNetwork.ConnectToRoom(GET_ROOMS_COMMAND);
         }
 
         public void BlockRoom()
         {
             Assert.IsTrue(isServer);
-            mNetwork.serverConnection.ConnectToRoom(BLOCK_ROOMS_COMMAND + ROOM_SEPARATOR_CHAR + RoomName);
+            mNetwork.ConnectToRoom(BLOCK_ROOMS_COMMAND + ROOM_SEPARATOR_CHAR + RoomName);
         }
 
         public void Reset()
@@ -187,10 +187,10 @@ namespace SlideBall
                 if (EditorVariables.AddLatency)
                     latencySimulation.NewFrame();
                 //first update it to read the data from the underlaying network system
-                NetworkUpdateResult lastEvents = mNetwork.UpdateNetwork();
+                mNetwork.UpdateNetwork();
 
-                ProcessSignalingEvents(lastEvents.signalingEvents);
-                ProcessPeerEvents(lastEvents.peerEvents);
+                ProcessSignalingEvents(mNetwork.SignalingEvents);
+                ProcessPeerEvents(mNetwork.PeerEvents);
 
                 //finish this update by flushing the messages out if the network wasn't destroyed during update
                 if (mNetwork != null)
@@ -474,7 +474,7 @@ namespace SlideBall
             if (EditorVariables.AddLatency)
                 latencySimulation.AddMessage(data, id, reliable);
             else
-                mNetwork.peerNetwork.SendData(id, data, 0, data.Length, reliable);
+                mNetwork.SendPeerEvent(id, data, 0, data.Length, reliable);
             if (!mConnections.Contains(id))
                 Debug.LogError("This isn't a valid connectionId " + id + "    " + mConnections.Count + "   " + mConnections.PrintContent());
         }
@@ -484,7 +484,7 @@ namespace SlideBall
         {
             Setup();
             RoomName = roomName;
-            mNetwork.serverConnection.ConnectToRoom(roomName);
+            mNetwork.ConnectToRoom(roomName);
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
             Debug.LogError("Connecting to " + roomName + " ...");
         }
@@ -501,7 +501,7 @@ namespace SlideBall
         {
             Setup();
             EnsureLength(roomName);
-            mNetwork.serverConnection.CreateRoom(roomName);
+            mNetwork.CreateRoom(roomName);
             RoomName = roomName;
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
 

@@ -23,6 +23,13 @@ namespace Byn.Net.Native
         private IServerConnection mSignaling;
 
         public Queue<NetworkEvent> mEvents = new Queue<NetworkEvent>();
+        public Queue<NetworkEvent> PeerEvents
+        {
+            get
+            {
+                return mEvents;
+            }
+        }
 
         public Dictionary<ConnectionId, WebRtcDataPeer> mIdToConnection = new Dictionary<ConnectionId, WebRtcDataPeer>();
 
@@ -132,7 +139,7 @@ namespace Byn.Net.Native
         {
         }
 
-        public void SendData(ConnectionId id, byte[] data, int offset, int length, bool reliable)
+        public void SendEvent(ConnectionId id, byte[] data, int offset, int length, bool reliable)
         {
             if (data == null || data.Length == 0 || length == 0)
             {

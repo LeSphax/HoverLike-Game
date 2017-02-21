@@ -31,7 +31,7 @@ namespace Byn.Net.Native
             return this.mFactory.IsInitialized() || this.mFactory.Initialize(multithreading);
         }
 
-        public override WebRtcNetwork CreateDefault(string urlOrConfig, string[] urls = null)
+        public override IWebRtcNetwork CreateDefault(string urlOrConfig, string[] urls = null)
         {
             IServerConnection signalingNetwork;
             if (string.IsNullOrEmpty(urlOrConfig))

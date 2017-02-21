@@ -5,10 +5,8 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Byn.Net.Native;
 using UnityEngine;
 
 namespace Byn.Net
@@ -26,7 +24,7 @@ namespace Byn.Net
     /// To send messages use SendData.
     /// You will need to handle incoming events by polling the Dequeue method.
     /// </summary>
-    public class BrowserWebRtcNetwork : IPeerNetwork, IServerConnection
+    public class BrowserWebRtcNetwork : IWebRtcNetwork
     {
 
         //these are functions implemented in the java script plugin file WebRtcNetwork.jslib
@@ -41,44 +39,45 @@ namespace Byn.Net
         private static extern void UnityWebRtcNetworkRelease(int lIndex);
 
         [DllImport("__Internal")]
-        private static extern int UnityWebRtcNetworkConnect(int lIndex, string lRoom);
-
-        [DllImport("__Internal")]
-        private static extern void UnityWebRtcNetworkStartServer(int lIndex, string lRoom);
-        [DllImport("__Internal")]
-        private static extern void UnityWebRtcNetworkStopServer(int lIndex);
-        
-        [DllImport("__Internal")]
-        private static extern void UnityWebRtcNetworkDisconnect(int lIndex, int lConnectionId);
-
-        [DllImport("__Internal")]
-        private static extern void UnityWebRtcNetworkShutdown(int lIndex);
-        [DllImport("__Internal")]
-        private static extern void UnityWebRtcNetworkUpdate(int lIndex);
+        private static extern void UnityWebRtcNetworkUpdateNetwork(int lIndex);
         [DllImport("__Internal")]
         private static extern void UnityWebRtcNetworkFlush(int lIndex);
 
         [DllImport("__Internal")]
-        private static extern void UnityWebRtcNetworkSendData(int lIndex, int lConnectionId, byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength, bool lReliable);
+        private static extern int UnityWebRtcNetworkConnectToServer(int lIndex);
+        [DllImport("__Internal")]
+        private static extern int UnityWebRtcNetworkConnectToRoom(int lIndex, string lRoom);
+        [DllImport("__Internal")]
+        private static extern void UnityWebRtcNetworkCreateRoom(int lIndex, string lRoom);
+        [DllImport("__Internal")]
+        private static extern void UnityWebRtcNetworkLeaveRoom(int lIndex);
+        [DllImport("__Internal")]
+        private static extern void UnityWebRtcNetworkDisconnectFromServer(int lIndex);
+        [DllImport("__Internal")]
+        private static extern void UnityWebRtcNetworkDisconnectFromPeer(int lIndex, int lConnectionId);
+        [DllImport("__Internal")]
+        private static extern void UnityWebRtcNetworkSendData(bool Signaling, int lIndex, int lConnectionId, byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength, bool lReliable);
+        [DllImport("__Internal")]
+        private static extern void UnityWebRtcNetworkShutdown(int lIndex);
 
         [DllImport("__Internal")]
-        private static extern int UnityWebRtcNetworkPeekEventDataLength(int lIndex);
+        private static extern int UnityWebRtcNetworkPeekEventDataLength(bool Signaling, int lIndex);
 
         [DllImport("__Internal")]
-        private static extern bool UnityWebRtcNetworkDequeue(int lIndex,
+        private static extern bool UnityWebRtcNetworkDequeue(bool Signaling, int lIndex,
             int[] lTypeIntArrayPtr,
             int[] lConidIntArrayPtr,
             byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength,
             int[] lDataLenIntArray);
         [DllImport("__Internal")]
-        private static extern bool UnityWebRtcNetworkPeek(int lIndex,
+        private static extern bool UnityWebRtcNetworkPeek(bool Signaling, int lIndex,
             int[] lTypeIntArrayPtr,
             int[] lConidIntArrayPtr,
             byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength,
             int[] lDataLenIntArray);
         #endregion
 
-        private static bool sInjectionTried = false;
+        //private static bool sInjectionTried = false;
 
         /// <summary>
         /// This injects the library using ExternalEval. Browsers seem to load some libraries asynchronously though.
@@ -87,18 +86,18 @@ namespace Byn.Net
         /// for the browser to download the libraries or better -> include everything needed into the websites header
         /// so this call isn't needed at all!
         /// </summary>
-        static public void InjectJsCode()
-        {
+        //static public void InjectJsCode()
+        //{
 
-            //use sInjectionTried to block multiple calls.
-            if (Application.platform == RuntimePlatform.WebGLPlayer && sInjectionTried == false)
-            {
-                Debug.Log("injecting webrtcnetworkplugin");
-                TextAsset txt = Resources.Load<TextAsset>("webrtcnetworkplugin");
-                Application.ExternalEval(txt.text);
-                sInjectionTried = true;
-            }
-        }
+        //    //use sInjectionTried to block multiple calls.
+        //    if (Application.platform == RuntimePlatform.WebGLPlayer && sInjectionTried == false)
+        //    {
+        //        Debug.Log("injecting webrtcnetworkplugin");
+        //        TextAsset txt = Resources.Load<TextAsset>("webrtcnetworkplugin");
+        //        Application.ExternalEval(txt.text);
+        //        sInjectionTried = true;
+        //    }
+        //}
         /// <summary>
         /// Will return true if the environment supports the WebRTCNetwork plugin
         /// (needs to run in Chrome or Firefox + the javascript file needs to be loaded in the html page!)
@@ -107,14 +106,14 @@ namespace Byn.Net
         /// <returns></returns>
         public static bool IsAvailable()
         {
-            try
-            {
-                return UnityWebRtcNetworkIsAvailable();
-            }catch(EntryPointNotFoundException)
-            {
-                //not available at all
-                return false;
-            }
+            //try
+            //{
+            return UnityWebRtcNetworkIsAvailable();
+            //}catch(EntryPointNotFoundException)
+            //{
+            //    //not available at all
+            //    return false;
+            //}
         }
 
 
@@ -145,20 +144,29 @@ namespace Byn.Net
             get { return mIsServer; }
         }
 
+        private Queue<NetworkEvent> signalingEvents;
+        public Queue<NetworkEvent> SignalingEvents
+        {
+            get
+            {
+                return signalingEvents;
+            }
+        }
 
-
-        
+        public Queue<NetworkEvent> peerEvents;
+        public Queue<NetworkEvent> PeerEvents
+        {
+            get
+            {
+                return peerEvents;
+            }
+        }
 
         private List<ConnectionId> mConnections = new List<ConnectionId>();
-
-
 
         private int[] mTypeidBuffer = new int[1];
         private int[] mConidBuffer = new int[1];
         private int[] mDataWrittenLenBuffer = new int[1];
-
-        private Queue<NetworkEvent> mEvents = new Queue<NetworkEvent>();
-        
 
         /// <summary>
         /// Creates a new network by using a JSON configuration string. This is used to configure the server connection for the signaling channel
@@ -220,7 +228,7 @@ namespace Byn.Net
                     UnityWebRtcNetworkRelease(mReference);
             }
         }
-        
+
         /// <summary>
         /// Starts a server using a random number as address/name.
         /// 
@@ -228,7 +236,7 @@ namespace Byn.Net
         /// </summary>
         public void ConnectToServer()
         {
-            StartServer("" + UnityEngine.Random.Range(0, 16777216));
+            UnityWebRtcNetworkConnectToServer(mReference);
         }
 
         /// <summary>
@@ -241,21 +249,15 @@ namespace Byn.Net
         /// <param name="name">Name/Address can be any kind of string. There might be restrictions though depending
         /// on the underlaying signaling channel.
         /// An invalid name will result in an InitFailed event being return in Dequeue.</param>
-        public void StartServer(string name)
+        public void CreateRoom(string name)
         {
             if (this.mIsServer == true)
             {
                 UnityEngine.Debug.LogError("Already in server mode.");
                 return;
             }
-            UnityWebRtcNetworkStartServer(mReference, name);
+            UnityWebRtcNetworkCreateRoom(mReference, name);
         }
-
-        public void Disconnect()
-        {
-            UnityWebRtcNetworkStopServer(mReference);
-        }
-
 
         /// <summary>
         /// Connects to the given name or address.
@@ -264,18 +266,14 @@ namespace Byn.Net
         /// <returns>
         /// The connection id. (WebRTCNetwork doesn't allow multiple connections yet! So you can ignore this for now)
         /// </returns>
-        public ConnectionId ConnectToRoom(string name)
+        public void ConnectToRoom(string name)
         {
             //until fully supported -> block connecting to others while running a server
             if (this.mIsServer == true)
             {
                 UnityEngine.Debug.LogError("Can't create outgoing connections while in server mode!");
-                return ConnectionId.INVALID;
             }
-
-            ConnectionId id = new ConnectionId();
-            id.id = (short)UnityWebRtcNetworkConnect(mReference, name);
-            return id;
+            UnityWebRtcNetworkConnectToRoom(mReference, name);
         }
 
 
@@ -284,10 +282,11 @@ namespace Byn.Net
         /// </summary>
         /// <param name="evt"> The new network event or an empty struct if none is found.</param>
         /// <returns>True if event found, false if no events queued.</returns>
-        private bool DequeueInternal(out NetworkEvent evt)
+        private bool DequeueInternal(bool Signaling, out NetworkEvent evt)
         {
-            int length = UnityWebRtcNetworkPeekEventDataLength(mReference);
-            if(length == -1) //-1 == no event available
+            Debug.Log("Dequeue " + Signaling);
+            int length = UnityWebRtcNetworkPeekEventDataLength(Signaling, mReference);
+            if (length == -1) //-1 == no event available
             {
                 evt = new NetworkEvent();
                 return false;
@@ -295,7 +294,7 @@ namespace Byn.Net
             else
             {
                 ByteArrayBuffer buf = ByteArrayBuffer.Get(length);
-                bool eventFound = UnityWebRtcNetworkDequeue(mReference, mTypeidBuffer, mConidBuffer, buf.array, 0, buf.array.Length, mDataWrittenLenBuffer);
+                bool eventFound = UnityWebRtcNetworkDequeue(Signaling, mReference, mTypeidBuffer, mConidBuffer, buf.array, 0, buf.array.Length, mDataWrittenLenBuffer);
                 //set the write correctly
                 buf.PositionWriteRelative = mDataWrittenLenBuffer[0];
 
@@ -326,7 +325,7 @@ namespace Byn.Net
 
 
                 evt = new NetworkEvent(type, id, data);
-                UnityEngine.Debug.Log("event" + type + " received");
+                UnityEngine.Debug.Log(Signaling + ": event" + type + " received");
                 HandleEventInternally(ref evt);
                 return eventFound;
             }
@@ -341,13 +340,15 @@ namespace Byn.Net
         /// <param name="evt"> event to handle </param>
         private void HandleEventInternally(ref NetworkEvent evt)
         {
-            if(evt.Type == NetEventType.NewConnection)
+            if (evt.Type == NetEventType.NewConnection)
             {
                 mConnections.Add(evt.ConnectionId);
-            }else if(evt.Type == NetEventType.Disconnected)
+            }
+            else if (evt.Type == NetEventType.Disconnected)
             {
                 mConnections.Remove(evt.ConnectionId);
-            }else if(evt.Type == NetEventType.ServerInitialized)
+            }
+            else if (evt.Type == NetEventType.ServerInitialized)
             {
                 mIsServer = true;
             }
@@ -365,9 +366,22 @@ namespace Byn.Net
         /// <param name="offset">Start index of the content in data</param>
         /// <param name="length">Length of the content in data</param>
         /// <param name="reliable">True to use the ordered, reliable transfer, false for unordered and unreliable</param>
-        public void SendData(ConnectionId conId, byte[] data, int offset, int length, bool reliable)
+        public void SendSignalingEvent(ConnectionId conId, byte[] data, int offset, int length, bool reliable)
         {
-            UnityWebRtcNetworkSendData(mReference, conId.id, data, offset, length, reliable);
+            UnityWebRtcNetworkSendData(true, mReference, conId.id, data, offset, length, reliable);
+        }
+
+        /// <summary>
+        /// Sends a byte array
+        /// </summary>
+        /// <param name="conId">Connection id the message should be delivered to.</param>
+        /// <param name="data">Content/Buffer that contains the content</param>
+        /// <param name="offset">Start index of the content in data</param>
+        /// <param name="length">Length of the content in data</param>
+        /// <param name="reliable">True to use the ordered, reliable transfer, false for unordered and unreliable</param>
+        public void SendPeerEvent(ConnectionId conId, byte[] data, int offset, int length, bool reliable)
+        {
+            UnityWebRtcNetworkSendData(false, mReference, conId.id, data, offset, length, reliable);
         }
 
         /// <summary>
@@ -378,51 +392,6 @@ namespace Byn.Net
         public void Shutdown()
         {
             UnityWebRtcNetworkShutdown(mReference);
-        }
-
-        /// <summary>
-        /// Dequeues a new event
-        /// </summary>
-        /// <param name="evt"></param>
-        /// <returns></returns>
-        public bool Dequeue(out NetworkEvent evt)
-        {
-            evt = new NetworkEvent();
-            if (mEvents.Count == 0)
-                return false;
-
-            evt = mEvents.Dequeue();
-            return true;
-        }
-
-        public bool Peek(out NetworkEvent evt)
-        {
-            evt = new NetworkEvent();
-            if (mEvents.Count == 0)
-                return false;
-
-            evt = mEvents.Peek();
-            return true;
-        }
-
-        /// <summary>
-        /// Needs to be called to read data from the underlaying network and update this class.
-        /// 
-        /// Use Dequeue to get the events it read.
-        /// </summary>
-        public virtual void Update()
-        {
-            UnityWebRtcNetworkUpdate(mReference);
-            
-            NetworkEvent ev = new NetworkEvent();
-
-            //DequeueInternal will read the message from js, change the state of this object
-            //e.g. if a server is successfully opened it will set mIsServer to true
-            while(DequeueInternal(out ev))
-            {
-                //add it for delivery to the user
-                mEvents.Enqueue(ev);
-            }
         }
 
         /// <summary>
@@ -438,39 +407,39 @@ namespace Byn.Net
         /// Disconnects the given connection id.
         /// </summary>
         /// <param name="id">Id to disconnect</param>
-        public void Disconnect(ConnectionId id)
+        public void DisconnectFromPeer(ConnectionId id)
         {
-            UnityWebRtcNetworkDisconnect(mReference, id.id);
-        }
-
-        public void CreateRoom(string address = null)
-        {
-            throw new NotImplementedException();
+            UnityWebRtcNetworkDisconnectFromPeer(mReference, id.id);
         }
 
         public void LeaveRoom()
         {
-            throw new NotImplementedException();
+            UnityWebRtcNetworkLeaveRoom(mReference);
         }
 
-        public void SetPeerNetwork(IPeerNetwork network)
+        public void UpdateNetwork()
         {
-            throw new NotImplementedException();
+            UnityWebRtcNetworkUpdateNetwork(mReference);
+
+            NetworkEvent ev = new NetworkEvent();
+
+            //DequeueInternal will read the message from js, change the state of this object
+            //e.g. if a server is successfully opened it will set mIsServer to true
+            while (DequeueInternal(true, out ev))
+            {
+                Debug.Log("BrowserRtcNetwork : Signaling event " + ev);
+                signalingEvents.Enqueue(ev);
+            }
+            while (DequeueInternal(false, out ev))
+            {
+                Debug.Log("BrowserRtcNetwork : Peer event " + ev);
+                peerEvents.Enqueue(ev);
+            }
         }
 
-        public void CheckSignalingState()
+        public void DisconnectFromServer()
         {
-            throw new NotImplementedException();
-        }
-
-        public void UpdatePeers()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Queue<NetworkEvent> UpdateNetwork()
-        {
-            throw new NotImplementedException();
+            UnityWebRtcNetworkDisconnectFromServer(mReference);
         }
     }
 }

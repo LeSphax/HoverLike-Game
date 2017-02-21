@@ -10,6 +10,13 @@ namespace Byn.Net.Native
     public class ServerConnection : IServerConnection, INetwork, IDisposable
     {
         private Queue<NetworkEvent> signalingEvents = new Queue<NetworkEvent>();
+        public Queue<NetworkEvent> SignalingEvents
+        {
+            get
+            {
+                return signalingEvents;
+            }
+        }
 
         private NativeWebRtcNetwork peerNetwork;
 
@@ -44,6 +51,7 @@ namespace Byn.Net.Native
 
         public Queue<NetworkEvent> UpdateNetwork()
         {
+            this.CheckSleep();
             signalingEvents.Clear();
             NetworkEvent evt;
             while (Dequeue(out evt))
@@ -231,7 +239,7 @@ namespace Byn.Net.Native
             }
         }
 
-        public void SendData(ConnectionId id, byte[] data, int offset, int length, bool reliable)
+        public void SendEvent(ConnectionId id, byte[] data, int offset, int length, bool reliable)
         {
             if (data == null || data.Length == 0 || length == 0)
             {

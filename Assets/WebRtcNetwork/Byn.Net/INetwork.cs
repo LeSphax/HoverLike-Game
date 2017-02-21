@@ -11,7 +11,7 @@ namespace Byn.Net
 
 		void Flush();
 
-		void SendData(ConnectionId id, byte[] data, int offset, int length, bool reliable);
+		void SendEvent(ConnectionId id, byte[] data, int offset, int length, bool reliable);
 
 		void Disconnect(ConnectionId id);
 

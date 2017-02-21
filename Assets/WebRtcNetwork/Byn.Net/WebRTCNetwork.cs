@@ -1,9 +1,8 @@
 ﻿using Byn.Net;
-using Byn.Net.Native;
-using System;
 using System.Collections.Generic;
+using System;
 
-public class WebRtcNetwork : IDisposable
+public class WebRtcNetwork : IWebRtcNetwork
 {
     private bool mIsDisposed = false;
 
@@ -13,6 +12,21 @@ public class WebRtcNetwork : IDisposable
     public IPeerNetwork peerNetwork;
 
     private NetworkUpdateResult result;
+
+    public Queue<NetworkEvent> SignalingEvents
+    {
+        get
+        {
+            return serverConnection.SignalingEvents;
+        }
+    }
+    public Queue<NetworkEvent> PeerEvents
+    {
+        get
+        {
+            return peerNetwork.PeerEvents;
+        }
+    }
 
     public WebRtcNetwork(IServerConnection serverConnection, IPeerNetwork peerNetwork, AWebRtcNetworkFactory factory)
     {
@@ -31,24 +45,63 @@ public class WebRtcNetwork : IDisposable
         }
     }
 
-    public NetworkUpdateResult UpdateNetwork()
+    public void UpdateNetwork()
     {
         peerNetwork.CheckSignalingState();
         result.signalingEvents = serverConnection.UpdateNetwork();
         result.peerEvents = peerNetwork.UpdateNetwork();
-        return result;
     }
 
-    private void Shutdown()
+    public void Shutdown()
     {
         serverConnection.Dispose();
         peerNetwork.Dispose();
     }
 
-    internal void Flush()
+    public void Flush()
     {
         peerNetwork.Flush();
         serverConnection.Flush();
+    }
+
+    public void ConnectToServer()
+    {
+        serverConnection.ConnectToServer();
+    }
+
+    public void ConnectToRoom(string roomName)
+    {
+        serverConnection.ConnectToRoom(roomName);
+    }
+
+    public void CreateRoom(string roomName)
+    {
+        serverConnection.CreateRoom(roomName);
+    }
+
+    public void LeaveRoom()
+    {
+        serverConnection.LeaveRoom();
+    }
+
+    public void SendSignalingEvent(ConnectionId id, byte[] data, int offset, int length, bool isReliable)
+    {
+        serverConnection.SendEvent(id, data, offset, length, isReliable);
+    }
+
+    public void SendPeerEvent(ConnectionId id, byte[] data, int offset, int length, bool isReliable)
+    {
+        peerNetwork.SendEvent(id, data, offset, length, isReliable);
+   }
+
+    public void DisconnectFromServer()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DisconnectFromPeer(ConnectionId id)
+    {
+        throw new NotImplementedException();
     }
 }
 

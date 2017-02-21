@@ -95,7 +95,7 @@ var UTF16Encoding = function(e) {
         e.call(this)
     }
     t.prototype.GetBytes = function(e) {
-        return this.stringToBuffer(e)
+        return stringToBuffer(e)
     };
     t.prototype.GetString = function(e) {
         return this.bufferToString(e)
@@ -103,15 +103,6 @@ var UTF16Encoding = function(e) {
     t.prototype.bufferToString = function(e) {
         var t = new Uint16Array(e.buffer, e.byteOffset, e.byteLength / 2);
         return String.fromCharCode.apply(null, t)
-    };
-    t.prototype.stringToBuffer = function(e) {
-        var t = new ArrayBuffer(e.length * 2);
-        var n = new Uint16Array(t);
-        for (var i = 0, o = e.length; i < o; i++) {
-            n[i] = e.charCodeAt(i)
-        }
-        var r = new Uint8Array(t);
-        return r
     };
     return t
 }(Encoder);
@@ -165,22 +156,6 @@ var SLog = function() {
     return e
 }();
 
-var WebRtcNetworkServerState;
-(function(e) {
-    e[e["Invalid"] = 0] = "Invalid";
-    e[e["Offline"] = 1] = "Offline";
-    e[e["Starting"] = 2] = "Starting";
-    e[e["Online"] = 3] = "Online"
-})(WebRtcNetworkServerState || (WebRtcNetworkServerState = {}));
-var SignalingConfig = function() {
-    function e(e) {
-        this.mNetwork = e
-    }
-    e.prototype.GetNetwork = function() {
-        return this.mNetwork
-    };
-    return e
-}();
 var SignalingInfo = function() {
     function e(e, t, n) {
         this.mConnectionId = e;

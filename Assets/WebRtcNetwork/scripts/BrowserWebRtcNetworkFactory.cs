@@ -7,7 +7,7 @@ namespace Byn.Net
         private bool disposedValue = false;
 
 
-        public override WebRtcNetwork CreateDefault(string websocketUrl, string[] iceUrls = null)
+        public override IWebRtcNetwork CreateDefault(string websocketUrl, string[] iceUrls = null)
         {
 
             if (iceUrls == null)
@@ -33,8 +33,7 @@ namespace Byn.Net
                 conf = "{ \"signaling\" :  { \"class\": \"WebsocketNetwork\", \"param\" : \"" + websocketUrl + "\"}, \"iceServers\":[" + iceUrlsJson + "]}";
             }
 
-            BrowserWebRtcNetwork bn = new BrowserWebRtcNetwork(conf);
-            return new WebRtcNetwork(bn, bn, this);
+            return new BrowserWebRtcNetwork(conf);
         }
 
 

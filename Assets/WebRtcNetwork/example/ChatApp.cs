@@ -96,7 +96,7 @@ public class ChatApp : MonoBehaviour
     /// This can be native webrtc or the browser webrtc version.
     /// (Can also be the old or new unity network but this isn't part of this package)
     /// </summary>
-    private WebRtcNetwork mNetwork = null;
+    private IWebRtcNetwork mNetwork = null;
 
     /// <summary>
     /// True if the user opened an own room allowing incoming connections
@@ -157,7 +157,7 @@ public class ChatApp : MonoBehaviour
         if (mNetwork != null)
         {
             Append("WebRTCNetwork created");
-            mNetwork.serverConnection.ConnectToServer();
+            mNetwork.ConnectToServer();
         }
         else
         {
@@ -205,11 +205,11 @@ public class ChatApp : MonoBehaviour
         //check if the network was created
         if (mNetwork != null)
         {
-            NetworkUpdateResult currentUpdate = mNetwork.UpdateNetwork();
+            mNetwork.UpdateNetwork();
 
-            ProcessSignalingEvents(currentUpdate.signalingEvents);
+            ProcessSignalingEvents(mNetwork.SignalingEvents);
 
-            ProcessPeerEvents(currentUpdate.peerEvents);
+            ProcessPeerEvents(mNetwork.PeerEvents);
 
             if (mNetwork != null)
                 mNetwork.Flush();
@@ -355,7 +355,7 @@ public class ChatApp : MonoBehaviour
             byte[] msgData = Encoding.UTF8.GetBytes(msg);
             foreach (ConnectionId id in mConnections)
             {
-                mNetwork.peerNetwork.SendData(id, msgData, 0, msgData.Length, reliable);
+                mNetwork.SendPeerEvent(id, msgData, 0, msgData.Length, reliable);
             }
         }
     }
@@ -401,7 +401,7 @@ public class ChatApp : MonoBehaviour
     public void JoinRoomButtonPressed()
     {
         Setup();
-        mNetwork.serverConnection.ConnectToRoom(uRoomName.text);
+        mNetwork.ConnectToRoom(uRoomName.text);
         Append("Connecting to " + uRoomName.text + " ...");
     }
     private void EnsureLength()
@@ -429,7 +429,7 @@ public class ChatApp : MonoBehaviour
     {
         Setup();
         EnsureLength();
-        mNetwork.serverConnection.CreateRoom(uRoomName.text);
+        mNetwork.CreateRoom(uRoomName.text);
 
         Debug.Log("StartServer " + uRoomName.text);
     }
@@ -459,7 +459,7 @@ public class ChatApp : MonoBehaviour
                 ConnectionId conId;
                 if (short.TryParse(slt[1], out conId.id))
                 {
-                    mNetwork.serverConnection.Disconnect(conId);
+                    mNetwork.DisconnectFromPeer(conId);
                 }
             }
         }

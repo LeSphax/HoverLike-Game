@@ -15,7 +15,7 @@ var LocalNetwork = function() {
         enumerable: true,
         configurable: true
     });
-    e.prototype.StartServer = function(t) {
+    e.prototype.CreateRoom = function(t) {
         if (t === void 0) {
             t = null
         }
@@ -28,14 +28,14 @@ var LocalNetwork = function() {
         this.mServerAddress = t;
         this.Enqueue(NetEventType.ServerInitialized, ConnectionId.INVALID, t)
     };
-    e.prototype.StopServer = function() {
+    e.prototype.LeaveRoom = function() {
         if (this.IsServer) {
             this.Enqueue(NetEventType.ServerClosed, ConnectionId.INVALID, this.mServerAddress);
             delete e.mServers[this.mServerAddress];
             this.mServerAddress = null
         }
     };
-    e.prototype.Connect = function(t) {
+    e.prototype.ConnectToRoom = function(t) {
         var n = this.NextConnectionId();
         var i = false;
         if (t in e.mServers) {
@@ -54,9 +54,9 @@ var LocalNetwork = function() {
     };
     e.prototype.Shutdown = function() {
         for (var e in this.mConnectionNetwork) {
-            this.Disconnect(new ConnectionId((+e)))
+            this.DisconnectPeerFromServer(new ConnectionId((+e)))
         }
-        this.StopServer()
+        this.LeaveRoom()
     };
     e.prototype.Dispose = function() {
         if (this.mIsDisposed == false) {
@@ -79,7 +79,7 @@ var LocalNetwork = function() {
         return this.mEvents.Peek()
     };
     e.prototype.Flush = function() {};
-    e.prototype.Disconnect = function(e) {
+    e.prototype.DisconnectPeerFromServer = function(e) {
         if (e.id in this.mConnectionNetwork) {
             var t = this.mConnectionNetwork[e.id];
             if (t != null) {

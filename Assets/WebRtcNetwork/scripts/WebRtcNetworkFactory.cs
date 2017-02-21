@@ -22,7 +22,7 @@ namespace Byn.Net
         private static bool sStaticInitSuccessful = false;
 
         private AWebRtcNetworkFactory mFactory = null;
-        private List<WebRtcNetwork> mCreatedNetworks = new List<WebRtcNetwork>();
+        private List<IWebRtcNetwork> mCreatedNetworks = new List<IWebRtcNetwork>();
 
         public static bool StaticInitSuccessful
         {
@@ -118,7 +118,8 @@ namespace Byn.Net
             if (BrowserWebRtcNetwork.IsAvailable() == false)
             {
                 //js part is missing -> inject the code into the browser
-                BrowserWebRtcNetwork.InjectJsCode();
+              //  BrowserWebRtcNetwork.InjectJsCode();
+            Debug.LogError("The javascript code isn't available");
             }
             //if still not available something failed. setting sStaticInitSuccessful to false
             //will block the use of the factories
@@ -170,9 +171,9 @@ namespace Byn.Net
             return successful;
         }
 
-        public WebRtcNetwork CreateDefault(string websocketUrl, string[] urls = null)
+        public IWebRtcNetwork CreateDefault(string websocketUrl, string[] urls = null)
         {
-            WebRtcNetwork network = mFactory.CreateDefault(websocketUrl, urls);
+            IWebRtcNetwork network = mFactory.CreateDefault(websocketUrl, urls);
             mCreatedNetworks.Add(network);
             return network;
         }

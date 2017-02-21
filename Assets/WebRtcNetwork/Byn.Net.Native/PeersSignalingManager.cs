@@ -41,7 +41,7 @@ namespace Byn.Net.Native
                 while (v.Value.DequeueSignalingMessage(out msg))
                 {
                     MessageDataBuffer buffer = MessageDataBufferExt.StringToBuffer(msg);
-                    signalingNetwork.SendData(v.Key, buffer.Buffer, buffer.Offset, buffer.ContentLength, true);
+                    signalingNetwork.SendEvent(v.Key, buffer.Buffer, buffer.Offset, buffer.ContentLength, true);
                 }
                 if (v.Value.State == AWebRtcPeer.PeerState.Connected)
                 {

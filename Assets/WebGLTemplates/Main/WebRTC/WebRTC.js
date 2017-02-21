@@ -10,13 +10,12 @@ function CAPIWebRtcNetworkCreate(e) {
     console.debug("CAPIWebRtcNetworkCreate called");
     var t = gCAPIWebRtcNetworkInstancesNextIndex;
     gCAPIWebRtcNetworkInstancesNextIndex++;
-    var n = "WebsocketNetwork";
     var i = "ws://localhost:12777";
-    var o = ["stun:stun.services.mozilla.com"];
+    var config = ["stun:stun.services.mozilla.com"];
     if (e == null || typeof e !== "string" || e.length === 0) {
-        console.debug("invalid configuration. use default");
-        var r = new SignalingConfig(new WebsocketNetwork(i));
-        gCAPIWebRtcNetworkInstances[t] = new WebRtcNetwork(r, ["stun:stun.services.mozilla.com"])
+        console.error("invalid configuration. use default");
+        //var r = new SignalingServerConnection(i);
+        gCAPIWebRtcNetworkInstances[t] = null//new PeerNetwork(r, ["stun:stun.services.mozilla.com"])
     } else {
         console.debug("parsing configuration");
         var a = JSON.parse(e);
@@ -26,13 +25,13 @@ function CAPIWebRtcNetworkCreate(e) {
                 i = a.signaling.param
             }
             if (a.iceServers) {
-                o = a.iceServers
+                config = a.iceServers
             }
         }
-        var s = window[n];
-        var r = new SignalingConfig(new s(i));
+        var signalingServerConnection = new SignalingServerConnection(i);
         console.debug("setup webrtc network");
-        gCAPIWebRtcNetworkInstances[t] = new WebRtcNetwork(r, o)
+        var peerNetwork = new PeerNetwork(signalingServerConnection, config);
+        gCAPIWebRtcNetworkInstances[t] = new WebRtcNetwork(signalingServerConnection,peerNetwork);
     }
     return t
 }
@@ -44,56 +43,53 @@ function CAPIWebRtcNetworkRelease(e) {
     }
 }
 
-function CAPIWebRtcNetworkConnect(e, t) {
-    return gCAPIWebRtcNetworkInstances[e].Connect(t)
+function CAPIWebRtcNetworkUpdateNetwork(e) {
+    gCAPIWebRtcNetworkInstances[e].UpdateNetwork()
 }
-
-function CAPIWebRtcNetworkStartServer(e, t) {
-    gCAPIWebRtcNetworkInstances[e].StartServer(t)
+function CAPIWebRtcNetworkFlush(e) {
+    gCAPIWebRtcNetworkInstances[e].Flush()
 }
-
-function CAPIWebRtcNetworkStopServer(e) {
-    gCAPIWebRtcNetworkInstances[e].StopServer()
+function CAPIWebRtcNetworkConnectToServer(e) {
+    return gCAPIWebRtcNetworkInstances[e].signalingServerConnection.ConnectToServer()
 }
-
-function CAPIWebRtcNetworkDisconnect(e, t) {
-    gCAPIWebRtcNetworkInstances[e].Disconnect(new ConnectionId(t))
+function CAPIWebRtcNetworkConnectToRoom(e, t) {
+    return gCAPIWebRtcNetworkInstances[e].signalingServerConnection.ConnectToRoom(t)
 }
+function CAPIWebRtcNetworkCreateRoom(e, t) {
+    gCAPIWebRtcNetworkInstances[e].signalingServerConnection.CreateRoom(t)
+}
+function CAPIWebRtcNetworkLeaveRoom(e) {
+    gCAPIWebRtcNetworkInstances[e].signalingServerConnection.LeaveRoom()
+}
+function CAPIWebRtcNetworkDisconnectFromServer(e) {
+    gCAPIWebRtcNetworkInstances[e].signalingServerConnection.DisconnectFromServer()
+}
+function CAPIWebRtcNetworkDisconnectFromPeer(e, t) {
+    gCAPIWebRtcNetworkInstances[e].peerNetwork.DisconnectFromPeer(new ConnectionId(t))
+}
+function CAPIWebRtcNetworkSendData(e, t, n, i) {
+    gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), n, i)
+}
+function CAPIWebRtcNetworkSendDataEm(Signaling, e, t, n, i, o, r) {
+    var a = new Uint8Array(n.buffer, i, o);
+    if (Signaling)
+        gCAPIWebRtcNetworkInstances[e].signalingServerConnection.SendData(new ConnectionId(t), a, r)
+    else
+        gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), a, r)
 
+}
 function CAPIWebRtcNetworkShutdown(e) {
     gCAPIWebRtcNetworkInstances[e].Shutdown()
 }
 
-function CAPIWebRtcNetworkUpdate(e) {
-    gCAPIWebRtcNetworkInstances[e].Update()
+function CAPIWebRtcNetworkPeekEventDataLength(signaling,e) {
+    var u;
+    if (signaling)
+        u = gCAPIWebRtcNetworkInstances[e].signalingServerConnection.signalingEvents.Peek();
+    else
+        u = gCAPIWebRtcNetworkInstances[e].peerNetwork.mEvents.Peek();
+    return CAPIWebRtcNetworkCheckEventLength(u);
 }
-
-function CAPIWebRtcNetworkFlush(e) {
-    gCAPIWebRtcNetworkInstances[e].Flush()
-}
-
-function CAPIWebRtcNetworkSendData(e, t, n, i) {
-    gCAPIWebRtcNetworkInstances[e].SendData(new ConnectionId(t), n, i)
-}
-
-function CAPIWebRtcNetworkSendDataEm(e, t, n, i, o, r) {
-    var a = new Uint8Array(n.buffer, i, o);
-    gCAPIWebRtcNetworkInstances[e].SendData(new ConnectionId(t), a, r)
-}
-
-function CAPIWebRtcNetworkDequeue(e) {
-    return gCAPIWebRtcNetworkInstances[e].Dequeue()
-}
-
-function CAPIWebRtcNetworkPeek(e) {
-    return gCAPIWebRtcNetworkInstances[e].Peek()
-}
-
-function CAPIWebRtcNetworkPeekEventDataLength(e) {
-    var t = gCAPIWebRtcNetworkInstances[e].Peek();
-    return CAPIWebRtcNetworkCheckEventLength(t)
-}
-
 function CAPIWebRtcNetworkCheckEventLength(e) {
     if (e == null) {
         return -1
@@ -105,7 +101,6 @@ function CAPIWebRtcNetworkCheckEventLength(e) {
         return e.RawData.length
     }
 }
-
 function CAPIWebRtcNetworkEventDataToUint8Array(e, t, n, i) {
     if (e == null) {
         return 0
@@ -123,9 +118,14 @@ function CAPIWebRtcNetworkEventDataToUint8Array(e, t, n, i) {
         return o
     }
 }
-
-function CAPIWebRtcNetworkDequeueEm(e, t, n, i, o, r, a, s, c, l) {
-    var u = CAPIWebRtcNetworkDequeue(e);
+function CAPIWebRtcNetworkDequeueEm(signaling, e, t, n, i, o, r, a, s, c, l) {
+    console.log(signaling);
+    var u;
+    if (signaling)
+        u = gCAPIWebRtcNetworkInstances[e].signalingServerConnection.signalingEvents.Dequeue();
+    else {
+        u = gCAPIWebRtcNetworkInstances[e].peerNetwork.mEvents.Dequeue();
+    }
     if (u == null) return false;
     t[n] = u.Type;
     i[o] = u.ConnectionId.id;
@@ -133,9 +133,13 @@ function CAPIWebRtcNetworkDequeueEm(e, t, n, i, o, r, a, s, c, l) {
     c[l] = g;
     return true
 }
-
-function CAPIWebRtcNetworkPeekEm(e, t, n, i, o, r, a, s, c, l) {
-    var u = CAPIWebRtcNetworkPeek(e);
+function CAPIWebRtcNetworkPeekEm(signaling,e, t, n, i, o, r, a, s, c, l) {
+    console.log(signaling);
+    var u;
+    if (signaling)
+        u = gCAPIWebRtcNetworkInstances[e].signalingServerConnection.signalingEvents.Peek();
+    else
+        u = gCAPIWebRtcNetworkInstances[e].peerNetwork.mEvents.Peek();
     if (u == null) return false;
     t[n] = u.Type;
     i[o] = u.ConnectionId.id;

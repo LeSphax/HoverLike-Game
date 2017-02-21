@@ -17,5 +17,7 @@ namespace Byn.Net
 		ConnectionId ConnectToRoom(string address);
 
         void SetPeerNetwork(IPeerNetwork network);
+
+        Queue<NetworkEvent> SignalingEvents { get; }
     }
 }

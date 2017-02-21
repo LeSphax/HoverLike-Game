@@ -1,8 +1,91 @@
 function runTests(){
-    WebRtcNetwork_test1();
+    My_WebRtcNetwork_test1();
     //WebsocketNetwork_sharedaddress();
     //CAPIWebRtcNetwork_test1();
     //WebsocketNetwork_test1();
+}
+
+function My_WebRtcNetwork_test1() {
+    console.log("My Test");
+    var e = "test1234";
+    
+    var signalingUrl = "ws://sphaxtest.herokuapp.com";
+    //if (window.location.protocol != "https:") {
+    //    signalingUrl = "ws://localhost:12776"
+    //} else {
+    //    signalingUrl = "wss://localhost:12777"
+    //}
+    var n = new Array;
+    n.push("stun:stun.services.mozilla.com");
+    var signalingNetwork1 = new SignalingServerConnection(signalingUrl)
+    var peerNetwork1 = new PeerNetwork(signalingNetwork1, n);
+    var network1 = new WebRtcNetwork(signalingNetwork1, peerNetwork1);
+    signalingNetwork1.ConnectToServer();
+    signalingNetwork1.CreateRoom("Jambon");
+
+
+    var signalingNetwork2 = new SignalingServerConnection(signalingUrl)
+    var peerNetwork2 = new PeerNetwork(signalingNetwork2, n);
+    var network2 = new WebRtcNetwork(signalingNetwork2, peerNetwork2);
+
+    setInterval(function () {
+        network1.UpdateNetwork();
+        var event = null;
+        while (event = network1.signalingServerConnection.signalingEvents.Dequeue()) {
+            console.log("server inc: " + event.toString());
+            if (event.Type == NetEventType.ServerInitialized) {
+                console.log("server started. Address " + event.Info);
+                console.log(network2);
+                network2.signalingServerConnection.ConnectToRoom("Jambon");
+            } else if (event.Type == NetEventType.ServerInitFailed) {
+                console.error("server start failed")
+            }
+        }
+        while (event = network1.peerNetwork.mEvents.Dequeue()) {
+            if (event.Type == NetEventType.NewConnection) {
+                console.log("server new incoming connection")
+            } else if (event.Type == NetEventType.Disconnected) {
+                console.log("server peer disconnected");
+                console.log("server shutdown");
+                network1.Shutdown()
+            } else if (event.Type == NetEventType.ReliableMessageReceived) {
+                network1.peerNetwork.SendData(event.ConnectionId, event.MessageData, true)
+            } else if (event.Type == NetEventType.UnreliableMessageReceived) {
+                network1.peerNetwork.SendData(event.ConnectionId, event.MessageData, false)
+            }
+        }
+        network1.Flush();
+
+        network2.UpdateNetwork();
+        while (event = network2.signalingServerConnection.signalingEvents.Dequeue()) {
+            console.log(event);
+        }
+        while (event = network2.peerNetwork.mEvents.Dequeue()) {
+            console.log("client inc: " + event.toString());
+            if (event.Type == NetEventType.NewConnection) {
+                console.log("client connection established");
+                var n = stringToBuffer(e);
+                network2.peerNetwork.SendData(event.ConnectionId, n, true)
+            } else if (event.Type == NetEventType.ReliableMessageReceived) {
+                var r = bufferToString(event.MessageData);
+                if (r != e) {
+                    console.error("Test failed sent string %s but received string %s", e, r)
+                }
+                var n = stringToBuffer(e);
+                network2.peerNetwork.SendData(event.ConnectionId, n, false)
+            } else if (event.Type == NetEventType.UnreliableMessageReceived) {
+                var r = bufferToString(event.MessageData);
+                if (r != e) {
+                    console.error("Test failed sent string %s but received string %s", e, r)
+                }
+                console.log("client disconnecting");
+                network2.peerNetwork.DisconnectFromPeer(event.ConnectionId);
+                console.log("client shutting down");
+                network2.Shutdown()
+            }
+        }
+        network2.Flush()
+    }, 100)
 }
 
 function WebRtcNetwork_test1() {
@@ -16,9 +99,9 @@ function WebRtcNetwork_test1() {
     }
     var n = new Array;
     n.push("stun:stun.services.mozilla.com");
-    var i = new WebRtcNetwork(new SignalingConfig(new LocalNetwork), n);
-    i.StartServer();
-    var o = new WebRtcNetwork(new SignalingConfig(new LocalNetwork), n);
+    var i = new PeerNetwork(new SignalingConfig(new LocalNetwork), n);
+    i.CreateRoom();
+    var o = new PeerNetwork(new SignalingConfig(new LocalNetwork), n);
     setInterval(function() {
         i.Update();
         var t = null;
@@ -26,7 +109,7 @@ function WebRtcNetwork_test1() {
             console.log("server inc: " + t.toString());
             if (t.Type == NetEventType.ServerInitialized) {
                 console.log("server started. Address " + t.Info);
-                o.Connect(t.Info)
+                o.ConnectToRoom(t.Info)
             } else if (t.Type == NetEventType.ServerInitFailed) {
                 console.error("server start failed")
             } else if (t.Type == NetEventType.NewConnection) {
@@ -62,7 +145,7 @@ function WebRtcNetwork_test1() {
                     console.error("Test failed sent string %s but received string %s", e, r)
                 }
                 console.log("client disconnecting");
-                o.Disconnect(t.ConnectionId);
+                o.DisconnectFromPeer(t.ConnectionId);
                 console.log("client shutting down");
                 o.Shutdown()
             }
@@ -72,7 +155,7 @@ function WebRtcNetwork_test1() {
 }
 
 function WebsocketNetwork_sharedaddress() {
-    console.log("WebsocketNetwork shared address test");
+    console.log("SignalingServerConnection shared address test");
     var e = "test1234";
     var t = false;
     var n = true;
@@ -86,15 +169,15 @@ function WebsocketNetwork_sharedaddress() {
         if (t) i = "wss://localhost:12777/testshare"
     }
 var r = "sharedaddresstest";
-var a = new WebsocketNetwork(i);
-var s = new WebsocketNetwork(i);
-var c = new WebsocketNetwork(i);
+var a = new SignalingServerConnection(i);
+var s = new SignalingServerConnection(i);
+var c = new SignalingServerConnection(i);
 var l = stringToBuffer("network1 says hi");
 var u = stringToBuffer("network2 says hi");
 var g = stringToBuffer("network3 says hi");
-a.StartServer(r);
-s.StartServer(r);
-c.StartServer(r);
+a.CreateRoom(r);
+s.CreateRoom(r);
+c.CreateRoom(r);
 
 function f(e, t) {
     e.Update();
@@ -210,9 +293,9 @@ function WebsocketNetwork_test1() {
         i = "wss://because-why-not.com:12777";
         if (t) i = "wss://localhost:12777"
     }
-var r = new WebsocketNetwork(i);
-r.StartServer();
-var a = new WebsocketNetwork(i);
+var r = new SignalingServerConnection(i);
+r.CreateRoom();
+var a = new SignalingServerConnection(i);
 setInterval(function() {
     r.Update();
     var t = null;
@@ -220,7 +303,7 @@ setInterval(function() {
         console.log("server inc: " + t.toString());
         if (t.Type == NetEventType.ServerInitialized) {
             console.log("server started. Address " + t.Info);
-            a.Connect(t.Info)
+            a.ConnectToRoom(t.Info)
         } else if (t.Type == NetEventType.ServerInitFailed) {
             console.error("server start failed")
         } else if (t.Type == NetEventType.NewConnection) {
@@ -256,7 +339,7 @@ setInterval(function() {
                 console.error("Test failed sent string %s but received string %s", e, i)
             }
             console.log("client disconnecting");
-            a.Disconnect(t.ConnectionId);
+            a.DisconnectFromPeer(t.ConnectionId);
             console.log("client shutting down");
             a.Shutdown()
         }
