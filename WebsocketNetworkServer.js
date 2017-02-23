@@ -50,7 +50,7 @@ var PeerPool = (function () {
     };
 
     PeerPool.prototype.getRooms = function () {
-        var rooms = "___GetRooms@";
+        var rooms = "GetRooms@";
         for (var key in this.mServers) {
             if (this.blockedRooms.indexOf(key) == -1)
                 rooms+= key+"|"+Object.keys(this.mServers[key][0].mConnections).length+"@";
@@ -65,7 +65,7 @@ var PeerPool = (function () {
             this.mServers[address] = new Array();
         }
         this.mServers[address].push(client);
-            console.log("ADD SERVER ------ " + address);
+        console.log("ADD SERVER ------ " + address);
 
     };
     PeerPool.prototype.removeClientFromServer = function (client, address) {
@@ -197,23 +197,14 @@ var SignalingPeer = (function () {
         var newConnectionId = evt.ConnectionId;
         if (evt.Type == inet.NetEventType.NewConnection) {
             console.log("NewConnection "+evt.Info);
-            var splittedInfo = evt.Info.split('@');
-            if (evt.Info == "___GetRooms"){
-                console.log("___GetRooms "+ evt.ConnectionId);
-                this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerInitFailed, newConnectionId, this.mConnectionPool.getRooms()));
-            }
-            else if (splittedInfo[0] == "___BlockRoom"){
-                var roomName = splittedInfo[1];
-                console.log("___BlockRoom "+ roomName);
-                this.mConnectionPool.blockedRooms.push(roomName);
-            }
-            else{
-                this.connect(address, evt.ConnectionId);
-            }
+
+            this.connect(address, evt.ConnectionId);
+
         }
         else if (evt.Type == inet.NetEventType.ConnectionFailed) {
         }
         else if (evt.Type == inet.NetEventType.Disconnected) {
+            console.log("Disconnect peer " + evt.ConnectionId);
             var otherPeerId = evt.ConnectionId;
             this.disconnect(otherPeerId);
         }
@@ -231,6 +222,18 @@ var SignalingPeer = (function () {
         }
         else if (evt.Type == inet.NetEventType.UnreliableMessageReceived) {
             this.sendData(evt.ConnectionId, evt.MessageData, false);
+        }
+        else if (evt.Type == inet.NetEventType.UserCommand){
+            var splittedInfo = evt.Info.split('@');
+            if (evt.Info == "GetRooms"){
+                console.log("GetRooms "+ evt.ConnectionId);
+                this.sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, newConnectionId, this.mConnectionPool.getRooms()));
+            }
+            else if (splittedInfo[0] == "BlockRoom"){
+                var roomName = splittedInfo[1];
+                console.log("BlockRoom "+ roomName);
+                this.mConnectionPool.blockedRooms.push(roomName);
+            }
         }
     };
     SignalingPeer.prototype.internalAddIncomingPeer = function (peer,id) {

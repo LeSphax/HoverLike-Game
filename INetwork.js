@@ -13,6 +13,7 @@ var NetEventType;
     NetEventType[NetEventType["FatalError"] = 100] = "FatalError";
     NetEventType[NetEventType["Warning"] = 101] = "Warning";
     NetEventType[NetEventType["Log"] = 102] = "Log";
+    NetEventType[NetEventType["UserCommand"] = 103] = "UserCommand";
 })(NetEventType || (NetEventType = {}));
 exports.NetEventType = NetEventType;
 
