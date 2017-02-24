@@ -25,6 +25,26 @@ public static class LayersGetter
         return CombineLayers(players);
     }
 
+    internal static bool IsPlayer(int layer)
+    {
+        return IsInArray(layer,players);
+    }
+
+    internal static bool IsAttacker(int layer)
+    {
+        return IsInArray(layer, attackers);
+    }
+
+    private static bool IsInArray(int value, int[ ] array)
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            if (array[i] == value)
+                return true;
+        }
+        return false;
+    }
+
     public static LayerMask AttackersMask()
     {
         return CombineLayers(attackers);

@@ -329,6 +329,7 @@ namespace Byn.Net.Native
 
         protected void RtcSetSignalingFailed()
         {
+            Debug.LogError("AWebRtcPeer RtcSignalingFailed");
             this.mRtcInternalState = WebRtcInternalState.SignalingFailed;
         }
 

@@ -30,8 +30,8 @@ var SignalingServerConnection = function () {
         while ((event = this.Dequeue()) != null) {
             console.log("new event " + event);
             this.peerNetwork.IncomingSignalingEvent(event);
-            if (event.Type == NetEventType.ServerInitialized || event.Type == NetEventType.ServerInitFailed || event.Type == NetEventType.ServerClosed) {
-            console.log("Enqueue event in signaling " + event);
+            if (event.Type == NetEventType.ServerInitialized || event.Type == NetEventType.ServerInitFailed || event.Type == NetEventType.ServerClosed || event.Type == NetEventType.UserCommand) {
+                console.log("Enqueue event in signaling " + event);
                 this.signalingEvents.Enqueue(new NetworkEvent(event.Type, ConnectionId.INVALID, event.RawData));
             }
         }
@@ -124,67 +124,69 @@ var SignalingServerConnection = function () {
         return null
     };
     e.prototype.Flush = function () {
-        if (this.socketConnection.status == WebsocketConnectionStatus.Connected) this.HandleOutgoingEvents()
+        if (this.socketConnection.status == WebsocketConnectionStatus.Connected) this.HandleOutgoingEvents();
     };
-    e.prototype.SendData = function (e, t, n) {
-        if (e == null || t == null || t.length == 0) return;
-        var i;
-        if (n) {
-            i = new NetworkEvent(NetEventType.ReliableMessageReceived, e, t)
-        } else {
-            i = new NetworkEvent(NetEventType.UnreliableMessageReceived, e, t)
+    e.prototype.SendData = function (connectionId, type, content) {
+        if (type == null ) {
+            console.error("Signaling server : The type of the event to send is null");
+            return;
         }
-        this.EnqueueOutgoing(i)
-    };
-    e.prototype.DisconnectPeerFromServer = function (e) {
-        var t = new NetworkEvent(NetEventType.Disconnected, e, null);
-        this.EnqueueOutgoing(t)
-    };
-    e.prototype.Shutdown = function () {
-        this.Cleanup();
-        this.LeaveRoom();
-        this.socketConnection.status = WebsocketConnectionStatus.NotConnected
-    };
-    e.prototype.Dispose = function () {
-        if (this.mIsDisposed == false) {
-            this.Shutdown();
-            this.mIsDisposed = true
-        }
-    };
-    e.prototype.ConnectToServer = function () {
-
-        if (this.mServerStatus == WebsocketServerStatus.Offline) {
-            this.mServerStatus = WebsocketServerStatus.Starting;
-            this.socketConnection.EnsureServerConnection();
-        } else {
-            this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerInitFailed, ConnectionId.INVALID, e))
-        }
+        if( content == null){
+         console.error("Signaling server : The content of the event to send is null");
+         return;   
+     }
+     var event = new NetworkEvent();
+     this.EnqueueOutgoing(i);
+ };
+ e.prototype.DisconnectPeerFromServer = function (e) {
+    var t = new NetworkEvent(NetEventType.Disconnected, e, null);
+    this.EnqueueOutgoing(t);
+};
+e.prototype.Shutdown = function () {
+    this.Cleanup();
+    this.LeaveRoom();
+    this.socketConnection.status = WebsocketConnectionStatus.NotConnected;
+};
+e.prototype.Dispose = function () {
+    if (this.mIsDisposed == false) {
+        this.Shutdown();
+        this.mIsDisposed = true;
     }
-    e.prototype.DisconnectFromServer = function (e) {
-        console.error("Disconnect From Server  : Not implemented yet");
-    };
+};
+e.prototype.ConnectToServer = function () {
 
-    e.prototype.CreateRoom = function (e) {
-        if (e == null) {
-            e = "" + this.GetRandomKey()
-        }
-        this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerInitialized, ConnectionId.INVALID, e))
-    };
-
-    e.prototype.LeaveRoom = function () {
-        this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null))
-    };
-
-    e.prototype.ConnectToRoom = function (e) {
-        console.log("ConnectToRoom");
+    if (this.mServerStatus == WebsocketServerStatus.Offline) {
+        this.mServerStatus = WebsocketServerStatus.Starting;
         this.socketConnection.EnsureServerConnection();
-        var t = this.NextConnectionId();
-        this.mConnecting.push(t.id);
-        var n = new NetworkEvent(NetEventType.NewConnection, t, e);
-        this.EnqueueOutgoing(n);
-        this.peerNetwork.AddOutgoingConnection(t);
+    } else {
+        this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerInitFailed, ConnectionId.INVALID, e));
+    }
+}
+e.prototype.DisconnectFromServer = function (e) {
+    console.error("Disconnect From Server  : Not implemented yet");
+};
 
-        return t
-    };
-    return e
+e.prototype.CreateRoom = function (e) {
+    if (e == null) {
+        e = "" + this.GetRandomKey()
+    }
+    this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerInitialized, ConnectionId.INVALID, e))
+};
+
+e.prototype.LeaveRoom = function () {
+    this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null))
+};
+
+e.prototype.ConnectToRoom = function (e) {
+    console.log("ConnectToRoom");
+    this.socketConnection.EnsureServerConnection();
+    var t = this.NextConnectionId();
+    this.mConnecting.push(t.id);
+    var n = new NetworkEvent(NetEventType.NewConnection, t, e);
+    this.EnqueueOutgoing(n);
+    this.peerNetwork.AddOutgoingConnection(t);
+
+    return t
+};
+return e
 }();

@@ -54,12 +54,16 @@ var UnityWebRtcNetwork =
 	{
 		CAPIWebRtcNetworkDisconnectFromPeer(lIndex, lConnectionId);
 	},
-	UnityWebRtcNetworkSendData:function(Signaling, lIndex, lConnectionId, lUint8ArrayDataPtr, lUint8ArrayDataOffset, lUint8ArrayDataLength, lReliable)
+	UnityWebRtcNetworkSendPeerData:function(lIndex, lConnectionId, lUint8ArrayDataPtr, lUint8ArrayDataOffset, lUint8ArrayDataLength, lReliable)
 	{
 		var sndReliable = true;
 		if(lReliable == false || lReliable == 0 || lReliable == "false" || lReliable == "False")
 			sndReliable = false;
-		CAPIWebRtcNetworkSendDataEm(Signaling, lIndex, lConnectionId, HEAPU8, lUint8ArrayDataPtr + lUint8ArrayDataOffset, lUint8ArrayDataLength, sndReliable);
+		CAPIWebRtcNetworkSendPeerDataEm(lIndex, lConnectionId, HEAPU8, lUint8ArrayDataPtr + lUint8ArrayDataOffset, lUint8ArrayDataLength, sndReliable);
+	},
+	UnityWebRtcNetworkSendSignalingData:function(lIndex, lConnectionId, lTypeInt, lContent)
+	{
+		CAPIWebRtcNetworkSendSignalingDataEm(lIndex, lConnectionId, lTypeInt, Pointer_stringify(lContent));
 	},
 	UnityWebRtcNetworkShutdown:function(lIndex)
 	{

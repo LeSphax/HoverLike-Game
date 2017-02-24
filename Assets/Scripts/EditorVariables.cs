@@ -42,6 +42,9 @@ public class EditorVariables : MonoBehaviour
     public bool startGameImmediately;
     public static bool StartGameImmediately;
 
+    public bool editorIsServer;
+    public static bool EditorIsServer;
+
     public int numberPlayersToStartGame;
     public static int NumberPlayersToStartGame;
 
@@ -65,6 +68,7 @@ public class EditorVariables : MonoBehaviour
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         StartGameImmediately = false;
+        EditorIsServer = false;
         NumberFramesLatency = 0;
         NumberPlayersToStartGame = 0;
         AddLatency = false;
@@ -74,6 +78,7 @@ public class EditorVariables : MonoBehaviour
         NoCooldowns = false;
 #else
         StartGameImmediately = startGameImmediately;
+        EditorIsServer = editorIsServer;
         NumberFramesLatency = numberFramesLatency;
         NumberPlayersToStartGame = numberPlayersToStartGame;
         AddLatency = addLatency;

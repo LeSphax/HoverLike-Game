@@ -9,6 +9,9 @@ using SlideBall.Networking;
 
 namespace PlayerManagement
 {
+    public delegate void OwnerChangeHandler(ConnectionId previousPlayer, ConnectionId newPlayer);
+
+
     public class Players : ANetworkView
     {
         public static ConnectionId INVALID_PLAYER_ID = new ConnectionId(-100);
@@ -31,6 +34,7 @@ namespace PlayerManagement
         public static Dictionary<ConnectionId, Player> players = new Dictionary<ConnectionId, Player>();
 
         public static event ConnectionEventHandler NewPlayerCreated;
+        public static event OwnerChangeHandler PlayerOwningBallChanged;
 
         //This variable only exists on client, on the server it is contained in the dictionary 'players'
         public static ConnectionId myPlayerId;
@@ -60,7 +64,7 @@ namespace PlayerManagement
             players.Clear();
         }
 
-        public void PlayerOwningBallChanged(ConnectionId previousPlayer, ConnectionId newPlayer, bool sendUpdate)
+        public void ChangePlayerOwningBall(ConnectionId previousPlayer, ConnectionId newPlayer, bool sendUpdate)
         {
             //Debug.LogError("PlayerOwningBallChanged " + previousPlayer + "   " + newPlayer);
             if (MyComponents.NetworkManagement.isServer)
@@ -76,12 +80,14 @@ namespace PlayerManagement
                 {
                     players[newPlayer].HasBall = true;
                     MyComponents.BallState.AttachBall(newPlayer);
-                    players[newPlayer].controller.animator.SetBool("Catch",true);
+                    players[newPlayer].controller.animator.SetBool("Catch", true);
                 }
                 else
                 {
                     MyComponents.BallState.AttachBall(BallState.NO_PLAYER_ID);
                 }
+                if (PlayerOwningBallChanged != null)
+                    PlayerOwningBallChanged.Invoke(previousPlayer, newPlayer);
             }
         }
 

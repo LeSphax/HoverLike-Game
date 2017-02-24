@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Byn.Net.Native
 {
@@ -9,7 +10,7 @@ namespace Byn.Net.Native
         private NativeWebRtcNetwork webRtcNetwork;
         private IServerConnection signalingNetwork;
 
-        private int mTimeout = 60000;
+        private int mTimeout = 10000;
 
         private Dictionary<ConnectionId, WebRtcDataPeer> signalingPeers = new Dictionary<ConnectionId, WebRtcDataPeer>();
 
@@ -26,6 +27,7 @@ namespace Byn.Net.Native
 
         internal void AddSignalingPeer(ConnectionId id, WebRtcDataPeer peer)
         {
+            Debug.LogWarning("AddSignalingPeer " + id + "   " + signalingPeers.Count);
             signalingPeers.Add(id, peer);
         }
 
@@ -49,6 +51,7 @@ namespace Byn.Net.Native
                 }
                 else if (v.Value.State == AWebRtcPeer.PeerState.SignalingFailed || timeAlive > this.mTimeout)
                 {
+                    Debug.LogError("PeerSignalingManager  " + v.Key + "  SignalingFailed !!! ");
                     failed.Add(v.Key);
                 }
             }
@@ -66,6 +69,7 @@ namespace Byn.Net.Native
 
         private void ConnectionEtablished(ConnectionId signalingConId)
         {
+            Debug.LogWarning("ConnectionEstablished " + signalingConId + "   " +signalingPeers.Count);
             WebRtcDataPeer peer = this.signalingPeers[signalingConId];
             this.signalingPeers.Remove(signalingConId);
             this.signalingNetwork.Disconnect(signalingConId);
@@ -80,6 +84,7 @@ namespace Byn.Net.Native
             if (this.signalingPeers.TryGetValue(signalingConId, out peer))
             {
                 this.signalingPeers.Remove(signalingConId);
+                Debug.LogError("SignalingFailed !!!! ");
                 webRtcNetwork.mEvents.Enqueue(new NetworkEvent(NetEventType.ConnectionFailed, peer.ConnectionId, null));
                 if (peer.SignalingInfo.IsSignalingConnected)
                 {

@@ -38,6 +38,7 @@ namespace SlideBall.Networking
                     }
                     else
                     {
+                        Debug.Log("Send BufferedMessage " + storedMessage.message);
                         networkManagement.SendData(storedMessage.message, id);
                     }
                 }

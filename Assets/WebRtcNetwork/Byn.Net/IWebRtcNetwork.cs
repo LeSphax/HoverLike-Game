@@ -13,7 +13,7 @@ public interface IWebRtcNetwork : IDisposable
     void DisconnectFromServer();
     void DisconnectFromPeer(ConnectionId id);
 
-    void SendSignalingEvent(ConnectionId id, byte[] data, int offset, int length, bool isReliable);
+    void SendSignalingEvent(ConnectionId id,string content, NetEventType type);
     void SendPeerEvent(ConnectionId id, byte[] data, int offset, int length, bool isReliable);
 
     void Shutdown();

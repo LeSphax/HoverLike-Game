@@ -37,7 +37,8 @@ public class RoomManager : MonoBehaviour
 
     public void OnDisable()
     {
-        MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreateMyPlayerInfo;
+        if (MyComponents.NetworkManagement != null)
+            MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreateMyPlayerInfo;
     }
 
     private void Start()
@@ -55,7 +56,7 @@ public class RoomManager : MonoBehaviour
     {
         if (MyComponents.NetworkManagement.isServer && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
         {
-            Invoke("StartGame", 1f);
+            Invoke("StartGame", 2f);
             CancelInvoke("CheckStartGame");
         }
     }

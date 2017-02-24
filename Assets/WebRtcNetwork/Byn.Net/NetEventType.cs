@@ -1,8 +1,6 @@
-using System;
-
 namespace Byn.Net
 {
-	public enum NetEventType : byte
+    public enum NetEventType : byte
 	{
 		Invalid,
 		UnreliableMessageReceived,
@@ -15,6 +13,7 @@ namespace Byn.Net
 		Disconnected,
 		FatalError = 100,
 		Warning,
-		Log
+		Log,
+        UserCommand,
 	}
 }

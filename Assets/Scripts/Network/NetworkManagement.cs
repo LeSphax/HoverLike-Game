@@ -99,32 +99,27 @@ namespace SlideBall
         }
 
         private const int MAX_CODE_LENGTH = 256;
-        private const string GET_ROOMS_COMMAND = "___GetRooms";
-        private const string BLOCK_ROOMS_COMMAND = "___BlockRoom";
+        private const string GET_ROOMS_COMMAND = "GetRooms";
+        private const string BLOCK_ROOMS_COMMAND = "BlockRoom";
         private const char ROOM_SEPARATOR_CHAR = '@';
         private BufferedMessages bufferedMessages;
 
         public event EmptyEventHandler RoomCreated;
         public event EmptyEventHandler ConnectedToRoom;
         public event EmptyEventHandler ServerStartFailed;
+        public event EmptyEventHandler ConnectionFailed;
 
         public event EmptyEventHandler ReceivedAllBufferedMessages;
 
         private void Awake()
         {
-            Reset();
-        }
-
-        /// <summary>
-        /// Will setup webrtc and create the network object
-        /// </summary>
-        private void Start()
-        {
+            Debug.LogError("NetworkManagement AWAKE");
             ConnectedToRoom += ClosePopUp;
             RoomCreated += ClosePopUp;
             WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
             if (factory != null)
                 Debug.Log("WebRtcNetworkFactory created");
+            Reset();
         }
 
         private void Setup()
@@ -142,16 +137,26 @@ namespace SlideBall
             }
         }
 
+        public void SendUserCommand(string command, params string[] args)
+        {
+            string content = command;
+            if (args != null)
+                for (int i = 0; i < args.Length; i++)
+                {
+                    content += "@" + args[i];
+                }
+            mNetwork.SendSignalingEvent(Players.myPlayerId, content, NetEventType.UserCommand);
+        }
+
         public void GetRooms()
         {
-            Setup();
-            mNetwork.ConnectToRoom(GET_ROOMS_COMMAND);
+            SendUserCommand(GET_ROOMS_COMMAND);
         }
 
         public void BlockRoom()
         {
             Assert.IsTrue(isServer);
-            mNetwork.ConnectToRoom(BLOCK_ROOMS_COMMAND + ROOM_SEPARATOR_CHAR + RoomName);
+            SendUserCommand(BLOCK_ROOMS_COMMAND, RoomName);
         }
 
         public void Reset()
@@ -161,6 +166,7 @@ namespace SlideBall
             stateCurrent = State.IDLE;
             mConnections = new List<ConnectionId>();
             Cleanup();
+            Setup();
         }
 
         private void Cleanup()
@@ -179,6 +185,7 @@ namespace SlideBall
                 Cleanup();
             }
         }
+
         private void FixedUpdate()
         {
             //check if the network was created
@@ -208,6 +215,7 @@ namespace SlideBall
             while (signalingEvents.Count != 0)
             {
                 evt = signalingEvents.Dequeue();
+                //Debug.LogWarning("Network Management : New event received " + evt);
                 switch (evt.Type)
                 {
                     case NetEventType.ServerInitialized:
@@ -228,39 +236,9 @@ namespace SlideBall
                     case NetEventType.ServerConnectionFailed:
                         {
                             Debug.LogError("Server Init Failed " + evt.RawData);
-
-                            if (evt.RawData != null)
-                            {
-                                string rawData = (string)evt.RawData;
-                                if (rawData == NetEventMessage.ROOM_ALREADY_EXISTS)
-                                {
-                                    if (ServerStartFailed != null)
-                                    {
-                                        Reset();
-                                        Setup();
-                                        ServerStartFailed.Invoke();
-                                    }
-                                    else
-                                    {
-                                        MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + Random_Name_Generator.GetRandomName() + "?");
-                                    }
-                                }
-                                else
-                                {
-                                    string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
-                                    if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
-                                    {
-                                        MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Reset();
-                                MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n " + Language.Instance.texts["Feedback"]);
-                                Debug.LogError("No internet connection ");
-
-                            }
+                            Reset();
+                            MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n " + Language.Instance.texts["Feedback"]);
+                            Debug.LogError("No internet connection ");
                         }
                         break;
                     //server shut down. reaction to "Shutdown" call or
@@ -285,6 +263,33 @@ namespace SlideBall
                                     Reset();
                                     // CreateRoom(RoomName);
                                     break;
+                            }
+                        }
+                        break;
+                    case NetEventType.UserCommand:
+                        if (evt.RawData != null)
+                        {
+                            string rawData = (string)evt.RawData;
+                            if (rawData == NetEventMessage.ROOM_ALREADY_EXISTS)
+                            {
+                                if (ServerStartFailed != null)
+                                {
+                                    Reset();
+                                    Setup();
+                                    ServerStartFailed.Invoke();
+                                }
+                                else
+                                {
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + Random_Name_Generator.GetRandomName() + "?");
+                                }
+                            }
+                            else
+                            {
+                                string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
+                                if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                                {
+                                    MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
+                                }
                             }
                         }
                         break;
@@ -347,6 +352,8 @@ namespace SlideBall
                                 }
                                 MyComponents.LobbyManager.RefreshServers();
                             }
+                            if (ConnectionFailed != null)
+                                ConnectionFailed.Invoke();
                         }
                         break;
                     case NetEventType.Disconnected:
@@ -467,8 +474,6 @@ namespace SlideBall
                 bufferedMessages.TryAddBuffered(SERVER_CONNECTION_ID, message);
         }
 
-
-
         private void SendToNetwork(byte[] data, ConnectionId id, bool reliable)
         {
             if (EditorVariables.AddLatency)
@@ -479,14 +484,12 @@ namespace SlideBall
                 Debug.LogError("This isn't a valid connectionId " + id + "    " + mConnections.Count + "   " + mConnections.PrintContent());
         }
 
-
         public void ConnectToRoom(string roomName)
         {
-            Setup();
             RoomName = roomName;
             mNetwork.ConnectToRoom(roomName);
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
-            Debug.LogError("Connecting to " + roomName + " ...");
+            Debug.LogError("Connecting to room : " + roomName + " ...");
         }
 
         private void EnsureLength(string roomName)
@@ -499,13 +502,12 @@ namespace SlideBall
 
         public void CreateRoom(string roomName)
         {
-            Setup();
             EnsureLength(roomName);
             mNetwork.CreateRoom(roomName);
             RoomName = roomName;
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
 
-            Debug.LogError("StartServer " + roomName);
+            Debug.LogError("CreateRoom " + roomName);
         }
 
         private void ClosePopUp()

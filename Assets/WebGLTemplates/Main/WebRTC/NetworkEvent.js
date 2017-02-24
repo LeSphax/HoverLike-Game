@@ -16,6 +16,7 @@ var NetEventType;
     e[e["FatalError"] = 100] = "FatalError";
     e[e["Warning"] = 101] = "Warning";
     e[e["Log"] = 102] = "Log"
+    e[e["UserCommand"] = 103] = "UserCommand"
 })(NetEventType || (NetEventType = {}));
 var NetEventDataType;
 (function(e) {

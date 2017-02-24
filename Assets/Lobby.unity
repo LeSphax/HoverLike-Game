@@ -461,10 +461,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   server: 1
   testURLParameters: 0
-  startGameImmediately: 0
-  numberPlayersToStartGame: 3
-  addLatency: 0
-  numberFramesLatency: 0
+  startGameImmediately: 1
+  editorIsServer: 1
+  numberPlayersToStartGame: 6
+  addLatency: 1
+  numberFramesLatency: 2
   playAsGoalieInitialValue: 0
   noCooldowns: 1
   editorFloat: 100

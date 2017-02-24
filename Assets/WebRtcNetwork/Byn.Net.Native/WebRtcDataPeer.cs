@@ -49,7 +49,6 @@ namespace Byn.Net.Native
 		public WebRtcDataPeer(ConnectionId ownConnectionId, string[] urls, NativeWebRtcNetworkFactory factory) : base(urls, factory)
 		{
 			this.mConnectionId = ownConnectionId;
-            Debug.LogWarning("DataPeer created " + ownConnectionId);
 		}
 
 		protected override void OnSetup()

@@ -13,6 +13,8 @@ public class MatchManager : SlideBall.MonoBehaviour
     [SerializeField]
     private Countdown getReadyCountdown;
 
+    private Team lastChanceTeam = Team.NONE;
+
     public enum State : byte
     {
         WARMUP,
@@ -76,14 +78,18 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void EndRound(int teamNumber, string methodName)
     {
+        matchCountdown.PauseTimer(true);
         Scoreboard.IncrementTeamScore(teamNumber);
         Invoke(methodName, END_POINT_DURATION);
         MyState = State.ENDING;
+        if (lastChanceTeam != Team.NONE)
+            EndMatch();
     }
 
     public void StartGame()
     {
         Assert.IsTrue(MyComponents.NetworkManagement.isServer && MyState == State.WARMUP);
+        Players.PlayerOwningBallChanged += BallChangedOwner;
         StartCoroutine(Warmup());
         Entry();
     }
@@ -95,11 +101,24 @@ public class MatchManager : SlideBall.MonoBehaviour
         MyState = State.WARMUP;
         //Wait until everyone press the ready button
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-        matchCountdown.TimerFinished += EndMatch;
+        matchCountdown.TimerFinished += LastChance;
         matchCountdown.View.RPC("StartMatch", RPCTargets.All, MATCH_DURATION, 10);
         MyState = State.ENDING;
         Scoreboard.ResetScore();
         Entry();
+    }
+
+    private void LastChance()
+    {
+        if (MyComponents.BallState.GetIdOfPlayerOwningBall() == BallState.NO_PLAYER_ID)
+        {
+            matchCountdown.PlayMatchEndSound();
+            EndMatch();
+        }
+        else
+        {
+            lastChanceTeam = Players.players[MyComponents.BallState.GetIdOfPlayerOwningBall()].Team;
+        }
     }
 
     [MyRPC]
@@ -108,6 +127,8 @@ public class MatchManager : SlideBall.MonoBehaviour
         Debug.LogError("SuddenDeath");
         matchCountdown.SetText(Language.Instance.texts["Sudden_Death"]);
     }
+
+
 
     private void EndMatch()
     {
@@ -141,6 +162,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     IEnumerator CoEntry()
     {
+        Debug.Log("MatchManager : CoEntry - State : " + MyState);
         Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH, "The entry shouldn't happen in this case, maybe it was a manual entry?");
         if (MyState == State.ENDING)
         {
@@ -173,12 +195,12 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     private static void ShowGame()
     {
+        Debug.Log("MatchManager : ShowGame");
         NavigationManager.ShowLevel();
     }
 
     private void SetPlayerRoles()
     {
-
         foreach (Team team in new Team[2] { Team.BLUE, Team.RED })
         {
             List<Player> players = Players.GetPlayersInTeam(team);
@@ -263,5 +285,26 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void SetReady()
     {
         matchCountdown.StopWarmup();
+    }
+
+    public void BallChangedOwner(ConnectionId previousPlayer, ConnectionId newPlayer)
+    {
+        switch (MyState)
+        {
+            case State.PLAYING:
+                matchCountdown.PauseTimer(false);
+                if (lastChanceTeam != Team.NONE)
+                {
+                    if (newPlayer != BallState.NO_PLAYER_ID &&  Players.players[newPlayer].Team != lastChanceTeam)
+                    {
+                        matchCountdown.PlayMatchEndSound();
+                        Invoke("EndMatch", END_POINT_DURATION);
+                    }
+                }
+                break;
+            default:
+                //Do nothing
+                break;
+        }
     }
 }

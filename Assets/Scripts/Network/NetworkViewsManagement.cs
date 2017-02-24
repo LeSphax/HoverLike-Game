@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class NetworkViewsManagement : SlideBall.MonoBehaviour
 {
-    private Dictionary<int, ANetworkView> networkViews = new Dictionary<int, ANetworkView>();
+    private Dictionary<short, ANetworkView> networkViews = new Dictionary<short, ANetworkView>();
 
     private const short INSTANCIATION_INTERVAL = 100;
     private short nextClientViewId = INVALID_VIEW_ID;
@@ -148,6 +148,11 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     }
 
     int logCount = 0;
+
+    public bool TryGetView(short viewId, out ANetworkView view)
+    {
+        return networkViews.TryGetValue(viewId, out view);
+    }
 
     internal void DistributeMessage(ConnectionId connectionId, NetworkMessage message)
     {

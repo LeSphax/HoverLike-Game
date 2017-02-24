@@ -93,9 +93,9 @@ public class PlayerController : PlayerView
     {
         if (MyComponents.NetworkManagement.isServer)
         {
-            GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
-            GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
-            GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
+            //GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
+            //GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
+            //GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
         }
         int layer = -1;
         if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)

@@ -208,7 +208,7 @@ namespace SlideBall.Networking
             currentIndex += 4;
             bool traceMessage = BitConverter.ToBoolean(data, currentIndex);
             currentIndex++;
-            MessageType type= (MessageType)data[currentIndex];
+            MessageType type = (MessageType)data[currentIndex];
             currentIndex++;
             MessageFlags flags = (MessageFlags)data[currentIndex];
             currentIndex++;
@@ -218,7 +218,19 @@ namespace SlideBall.Networking
 
         public override string ToString()
         {
-            return "Id : " + sceneId + "-" + viewId + "-" + subId + ", length : "+ data.Length + ", type : " + type + " flags : " + flags + "  IsBuffered :" + isBuffered();
+            string result = "Id : " + sceneId + "-" + viewId + "-" + subId + ", length : " + data.Length + ", type : " + type + " flags : " + flags + "  IsBuffered :" + isBuffered();
+            if (type == MessageType.RPC)
+            {
+                ANetworkView view;
+                if (MyComponents.NetworkViewsManagement.TryGetView(viewId, out view))
+                {
+                    MyNetworkView m_view = (MyNetworkView)view;
+                    string name;
+                    if (m_view.TryGetRPCName(RPCManager.GetRPCIdFromNetworkMessage(this), out name))
+                        result += "  Method called " + name;
+                }
+            }
+            return result;
         }
     }
 

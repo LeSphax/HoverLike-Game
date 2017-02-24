@@ -27,7 +27,7 @@ public class PassPersistentEffect : PersistentEffect
     public PassPersistentEffect(AbilitiesManager manager, ConnectionId id, AnimationCurve curve) : base(manager)
     {
         MyComponents.BallState.Detach();
-        MyComponents.BallState.UnPickable = true;
+        MyComponents.BallState.UnCatchable = true;
         MyComponents.BallState.PassTarget = id;
 
         this.curve = curve;
@@ -40,7 +40,7 @@ public class PassPersistentEffect : PersistentEffect
     protected override void Apply(float dt)
     {
         //Someone caught the ball before it reached the player
-        if (!MyComponents.BallState.UnPickable)
+        if (!MyComponents.BallState.UnCatchable)
         {
             StopEffect();
             DestroyEffect();
@@ -63,6 +63,8 @@ public class PassPersistentEffect : PersistentEffect
             Vector3 newHorizontalPosition = new Vector3(newPositionOnLine.x, 0, newPositionOnLine.z);
             Vector3 newPositionWithoutVerticalChange = newHorizontalPosition + Vector3.up * MyComponents.BallState.transform.position.y;
             Vector3 targetPosition = newHorizontalPosition + Vector3.up * yPos;
+            //Debug.Log(trajectoryPlaneNormal + "   " + proj_ballPositionOnTrajectoryLine + "   " + proj_ballPositionOnTrajectoryPlane + "   " + newPositionOnLine + "   " + newHorizontalPosition + "   " + newPositionWithoutVerticalChange + "    " + targetPosition);
+            //Debug.Log(manager.transform.position + "    " + target.position + "    " + H_completion + "     " + yPos);
 
             MyComponents.BallState.transform.position = Vector3.MoveTowards(newPositionWithoutVerticalChange, targetPosition, SPEED * dt);
         }
@@ -71,7 +73,7 @@ public class PassPersistentEffect : PersistentEffect
     public override void StopEffect()
     {
         MyComponents.BallState.SetAttached(targetId);
-        MyComponents.BallState.UnPickable = false;
+        MyComponents.BallState.UnCatchable = false;
         MyComponents.BallState.PassTarget = Players.INVALID_PLAYER_ID;
         //Collider[] colliders = Physics.OverlapSphere(targetPosition, DIAMETER_PASS_ZONE / 2, LayersGetter.PlayersMask());
 

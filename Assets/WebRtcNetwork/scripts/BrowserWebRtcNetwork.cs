@@ -56,7 +56,10 @@ namespace Byn.Net
         [DllImport("__Internal")]
         private static extern void UnityWebRtcNetworkDisconnectFromPeer(int lIndex, int lConnectionId);
         [DllImport("__Internal")]
-        private static extern void UnityWebRtcNetworkSendData(bool Signaling, int lIndex, int lConnectionId, byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength, bool lReliable);
+        private static extern void UnityWebRtcNetworkSendPeerData(int lIndex, int lConnectionId, byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength, bool lReliable);
+
+        [DllImport("__Internal")]
+        private static extern void UnityWebRtcNetworkSendSignalingData(int lIndex, int lConnectionId, int lTypeInt, string lContent);
         [DllImport("__Internal")]
         private static extern void UnityWebRtcNetworkShutdown(int lIndex);
 
@@ -144,7 +147,7 @@ namespace Byn.Net
             get { return mIsServer; }
         }
 
-        private Queue<NetworkEvent> signalingEvents;
+        private Queue<NetworkEvent> signalingEvents = new Queue<NetworkEvent>();
         public Queue<NetworkEvent> SignalingEvents
         {
             get
@@ -153,7 +156,7 @@ namespace Byn.Net
             }
         }
 
-        public Queue<NetworkEvent> peerEvents;
+        public Queue<NetworkEvent> peerEvents = new Queue<NetworkEvent>();
         public Queue<NetworkEvent> PeerEvents
         {
             get
@@ -181,7 +184,7 @@ namespace Byn.Net
         /// <param name="config"></param>
         public BrowserWebRtcNetwork(string config)
         {
-            Debug.Log(config);
+            Debug.Log("new BrowserWebRtcNetwork " + config);
             mReference = UnityWebRtcNetworkCreate(config);
         }
         /// <summary>
@@ -271,7 +274,7 @@ namespace Byn.Net
             //until fully supported -> block connecting to others while running a server
             if (this.mIsServer == true)
             {
-                UnityEngine.Debug.LogError("Can't create outgoing connections while in server mode!");
+                UnityEngine.Debug.LogWarning("Stop using connect to send signaling events");//"Can't create outgoing connections while in server mode!");
             }
             UnityWebRtcNetworkConnectToRoom(mReference, name);
         }
@@ -284,7 +287,6 @@ namespace Byn.Net
         /// <returns>True if event found, false if no events queued.</returns>
         private bool DequeueInternal(bool Signaling, out NetworkEvent evt)
         {
-            Debug.Log("Dequeue " + Signaling);
             int length = UnityWebRtcNetworkPeekEventDataLength(Signaling, mReference);
             if (length == -1) //-1 == no event available
             {
@@ -323,19 +325,16 @@ namespace Byn.Net
 
                 }
 
-
                 evt = new NetworkEvent(type, id, data);
-                UnityEngine.Debug.Log(Signaling + ": event" + type + " received");
                 HandleEventInternally(ref evt);
                 return eventFound;
             }
-
         }
 
         /// <summary>
         /// Handles events internally. Needed to change the internal states: Server flag and connection id list.
         /// 
-        /// Would be better to remove that in the future from the main library and treat it separately. 
+        /// Would be better to reove that in the future from the main library and treat it separately. 
         /// </summary>
         /// <param name="evt"> event to handle </param>
         private void HandleEventInternally(ref NetworkEvent evt)
@@ -366,9 +365,9 @@ namespace Byn.Net
         /// <param name="offset">Start index of the content in data</param>
         /// <param name="length">Length of the content in data</param>
         /// <param name="reliable">True to use the ordered, reliable transfer, false for unordered and unreliable</param>
-        public void SendSignalingEvent(ConnectionId conId, byte[] data, int offset, int length, bool reliable)
+        public void SendSignalingEvent(ConnectionId conId, string content, NetEventType type)
         {
-            UnityWebRtcNetworkSendData(true, mReference, conId.id, data, offset, length, reliable);
+            UnityWebRtcNetworkSendSignalingData(mReference, conId.id, (int)type,content);
         }
 
         /// <summary>
@@ -381,7 +380,7 @@ namespace Byn.Net
         /// <param name="reliable">True to use the ordered, reliable transfer, false for unordered and unreliable</param>
         public void SendPeerEvent(ConnectionId conId, byte[] data, int offset, int length, bool reliable)
         {
-            UnityWebRtcNetworkSendData(false, mReference, conId.id, data, offset, length, reliable);
+            UnityWebRtcNetworkSendPeerData(mReference, conId.id, data, offset, length, reliable);
         }
 
         /// <summary>
@@ -427,12 +426,10 @@ namespace Byn.Net
             //e.g. if a server is successfully opened it will set mIsServer to true
             while (DequeueInternal(true, out ev))
             {
-                Debug.Log("BrowserRtcNetwork : Signaling event " + ev);
                 signalingEvents.Enqueue(ev);
             }
             while (DequeueInternal(false, out ev))
             {
-                Debug.Log("BrowserRtcNetwork : Peer event " + ev);
                 peerEvents.Enqueue(ev);
             }
         }

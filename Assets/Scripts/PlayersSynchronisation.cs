@@ -3,8 +3,6 @@ using Byn.Net;
 using PlayerManagement;
 using SlideBall.Networking;
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Assertions;
 
 public class PlayersSynchronisation : ANetworkView

@@ -47,6 +47,7 @@ public class GameInitialization : SlideBall.MonoBehaviour
         View.RPC("SendReady", RPCTargets.All, syncId);
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         //
+        Debug.Log("GameInitialization : All Ready, Start the game");
         MyComponents.MatchManager.StartGame();
     }
 
@@ -59,13 +60,6 @@ public class GameInitialization : SlideBall.MonoBehaviour
         Players.MyPlayer.SceneChanged += SendReady;
         Debug.Log("EndLoadRoom");
     }
-
-    //private void CreateTutorial(ConnectionId connectionId, short scene)
-    //{
-    //    GameObject tutorial = new GameObject("Tutorial");
-    //    tutorial.transform.position = Vector3.forward * 1000f;
-    //    tutorial.AddComponent<Tutorial>();
-    //}
 
     private void InstantiateNewObjects()
     {

@@ -40,6 +40,11 @@ public class MyNetworkView : ANetworkView
         }
     }
 
+    public bool TryGetRPCName(short methodId, out string name)
+    {
+        return rpcManager.TryGetRPCName(methodId, out name);
+    }
+
     void FixedUpdate()
     {
         if (update)

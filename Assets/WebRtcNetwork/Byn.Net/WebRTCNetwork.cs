@@ -84,15 +84,15 @@ public class WebRtcNetwork : IWebRtcNetwork
         serverConnection.LeaveRoom();
     }
 
-    public void SendSignalingEvent(ConnectionId id, byte[] data, int offset, int length, bool isReliable)
+    public void SendSignalingEvent(ConnectionId id, string content, NetEventType type)
     {
-        serverConnection.SendEvent(id, data, offset, length, isReliable);
+        serverConnection.SendSignalingEvent(id, content, type);
     }
 
     public void SendPeerEvent(ConnectionId id, byte[] data, int offset, int length, bool isReliable)
     {
         peerNetwork.SendEvent(id, data, offset, length, isReliable);
-   }
+    }
 
     public void DisconnectFromServer()
     {

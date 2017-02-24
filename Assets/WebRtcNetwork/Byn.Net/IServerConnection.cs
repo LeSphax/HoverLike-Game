@@ -19,5 +19,9 @@ namespace Byn.Net
         void SetPeerNetwork(IPeerNetwork network);
 
         Queue<NetworkEvent> SignalingEvents { get; }
+
+        void SendSignalingEvent(ConnectionId id, string data, NetEventType type);
+
+
     }
 }

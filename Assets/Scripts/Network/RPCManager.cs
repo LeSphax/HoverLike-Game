@@ -24,7 +24,7 @@ public class RPCManager : SlideBall.MonoBehaviour
             Dictionary<string, RPCHandler> dico = new Dictionary<string, RPCHandler>();
             for (int i = 0; i < methods.Length; i++)
             {
-                Assert.IsFalse(dico.ContainsKey(methods[i].Name),this + " : Two RPCs on the same GameObject shouldn't have the same name");
+                Assert.IsFalse(dico.ContainsKey(methods[i].Name), this + " : Two RPCs on the same GameObject shouldn't have the same name");
                 dico.Add(methods[i].Name, new RPCHandler(component, methods[i]));
             }
             List<string> list = new List<string>(dico.Keys);
@@ -144,7 +144,7 @@ public class RPCManager : SlideBall.MonoBehaviour
     internal void RPCCallReceived(NetworkMessage message, ConnectionId connectionId)
     {
         int currentBufferIndex = 0;
-        short methodId = BitConverter.ToInt16(message.data, currentBufferIndex);
+        short methodId = GetRPCIdFromNetworkMessage(message);
         currentBufferIndex += 2;
         //
         RPCHandler handler;
@@ -197,6 +197,23 @@ public class RPCManager : SlideBall.MonoBehaviour
         }
 
         return argTypes;
+    }
+
+    internal static short GetRPCIdFromNetworkMessage(NetworkMessage networkMessage)
+    {
+        return BitConverter.ToInt16(networkMessage.data, 0);
+    }
+
+    public bool TryGetRPCName(short methodId, out string name)
+    {
+        RPCHandler handler;
+        name = "";
+        if (idsToRPC.TryGetValue(methodId, out handler))
+        {
+            name = handler.methodInfo.Name;
+            return true;
+        }
+        return false;
     }
 
     private bool CheckTypeMatch(ParameterInfo[] localParameters, Type[] receivedParameters)

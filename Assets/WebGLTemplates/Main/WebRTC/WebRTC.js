@@ -70,16 +70,15 @@ function CAPIWebRtcNetworkDisconnectFromPeer(e, t) {
 function CAPIWebRtcNetworkSendData(e, t, n, i) {
     gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), n, i)
 }
-function CAPIWebRtcNetworkSendDataEm(Signaling, e, t, n, i, o, r) {
+function CAPIWebRtcNetworkSendPeerDataEm(e, t, n, i, o, r) {
     var a = new Uint8Array(n.buffer, i, o);
-    if (Signaling)
-        gCAPIWebRtcNetworkInstances[e].signalingServerConnection.SendData(new ConnectionId(t), a, r)
-    else
-        gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), a, r)
-
+    gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), a, r);
+}
+function CAPIWebRtcNetworkSendSignalingDataEm(e, connectionId,type_data, type_location, content) {
+    gCAPIWebRtcNetworkInstances[e].signalingServerConnection.SendData(new ConnectionId(t), type_int, content);
 }
 function CAPIWebRtcNetworkShutdown(e) {
-    gCAPIWebRtcNetworkInstances[e].Shutdown()
+    gCAPIWebRtcNetworkInstances[e].Shutdown();
 }
 
 function CAPIWebRtcNetworkPeekEventDataLength(signaling,e) {
@@ -119,7 +118,6 @@ function CAPIWebRtcNetworkEventDataToUint8Array(e, t, n, i) {
     }
 }
 function CAPIWebRtcNetworkDequeueEm(signaling, e, t, n, i, o, r, a, s, c, l) {
-    console.log(signaling);
     var u;
     if (signaling)
         u = gCAPIWebRtcNetworkInstances[e].signalingServerConnection.signalingEvents.Dequeue();
@@ -134,7 +132,6 @@ function CAPIWebRtcNetworkDequeueEm(signaling, e, t, n, i, o, r, a, s, c, l) {
     return true
 }
 function CAPIWebRtcNetworkPeekEm(signaling,e, t, n, i, o, r, a, s, c, l) {
-    console.log(signaling);
     var u;
     if (signaling)
         u = gCAPIWebRtcNetworkInstances[e].signalingServerConnection.signalingEvents.Peek();

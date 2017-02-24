@@ -64,11 +64,6 @@ public class LobbyManager : MonoBehaviour
     protected void Awake()
     {
         MyState = State.IDLE;
-        if (EditorVariables.StartGameImmediately)
-        {
-            MyComponents.NetworkManagement.ServerStartFailed += ConnectToDefaultRoom;
-            MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
-        }
         topPanel.RoomName = "";
     }
 
@@ -77,6 +72,26 @@ public class LobbyManager : MonoBehaviour
         if (RequestParameters.HasKey("RoomName"))
         {
             MyComponents.NetworkManagement.ConnectToRoom(RequestParameters.GetValue("RoomName"));
+        }
+        else
+        {
+            bool editor = false;
+#if UNITY_EDITOR
+            editor = true;
+#endif
+            if (EditorVariables.StartGameImmediately)
+            {
+                if (editor == EditorVariables.EditorIsServer)
+                {
+                    MyComponents.NetworkManagement.ServerStartFailed += ConnectToDefaultRoom;
+                    MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
+                }
+                else
+                {
+                    MyComponents.NetworkManagement.ConnectionFailed += ConnectToDefaultRoom;
+                    ConnectToDefaultRoom();
+                }
+            }
         }
     }
 
@@ -90,6 +105,7 @@ public class LobbyManager : MonoBehaviour
     {
         MyComponents.NetworkManagement.RoomCreated += LoadRoom;
         MyComponents.NetworkManagement.ConnectedToRoom += LoadRoom;
+
         topPanel.BackPressed += GoBack;
     }
 
@@ -97,6 +113,8 @@ public class LobbyManager : MonoBehaviour
     {
         if (MyComponents.NetworkManagement != null)
         {
+            MyComponents.NetworkManagement.ConnectionFailed -= ConnectToDefaultRoom;
+            MyComponents.NetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
             MyComponents.NetworkManagement.RoomCreated -= LoadRoom;
             MyComponents.NetworkManagement.ConnectedToRoom -= LoadRoom;
             topPanel.BackPressed -= GoBack;

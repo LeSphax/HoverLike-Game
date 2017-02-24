@@ -13,7 +13,7 @@ namespace AbilitiesManagement
 {
     public class JumpPersistentEffect : PersistentEffect
     {
-        
+
         float lowestPoint;
         const float highestPoint = 20f;
 
@@ -26,16 +26,19 @@ namespace AbilitiesManagement
             lowestPoint = manager.controller.Player.SpawningPoint.y;
             manager.controller.GetComponent<Rigidbody>().useGravity = false;
             manager.EffectsManager.ShockwaveOnPlayer(false);
+
         }
 
         public override void StopEffect()
         {
+            Debug.Log("Stop Jump " + time);
             manager.controller.GetComponent<Rigidbody>().useGravity = true;
             manager.EffectsManager.ShockwaveOnPlayer(true);
         }
 
         protected override void Apply(float dt)
         {
+            Debug.Log("Apply " + time);
             float jumpHeightProportion = jumpCurve.Evaluate(time / duration);
             float currentHeight = lowestPoint * (1 - jumpHeightProportion) + highestPoint * jumpHeightProportion;
             manager.controller.transform.position = new Vector3(
@@ -43,6 +46,12 @@ namespace AbilitiesManagement
                 currentHeight,
                 manager.controller.transform.position.z
             );
+            if (DetectPlayersOnCage.playersOnCage.Contains(manager.controller.gameObject))
+            {
+                StopEffect();
+                DestroyEffect();
+                DetectPlayersOnCage.RemovePlayer(manager.controller.gameObject);
+            }
         }
     }
 }

@@ -12,14 +12,17 @@ public class Countdown : SlideBall.MonoBehaviour
 
     public AudioClip tickSound;
     public AudioClip entrySound;
+    public AudioClip matchEndSound;
 
     public event EmptyEventHandler TimerFinished;
+
+    private bool paused;
 
     [SerializeField]
     private float timeLeft = -1;
     public virtual float TimeLeft
     {
-        protected get
+        get
         {
             return timeLeft;
         }
@@ -68,7 +71,7 @@ public class Countdown : SlideBall.MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (TimeLeft > -1)
+        if (TimeLeft > -1 && !paused)
         {
             int integer = shownNumber;
             TimeLeft -= Time.deltaTime;
@@ -99,6 +102,18 @@ public class Countdown : SlideBall.MonoBehaviour
         this.endMessage = endMessage;
     }
 
+    public virtual void PauseTimer(bool pause)
+    {
+        if (paused != pause)
+            View.RPC("RPCPauseTimer", RPCTargets.All, pause);
+    }
+
+    [MyRPC]
+    protected virtual void RPCPauseTimer(bool pause)
+    {
+        paused = pause;
+    }
+
     [MyRPC]
     protected void StopTimer()
     {
@@ -125,6 +140,15 @@ public class Countdown : SlideBall.MonoBehaviour
         if (audioSource != null)
         {
             audioSource.clip = tickSound;
+            audioSource.Play();
+        }
+    }
+
+    public void PlayMatchEndSound()
+    {
+        if (audioSource != null)
+        {
+            audioSource.clip = matchEndSound;
             audioSource.Play();
         }
     }

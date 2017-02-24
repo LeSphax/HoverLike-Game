@@ -57,7 +57,7 @@ namespace Byn.Net.Native
             while (Dequeue(out evt))
             {
                 peerNetwork.IncomingSignalingEvent(evt);
-                if (evt.Type == NetEventType.ServerInitialized || evt.Type == NetEventType.ServerConnectionFailed || evt.Type == NetEventType.ServerClosed)
+                if (evt.Type == NetEventType.ServerInitialized || evt.Type == NetEventType.ServerConnectionFailed || evt.Type == NetEventType.ServerClosed || evt.Type == NetEventType.UserCommand)
                 {
                     signalingEvents.Enqueue(evt);
                 }
@@ -82,6 +82,7 @@ namespace Byn.Net.Native
             websocket.status = WebsocketConnectionStatus.Disconnecting;
             foreach (ConnectionId conId in this.mConnecting)
             {
+                Debug.LogError("Cleanup ServerConnection -> Connection Failed event");
                 this.EnqueueIncoming(new NetworkEvent(NetEventType.ConnectionFailed, conId, null));
             }
             this.mConnecting.Clear();
@@ -178,6 +179,7 @@ namespace Byn.Net.Native
             {
                 while (this.mOutgoingQueue.Count > 0)
                 {
+                    Debug.Log("Send " + mOutgoingQueue.Peek());
                     websocket.Send(mOutgoingQueue.Dequeue());
                 }
             }
@@ -241,6 +243,16 @@ namespace Byn.Net.Native
 
         public void SendEvent(ConnectionId id, byte[] data, int offset, int length, bool reliable)
         {
+            NetEventType type;
+            if (reliable)
+                type = NetEventType.ReliableMessageReceived;
+            else
+                type = NetEventType.UnreliableMessageReceived;
+            SendSignalingEvent(id, data, offset, length, type);
+        }
+
+        public void SendSignalingEvent(ConnectionId id, byte[] data, int offset, int length, NetEventType type)
+        {
             if (data == null || data.Length == 0 || length == 0)
             {
                 SLog.LW("Invalid SendData argument: pointer null or length zero", new string[0]);
@@ -257,14 +269,18 @@ namespace Byn.Net.Native
                 return;
             }
             NetworkEvent evt;
-            if (reliable)
-            {
-                evt = new NetworkEvent(NetEventType.ReliableMessageReceived, id, new ByteArrayBuffer(data, offset, length));
-            }
-            else
-            {
-                evt = new NetworkEvent(NetEventType.UnreliableMessageReceived, id, new ByteArrayBuffer(data, offset, length));
-            }
+
+            evt = new NetworkEvent(type, id, new ByteArrayBuffer(data, offset, length));
+
+            this.EnqueueOutgoing(evt);
+        }
+
+        public void SendSignalingEvent(ConnectionId id, string data, NetEventType type)
+        {
+            NetworkEvent evt;
+
+            evt = new NetworkEvent(type, id, data);
+
             this.EnqueueOutgoing(evt);
         }
 

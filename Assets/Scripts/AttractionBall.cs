@@ -11,7 +11,7 @@ public class AttractionBall : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if (IsAttacker(collider))
+        if (LayersGetter.IsAttacker(collider.gameObject.layer))
             playersAttracting.Add(collider.gameObject);
     }
 
@@ -21,17 +21,9 @@ public class AttractionBall : MonoBehaviour
         playersAttracting.Clear();
     }
 
-    private bool IsAttacker(Collider collider)
-    {
-        if (!Tags.IsPlayer(collider.gameObject.tag))
-            return false;
-        PlayerController controller = collider.gameObject.GetComponent<PlayerController>();
-        return controller.Player != null && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER;
-    }
-
     void OnTriggerExit(Collider collider)
     {
-        if (IsAttacker(collider))
+        if (LayersGetter.IsAttacker(collider.gameObject.layer))
             playersAttracting.Remove(collider.gameObject);
     }
 
@@ -47,7 +39,7 @@ public class AttractionBall : MonoBehaviour
 
     void Update()
     {
-        if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.UnPickable)
+        if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.UnCatchable)
             foreach (GameObject player in playersAttracting)
             {
                 if (!deactivatedPlayers.Contains(player))

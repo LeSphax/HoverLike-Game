@@ -1,43 +1,90 @@
 ﻿using PlayerBallControl;
 using PlayerManagement;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class AIRandomMovement : MonoBehaviour
+namespace AbilitiesManagement
 {
-    JumpEffect jumpEffect;
-    MoveEffect moveEffect;
-    private float MoveDelay = 3f;
-    private float JumpDelay = 10f;
-
-    // Use this for initialization
-    void Start()
+    [RequireComponent(typeof(PlayerController))]
+    public class AIRandomMovement : MonoBehaviour
     {
-        jumpEffect = gameObject.AddComponent<JumpEffect>();
-        moveEffect = gameObject.AddComponent<MoveEffect>();
-        InvokeMove();
-        InvokeJump();
-    }
+        private float MoveDelay = 2f;
+        private float JumpDelay = 10f;
 
-    private void Move()
-    {
-        Vector3 target = Functions.GetRandomPointInVolume(Vector3.zero, new Vector3(-60, 5, -140), new Vector3(60, 5, 140));
-        moveEffect.ApplyOnTarget(Players.MyPlayer.controller, target);
-        InvokeMove();
-    }
+        private PlayerController controller;
+        private AbilitiesManager abilitiesManager;
 
-    private void InvokeMove()
-    {
-        Invoke("Move", Random.Range(MoveDelay, MoveDelay * 2));
-    }
+        // Use this for initialization
+        void Start()
+        {
+            controller = GetComponent<PlayerController>();
+            if (controller.Player.IsMyPlayer)
+            {
+                abilitiesManager = controller.abilitiesManager;
+                Move();
+                Steal();
+                Dash();
+                Pass();
+            }
+        }
 
-    private void Jump()
-    {
-        jumpEffect.ApplyOnTarget(Players.MyPlayer.controller);
-        InvokeJump();
-    }
+        private void Move()
+        {
+            Vector2 target = new Vector2(GetRandomPointInTerrain().x, GetRandomPointInTerrain().y);
+            abilitiesManager.View.RPC("Move", RPCTargets.Server, target);
+            InvokeRandom("Move", MoveDelay, MoveDelay * 2);
+        }
 
-    private void InvokeJump()
-    {
-        Invoke("Jump", Random.Range(JumpDelay, JumpDelay * 2));
+        private static Vector3 GetRandomPointInTerrain()
+        {
+            return Functions.GetRandomPointInVolume(Vector3.zero, new Vector3(-30, 5, -70), new Vector3(30, 5, 70));
+        }
+
+        private void InvokeMove()
+        {
+            Invoke("Move", Random.Range(MoveDelay, MoveDelay * 2f));
+        }
+
+        private void Jump()
+        {
+            abilitiesManager.View.RPC("Jump", RPCTargets.Server);
+            InvokeRandom("Jump", JumpDelay, JumpDelay * 2);
+        }
+
+        private void InvokeJump()
+        {
+            Invoke("Jump", Random.Range(JumpDelay, JumpDelay));
+        }
+
+        private void Steal()
+        {
+            abilitiesManager.View.RPC("Steal", RPCTargets.Server, 0.5f);
+            InvokeRandom("Steal", 1, 1.5f);
+        }
+
+        private void Dash()
+        {
+            Vector3 target = GetRandomPointInTerrain();
+            abilitiesManager.View.RPC("Dash", RPCTargets.Server, target);
+            InvokeRandom("Dash", 3, 8);
+        }
+
+        private void Pass()
+        {
+            List<Player> friends = Players.GetPlayersInTeam(controller.Player.Team);
+            friends.Remove(controller.Player);
+            if (friends.Count > 0)
+            {
+                abilitiesManager.View.RPC("Pass", RPCTargets.Server, friends[Random.Range(0, friends.Count - 1)].id);
+                InvokeRandom("Pass", 3, 8);
+            }
+        }
+
+        private void InvokeRandom(string methodName, float minTime, float maxTime)
+        {
+            Invoke(methodName, Random.Range(minTime, maxTime));
+        }
+
+
     }
 }

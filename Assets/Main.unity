@@ -2891,6 +2891,7 @@ MonoBehaviour:
   text: {fileID: 1291646213}
   tickSound: {fileID: 0}
   entrySound: {fileID: 0}
+  matchEndSound: {fileID: 0}
   timeLeft: 0
   readyButton: {fileID: 524208060}
   warmupInfo: {fileID: 1818667257}
@@ -4194,9 +4195,49 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1000011142051842, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000013307186026, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e9287a046b140fa4cac8249c8c46c7c0, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1778822784 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1000013307186026, guid: e9287a046b140fa4cac8249c8c46c7c0,
+    type: 2}
+  m_PrefabInternal: {fileID: 1778822783}
+--- !u!1 &1778822785 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1000011142051842, guid: e9287a046b140fa4cac8249c8c46c7c0,
+    type: 2}
+  m_PrefabInternal: {fileID: 1778822783}
+--- !u!114 &1778822786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1778822784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec68b42f5fb75e1419c9b9f5039e0ab3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1778822787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1778822785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec68b42f5fb75e1419c9b9f5039e0ab3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1781275084
 GameObject:
   m_ObjectHideFlags: 0
@@ -5044,6 +5085,7 @@ MonoBehaviour:
   text: {fileID: 2110267379}
   tickSound: {fileID: 8300000, guid: 1cead61e5cf86464ab342f2e67e86688, type: 3}
   entrySound: {fileID: 8300000, guid: d70583adf60fd1e48b485ad2ce73158b, type: 3}
+  matchEndSound: {fileID: 8300000, guid: a7383ec1627813b43bbd5a16cf5318c8, type: 3}
   timeLeft: 0
 --- !u!82 &2110267383
 AudioSource:

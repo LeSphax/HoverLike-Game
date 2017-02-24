@@ -62,16 +62,16 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
-        private void Move(Vector2 position)
+        internal void Move(Vector2 position)
         {
             if (CanUseAbility())
                 controller.targetManager.SetTarget(position);
         }
 
         [MyRPC]
-        private void Shoot(Vector3 target, float power)
+        internal void Shoot(Vector3 target, float power)
         {
-            if (CanUseAbility())
+            if (CanUseAbility() && controller.Player.HasBall)
             {
                 controller.ballController.ThrowBall(target, power);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
@@ -79,7 +79,7 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
-        private void Dash(Vector3 position)
+        internal void Dash(Vector3 position)
         {
             if (CanUseAbility())
             {
@@ -90,7 +90,7 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
-        private void Jump()
+        internal void Jump()
         {
             if (CanUseAbility())
             {
@@ -125,8 +125,9 @@ namespace AbilitiesManagement
         [MyRPC]
         private void Pass(ConnectionId id)
         {
-            if (CanUseAbility())
+            if (CanUseAbility() && controller.Player.HasBall && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
+                Debug.LogError("Pass from " + this + " to " + Players.players[id].controller);
                 new PassPersistentEffect(this, id, passCurve);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }

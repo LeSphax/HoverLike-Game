@@ -19,7 +19,7 @@ public class BallState : SlideBall.MonoBehaviour
     public ConnectionId PassTarget = NO_PLAYER_ID;
 
     private bool uncatchable;
-    public bool UnPickable
+    public bool UnCatchable
     {
         get
         {
@@ -77,7 +77,7 @@ public class BallState : SlideBall.MonoBehaviour
 
     void Start()
     {
-        UnPickable = false;
+        UnCatchable = false;
     }
 
     public void StartGame()
@@ -86,9 +86,7 @@ public class BallState : SlideBall.MonoBehaviour
         {
             IdPlayerOwningBall = NO_PLAYER_ID;
         }
-
         AttachBall(GetIdOfPlayerOwningBall());
-
     }
 
     public void SetAttached(ConnectionId playerId, bool sendUpdate = true)
@@ -97,7 +95,7 @@ public class BallState : SlideBall.MonoBehaviour
         {
             ConnectionId previousId = IdPlayerOwningBall;
             IdPlayerOwningBall = playerId;
-            MyComponents.Players.PlayerOwningBallChanged(previousId, playerId, sendUpdate);
+            MyComponents.Players.ChangePlayerOwningBall(previousId, playerId, sendUpdate);
         }
     }
     public void Detach()
@@ -106,7 +104,7 @@ public class BallState : SlideBall.MonoBehaviour
         {
             ConnectionId previousId = IdPlayerOwningBall;
             IdPlayerOwningBall = NO_PLAYER_ID;
-            MyComponents.Players.PlayerOwningBallChanged(previousId, NO_PLAYER_ID, true);
+            MyComponents.Players.ChangePlayerOwningBall(previousId, NO_PLAYER_ID, true);
         }
     }
 
@@ -138,7 +136,7 @@ public class BallState : SlideBall.MonoBehaviour
         {
             Assert.IsTrue(GetAttachedPlayer() != null);
             Transform hand = GetAttachedPlayer().PlayerMesh.hand;
-            UnPickable = false;
+            UnCatchable = false;
             gameObject.transform.SetParent(hand);
             TrySetKinematic();
             gameObject.transform.localPosition = ballHoldingPosition;

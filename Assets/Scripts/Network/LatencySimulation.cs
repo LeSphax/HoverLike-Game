@@ -24,7 +24,7 @@ public class LatencySimulation
             List<Message> messages = messagesWaitingToBeSent.Dequeue();
             foreach (var message in messages)
             {
-                network.SendSignalingEvent(message.id, message.data, 0, message.data.Length, message.reliable);
+                network.SendPeerEvent(message.id, message.data, 0, message.data.Length, message.reliable);
             }
         }
         currentList.Clear();
