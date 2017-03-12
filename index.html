@@ -1,66 +1,67 @@
 <!doctype html>
 <html lang="en-us">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>SlideBall</title>
-  <link rel="stylesheet" href="TemplateData/style.css">
-  <link rel="shortcut icon" href="TemplateData/favicon.ico" />
-  <link href="webpage/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  
-  <link rel="stylesheet" href="TemplateData/ProgressBar.css">
-  <script src="webpage/jquery/jquery.min.js"></script>
-  <script src="TemplateData/UnityProgress.js"></script>
-  <style>
-    .center {
-      margin: 0 auto;
-      width: 50%;
-      border: 3px solid green;
-      padding: 10px;
-    }
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SlideBall</title>
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+    <link href="webpage/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    .outer {
-      display: table;
-      position: absolute;
-      height: 100%;
-      width: 100%;
-    }
+    <link rel="stylesheet" href="TemplateData/ProgressBar.css">
+    <script src="webpage/jquery/jquery.min.js"></script>
+    <script src="TemplateData/UnityProgress.js"></script>
+    <style>
+        .center {
+            margin: 0 auto;
+            width: 50%;
+            border: 3px solid green;
+            padding: 10px;
+        }
 
-    .middle {
-      display: table-cell;
-      vertical-align: middle;
-    }
+        .outer {
+            display: table;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
 
-    .inner {
-      margin-left: auto;
-      margin-right: auto; 
-      width: 50%;/*whatever width you want*/;
-      background-color:#0095FF;
-      padding: 20px;
-      border-radius: 25px;
-    }
+        .middle {
+            display: table-cell;
+            vertical-align: middle;
+        }
 
-    .content{
-      margin-left: auto;
-      margin-right: auto; 
-      width: 70%;
-    }
-  </style>
+        .inner {
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%; /*whatever width you want*/
+            ;
+            background-color: #0095FF;
+            padding: 20px;
+            border-radius: 25px;
+        }
+
+        .content {
+            margin-left: auto;
+            margin-right: auto;
+            width: 70%;
+        }
+    </style>
 </head>
 <body class="template" style="background-color:#363636;">
 
-  <div id="unity-player" style="display: inline">
-    <div class="template-wrap clear">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" height="1080px" width="1920px"></canvas>
-    </div>
-    <div class="unity_progress">
-      <b class="progress__bar">
-        <span class="progress__text">
-          Progress: <em>0%</em>
-        </span>
-      </b>
-    </div>
-    <script type='text/javascript'>
+    <div id="unity-player" style="display: inline">
+        <div class="template-wrap clear">
+            <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" height="1080px" width="1920px"></canvas>
+        </div>
+        <div class="unity_progress">
+            <b class="progress__bar">
+                <span class="progress__text">
+                    Progress: <em>0%</em>
+                </span>
+            </b>
+        </div>
+        <script type='text/javascript'>
   var Module = {
     TOTAL_MEMORY: 268435456,
     errorhandler: null,			// arguments: err, url, line. This function must return 'true' if the error is handled, otherwise 'false'
@@ -76,10 +77,22 @@
 </script>
 <script src="Release/UnityLoader.js"></script>
 
-  </div>
+    </div>
 
-  <!-- Bootstrap Core JavaScript -->
-  <script src="webpage/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="webpage/bootstrap/js/bootstrap.min.js"></script>
+    <script src="WebRTC/ConnectionId.js"></script>
+    <script src="WebRTC/NetworkEvent.js"></script>
+    <script src="WebRTC/Utilitaires.js"></script>
+    <script src="WebRTC/AWebRTCPeer.js"></script>
+    <script src="WebRTC/WebRTCDataPeer.js"></script>
+    <script src="WebRTC/LocalNetwork.js"></script>
+    <script src="WebRTC/WebSocketConnection.js"></script>
+    <script src="WebRTC/SignalingServerConnection.js"></script>
+    <script src="WebRTC/PeerSignalingManager.js"></script>
+    <script src="WebRTC/PeerNetwork.js"></script>
+    <script src="WebRTC/WebRtcNetwork.js"></script>
+    <script src="WebRTC/WebRTC.js"></script>
 
 </body>
 </html>
