@@ -267,6 +267,7 @@ var SignalingPeer = (function () {
         if (serverConnections == null){
             console.log("ConnectionFailed Room");
             this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.RoomDoesntExists));
+            console.log(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.RoomDoesntExists));
         }
         else if (serverConnections.length != 1){
             console.log("ConnectionFailed Not1");
