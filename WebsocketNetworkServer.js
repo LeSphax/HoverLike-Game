@@ -266,15 +266,15 @@ var SignalingPeer = (function () {
         var serverConnections = this.mConnectionPool.getServerConnection(address);
         if (serverConnections == null){
             console.log("ConnectionFailed Room");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ConnectionFailed, connectionId, inet.NetEventMessage.RoomDoesntExists));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerConnectionFailed, connectionId, inet.NetEventMessage.RoomDoesntExists));
         }
         else if (serverConnections.length != 1){
             console.log("ConnectionFailed Not1");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ConnectionFailed, connectionId, inet.NetEventMessage.ServerConnectionNot1));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerConnectionFailed, connectionId, inet.NetEventMessage.ServerConnectionNot1));
         }
         else if (this.mConnectionPool.blockedRooms.indexOf(address) != -1){
             console.log("ConnectionFailed Blocked");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ConnectionFailed, connectionId, inet.NetEventMessage.RoomBlocked));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerConnectionFailed, connectionId, inet.NetEventMessage.RoomBlocked));
         }
         else {
             var newConnectionId = serverConnections[0].nextConnectionId();

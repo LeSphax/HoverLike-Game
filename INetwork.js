@@ -10,6 +10,7 @@ var NetEventType;
     NetEventType[NetEventType["NewConnection"] = 6] = "NewConnection";
     NetEventType[NetEventType["ConnectionFailed"] = 7] = "ConnectionFailed";
     NetEventType[NetEventType["Disconnected"] = 8] = "Disconnected";
+    NetEventType[NetEventType["ServerConnectionFailed"] = 9] = "ServerConnectionFailed";
     NetEventType[NetEventType["FatalError"] = 100] = "FatalError";
     NetEventType[NetEventType["Warning"] = 101] = "Warning";
     NetEventType[NetEventType["Log"] = 102] = "Log";
