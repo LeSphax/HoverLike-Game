@@ -208,13 +208,13 @@ var SignalingPeer = (function () {
             var otherPeerId = evt.ConnectionId;
             this.disconnect(otherPeerId);
         }
-        else if (evt.Type == inet.NetEventType.ServerInitialized) {
+        else if (evt.Type == inet.NetEventType.RoomCreated) {
             console.log("Initialized " + evt.Info);
             this.startServer(evt.Info);
         }
-        else if (evt.Type == inet.NetEventType.ServerInitFailed) {
+        else if (evt.Type == inet.NetEventType.RoomCreateFailed) {
         }
-        else if (evt.Type == inet.NetEventType.ServerClosed) {
+        else if (evt.Type == inet.NetEventType.RoomClosed) {
             this.stopServer(inet.NetEventMessage.HostDisconnected);
         }
         else if (evt.Type == inet.NetEventType.ReliableMessageReceived) {
@@ -266,15 +266,15 @@ var SignalingPeer = (function () {
         var serverConnections = this.mConnectionPool.getServerConnection(address);
         if (serverConnections == null){
             console.log("ConnectionFailed Room");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerConnectionFailed, connectionId, inet.NetEventMessage.RoomDoesntExists));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.RoomDoesntExists));
         }
         else if (serverConnections.length != 1){
             console.log("ConnectionFailed Not1");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerConnectionFailed, connectionId, inet.NetEventMessage.ServerConnectionNot1));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.ServerConnectionNot1));
         }
         else if (this.mConnectionPool.blockedRooms.indexOf(address) != -1){
             console.log("ConnectionFailed Blocked");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerConnectionFailed, connectionId, inet.NetEventMessage.RoomBlocked));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.RoomBlocked));
         }
         else {
             var newConnectionId = serverConnections[0].nextConnectionId();
@@ -311,20 +311,20 @@ var SignalingPeer = (function () {
         if (this.mConnectionPool.isAddressAvailable(address)) {
             this.mServerAddress = address;
             this.mConnectionPool.addServer(this, address);
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerInitialized, inet.ConnectionId.INVALID, address));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomCreated, inet.ConnectionId.INVALID, address));
             if (this.mConnectionPool.hasAddressSharing()) {
                 this.connectJoin(address);
             }
         }
         else {
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerInitFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.RoomAlreadyExists));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomCreateFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.RoomAlreadyExists));
         }
     };
     SignalingPeer.prototype.stopServer = function (message) {
         console.log("Stop Server");
         if (this.mServerAddress != null) {
             this.mConnectionPool.removeClientFromServer(this, this.mServerAddress);
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.ServerClosed, inet.ConnectionId.INVALID, message));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomClosed, inet.ConnectionId.INVALID, message));
             this.mServerAddress = null;
         }
     };
