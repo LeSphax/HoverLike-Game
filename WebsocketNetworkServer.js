@@ -55,6 +55,13 @@ var PeerPool = (function () {
             //If the room isn't in the blocked list, then send it
             if (this.blockedRooms.indexOf(key) == -1) {
                 console.log("Get room " + key + "    " + Object.keys(this.mServers[key][0].mConnections).length);
+                console.log("Keys " + Object.keys(this.mServers[key][0].mConnections));
+                console.log("Peer " + this.mServers[key][0]);
+                for (var key in this.mServers[key][0].mConnections) {
+                    if (driversCounter.hasOwnProperty(key)) {
+                        console.log("KEY "+ key);
+                    }
+                }
                 rooms += key + "|" + Object.keys(this.mServers[key][0].mConnections).length + "@";
             }
         }
@@ -240,9 +247,17 @@ var SignalingPeer = (function () {
         }
     };
     SignalingPeer.prototype.internalAddIncomingPeer = function (peer,id) {
-        console.log("Incoming");
+        console.log("Incoming " + id + "   " + peer);
         this.mConnections[id.id] = peer;
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.NewConnection, id, inet.NetEventMessage.Incoming));
+        console.log(Object.keys(this.mConnections).length);
+        console.log("Keys " + Object.keys(this.mConnections));
+        for (var key in this.mConnections) {
+            console.log("KEY1 " + key);
+            if (this.mConnections.hasOwnProperty(key)) {
+                console.log("KEY2 " + key);
+            }
+        }
     };
     SignalingPeer.prototype.internalAddOutgoingPeer = function (peer, id) {
         console.log("Outgoing");
