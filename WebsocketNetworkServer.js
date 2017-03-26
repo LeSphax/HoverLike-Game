@@ -52,8 +52,11 @@ var PeerPool = (function () {
     PeerPool.prototype.getRooms = function () {
         var rooms = "GetRooms@";
         for (var key in this.mServers) {
-            if (this.blockedRooms.indexOf(key) == -1)
-                rooms+= key+"|"+Object.keys(this.mServers[key][0].mConnections).length+"@";
+            //If the room isn't in the blocked list, then send it
+            if (this.blockedRooms.indexOf(key) == -1) {
+                console.log("Get room " + key + "    " + Object.keys(this.mServers[key][0].mConnections).length);
+                rooms += key + "|" + Object.keys(this.mServers[key][0].mConnections).length + "@";
+            }
         }
         //Remove the last @
         rooms = rooms.substring(0, rooms.length - 1);
