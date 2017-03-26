@@ -33,11 +33,11 @@ function My_WebRtcNetwork_test1() {
         var event = null;
         while (event = network1.signalingServerConnection.signalingEvents.Dequeue()) {
             console.log("server inc: " + event.toString());
-            if (event.Type == NetEventType.ServerInitialized) {
+            if (event.Type == NetEventType.RoomCreated) {
                 console.log("server started. Address " + event.Info);
                 console.log(network2);
                 network2.signalingServerConnection.ConnectToRoom("Jambon");
-            } else if (event.Type == NetEventType.ServerInitFailed) {
+            } else if (event.Type == NetEventType.RoomCreateFailed) {
                 console.error("server start failed")
             }
         }
@@ -107,10 +107,10 @@ function WebRtcNetwork_test1() {
         var t = null;
         while (t = i.Dequeue()) {
             console.log("server inc: " + t.toString());
-            if (t.Type == NetEventType.ServerInitialized) {
+            if (t.Type == NetEventType.RoomCreated) {
                 console.log("server started. Address " + t.Info);
                 o.ConnectToRoom(t.Info)
-            } else if (t.Type == NetEventType.ServerInitFailed) {
+            } else if (t.Type == NetEventType.RoomCreateFailed) {
                 console.error("server start failed")
             } else if (t.Type == NetEventType.NewConnection) {
                 console.log("server new incoming connection")
@@ -183,12 +183,12 @@ function f(e, t) {
     e.Update();
     var n = null;
     while (n = e.Dequeue()) {
-        if (n.Type == NetEventType.ServerInitFailed || n.Type == NetEventType.ConnectionFailed || n.Type == NetEventType.ServerClosed) {
+        if (n.Type == NetEventType.RoomCreateFailed || n.Type == NetEventType.ConnectionFailed || n.Type == NetEventType.RoomClosed) {
             console.error(t + "inc: " + n.toString())
         } else {
             console.log(t + "inc: " + n.toString())
         }
-        if (n.Type == NetEventType.ServerInitialized) {} else if (n.Type == NetEventType.ServerInitFailed) {} else if (n.Type == NetEventType.NewConnection) {
+        if (n.Type == NetEventType.RoomCreated) {} else if (n.Type == NetEventType.RoomCreateFailed) {} else if (n.Type == NetEventType.NewConnection) {
             var i = stringToBuffer(t + "says hi!");
             e.SendData(n.ConnectionId, i, true)
         } else if (n.Type == NetEventType.Disconnected) {} else if (n.Type == NetEventType.ReliableMessageReceived) {
@@ -231,10 +231,10 @@ function CAPIWebRtcNetwork_test1() {
         var t = null;
         while (t = CAPIWebRtcNetworkDequeue(n)) {
             console.log("server inc: " + t.toString());
-            if (t.Type == NetEventType.ServerInitialized) {
+            if (t.Type == NetEventType.RoomCreated) {
                 console.log("server started. Address " + t.Info);
                 CAPIWebRtcNetworkConnect(i, t.Info)
-            } else if (t.Type == NetEventType.ServerInitFailed) {
+            } else if (t.Type == NetEventType.RoomCreateFailed) {
                 console.error("server start failed")
             } else if (t.Type == NetEventType.NewConnection) {
                 console.log("server new incoming connection")
@@ -301,10 +301,10 @@ setInterval(function() {
     var t = null;
     while (t = r.Dequeue()) {
         console.log("server inc: " + t.toString());
-        if (t.Type == NetEventType.ServerInitialized) {
+        if (t.Type == NetEventType.RoomCreated) {
             console.log("server started. Address " + t.Info);
             a.ConnectToRoom(t.Info)
-        } else if (t.Type == NetEventType.ServerInitFailed) {
+        } else if (t.Type == NetEventType.RoomCreateFailed) {
             console.error("server start failed")
         } else if (t.Type == NetEventType.NewConnection) {
             console.log("server new incoming connection")
