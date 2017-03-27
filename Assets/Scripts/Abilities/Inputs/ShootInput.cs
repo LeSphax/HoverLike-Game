@@ -22,4 +22,9 @@ public class ShootInput : AbilityInputWithBall
     {
         return false;
     }
+
+public override bool HasErrorSound()
+    {
+        return false;
+    }
 }

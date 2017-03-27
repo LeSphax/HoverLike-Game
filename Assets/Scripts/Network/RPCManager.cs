@@ -9,6 +9,7 @@ using UnityEngine.Assertions;
 
 public class RPCManager : SlideBall.MonoBehaviour
 {
+    public const string SenderIdParameterName = "RPCSenderId";
     private Dictionary<short, RPCHandler> idsToRPC = new Dictionary<short, RPCHandler>();
     private Dictionary<string, short> methodNamesToIds = new Dictionary<string, short>();
 
@@ -47,7 +48,7 @@ public class RPCManager : SlideBall.MonoBehaviour
         else
         {
             NetworkMessage message = new NetworkMessage(View.ViewId, 0, RPCTargets.Specified, CreateRPCData(methodName, parameters));
-            MyComponents.NetworkManagement.SendData(message, id);
+            MyComponents.NetworkManagement.SendNetworkMessage(message, id);
         }
     }
 
@@ -81,7 +82,7 @@ public class RPCManager : SlideBall.MonoBehaviour
     private void RPC(RPCTargets targets, NetworkMessage message)
     {
         if (targets.IsSentToNetwork())
-            MyComponents.NetworkManagement.SendData(message);
+            MyComponents.NetworkManagement.SendNetworkMessage(message);
         //
         if (targets.IsInvokedInPlace())
         {
@@ -260,7 +261,7 @@ public class RPCManager : SlideBall.MonoBehaviour
     //As the peer id is already present in NetworkMessage.connectionId, it is not replicated in the RPC parameters that are sent over the network.
     private static bool IsSenderIdParameter(ParameterInfo parameter)
     {
-        return parameter.Name == "RPCSenderId" && parameter.ParameterType == typeof(ConnectionId);
+        return parameter.Name == SenderIdParameterName && parameter.ParameterType == typeof(ConnectionId);
     }
 
     private struct RPCHandler

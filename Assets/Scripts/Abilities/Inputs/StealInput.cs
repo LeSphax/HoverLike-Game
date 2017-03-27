@@ -3,15 +3,21 @@
 public class StealInput : AbilityInput
 {
 
-    private const int INPUT_NUMBER = 4;
-
-    public override bool FirstActivation()
+    protected override int INPUT_NUMBER
     {
-        return Input.GetKeyDown(UserSettings.GetKeyCode(INPUT_NUMBER));
+        get
+        {
+            return 4;
+        }
     }
 
-    public override string GetKey()
+    public override string GetKeyForGUI()
     {
         return UserSettings.GetKeyForIcon(INPUT_NUMBER);
+    }
+
+    public override bool HasErrorSound()
+    {
+        return false;
     }
 }

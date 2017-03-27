@@ -1,15 +1,21 @@
-﻿
-
-using PlayerManagement;
+﻿using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 public delegate void ActivationHandler(bool activated);
 
-//Manage when an ability can be activated (The game is p
+//Manage when an ability can be activated (We are actually during a round, the player has the ball if it is necessary for the ability)
 public abstract class AbilityInput : MonoBehaviour
 {
+    protected virtual int INPUT_NUMBER
+    {
+        get
+        {
+            return -1;
+        }
+    }
+
     protected bool CurrentStateAllowActivation;
 
     protected bool IsActivated
@@ -39,9 +45,12 @@ public abstract class AbilityInput : MonoBehaviour
         return true;
     }
 
-    public abstract bool FirstActivation();
+    public virtual bool FirstActivation()
+    {
+        return SlideBallInputs.GetKeyDown(UserSettings.GetKeyCode(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
+    }
 
-    //Sometimes, 
+    //For abilities that need targeting, there is a first phase with the targeting UI and a second one to actually fire the ability.
     public virtual bool SecondActivation()
     {
         return false;
@@ -53,7 +62,7 @@ public abstract class AbilityInput : MonoBehaviour
     }
 
     //The letter that should be shown if the ability has an icon
-    public virtual string GetKey()
+    public virtual string GetKeyForGUI()
     {
         return "";
     }
@@ -80,7 +89,7 @@ public abstract class AbilityInput : MonoBehaviour
             GameObject keyToUsePrefab = Resources.Load<GameObject>(Paths.KEY_TO_USE);
             GameObject keyToUse = Instantiate(keyToUsePrefab);
             keyToUse.transform.SetParent(transform, false);
-            keyToUse.GetComponentInChildren<Text>().text = GetKey();
+            keyToUse.GetComponentInChildren<Text>().text = GetKeyForGUI();
         }
         PlayerStateChanged(Players.MyPlayer.CurrentState);
     }
@@ -94,6 +103,11 @@ public abstract class AbilityInput : MonoBehaviour
     protected virtual bool IsMovement()
     {
         return false;
+    }
+
+    public virtual bool HasErrorSound()
+    {
+        return true;
     }
 
 }

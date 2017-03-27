@@ -129,6 +129,11 @@ namespace SlideBall.Networking
             return (flags & MessageFlags.SceneDependant) != 0;
         }
 
+        public bool isSentToTeam()
+        {
+            return (flags & MessageFlags.SentToTeam) != 0;
+        }
+
         private bool IsTypeReliable()
         {
             switch (type)
@@ -250,5 +255,6 @@ namespace SlideBall.Networking
         NotDistributed = 2,
         Buffered = 4,
         SceneDependant = 8,
+        SentToTeam = 16,
     }
 }

@@ -31,7 +31,7 @@
             var r = new Output;
             while (i.DequeueSignalingMessage(r)) {
                 var a = stringToBuffer(r.val);
-                this.mSignalingNetwork.SendData(new ConnectionId((+n)), a, true)
+                this.mSignalingNetwork.SendData(NetEventType.ReliableMessageReceived, new ConnectionId((+n)), a)
             }
             if (i.GetState() == WebRtcPeerState.Connected) {
                 connectedPeers.push(i.SignalingInfo.ConnectionId)

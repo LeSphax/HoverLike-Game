@@ -3,17 +3,23 @@ using UnityEngine;
 
 public class BrakeInput : AbilityInput
 {
-    private const int INPUT_NUMBER = 1;
+    protected override int INPUT_NUMBER
+    {
+        get
+        {
+            return 1;
+        }
+    }
 
     public override bool FirstActivation()
     {
-        bool result = Input.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER));
+        bool result = SlideBallInputs.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
         if (result)
             Players.MyPlayer.controller.abilitiesManager.EffectsManager.ActivateSlow(true);
         return result;
     }
 
-    public override string GetKey()
+    public override string GetKeyForGUI()
     {
         return UserSettings.GetKeyForIcon(INPUT_NUMBER);
     }

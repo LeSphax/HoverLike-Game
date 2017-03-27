@@ -109,7 +109,7 @@ namespace PlayerBallControl
         {
             if (playerConnectionId == MyComponents.BallState.GetIdOfPlayerOwningBall())
             {
-                MyComponents.BallState.SetAttached(BallState.NO_PLAYER_ID);
+                MyComponents.BallState.DetachBall();
                 SetBallSpeed(target, power);
             }
         }

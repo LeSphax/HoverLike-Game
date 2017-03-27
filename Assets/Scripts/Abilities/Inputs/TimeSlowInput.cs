@@ -3,11 +3,12 @@
 public class TimeSlowInput : AbilityInput
 {
 
-    private const int INPUT_NUMBER = 2;
-
-    public override bool FirstActivation()
+    protected override int INPUT_NUMBER
     {
-        return Input.GetKeyDown(UserSettings.GetKeyCode(INPUT_NUMBER));
+        get
+        {
+            return 2;
+        }
     }
 
     public override bool Cancellation()
@@ -15,7 +16,7 @@ public class TimeSlowInput : AbilityInput
         return Input.GetMouseButtonDown(1);
     }
 
-    public override string GetKey()
+    public override string GetKeyForGUI()
     {
         return UserSettings.GetKeyForIcon(INPUT_NUMBER);
     }

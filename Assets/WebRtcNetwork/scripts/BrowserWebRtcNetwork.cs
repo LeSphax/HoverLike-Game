@@ -347,11 +347,11 @@ namespace Byn.Net
             {
                 mConnections.Remove(evt.ConnectionId);
             }
-            else if (evt.Type == NetEventType.ServerInitialized)
+            else if (evt.Type == NetEventType.RoomCreated)
             {
                 mIsServer = true;
             }
-            else if (evt.Type == NetEventType.ServerClosed || evt.Type == NetEventType.ServerConnectionFailed)
+            else if (evt.Type == NetEventType.RoomClosed || evt.Type == NetEventType.RoomCreationFailed)
             {
                 mIsServer = false;
             }

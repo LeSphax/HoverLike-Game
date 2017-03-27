@@ -3,20 +3,23 @@
 
 
 var NetEventType;
-(function(e) {
+(function (e) {
     e[e["Invalid"] = 0] = "Invalid";
     e[e["UnreliableMessageReceived"] = 1] = "UnreliableMessageReceived";
     e[e["ReliableMessageReceived"] = 2] = "ReliableMessageReceived";
-    e[e["ServerInitialized"] = 3] = "ServerInitialized";
-    e[e["ServerInitFailed"] = 4] = "ServerInitFailed";
-    e[e["ServerClosed"] = 5] = "ServerClosed";
-    e[e["NewConnection"] = 6] = "NewConnection";
-    e[e["ConnectionFailed"] = 7] = "ConnectionFailed";
-    e[e["Disconnected"] = 8] = "Disconnected";
+    e[e["RoomCreated"] = 3] = "RoomCreated";
+    e[e["RoomCreateFailed"] = 4] = "RoomCreateFailed";
+    e[e["RoomJoinFailed"] = 5] = "RoomJoinFailed";
+    e[e["RoomClosed"] = 6] = "RoomClosed";
+    e[e["NewConnection"] = 7] = "NewConnection";
+    e[e["ConnectionFailed"] = 8] = "ConnectionFailed";
+    e[e["Disconnected"] = 9] = "Disconnected"; 
+    e[e["ConnectionToSignalingServerEstablished"] = 10] = "ConnectionToSignalingServerEstablished";
     e[e["FatalError"] = 100] = "FatalError";
     e[e["Warning"] = 101] = "Warning";
     e[e["Log"] = 102] = "Log"
     e[e["UserCommand"] = 103] = "UserCommand"
+    e[e["SignalingConnectionFailed"] = 200] = "SignalingConnectionFailed"
 })(NetEventType || (NetEventType = {}));
 var NetEventDataType;
 (function(e) {

@@ -14,18 +14,43 @@ namespace AbilitiesManagement
         private PlayerController controller;
         private AbilitiesManager abilitiesManager;
 
+        public static bool activateOnServer;
+
+        public static bool isActivated;
+
         // Use this for initialization
         void Start()
         {
             controller = GetComponent<PlayerController>();
-            if (controller.Player.IsMyPlayer)
-            {
-                abilitiesManager = controller.abilitiesManager;
-                Move();
-                Steal();
-                Dash();
-                Pass();
-            }
+        }
+
+        private void Update()
+        {
+            //Changing scene
+            if (controller.Player != null)
+                if (controller.Player.IsMyPlayer && !isActivated)
+                {
+                    if (!isActivated && DevelopperCommands.ActivateAI)
+                    {
+                        if (activateOnServer || !MyComponents.NetworkManagement.isServer)
+                        {
+                            abilitiesManager = controller.abilitiesManager;
+                            Move();
+                            Steal();
+                            Dash();
+                            Pass();
+
+                        }
+                        isActivated = true;
+                    }
+                    if (isActivated && !DevelopperCommands.ActivateAI)
+                    {
+                        CancelInvoke();
+                        isActivated = false;
+
+                    }
+                }
+
         }
 
         private void Move()
@@ -76,7 +101,7 @@ namespace AbilitiesManagement
             if (friends.Count > 0)
             {
                 abilitiesManager.View.RPC("Pass", RPCTargets.Server, friends[Random.Range(0, friends.Count - 1)].id);
-                InvokeRandom("Pass", 3, 8);
+                InvokeRandom("Pass", 1.5f, 3);
             }
         }
 

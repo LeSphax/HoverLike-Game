@@ -7,6 +7,15 @@ using CustomAnimations;
 public class RendererTimeSlow : AVisualEffect
 {
 
+    private Material material;
+
+    public void InitView(object[] parameters)
+    {
+        Color newColor = (Color)parameters[0];
+        newColor.a = material.color.a;
+        material.color = newColor;
+    }
+
     private Renderer m_Renderer;
     private Renderer M_Renderer
     {
@@ -25,6 +34,7 @@ public class RendererTimeSlow : AVisualEffect
     protected override void Awake()
     {
         base.Awake();
+        material = GetComponent<Renderer>().material;
         transform.localScale = Vector3.one * TimeSlowTargeting.DIAMETER_TIME_SLOW_ZONE;
     }
 

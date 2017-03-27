@@ -4,8 +4,12 @@ using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+public delegate void UncatchableChangeHandler(bool uncatchable);
+
 public class BallState : SlideBall.MonoBehaviour
 {
+    public event UncatchableChangeHandler UncatchableChanged;
+
     public static ConnectionId NO_PLAYER_ID
     {
         get
@@ -27,9 +31,7 @@ public class BallState : SlideBall.MonoBehaviour
         }
         set
         {
-            uncatchable = value;
-            View.RPC("UpdateUncatchable", RPCTargets.Others, value);
-            MakeBallUncatchable(value);
+            View.RPC("UpdateUncatchable", RPCTargets.All, value);
         }
     }
 
@@ -59,10 +61,12 @@ public class BallState : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    private void UpdateUncatchable(bool uncatchable)
+    private void UpdateUncatchable(bool newValue)
     {
-        this.uncatchable = uncatchable;
-        MakeBallUncatchable(uncatchable);
+        this.uncatchable = newValue;
+        MakeBallUncatchable(newValue);
+        if (UncatchableChanged != null)
+            UncatchableChanged.Invoke(newValue);
     }
 
     [SerializeField]
@@ -98,14 +102,9 @@ public class BallState : SlideBall.MonoBehaviour
             MyComponents.Players.ChangePlayerOwningBall(previousId, playerId, sendUpdate);
         }
     }
-    public void Detach()
+    public void DetachBall()
     {
-        if (NO_PLAYER_ID != IdPlayerOwningBall)
-        {
-            ConnectionId previousId = IdPlayerOwningBall;
-            IdPlayerOwningBall = NO_PLAYER_ID;
-            MyComponents.Players.ChangePlayerOwningBall(previousId, NO_PLAYER_ID, true);
-        }
+        SetAttached(NO_PLAYER_ID);
     }
 
     public bool IsAttached()
@@ -134,9 +133,10 @@ public class BallState : SlideBall.MonoBehaviour
         bool attach = playerId != NO_PLAYER_ID;
         if (attach)
         {
+            if (MyComponents.NetworkManagement.isServer)
+                UnCatchable = false;
             Assert.IsTrue(GetAttachedPlayer() != null);
             Transform hand = GetAttachedPlayer().PlayerMesh.hand;
-            UnCatchable = false;
             gameObject.transform.SetParent(hand);
             TrySetKinematic();
             gameObject.transform.localPosition = ballHoldingPosition;
@@ -153,7 +153,7 @@ public class BallState : SlideBall.MonoBehaviour
     {
         if (MyComponents.NetworkManagement.isServer)
         {
-            SetAttached(NO_PLAYER_ID);
+            DetachBall();
             View.RPC("PutAtStartPosition", RPCTargets.Others);
         }
         gameObject.transform.position = MyComponents.Spawns.BallSpawn;

@@ -21,6 +21,8 @@ public enum RPCTargets
     AllBuffered,
     /// <summary>Sends the RPC to everyone. This client does not execute the RPC. New players get the RPC when they join as it's buffered (until this client leaves).</summary>
     OthersBuffered,
+    /// <summary>Sends the RPC to everyone in the same team as the sender. This client does not execute the RPC.</summary>
+    Team,
 }
 
 public static class RPCTargetsMethods
@@ -31,6 +33,7 @@ public static class RPCTargetsMethods
         {
             case RPCTargets.AllBuffered:
             case RPCTargets.All:
+            case RPCTargets.Team:
                 return true;
             case RPCTargets.Others:
             case RPCTargets.Specified:
@@ -59,13 +62,14 @@ public static class RPCTargetsMethods
             case RPCTargets.Others:
             case RPCTargets.AllBuffered:
             case RPCTargets.OthersBuffered:
+            case RPCTargets.Team:
                 break;
             case RPCTargets.Specified:
             case RPCTargets.Server:
                 flags |= MessageFlags.NotDistributed;
                 break;
             default:
-                break;
+                throw new UnhandledSwitchCaseException(targets);
         }
         switch (targets)
         {
@@ -77,9 +81,10 @@ public static class RPCTargetsMethods
             case RPCTargets.Others:
             case RPCTargets.Specified:
             case RPCTargets.Server:
+            case RPCTargets.Team:
                 break;
             default:
-                break;
+                throw new UnhandledSwitchCaseException(targets);
         }
         switch (targets)
         {
@@ -91,9 +96,25 @@ public static class RPCTargetsMethods
             case RPCTargets.Server:
             case RPCTargets.Specified:
             case RPCTargets.Others:
+            case RPCTargets.Team:
                 break;
             default:
+                throw new UnhandledSwitchCaseException(targets);
+        }
+        switch (targets)
+        {
+            case RPCTargets.AllBuffered:
+            case RPCTargets.OthersBuffered:
+            case RPCTargets.All:
+            case RPCTargets.Server:
+            case RPCTargets.Specified:
+            case RPCTargets.Others:
                 break;
+            case RPCTargets.Team:
+                flags |= MessageFlags.SentToTeam;
+                break;
+            default:
+                throw new UnhandledSwitchCaseException(targets);
         }
         return flags;
     }

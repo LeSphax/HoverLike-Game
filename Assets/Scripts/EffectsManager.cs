@@ -5,13 +5,14 @@ public class EffectsManager : SlideBall.MonoBehaviour
 {
 
     public ParticleSystem BlueSmoke;
-    public ParticleSystem Braking;
+    public TrailRenderer Braking;
 
     private PlayerController controller;
 
     private void Awake()
     {
         controller = GetComponent<PlayerController>();
+        Braking.enabled = false;
     }
 
     [MyRPC]
@@ -39,14 +40,8 @@ public class EffectsManager : SlideBall.MonoBehaviour
 
     public void ActivateSlow(bool activate)
     {
-        if (activate && !Braking.isPlaying)
-        {
-            Braking.Play();
-        }
-        else if (!activate && Braking.isPlaying)
-        {
-            Braking.Stop();
-        }
+        if (activate != Braking.enabled)
+            Braking.enabled = activate;
     }
 
 }

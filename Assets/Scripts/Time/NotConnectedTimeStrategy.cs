@@ -31,7 +31,7 @@ public class NotConnectedTimeStrategy : TimeStrategy
 
     public override float GetMyLatencyInMiliseconds()
     {
-        throw new NotImplementedException();
+        return 0;
     }
 
     internal override float GetNetworkTimeInSeconds()

@@ -17,7 +17,7 @@ namespace Navigation
 
         public void StartLoading(string levelName, bool useFade, bool waitToShowNextLevel)
         {
-            Debug.Log("StartLoading");
+            //Debug.Log("StartLoading");
             this.useFade = useFade;
             this.levelName = levelName;
             this.waitToShowNextLevel = waitToShowNextLevel;
@@ -26,12 +26,10 @@ namespace Navigation
 
         IEnumerator load()
         {
-            Debug.Log("load");
             async = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
             SceneManager.sceneLoaded += LevelLoaded;
             if (useFade)
                 async.allowSceneActivation = false;
-            Debug.Log("endLoad");
             yield return async;
         }
 

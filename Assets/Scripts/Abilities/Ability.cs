@@ -16,6 +16,8 @@ public class Ability : MonoBehaviour
 
     public bool trace;
 
+    private static AudioClip errorSound;
+
     private enum State
     {
         READY,
@@ -29,6 +31,10 @@ public class Ability : MonoBehaviour
 
     protected virtual void Awake()
     {
+        if (errorSound == null)
+        {
+            errorSound = ResourcesGetter.ErrorSound();
+        }
         input = GetComponent<AbilityInput>();
         input.CanBeActivatedChanged += EnableAbility;
         targeting = GetComponent<AbilityTargeting>();
@@ -55,9 +61,13 @@ public class Ability : MonoBehaviour
         switch (state)
         {
             case State.READY:
-                if (input.FirstActivation() && isEnabled)
+                if (input.FirstActivation())
                 {
-                    CastAbility();
+                    if (isEnabled)
+                        CastAbility();
+                    else
+                        PlayErrorSound();
+
                 }
                 //Used to stop the visual effect for the brake effect
                 input.Cancellation();
@@ -80,11 +90,22 @@ public class Ability : MonoBehaviour
                 if (currentCooldown == 0)
                 {
                     state = State.READY;
+                    Update();
+                }
+                else if (input.FirstActivation())
+                {
+                    PlayErrorSound();
                 }
                 break;
             default:
                 throw new UnhandledSwitchCaseException(state);
         }
+    }
+
+    private void PlayErrorSound()
+    {
+        if (input.HasErrorSound())
+            MyComponents.GlobalSound.Play(errorSound);
     }
 
     protected virtual void UpdateUI() { }

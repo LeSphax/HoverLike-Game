@@ -25,11 +25,10 @@ namespace SlideBall.Networking
 
         internal void SendBufferedMessages(ConnectionId id, short sceneId)
         {
-            Debug.Log("SendBuffered messages " + id + "   " + sceneId);
+            //Debug.Log("SendBuffered messages " + id + "   " + sceneId);
             List<StoredMessage> messages;
             if (bufferedMessages.TryGetValue(sceneId, out messages))
             {
-                Debug.Log("Number buffered messages " + messages.Count);
                 foreach (StoredMessage storedMessage in messages)
                 {
                     if (id == NetworkManagement.SERVER_CONNECTION_ID)
@@ -38,8 +37,7 @@ namespace SlideBall.Networking
                     }
                     else
                     {
-                        Debug.Log("Send BufferedMessage " + storedMessage.message);
-                        networkManagement.SendData(storedMessage.message, id);
+                        networkManagement.SendNetworkMessage(storedMessage.message, id);
                     }
                 }
             }
@@ -68,7 +66,6 @@ namespace SlideBall.Networking
 
         private void SceneChanged(short previousSceneId, short currentSceneId)
         {
-            Debug.Log("Remove Messages " + previousSceneId);
             bufferedMessages.Remove(previousSceneId);
         }
 

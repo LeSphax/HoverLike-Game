@@ -90,7 +90,7 @@ public class MyNetworkView : ANetworkView
     {
         NetworkMessage message = new NetworkMessage(ViewId, observedId, type, data);
         message.flags = flags;
-        MyComponents.NetworkManagement.SendData(message);
+        MyComponents.NetworkManagement.SendNetworkMessage(message);
     }
 
     public void RPC(string methodName, ConnectionId id, params object[] parameters)
@@ -100,11 +100,13 @@ public class MyNetworkView : ANetworkView
 
     public void RPC(string methodName, RPCTargets targets, params object[] parameters)
     {
+        //Assert.IsFalse(targets.IsInvokedInPlace() && !MyComponents.NetworkManagement.isServer && !methodName.Contains("Manual"),methodName + "    "+ targets);
         rpcManager.RPC(methodName, targets, parameters);
     }
 
     public void RPC(string methodName, RPCTargets targets, MessageFlags additionalFlags, params object[] parameters)
     {
+        //Assert.IsFalse(targets.IsInvokedInPlace() && !MyComponents.NetworkManagement.isServer, methodName + "    " + targets);
         rpcManager.RPC(methodName, targets, additionalFlags, parameters);
     }
 }

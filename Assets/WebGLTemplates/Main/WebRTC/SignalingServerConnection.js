@@ -30,7 +30,7 @@ var SignalingServerConnection = function () {
         while ((event = this.Dequeue()) != null) {
             console.log("new event " + event);
             this.peerNetwork.IncomingSignalingEvent(event);
-            if (event.Type == NetEventType.ServerInitialized || event.Type == NetEventType.ServerInitFailed || event.Type == NetEventType.ServerClosed || event.Type == NetEventType.UserCommand) {
+            if (event.Type == NetEventType.RoomCreated || event.Type == NetEventType.RoomJoinFailed || event.Type == NetEventType.RoomCreateFailed || event.Type == NetEventType.RoomClosed || event.Type == NetEventType.UserCommand) {
                 console.log("Enqueue event in signaling " + event);
                 this.signalingEvents.Enqueue(new NetworkEvent(event.Type, ConnectionId.INVALID, event.RawData));
             }
@@ -51,11 +51,11 @@ var SignalingServerConnection = function () {
         }
         this.mConnections = new Array;
         if (this.mServerStatus == WebsocketServerStatus.Starting) {
-            this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerInitFailed, ConnectionId.INVALID, null))
+            this.EnqueueIncoming(new NetworkEvent(NetEventType.SignalingConnectionFailed, ConnectionId.INVALID, null))
         } else if (this.mServerStatus == WebsocketServerStatus.Online) {
-            this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null))
+            this.EnqueueIncoming(new NetworkEvent(NetEventType.SignalingConnectionFailed, ConnectionId.INVALID, null))
         } else if (this.mServerStatus == WebsocketServerStatus.ShuttingDown) {
-            this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null))
+            this.EnqueueIncoming(new NetworkEvent(NetEventType.SignalingConnectionFailed, ConnectionId.INVALID, null))
         }
         this.mServerStatus = WebsocketServerStatus.Offline;
         this.mOutgoingQueue = new Array;
@@ -80,21 +80,17 @@ var SignalingServerConnection = function () {
             this.mConnections.splice(t, 1)
         }
     };
-    e.prototype.HandleIncomingEvent = function (e) {
-        console.log(e.Type);
-        if (e.Type == NetEventType.NewConnection) {
-            this.TryRemoveConnecting(e.ConnectionId);
-            this.mConnections.push(e.ConnectionId.id)
-        } else if (e.Type == NetEventType.ConnectionFailed) {
-            this.TryRemoveConnecting(e.ConnectionId)
-        } else if (e.Type == NetEventType.Disconnected) {
-            this.TryRemoveConnection(e.ConnectionId)
-        } else if (e.Type == NetEventType.ServerInitialized) {
-            this.mServerStatus = WebsocketServerStatus.Online
-        } else if (e.Type == NetEventType.ServerInitFailed) {
-            this.mServerStatus = WebsocketServerStatus.Offline
-        } else if (e.Type == NetEventType.ServerClosed) {
-            this.mServerStatus = WebsocketServerStatus.Offline
+    e.prototype.HandleIncomingEvent = function (evt) {
+        console.log(evt.Type);
+        if (evt.Type == NetEventType.NewConnection) {
+            this.TryRemoveConnecting(evt.ConnectionId);
+            this.mConnections.push(evt.ConnectionId.id)
+        } else if (evt.Type == NetEventType.ConnectionFailed) {
+            this.TryRemoveConnecting(evt.ConnectionId)
+        } else if (evt.Type == NetEventType.Disconnected) {
+            this.TryRemoveConnection(evt.ConnectionId)
+        } else if (evt.Type == NetEventType.ConnectionToSignalingServerEstablished) {
+            this.mServerStatus = WebsocketServerStatus.Online;
         }
         this.EnqueueIncoming(e)
     };
@@ -126,7 +122,7 @@ var SignalingServerConnection = function () {
     e.prototype.Flush = function () {
         if (this.socketConnection.status == WebsocketConnectionStatus.Connected) this.HandleOutgoingEvents();
     };
-    e.prototype.SendData = function (connectionId, type, content) {
+    e.prototype.SendData = function (type, connectionId, content) {
         if (type == null ) {
             console.error("Signaling server : The type of the event to send is null");
             return;
@@ -135,8 +131,8 @@ var SignalingServerConnection = function () {
          console.error("Signaling server : The content of the event to send is null");
          return;   
      }
-     var event = new NetworkEvent();
-     this.EnqueueOutgoing(i);
+     var event = new NetworkEvent(type,connectionId,content);
+     this.EnqueueOutgoing(event);
  };
  e.prototype.DisconnectPeerFromServer = function (e) {
     var t = new NetworkEvent(NetEventType.Disconnected, e, null);
@@ -159,7 +155,7 @@ e.prototype.ConnectToServer = function () {
         this.mServerStatus = WebsocketServerStatus.Starting;
         this.socketConnection.EnsureServerConnection();
     } else {
-        this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerInitFailed, ConnectionId.INVALID, e));
+        this.EnqueueIncoming(new NetworkEvent(NetEventType.RoomCreateFailed, ConnectionId.INVALID, e));
     }
 }
 e.prototype.DisconnectFromServer = function (e) {
@@ -170,11 +166,11 @@ e.prototype.CreateRoom = function (e) {
     if (e == null) {
         e = "" + this.GetRandomKey()
     }
-    this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerInitialized, ConnectionId.INVALID, e))
+    this.EnqueueOutgoing(new NetworkEvent(NetEventType.RoomCreated, ConnectionId.INVALID, e))
 };
 
 e.prototype.LeaveRoom = function () {
-    this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null))
+    this.EnqueueOutgoing(new NetworkEvent(NetEventType.RoomClosed, ConnectionId.INVALID, null))
 };
 
 e.prototype.ConnectToRoom = function (e) {

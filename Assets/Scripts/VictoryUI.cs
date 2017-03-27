@@ -16,6 +16,7 @@ public class VictoryUI : MonoBehaviour
     public void ReturnToRoom()
     {
         MyComponents.ResetGameComponents();
+        MyComponents.ResetScene();
     }
 
     public void SetVictoryText(Team team)

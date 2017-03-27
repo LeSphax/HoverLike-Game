@@ -27,6 +27,7 @@ TagManager:
   - PopUp
   - VictoryPose
   - VictoryUI
+  - GlobalSound
   layers:
   - Default
   - TransparentFX

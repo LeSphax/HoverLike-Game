@@ -11,7 +11,6 @@ public class RoomData
 
     public RoomData(string data)
     {
-        Debug.LogError(data);
         string[] split = data.Split(NB_PLAYERS_SEPARATOR_CHAR);
         name = split[0];
         nbPlayers = int.Parse(split[1]);

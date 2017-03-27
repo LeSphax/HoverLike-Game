@@ -82,8 +82,8 @@ public class MatchManager : SlideBall.MonoBehaviour
         Scoreboard.IncrementTeamScore(teamNumber);
         Invoke(methodName, END_POINT_DURATION);
         MyState = State.ENDING;
-        if (lastChanceTeam != Team.NONE)
-            EndMatch();
+        //if (lastChanceTeam != Team.NONE)
+        //    EndMatch();
     }
 
     public void StartGame()
@@ -103,6 +103,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         matchCountdown.TimerFinished += LastChance;
         matchCountdown.View.RPC("StartMatch", RPCTargets.All, MATCH_DURATION, 10);
+        matchCountdown.PauseTimer(true);
         MyState = State.ENDING;
         Scoreboard.ResetScore();
         Entry();
@@ -110,6 +111,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void LastChance()
     {
+        Debug.Log("Last Chance");
         if (MyComponents.BallState.GetIdOfPlayerOwningBall() == BallState.NO_PLAYER_ID)
         {
             matchCountdown.PlayMatchEndSound();
@@ -117,6 +119,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         }
         else
         {
+            matchCountdown.SetText(Language.Instance.texts["Last_Chance"]);
             lastChanceTeam = Players.players[MyComponents.BallState.GetIdOfPlayerOwningBall()].Team;
         }
     }
@@ -163,7 +166,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     IEnumerator CoEntry()
     {
         Debug.Log("MatchManager : CoEntry - State : " + MyState);
-        Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH, "The entry shouldn't happen in this case, maybe it was a manual entry?");
+        Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH, "The entry shouldn't happen in this state " + MyState + " , maybe it was a manual entry?");
         if (MyState == State.ENDING)
         {
             getReadyCountdown.TimerFinished += SendInvokeStartRound;
@@ -234,14 +237,20 @@ public class MatchManager : SlideBall.MonoBehaviour
                 }
                 players.Map(player =>
                 {
-                    Debug.Log("Before " + player.SpawnNumber);
                     int attackersNumber = Players.GetPlayersInTeam(player.Team).Count - 1;
                     player.SpawnNumber = (short)(((player.SpawnNumber) % attackersNumber) + 1);
-                    Debug.Log("After " + player.SpawnNumber);
                     player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
                 });
             }
         }
+
+        AllowAttackersToEnterGoalsWhenAlone();
+    }
+
+    private void AllowAttackersToEnterGoalsWhenAlone()
+    {
+        Physics.IgnoreLayerCollision(LayersGetter.ATTACKER_0, LayersGetter.GOAL_0, Players.GetPlayersInTeam(Team.BLUE).Count == 1);
+        Physics.IgnoreLayerCollision(LayersGetter.ATTACKER_1, LayersGetter.GOAL_1, Players.GetPlayersInTeam(Team.RED).Count == 1);
     }
 
     private void SendInvokeStartRound()

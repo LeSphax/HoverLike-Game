@@ -46,6 +46,7 @@ namespace Byn.Net.Native
 
         public ServerConnection(string url)
         {
+            Debug.LogWarning("New server connection " + url);
             this.websocket = new WebSocketConnection(this, url);
         }
 
@@ -56,8 +57,10 @@ namespace Byn.Net.Native
             NetworkEvent evt;
             while (Dequeue(out evt))
             {
+                Debug.Log(evt);
+                Debug.Log(evt.Type + "    " + evt.RawData);
                 peerNetwork.IncomingSignalingEvent(evt);
-                if (evt.Type == NetEventType.ServerInitialized || evt.Type == NetEventType.ServerConnectionFailed || evt.Type == NetEventType.ServerClosed || evt.Type == NetEventType.UserCommand)
+                if (evt.Type == NetEventType.RoomCreated || evt.Type == NetEventType.SignalingConnectionFailed || evt.Type == NetEventType.RoomCreationFailed || evt.Type == NetEventType.RoomJoinFailed || evt.Type == NetEventType.RoomClosed || evt.Type == NetEventType.UserCommand)
                 {
                     signalingEvents.Enqueue(evt);
                 }
@@ -82,7 +85,6 @@ namespace Byn.Net.Native
             websocket.status = WebsocketConnectionStatus.Disconnecting;
             foreach (ConnectionId conId in this.mConnecting)
             {
-                Debug.LogError("Cleanup ServerConnection -> Connection Failed event");
                 this.EnqueueIncoming(new NetworkEvent(NetEventType.ConnectionFailed, conId, null));
             }
             this.mConnecting.Clear();
@@ -93,15 +95,15 @@ namespace Byn.Net.Native
             this.mConnections.Clear();
             if (this.mServerStatus == WebsocketServerStatus.Starting)
             {
-                this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerConnectionFailed, ConnectionId.INVALID, null));
+                this.EnqueueIncoming(new NetworkEvent(NetEventType.SignalingConnectionFailed, ConnectionId.INVALID, null));
             }
             else if (this.mServerStatus == WebsocketServerStatus.Online)
             {
-                this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null));
+                this.EnqueueIncoming(new NetworkEvent(NetEventType.SignalingConnectionFailed, ConnectionId.INVALID, null));
             }
             else if (this.mServerStatus == WebsocketServerStatus.ShuttingDown)
             {
-                this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null));
+                this.EnqueueIncoming(new NetworkEvent(NetEventType.SignalingConnectionFailed, ConnectionId.INVALID, null));
             }
             this.mServerStatus = WebsocketServerStatus.Offline;
             Queue<NetworkEvent> obj = this.mOutgoingQueue;
@@ -156,18 +158,9 @@ namespace Byn.Net.Native
             {
                 this.mConnections.Remove(evt.ConnectionId);
             }
-            else if (evt.Type == NetEventType.ServerInitialized)
+            else if (evt.Type == NetEventType.ConnectionToSignalingServerEstablished)
             {
                 this.mServerStatus = WebsocketServerStatus.Online;
-            }
-            else if (evt.Type == NetEventType.ServerConnectionFailed)
-            {
-                this.mServerStatus = WebsocketServerStatus.Offline;
-            }
-            else if (evt.Type == NetEventType.ServerClosed)
-            {
-                this.mServerStatus = WebsocketServerStatus.ShuttingDown;
-                this.mServerStatus = WebsocketServerStatus.Offline;
             }
             this.EnqueueIncoming(evt);
         }
@@ -179,7 +172,6 @@ namespace Byn.Net.Native
             {
                 while (this.mOutgoingQueue.Count > 0)
                 {
-                    Debug.Log("Send " + mOutgoingQueue.Peek());
                     websocket.Send(mOutgoingQueue.Dequeue());
                 }
             }
@@ -293,12 +285,11 @@ namespace Byn.Net.Native
         public void Shutdown()
         {
             this.Cleanup();
-            websocket.status = WebsocketConnectionStatus.NotConnected;
         }
 
         public void LeaveRoom()
         {
-            this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null));
+            this.EnqueueOutgoing(new NetworkEvent(NetEventType.RoomClosed, ConnectionId.INVALID, null));
         }
 
         public void CreateRoom(string address = null)
@@ -310,7 +301,7 @@ namespace Byn.Net.Native
             if (this.mServerStatus == WebsocketServerStatus.Online || this.mServerStatus == WebsocketServerStatus.Starting)
             {
                 Debug.Log("Creating Room " + address);
-                this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerInitialized, ConnectionId.INVALID, address));
+                this.EnqueueOutgoing(new NetworkEvent(NetEventType.RoomCreated, ConnectionId.INVALID, address));
             }
             else
             {
@@ -332,7 +323,7 @@ namespace Byn.Net.Native
 
         public void Disconnect()
         {
-            this.EnqueueOutgoing(new NetworkEvent(NetEventType.ServerClosed, ConnectionId.INVALID, null));
+            this.EnqueueOutgoing(new NetworkEvent(NetEventType.RoomClosed, ConnectionId.INVALID, null));
         }
 
         public ConnectionId ConnectToRoom(string address)

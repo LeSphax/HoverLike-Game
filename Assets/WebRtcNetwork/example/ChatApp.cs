@@ -282,7 +282,7 @@ public class ChatApp : MonoBehaviour
             evt = signalingEvents.Dequeue();
             switch (evt.Type)
             {
-                case NetEventType.ServerInitialized:
+                case NetEventType.RoomCreated:
                     {
                         //server initialized message received
                         //this is the reaction to StartServer -> switch GUI mode
@@ -292,7 +292,7 @@ public class ChatApp : MonoBehaviour
                         uRoomName.text = "" + address;
                     }
                     break;
-                case NetEventType.ServerConnectionFailed:
+                case NetEventType.RoomCreationFailed:
                     {
                         //user tried to start the server but it failed
                         //maybe the user is offline or signaling server down?
@@ -301,7 +301,7 @@ public class ChatApp : MonoBehaviour
                         Reset();
                     }
                     break;
-                case NetEventType.ServerClosed:
+                case NetEventType.RoomClosed:
                     {
                         mIsServer = false;
                         Append("Server closed. No incoming connections possible until restart.");

@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using AbilitiesManagement;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DevelopperCommands : MonoBehaviour
 {
-
+    public static bool ActivateAI = false;
     // Use this for initialization
     void Start()
     {
@@ -13,7 +14,7 @@ public class DevelopperCommands : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift))
+        if (Functions.IsDevelopperComboPressed())
         {
             if (MyComponents.MatchManager != null)
                 if (Input.GetKeyDown(KeyCode.S))
@@ -32,10 +33,14 @@ public class DevelopperCommands : MonoBehaviour
                 PlayerPrefs.DeleteAll();
                 PlayerPrefs.Save();
             }
-        }
-        if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
-        {
-            MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
+            if (Input.GetKeyDown(KeyCode.W))
+                ActivateAI = !ActivateAI;
+            if (Input.GetKeyDown(KeyCode.X))
+                AIRandomMovement.activateOnServer = !AIRandomMovement.activateOnServer;
+            if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
+            {
+                MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
+            }
         }
     }
 

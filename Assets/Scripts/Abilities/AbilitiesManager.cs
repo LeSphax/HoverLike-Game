@@ -127,7 +127,7 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility() && controller.Player.HasBall && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
-                Debug.LogError("Pass from " + this + " to " + Players.players[id].controller);
+                Debug.LogWarning("Pass from " + this + " to " + Players.players[id].controller);
                 new PassPersistentEffect(this, id, passCurve);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }
@@ -173,7 +173,7 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility())
             {
-                MyComponents.NetworkViewsManagement.Instantiate("Effects/TimeSlow", epicenter, Quaternion.identity);
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/TimeSlow", epicenter, Quaternion.identity,Colors.Teams[(int)controller.Player.Team]);
                 new TimeSlowPersistentEffect(this, epicenter);
             }
         }

@@ -89,8 +89,8 @@ public class Countdown : SlideBall.MonoBehaviour
                 if (TimerFinished != null)
                 {
                     TimerFinished.Invoke();
-                    TimerFinished = null;
                 }
+                StopTimer();
             }
         }
     }
@@ -118,7 +118,7 @@ public class Countdown : SlideBall.MonoBehaviour
     protected void StopTimer()
     {
         TimerFinished = null;
-        TimeLeft = 0;
+        TimeLeft = -1;
     }
 
     [MyRPC]

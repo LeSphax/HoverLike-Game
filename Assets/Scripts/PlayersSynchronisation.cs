@@ -48,7 +48,7 @@ public class PlayersSynchronisation : ANetworkView
     public bool IsSynchronised(short syncId)
     {
         Assert.IsFalse(syncId == INVALID_SYNC_ID);
-        return synchronisations.CountList(syncId) == Players.players.Count;
+        return synchronisations.CountList(syncId) == Players.players.Count && Players.players.Count!=0;
     }
 
     public void SendSynchronisation(short syncId)
@@ -61,7 +61,7 @@ public class PlayersSynchronisation : ANetworkView
             byte[] connectionIdData = BitConverter.GetBytes(connectionId.id);
             byte[] data = new byte[4] { syncIdData[0], syncIdData[1], connectionIdData[0], connectionIdData[1] };
             NetworkMessage message = new NetworkMessage(ViewId, MessageType.Synchronisation, data);
-            MyComponents.NetworkManagement.SendData(message);
+            MyComponents.NetworkManagement.SendNetworkMessage(message);
         }
         else
         {

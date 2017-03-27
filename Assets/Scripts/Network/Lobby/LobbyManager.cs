@@ -29,7 +29,7 @@ public class LobbyManager : MonoBehaviour
             switch (value)
             {
                 case State.IDLE:
-                    MyComponents.PopUp.ClosePopUp();
+                    //MyComponents.PopUp.ClosePopUp();
                     MainPanel.SetActive(true);
                     //
                     RoomListPanel.gameObject.SetActive(false);

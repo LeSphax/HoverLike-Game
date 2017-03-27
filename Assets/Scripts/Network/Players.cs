@@ -522,6 +522,11 @@ namespace PlayerManagement
         {
             this.id = id;
         }
+
+        public override string ToString()
+        {
+            return "Player " + id + " Nickname: " + Nickname + " Team : " + Team + "   HasBall : " + hasBall;
+        }
     }
 
 

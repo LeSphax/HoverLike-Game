@@ -35,7 +35,7 @@ namespace TimeSlow
 
         protected override void Apply(float dt)
         {
-            Collider[] colliders = Physics.OverlapSphere(epicenter, TimeSlowTargeting.DIAMETER_TIME_SLOW_ZONE / 2, LayersGetter.AttackersMask() | LayersGetter.BallMask());
+            Collider[] colliders = Physics.OverlapSphere(epicenter, TimeSlowTargeting.DIAMETER_TIME_SLOW_ZONE / 2, LayersGetter.TeamMask(Teams.GetOtherTeam(manager.controller.Player.Team)) | LayersGetter.BallMask());
             foreach (var collider in colliders)
             {
                 Rigidbody rb = GetObjectsWithRigidbody(collider.transform);
@@ -49,6 +49,7 @@ namespace TimeSlow
 
         public override void StopEffect()
         {
+
         }
 
         private Rigidbody GetObjectsWithRigidbody(Transform t)

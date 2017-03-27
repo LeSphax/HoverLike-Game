@@ -227,6 +227,19 @@ public static class MyComponents
         }
     }
 
+    private static ChatManager chatManager;
+    public static ChatManager ChatManager
+    {
+        get
+        {
+            if (chatManager == null)
+            {
+                chatManager = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<ChatManager>();
+            }
+            return chatManager;
+        }
+    }
+
     private static Spawns spawns;
     public static Spawns Spawns
     {
@@ -238,6 +251,21 @@ public static class MyComponents
                 spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
             }
             return spawns;
+        }
+    }
+
+    private static GlobalSound globalSound;
+    public static GlobalSound GlobalSound
+    {
+        get
+        {
+            if (globalSound == null)
+            {
+                GameObject go = GameObject.FindGameObjectWithTag(Tags.GlobalSound);
+                if (go != null)
+                    globalSound = go.GetComponent<GlobalSound>();
+            }
+            return globalSound;
         }
     }
 
@@ -268,24 +296,23 @@ public static class MyComponents
         NetworkManagement.Reset();
         ResetGameComponents();
         TimeManagement.Reset();
+        ResetScene();
     }
 
     public static void ResetGameComponents()
     {
-        ResetScene();
         GameInitialization.Reset();
         PlayersSynchronisation.Reset();
     }
 
-    private static void ResetScene()
+    public static void ResetScene()
     {
-        Debug.Log(NetworkManagement.IsConnected);
         if (Scenes.IsCurrentScene(Scenes.MainIndex))
-            NavigationManager.LoadScene(Scenes.Room, true, false);
+            NavigationManager.LoadScene(Scenes.Lobby, true, false);
         //else if (Scenes.IsCurrentScene(Scenes.MainIndex) && !NetworkManagement.IsConnected)
         //    NavigationManager.LoadScene(Scenes.Lobby, true, false);
-        else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
-            NavigationManager.LoadScene(Scenes.Lobby);
+        else if (Scenes.IsCurrentScene(Scenes.RoomIndex)) 
+           NavigationManager.LoadScene(Scenes.Lobby);
         else
             MyComponents.LobbyManager.Reset();
     }

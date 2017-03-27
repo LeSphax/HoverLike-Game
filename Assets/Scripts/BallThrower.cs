@@ -23,7 +23,7 @@ public class BallThrower : MonoBehaviour
     // Update is called once per frame
     void ChangeBallPosition()
     {
-        MyComponents.BallState.Detach();
+        MyComponents.BallState.DetachBall();
         MyComponents.BallState.GetComponent<Rigidbody>().velocity = Vector3.zero;
         MyComponents.BallState.transform.position = Functions.GetRandomPointInCube(gameObject);
         float timeToWait = Random.Range(timeToWaitBeforeThrow, timeToWaitBeforeThrowMax);

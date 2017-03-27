@@ -100,10 +100,8 @@ public class PlayerController : PlayerView
         int layer = -1;
         if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             layer = LayersGetter.players[(int)Player.Team];
-        else if (Players.GetPlayersInTeam(Player.Team).Count == 1)
-            layer = LayersGetter.attackers[(int)Player.Team];
         else
-            layer = LayersGetter.ATTACKER;
+            layer = LayersGetter.attackers[(int)Player.Team];
         Functions.SetLayer(transform, layer);
     }
 

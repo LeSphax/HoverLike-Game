@@ -74,8 +74,9 @@ function CAPIWebRtcNetworkSendPeerDataEm(e, t, n, i, o, r) {
     var a = new Uint8Array(n.buffer, i, o);
     gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), a, r);
 }
-function CAPIWebRtcNetworkSendSignalingDataEm(e, connectionId,type_data, type_location, content) {
-    gCAPIWebRtcNetworkInstances[e].signalingServerConnection.SendData(new ConnectionId(t), type_int, content);
+function CAPIWebRtcNetworkSendSignalingDataEm(e, connectionId,type_int, content) {
+    console.log("Send Signaling Event : " + connectionId + "     " + type_int);
+    gCAPIWebRtcNetworkInstances[e].signalingServerConnection.SendData(type_int, new ConnectionId(connectionId), content);
 }
 function CAPIWebRtcNetworkShutdown(e) {
     gCAPIWebRtcNetworkInstances[e].Shutdown();

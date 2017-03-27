@@ -53,7 +53,6 @@ namespace Byn.Net
             factory.Initialize(true);
             mFactory = factory;
             Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
-            
 #endif
 
         }

@@ -3,11 +3,12 @@
 public class PassInput : AbilityInputWithBall
 {
 
-    private const int INPUT_NUMBER = 3;
-
-    public override bool FirstActivation()
+    protected override int INPUT_NUMBER
     {
-        return Input.GetKeyDown(UserSettings.GetKeyCode(INPUT_NUMBER));
+        get
+        {
+            return 3;
+        }
     }
 
     public override bool SecondActivation()
@@ -20,7 +21,7 @@ public class PassInput : AbilityInputWithBall
         return Input.GetMouseButtonDown(1);
     }
 
-    public override string GetKey()
+    public override string GetKeyForGUI()
     {
         return UserSettings.GetKeyForIcon(INPUT_NUMBER);
     }

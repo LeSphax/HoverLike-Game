@@ -41,6 +41,8 @@ public static class NetworkExtensions
                 typeIds.Add(9, typeof(InstantiationMessage));
                 typeIds.Add(10, typeof(Team));
                 typeIds.Add(11, typeof(MatchManager.State));
+                typeIds.Add(12, typeof(Vector2));
+                typeIds.Add(13, typeof(Color));
             }
             return typeIds;
         }
@@ -67,6 +69,7 @@ public static class NetworkExtensions
                 deserializers.Add(typeof(Team), TeamDeserializer);
                 deserializers.Add(typeof(MatchManager.State), MMStateDeserializer);
                 deserializers.Add(typeof(Vector2), Vector2Deserializer);
+                deserializers.Add(typeof(Color), ColorDeserializer);
 
             }
             return deserializers;
@@ -94,6 +97,7 @@ public static class NetworkExtensions
                 serializers.Add(typeof(Team), TeamSerializer);
                 serializers.Add(typeof(MatchManager.State), MMStateSerializer);
                 serializers.Add(typeof(Vector2), Vector2Serializer);
+                serializers.Add(typeof(Color), ColorSerializer);
             }
             return serializers;
         }
@@ -247,6 +251,19 @@ public static class NetworkExtensions
         return DeserializeVector2(data, ref currentIndex);
     }
 
+    public static object ColorDeserializer(byte[] data, ref int currentIndex)
+    {
+        float r = BitConverter.ToSingle(data, currentIndex);
+        currentIndex += 4;
+        float g = BitConverter.ToSingle(data, currentIndex);
+        currentIndex += 4;
+        float b = BitConverter.ToSingle(data, currentIndex);
+        currentIndex += 4;
+        float a = BitConverter.ToSingle(data, currentIndex);
+        currentIndex += 4;
+        return new Color(r,g,b,a);
+    }
+
 
     //This method assume that the array is the last item in the byte array
     private static object[] ObjectArrayDeserializer(byte[] data, int startIndex)
@@ -271,7 +288,7 @@ public static class NetworkExtensions
             }
             else
             {
-                Debug.LogError("This id has no type " + typeId);
+                Debug.LogError("This type isn't handled by the network " + typeId);
             }
         }
         return objects.ToArray();
@@ -379,7 +396,7 @@ public static class NetworkExtensions
             }
             else
             {
-                Debug.LogError("This type has no id " + t);
+                Debug.LogError("This type isn't handled by the network " + t);
             }
         }
         return data;
@@ -407,6 +424,15 @@ public static class NetworkExtensions
     {
         Vector2 v = (Vector2)parameter;
         return SerializeVector2(v);
+    }
+
+    public static byte[] ColorSerializer(object parameter)
+    {
+        Color c = (Color)parameter;
+        byte[] data = BitConverter.GetBytes(c.r);
+        data = data.Concatenate(BitConverter.GetBytes(c.g));
+        data = data.Concatenate(BitConverter.GetBytes(c.b));
+        return data.Concatenate(BitConverter.GetBytes(c.a));
     }
 
     public static byte[] ArraySerializer(object parameter)

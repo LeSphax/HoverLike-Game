@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public enum Team : byte
 {
@@ -20,6 +21,20 @@ public static class Teams
             default:
                 Debug.LogError("This team doesn't have a name " + team);
                 return "Blue";
+        }
+    }
+
+    internal static Team GetOtherTeam(Team team)
+    {
+        switch (team)
+        {
+            case Team.BLUE:
+                return Team.RED;
+            case Team.RED:
+                return Team.BLUE;
+            default:
+                Debug.LogError("This team doesn't have an opposite" + team);
+                return Team.NONE;
         }
     }
 }

@@ -22,6 +22,7 @@ public class Tags : MonoBehaviour
     public const string Mesh = "Mesh";
     public const string TeamColored = "TeamColored";
     public const string Abilities = "Abilities";
+    public const string MainCamera = "MainCamera";
 
     public const string LobbyManager = "LobbyManager";
     public const string NavigationManager = "NavigationManager";
@@ -31,6 +32,7 @@ public class Tags : MonoBehaviour
     public const string PopUp = "PopUp";
     public const string VictoryPose = "VictoryPose";
     public const string VictoryUI = "VictoryUI";
+    public static string GlobalSound = "GlobalSound";
 
     public static bool IsPlayer(string tag)
     {

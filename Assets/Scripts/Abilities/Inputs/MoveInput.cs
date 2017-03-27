@@ -17,4 +17,9 @@ public class MoveInput : AbilityInput
     {
         return true;
     }
+
+    public override bool HasErrorSound()
+    {
+        return false;
+    }
 }

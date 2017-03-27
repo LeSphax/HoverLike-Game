@@ -3,15 +3,15 @@
 public class DashInput : AbilityInput
 {
 
-    private const int INPUT_NUMBER = 0;
-
-
-    public override bool FirstActivation()
+    protected override int INPUT_NUMBER
     {
-        return Input.GetKeyDown(UserSettings.GetKeyCode(INPUT_NUMBER));
+        get
+        {
+            return 0;
+        }
     }
 
-    public override string GetKey()
+    public override string GetKeyForGUI()
     {
         return UserSettings.GetKeyForIcon(INPUT_NUMBER);
     }

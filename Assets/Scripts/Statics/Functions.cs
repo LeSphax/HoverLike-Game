@@ -63,5 +63,10 @@ class Functions
         return new string(Enumerable.Repeat(chars, length)
           .Select(s => s[random.Next(s.Length)]).ToArray());
     }
+
+    public static bool IsDevelopperComboPressed()
+    {
+        return Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift);
+    }
 }
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PopUp : MonoBehaviour
@@ -17,20 +18,20 @@ public class PopUp : MonoBehaviour
     private State __state;
     private State state
     {
+        get
+        {
+            return __state;
+        }
         set
         {
-            switch (value)
-            {
-                case State.CLOSED:
-                    popUp.SetActive(false);
-                    break;
-                case State.OPEN:
-                    popUp.SetActive(true);
-                    break;
-                default:
-                    break;
-            }
+            __state = value;
+            SetPopUpActivation(value);
         }
+    }
+
+    private void Awake()
+    {
+        SceneManager.sceneLoaded += ChangedScene;
     }
 
     public void Show(string text, Sprite image = null) {
@@ -50,4 +51,23 @@ public class PopUp : MonoBehaviour
         state = State.CLOSED;
     }
 
+    private void ChangedScene(Scene scene, LoadSceneMode mode)
+    {
+        SetPopUpActivation(state);
+    }
+
+    private void SetPopUpActivation(State state)
+    {
+        switch (state)
+        {
+            case State.CLOSED:
+                popUp.SetActive(false);
+                break;
+            case State.OPEN:
+                popUp.SetActive(true);
+                break;
+            default:
+                break;
+        }
+    }
 }

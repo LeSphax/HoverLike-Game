@@ -33,19 +33,22 @@ public class RoomManager : MonoBehaviour
             StartButton.SetActive(false);
         }
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages += CreateMyPlayerInfo;
+        topPanel.BackPressed += GoBack;
+
     }
 
     public void OnDisable()
     {
         if (MyComponents.NetworkManagement != null)
             MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreateMyPlayerInfo;
+        topPanel.BackPressed -= GoBack;
+
     }
 
     private void Start()
     {
         topPanel.Status = "In Game Room";
         topPanel.RoomName = MyComponents.NetworkManagement.RoomName;
-        topPanel.BackPressed += GoBack;
         if (EditorVariables.StartGameImmediately)
         {
             InvokeRepeating("CheckStartGame", 0f, 0.2f);
@@ -104,4 +107,5 @@ public class RoomManager : MonoBehaviour
     {
         instance = null;
     }
+
 }

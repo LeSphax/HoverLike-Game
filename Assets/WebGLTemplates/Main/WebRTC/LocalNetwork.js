@@ -21,16 +21,16 @@ var LocalNetwork = function() {
         }
         if (t == null) t = "" + this.mId;
         if (t in e.mServers) {
-            this.Enqueue(NetEventType.ServerInitFailed, ConnectionId.INVALID, t);
+            this.Enqueue(NetEventType.RoomCreateFailed, ConnectionId.INVALID, t);
             return
         }
         e.mServers[t] = this;
         this.mServerAddress = t;
-        this.Enqueue(NetEventType.ServerInitialized, ConnectionId.INVALID, t)
+        this.Enqueue(NetEventType.RoomCreated, ConnectionId.INVALID, t)
     };
     e.prototype.LeaveRoom = function() {
         if (this.IsServer) {
-            this.Enqueue(NetEventType.ServerClosed, ConnectionId.INVALID, this.mServerAddress);
+            this.Enqueue(NetEventType.RoomClosed, ConnectionId.INVALID, this.mServerAddress);
             delete e.mServers[this.mServerAddress];
             this.mServerAddress = null
         }

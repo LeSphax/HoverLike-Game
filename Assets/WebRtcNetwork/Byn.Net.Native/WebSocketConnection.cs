@@ -1,5 +1,6 @@
 ﻿using Byn.Common;
 using System;
+using UnityEngine;
 using WebSocketSharp;
 
 namespace Byn.Net.Native
@@ -55,10 +56,7 @@ namespace Byn.Net.Native
 
         private void OnWebsocketOnOpen(object sender, EventArgs evt)
         {
-            SLog.L("onWebsocketOnOpen", new string[]
-            {
-                ServerConnection.LOGTAG
-            });
+            Debug.Log("onWebsocketOnOpen");
             this.status = WebsocketConnectionStatus.Connected;
         }
 

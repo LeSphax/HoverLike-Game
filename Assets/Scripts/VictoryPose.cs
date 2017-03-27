@@ -3,7 +3,6 @@ using System.Collections;
 using PlayerManagement;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
-using UnityEngine.UI;
 
 public class VictoryPose : SlideBall.MonoBehaviour
 {
@@ -18,7 +17,6 @@ public class VictoryPose : SlideBall.MonoBehaviour
         victoryCamera.SetActive(false);
     }
 
-    [MyRPC]
     public void SetVictoryPose(Team team)
     {
         Debug.LogError("SetVictoryPose");
