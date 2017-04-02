@@ -80,19 +80,19 @@ var SignalingServerConnection = function () {
             this.mConnections.splice(t, 1)
         }
     };
-    e.prototype.HandleIncomingEvent = function (e) {
-        console.log(e.Type);
-        if (e.Type == NetEventType.NewConnection) {
-            this.TryRemoveConnecting(e.ConnectionId);
-            this.mConnections.push(e.ConnectionId.id)
-        } else if (e.Type == NetEventType.ConnectionFailed) {
-            this.TryRemoveConnecting(e.ConnectionId)
-        } else if (e.Type == NetEventType.Disconnected) {
-            this.TryRemoveConnection(e.ConnectionId)
-        } else if (e.Type == NetEventType.ConnectionToSignalingServerEstablished) {
+    e.prototype.HandleIncomingEvent = function (evt) {
+        console.log(evt.Type);
+        if (evt.Type == NetEventType.NewConnection) {
+            this.TryRemoveConnecting(evt.ConnectionId);
+            this.mConnections.push(evt.ConnectionId.id)
+        } else if (evt.Type == NetEventType.ConnectionFailed) {
+            this.TryRemoveConnecting(evt.ConnectionId)
+        } else if (evt.Type == NetEventType.Disconnected) {
+            this.TryRemoveConnection(evt.ConnectionId)
+        } else if (evt.Type == NetEventType.ConnectionToSignalingServerEstablished) {
             this.mServerStatus = WebsocketServerStatus.Online;
         }
-        this.EnqueueIncoming(e)
+        this.EnqueueIncoming(evt)
     };
     e.prototype.HandleOutgoingEvents = function () {
         while (this.mOutgoingQueue.length > 0) {
