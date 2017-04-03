@@ -24,7 +24,10 @@ public class DevelopperCommands : MonoBehaviour
                 else if (Input.GetKeyDown(KeyCode.M))
                     MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
                 else if (Input.GetKeyDown(KeyCode.B))
+                {
+                    Debug.Log("Call ManualScoreGoal");
                     MyComponents.MatchManager.View.RPC("ManualScoreGoal", RPCTargets.Server, 0);
+                }
                 else if (Input.GetKeyDown(KeyCode.R))
                     MyComponents.MatchManager.View.RPC("ManualScoreGoal", RPCTargets.Server, 1);
             if (Input.GetKeyDown(KeyCode.D))

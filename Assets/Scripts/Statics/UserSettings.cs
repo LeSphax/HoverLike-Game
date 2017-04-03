@@ -1,8 +1,6 @@
 ﻿using PlayerManagement;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 public class UserSettings
 {
@@ -45,6 +43,27 @@ public class UserSettings
             PlayerPrefs.Save();
             if (Players.MyPlayer != null)
                 Players.MyPlayer.Nickname = nickname;
+        }
+    }
+
+    private static bool volumeSet = false;
+    public static float Volume
+    {
+        get
+        {
+            if (!volumeSet)
+            {
+                volumeSet = true;
+                AudioListener.volume = PlayerPrefs.GetFloat("Volume", 1);
+            }
+
+            return AudioListener.volume;
+        }
+        set
+        {
+            AudioListener.volume = value;
+            PlayerPrefs.SetFloat("Volume", AudioListener.volume);
+            PlayerPrefs.Save();
         }
     }
 

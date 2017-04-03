@@ -59,7 +59,7 @@ public class RPCManager : SlideBall.MonoBehaviour
         RPC(targets, message);
     }
 
-    public void RPC(string methodName, RPCTargets targets, MessageFlags additionalFlags, params object[] parameters)
+    public void RPC(string methodName, MessageFlags additionalFlags, RPCTargets targets,  params object[] parameters)
     {
         NetworkMessage message = new NetworkMessage(View.ViewId, 0, targets, CreateRPCData(methodName, parameters));
         message.flags = message.flags | additionalFlags;
@@ -75,7 +75,6 @@ public class RPCManager : SlideBall.MonoBehaviour
             return idData;
         byte[] parametersData = SerializeParameters(parameters, idsToRPC[methodId].methodInfo);
         byte[] result = ArrayExtensions.Concatenate(idData, parametersData);
-
         return result;
     }
 

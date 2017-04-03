@@ -104,7 +104,7 @@ public class MyNetworkView : ANetworkView
         rpcManager.RPC(methodName, targets, parameters);
     }
 
-    public void RPC(string methodName, RPCTargets targets, MessageFlags additionalFlags, params object[] parameters)
+    public void RPC(string methodName, MessageFlags additionalFlags, RPCTargets targets,  params object[] parameters)
     {
         //Assert.IsFalse(targets.IsInvokedInPlace() && !MyComponents.NetworkManagement.isServer, methodName + "    " + targets);
         rpcManager.RPC(methodName, targets, additionalFlags, parameters);

@@ -114,12 +114,11 @@ public class MatchManager : SlideBall.MonoBehaviour
         Debug.Log("Last Chance");
         if (MyComponents.BallState.GetIdOfPlayerOwningBall() == BallState.NO_PLAYER_ID)
         {
-            matchCountdown.PlayMatchEndSound();
             EndMatch();
         }
         else
         {
-            matchCountdown.SetText(Language.Instance.texts["Last_Chance"]);
+            matchCountdown.StopTimerAndSetText(Language.Instance.texts["Last_Chance"]);
             lastChanceTeam = Players.players[MyComponents.BallState.GetIdOfPlayerOwningBall()].Team;
         }
     }
@@ -128,7 +127,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void SuddenDeath()
     {
         Debug.LogError("SuddenDeath");
-        matchCountdown.SetText(Language.Instance.texts["Sudden_Death"]);
+        matchCountdown.StopTimerAndSetText(Language.Instance.texts["Sudden_Death"]);
     }
 
 
@@ -136,20 +135,29 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void EndMatch()
     {
         Debug.LogError("EndMatch " + Scoreboard.GetWinningTeam());
+        //Don't play the gong sound at the same time as the "But" sound
+        
         Team winningTeam = Scoreboard.GetWinningTeam();
         if (winningTeam == Team.NONE)
         {
             View.RPC("SuddenDeath", RPCTargets.All);
             MyState = State.SUDDEN_DEATH;
-            Entry();
+            Invoke("Entry", END_POINT_DURATION);
         }
         else
         {
+            matchCountdown.PlayMatchEndSound();
             CancelInvoke("Entry");
             getReadyCountdown.View.RPC("StopTimer", RPCTargets.All);
             matchCountdown.View.RPC("StopTimer", RPCTargets.All);
-            View.RPC("SetVictoryPose", RPCTargets.All, winningTeam);
+            Invoke("SetVictoryPose", END_POINT_DURATION);
         }
+    }
+
+    private void SetVictoryPose()
+    {
+        Team winningTeam = Scoreboard.GetWinningTeam();
+        View.RPC("SetVictoryPose", RPCTargets.All, winningTeam);
     }
 
     [MyRPC]
@@ -304,7 +312,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 matchCountdown.PauseTimer(false);
                 if (lastChanceTeam != Team.NONE)
                 {
-                    if (newPlayer != BallState.NO_PLAYER_ID &&  Players.players[newPlayer].Team != lastChanceTeam)
+                    if (newPlayer != BallState.NO_PLAYER_ID && Players.players[newPlayer].Team != lastChanceTeam)
                     {
                         matchCountdown.PlayMatchEndSound();
                         Invoke("EndMatch", END_POINT_DURATION);

@@ -8,13 +8,21 @@ public class UserSettingsPanel : MonoBehaviour
     public Button[] buttons;
     public InputField nicknameField;
     public Text nicknamePlaceholder;
+    public Slider volumeSlider;
 
     private int? currentButton;
+
+    public static GameObject InstantiateSettingsPanel()
+    {
+        GameObject panel = Instantiate(ResourcesGetter.SettingsPanel());
+        return panel;
+    }
 
     // Use this for initialization
     void Start()
     {
         currentButton = null;
+        Reset();
     }
 
     // Update is called once per frame
@@ -38,6 +46,7 @@ public class UserSettingsPanel : MonoBehaviour
     {
         nicknamePlaceholder.text = Random_Name_Generator.GetRandomName();
         nicknameField.text = UserSettings.Nickname;
+        volumeSlider.value = UserSettings.Volume;
         for (int i = 0; i < buttons.Length; i++)
         {
             char key = UserSettings.GetKey(i);
@@ -107,6 +116,7 @@ public class UserSettingsPanel : MonoBehaviour
                 keys += text;
             }
             UserSettings.SetKeys(keys);
+            UserSettings.Volume = volumeSlider.value;
             Close();
         }
         else
@@ -133,14 +143,8 @@ public class UserSettingsPanel : MonoBehaviour
         Close();
     }
 
-    public void Open()
-    {
-        Reset();
-        gameObject.SetActive(true);
-    }
-
     public void Close()
     {
-        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 }

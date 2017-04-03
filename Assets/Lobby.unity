@@ -599,7 +599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   server: 1
   testURLParameters: 0
-  startGameImmediately: 0
+  startGameImmediately: 1
   editorIsServer: 1
   numberPlayersToStartGame: 2
   addLatency: 1
@@ -2478,6 +2478,48 @@ CanvasRenderer:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1100224175}
+--- !u!1001 &1160464487
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -32.98047
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 57.2666
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 77.70215
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092439267073164, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 94d9c9f386c464a4aa72ded19e168cfe, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1001 &1196552131
 Prefab:
   m_ObjectHideFlags: 0

@@ -28,6 +28,11 @@ Button_Close "Fermer"
 Button_Cancel "Annuler"
 Button_Leave "Quitter"
 Button_Ok "Ok"
+Button_Settings "Options"
+Button_Help "Aide"
+Button_Leave_Game "Quitter la partie"
+
+
 Exit_Dialog "Etes vous sûr de vouloir quitter?"
 Host_Disconnected "La partie a été stoppée car l'hôte s'est déconnecté"
 Room_Exists "Il existe déjà une salle avec ce nom, veuillez choisir un autre nom. %e%e Pourquoi pas "

@@ -92,7 +92,7 @@ var SignalingServerConnection = function () {
         } else if (evt.Type == NetEventType.ConnectionToSignalingServerEstablished) {
             this.mServerStatus = WebsocketServerStatus.Online;
         }
-        this.EnqueueIncoming(e)
+        this.EnqueueIncoming(evt)
     };
     e.prototype.HandleOutgoingEvents = function () {
         while (this.mOutgoingQueue.length > 0) {

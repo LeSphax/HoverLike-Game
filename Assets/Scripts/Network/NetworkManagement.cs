@@ -246,14 +246,32 @@ namespace SlideBall
                     case NetEventType.SignalingConnectionFailed:
                         {
                             Reset();
-                            MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n" + Language.Instance.texts["Feedback"]);
+                            //MyComponents.PopUp.Show(Language.Instance.texts["Failed_Connect"] + "\n" + Language.Instance.texts["Feedback"]);
                             Debug.LogError("Signaling connection failed " + evt.RawData);
                         }
                         break;
                     case NetEventType.RoomCreationFailed:
                         {
-                            Reset();
-                            MyComponents.PopUp.Show(Language.Instance.texts["Room_Creation_Failed"]);
+                            string rawData = (string)evt.RawData;
+
+                            if (rawData == NetEventMessage.ROOM_ALREADY_EXISTS)
+                            {
+                                if (ServerStartFailed != null)
+                                {
+                                    Reset();
+                                    Setup();
+                                    ServerStartFailed.Invoke();
+                                }
+                                else
+                                {
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + Random_Name_Generator.GetRandomName() + "?");
+                                }
+                            }
+                            else
+                            {
+                                Reset();
+                                MyComponents.PopUp.Show(Language.Instance.texts["Room_Creation_Failed"]);
+                            }
                             Debug.LogError("Room creation failed " + evt.RawData);
                         }
                         break;
@@ -307,26 +325,11 @@ namespace SlideBall
                         if (evt.RawData != null)
                         {
                             string rawData = (string)evt.RawData;
-                            if (rawData == NetEventMessage.ROOM_ALREADY_EXISTS)
+
+                            string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
+                            if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
                             {
-                                if (ServerStartFailed != null)
-                                {
-                                    Reset();
-                                    Setup();
-                                    ServerStartFailed.Invoke();
-                                }
-                                else
-                                {
-                                    MyComponents.PopUp.Show(Language.Instance.texts["Room_Exists"] + Random_Name_Generator.GetRandomName() + "?");
-                                }
-                            }
-                            else
-                            {
-                                string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
-                                if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
-                                {
-                                    MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
-                                }
+                                MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
                             }
                         }
                         break;

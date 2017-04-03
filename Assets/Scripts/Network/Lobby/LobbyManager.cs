@@ -65,6 +65,7 @@ public class LobbyManager : MonoBehaviour
     {
         MyState = State.IDLE;
         topPanel.RoomName = "";
+        AudioListener.volume = UserSettings.Volume;
     }
 
     private void Start()

@@ -136,6 +136,7 @@ public static class NetworkExtensions
 
     public static object IntDeserializer(byte[] data, ref int currentIndex)
     {
+        Debug.Log(data.Length + "    " + currentIndex);
         int result = BitConverter.ToInt32(data, currentIndex);
         currentIndex += 4;
         return result;

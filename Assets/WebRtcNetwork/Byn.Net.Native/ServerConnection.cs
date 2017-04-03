@@ -58,7 +58,6 @@ namespace Byn.Net.Native
             while (Dequeue(out evt))
             {
                 Debug.Log(evt);
-                Debug.Log(evt.Type + "    " + evt.RawData);
                 peerNetwork.IncomingSignalingEvent(evt);
                 if (evt.Type == NetEventType.RoomCreated || evt.Type == NetEventType.SignalingConnectionFailed || evt.Type == NetEventType.RoomCreationFailed || evt.Type == NetEventType.RoomJoinFailed || evt.Type == NetEventType.RoomClosed || evt.Type == NetEventType.UserCommand)
                 {

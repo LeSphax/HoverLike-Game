@@ -19,12 +19,14 @@ public class EffectsManager : SlideBall.MonoBehaviour
     public void ThrowBall()
     {
         controller.animator.SetTrigger("Throw");
+        PlayClipAtPoint(ResourcesGetter.PassSound(), controller.transform.position, 0.5f);
     }
 
     [MyRPC]
     public void ShowSmoke()
     {
         BlueSmoke.Play();
+        PlayClipAtPoint(ResourcesGetter.BoostSound(), controller.transform.position, 0.2f);
     }
 
     [MyRPC]
@@ -42,6 +44,15 @@ public class EffectsManager : SlideBall.MonoBehaviour
     {
         if (activate != Braking.enabled)
             Braking.enabled = activate;
+    }
+
+    void PlayClipAtPoint(AudioClip clip, Vector3 point, float volume)
+    {
+        GameObject source = Instantiate(ResourcesGetter.TempAudioSource);
+        source.transform.position = point;
+        source.GetComponent<AudioSource>().clip = clip;
+        source.GetComponent<AudioSource>().volume = volume;
+        source.GetComponent<AudioSource>().Play();
     }
 
 }

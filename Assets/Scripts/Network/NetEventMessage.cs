@@ -21,6 +21,7 @@ public class NetEventMessage
                 codesMeaning.Add("6", "Asked to connect to a different server");
                 codesMeaning.Add("7", "Incoming");
                 codesMeaning.Add("8", "Outgoing");
+                codesMeaning.Add("9", "Asked to connect to a different server");
             }
             return codesMeaning;
         }

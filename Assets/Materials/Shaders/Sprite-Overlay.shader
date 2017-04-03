@@ -3,7 +3,6 @@
 	Properties
 	{
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
-	_Color("Color", Color) = (1,1,1,1)
 		[MaterialToggle] PixelSnap("Pixel snap", Float) = 0
 	}
 
@@ -54,7 +53,7 @@
 		v2f OUT;
 		OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
 		OUT.texcoord = IN.texcoord;
-		OUT.color = IN.color * _Color;
+		OUT.color = IN.color;
 #ifdef PIXELSNAP_ON
 		OUT.vertex = UnityPixelSnap(OUT.vertex);
 #endif
@@ -65,13 +64,13 @@
 	sampler2D _MainTex;
 	sampler2D _AlphaTex;
 
-	fixed4 SampleSpriteTexture(float2 uv)
+	float SampleSpriteTexture(float2 uv)
 	{
-		fixed4 color = tex2D(_MainTex, uv);
+		float color = tex2D(_MainTex, uv).a;
 
 #if ETC1_EXTERNAL_ALPHA
 		// get the color from an external texture (usecase: Alpha support for ETC1 on android)
-		color.a = tex2D(_AlphaTex, uv).r;
+		color = tex2D(_AlphaTex, uv).r;
 #endif //ETC1_EXTERNAL_ALPHA
 
 		return color;
@@ -80,7 +79,7 @@
 	fixed4 frag(v2f IN) : SV_Target
 	{
 		fixed4 c = SampleSpriteTexture(IN.texcoord) * IN.color;
-	c.rgb *= c.a;
+		//c.rgb *= c.a;
 	return c;
 	}
 		ENDCG

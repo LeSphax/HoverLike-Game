@@ -9,14 +9,10 @@ public class TopPanel : MonoBehaviour {
 
     public event EmptyEventHandler BackPressed;
 
-    public UserSettingsPanel settingsPanel;
-
     private void Awake()
     {
         if (UserSettings.Nickname == "")
-            settingsPanel.Open();
-        else
-            settingsPanel.Close();
+            OpenSettings();
     }
 
     public string Status
@@ -48,8 +44,10 @@ public class TopPanel : MonoBehaviour {
         BackPressed.Invoke();
     }
 
-    public void SettingsButton()
+    public void OpenSettings()
     {
-        settingsPanel.Open();
+        UserSettingsPanel.InstantiateSettingsPanel().transform.SetParent(transform.parent, false);
     }
+
+
 }

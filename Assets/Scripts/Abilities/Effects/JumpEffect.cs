@@ -31,14 +31,12 @@ namespace AbilitiesManagement
 
         public override void StopEffect()
         {
-            Debug.Log("Stop Jump " + time);
             manager.controller.GetComponent<Rigidbody>().useGravity = true;
             manager.EffectsManager.ShockwaveOnPlayer(true);
         }
 
         protected override void Apply(float dt)
         {
-            Debug.Log("Apply " + time);
             float jumpHeightProportion = jumpCurve.Evaluate(time / duration);
             float currentHeight = lowestPoint * (1 - jumpHeightProportion) + highestPoint * jumpHeightProportion;
             manager.controller.transform.position = new Vector3(
