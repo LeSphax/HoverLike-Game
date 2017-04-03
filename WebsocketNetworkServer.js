@@ -37,10 +37,15 @@ var PeerPool = (function () {
         return this.mAddressSharing;
     };
     PeerPool.prototype.add = function (socket) {
-        this.mConnections.push(new SignalingPeer(this, socket));
+        var peer = new SignalingPeer(this, socket)
+        this.mConnections.push(peer);
+        peer.sendToClient(new inet.NetworkEvent(inet.NetEventType.ConnectionToSignalingServerEstablished, inet.ConnectionId.INVALID, null));
     };
     PeerPool.prototype.getServerConnection = function (address) {
         return this.mServers[address];
+    };
+    PeerPool.prototype.getServerConnection = function (connectionId) {
+        return this.mConnections[address];
     };
     PeerPool.prototype.isAddressAvailable = function (address) {
         if (address.length <= this.maxAddressLength&& (this.mServers[address] == null || this.mAddressSharing)) {
@@ -58,9 +63,7 @@ var PeerPool = (function () {
                 console.log("Keys " + Object.keys(this.mServers[key][0].mConnections));
                 console.log("Peer " + this.mServers[key][0]);
                 for (var key in this.mServers[key][0].mConnections) {
-                    if (driversCounter.hasOwnProperty(key)) {
                         console.log("KEY "+ key);
-                    }
                 }
                 rooms += key + "|" + Object.keys(this.mServers[key][0].mConnections).length + "@";
             }
@@ -123,6 +126,7 @@ var SignalingPeer = (function () {
         var _this = this;
         this.mState = SignalingConnectionState.Uninitialized;
         this.mConnections = {};
+        this.mWaitingForConnection = {};
         this.mNextIncomingConnectionId = new inet.ConnectionId(16384);
         this.mConnectionPool = pool;
         this.mSocket = socket;
@@ -208,7 +212,7 @@ var SignalingPeer = (function () {
         if (evt.Type == inet.NetEventType.NewConnection) {
             console.log("NewConnection "+evt.Info);
 
-            this.connect(address, evt.ConnectionId);
+            this.tryToConnect(address, evt.ConnectionId);
 
         }
         else if (evt.Type == inet.NetEventType.ConnectionFailed) {
@@ -237,12 +241,22 @@ var SignalingPeer = (function () {
             var splittedInfo = evt.Info.split('@');
             if (evt.Info == "GetRooms"){
                 console.log("GetRooms "+ evt.ConnectionId);
-                this.sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, newConnectionId, this.mConnectionPool.getRooms()));
+                this.sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, inet.ConnectionId.INVALID, this.mConnectionPool.getRooms()));
             }
-            else if (splittedInfo[0] == "BlockRoom"){
-                var roomName = splittedInfo[1];
-                console.log("BlockRoom "+ roomName);
-                this.mConnectionPool.blockedRooms.push(roomName);
+            else if (splittedInfo[0] == inet.NetEventMessage.AskIfAllowedToEnter) {
+                var peerConnectionId = parseInt(splittedInfo[1]);
+                if (splittedInfo[2] == inet.NetEventMessage.GameStarted) {
+                    console.log("ConnectionFailed GameStarted " + peerConnectionId);
+                    this.mWaitingForConnection[peerConnectionId].sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.GameStarted));
+                }
+                else if (splittedInfo[2] == inet.NetEventMessage.RoomFull) {
+                    console.log("ConnectionFailed RoomFull");
+                    this.mWaitingForConnection[peerConnectionId].sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.RoomFull));
+                }
+                else if (splittedInfo[2] == inet.NetEventMessage.AllowedToEnter) {
+                    console.log("Successfully connected " + peerConnectionId);
+                    this.mWaitingForConnection[peerConnectionId].connect(this,peerConnectionId);
+                }
             }
         }
     };
@@ -250,14 +264,6 @@ var SignalingPeer = (function () {
         console.log("Incoming " + id + "   " + peer);
         this.mConnections[id.id] = peer;
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.NewConnection, id, inet.NetEventMessage.Incoming));
-        console.log(Object.keys(this.mConnections).length);
-        console.log("Keys " + Object.keys(this.mConnections));
-        for (var key in this.mConnections) {
-            console.log("KEY1 " + key);
-            if (this.mConnections.hasOwnProperty(key)) {
-                console.log("KEY2 " + key);
-            }
-        }
     };
     SignalingPeer.prototype.internalAddOutgoingPeer = function (peer, id) {
         console.log("Outgoing");
@@ -265,6 +271,7 @@ var SignalingPeer = (function () {
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.NewConnection, id, inet.NetEventMessage.Outgoing));
     };
     SignalingPeer.prototype.internalRemovePeer = function (id) {
+        console.log("Remove Peer " + id.id);
         delete this.mConnections[id.id];
         this.sendToClient(new inet.NetworkEvent(inet.NetEventType.Disconnected, id, null));
     };
@@ -280,28 +287,29 @@ var SignalingPeer = (function () {
         this.mNextIncomingConnectionId = new inet.ConnectionId(this.mNextIncomingConnectionId.id + 1);
         return result;
     };
-    SignalingPeer.prototype.connect = function (address, connectionId) {
+    SignalingPeer.prototype.tryToConnect = function (address, connectionId) {
         var serverConnections = this.mConnectionPool.getServerConnection(address);
         if (serverConnections == null){
             console.log("ConnectionFailed Room");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.RoomDoesntExist));
-            console.log(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.RoomDoesntExist));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.RoomDoesntExist));
         }
         else if (serverConnections.length != 1){
             console.log("ConnectionFailed Not1");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.ServerConnectionNot1));
-        }
-        else if (this.mConnectionPool.blockedRooms.indexOf(address) != -1){
-            console.log("ConnectionFailed Blocked");
-            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, connectionId, inet.NetEventMessage.RoomBlocked));
+            this.sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.ServerConnectionNot1));
         }
         else {
             var newConnectionId = serverConnections[0].nextConnectionId();
-            console.log("Connect" +newConnectionId);
-            serverConnections[0].internalAddIncomingPeer(this, newConnectionId);
-            this.internalAddOutgoingPeer(serverConnections[0], newConnectionId);
+            serverConnections[0].mWaitingForConnection[newConnectionId];
+            serverConnections[0].sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, newConnectionId, inet.NetEventMessage.AskIfAllowedToEnter));
         }
     };
+
+    SignalingPeer.prototype.connect = function (serverPeer, connectionId) {
+        console.log("Connect" + connectionId);
+        serverPeer.internalAddIncomingPeer(this, connectionId);
+        this.internalAddOutgoingPeer(serverPeer, connectionId);
+    };
+
     SignalingPeer.prototype.connectJoin = function (address) {
         var serverConnections = this.mConnectionPool.getServerConnection(address);
         if (serverConnections != null) {

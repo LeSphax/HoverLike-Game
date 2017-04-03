@@ -11,6 +11,7 @@ var NetEventType;
     NetEventType[NetEventType["NewConnection"] = 7] = "NewConnection";
     NetEventType[NetEventType["ConnectionFailed"] = 8] = "ConnectionFailed";
     NetEventType[NetEventType["Disconnected"] = 9] = "Disconnected";
+    NetEventType[NetEventType["ConnectionToSignalingServerEstablished"] = 10] = "ConnectionToSignalingServerEstablished";
     NetEventType[NetEventType["FatalError"] = 100] = "FatalError";
     NetEventType[NetEventType["Warning"] = 101] = "Warning";
     NetEventType[NetEventType["Log"] = 102] = "Log";
@@ -24,11 +25,15 @@ var NetEventMessage;
     NetEventMessage[NetEventMessage["WebsocketClosed"] = "1"] = "WebsocketClosed";
     NetEventMessage[NetEventMessage["HostDisconnected"] = "2"] = "HostDisconnected";
     NetEventMessage[NetEventMessage["RoomAlreadyExists"] = "3"] = "RoomAlreadyExists";
-    NetEventMessage[NetEventMessage["RoomBlocked"] = "4"] = "RoomBlocked";
-    NetEventMessage[NetEventMessage["ServerConnectionNot1"] = "5"] = "ServerConnectionNot1";
-    NetEventMessage[NetEventMessage["OtherConnection"] = "6"] = "OtherConnection";
-    NetEventMessage[NetEventMessage["Incoming"] = "7"] = "Incoming";
-    NetEventMessage[NetEventMessage["Outgoing"] = "8"] = "Outgoing";
+    NetEventMessage[NetEventMessage["GameStarted"] = "4"] = "GameStarted";
+    NetEventMessage[NetEventMessage["RoomFull"] = "5"] = "RoomFull";
+    NetEventMessage[NetEventMessage["ServerConnectionNot1"] = "6"] = "ServerConnectionNot1";
+    NetEventMessage[NetEventMessage["OtherConnection"] = "7"] = "OtherConnection";
+    NetEventMessage[NetEventMessage["Incoming"] = "8"] = "Incoming";
+    NetEventMessage[NetEventMessage["Outgoing"] = "9"] = "Outgoing";
+    NetEventMessage[NetEventMessage["AskIfAllowedToEnter"] = "10"] = "AskIfAllowedToEnter";
+    NetEventMessage[NetEventMessage["AllowedToEnter"] = "11"] = "AllowedToEnter";
+
 
 })(NetEventMessage || (NetEventMessage = {}));
 exports.NetEventMessage = NetEventMessage;
