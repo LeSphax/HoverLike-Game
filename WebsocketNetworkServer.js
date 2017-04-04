@@ -44,9 +44,6 @@ var PeerPool = (function () {
     PeerPool.prototype.getServerConnection = function (address) {
         return this.mServers[address];
     };
-    PeerPool.prototype.getServerConnection = function (connectionId) {
-        return this.mConnections[address];
-    };
     PeerPool.prototype.isAddressAvailable = function (address) {
         if (address.length <= this.maxAddressLength&& (this.mServers[address] == null || this.mAddressSharing)) {
             return true;
@@ -210,10 +207,9 @@ var SignalingPeer = (function () {
         var address = evt.Info;
         var newConnectionId = evt.ConnectionId;
         if (evt.Type == inet.NetEventType.NewConnection) {
-            console.log("NewConnection "+evt.Info);
+            console.log("NewConnection "+ address);
 
             this.tryToConnect(address, evt.ConnectionId);
-
         }
         else if (evt.Type == inet.NetEventType.ConnectionFailed) {
         }
@@ -239,6 +235,8 @@ var SignalingPeer = (function () {
         }
         else if (evt.Type == inet.NetEventType.UserCommand){
             var splittedInfo = evt.Info.split('@');
+            console.log("UserCommand " + splittedInfo[0]);
+
             if (evt.Info == "GetRooms"){
                 console.log("GetRooms "+ evt.ConnectionId);
                 this.sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, inet.ConnectionId.INVALID, this.mConnectionPool.getRooms()));
@@ -255,7 +253,7 @@ var SignalingPeer = (function () {
                 }
                 else if (splittedInfo[2] == inet.NetEventMessage.AllowedToEnter) {
                     console.log("Successfully connected " + peerConnectionId);
-                    this.mWaitingForConnection[peerConnectionId].connect(this,peerConnectionId);
+                    this.mWaitingForConnection[peerConnectionId].connect(this, new inet.ConnectionId(peerConnectionId));
                 }
             }
         }
@@ -299,13 +297,14 @@ var SignalingPeer = (function () {
         }
         else {
             var newConnectionId = serverConnections[0].nextConnectionId();
-            serverConnections[0].mWaitingForConnection[newConnectionId];
+            serverConnections[0].mWaitingForConnection[newConnectionId.id] = this;
+            console.log("AskPermission for id " + newConnectionId.id );
+
             serverConnections[0].sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, newConnectionId, inet.NetEventMessage.AskIfAllowedToEnter));
         }
     };
 
     SignalingPeer.prototype.connect = function (serverPeer, connectionId) {
-        console.log("Connect" + connectionId);
         serverPeer.internalAddIncomingPeer(this, connectionId);
         this.internalAddOutgoingPeer(serverPeer, connectionId);
     };
