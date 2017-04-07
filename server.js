@@ -2,10 +2,11 @@ var express = require('express');
 var fs = require('fs');
 var app = express();
 
+var port = process.env.PORT || 3000;
+
 app.get('/', function(req, res){
-    console.log(req.query.user);
-  console.log(req.query.message);
   writeLogLine(req.query.user, req.query.message)
+  res.send('')
 });
 
 function writeLogLine(file,line){
@@ -14,9 +15,9 @@ function writeLogLine(file,line){
 	        return console.log(err);
 	    }
 
-	    console.log("The file was saved!");
+	    console.log(line);
 	}); 
 }
 
-app.listen(3000);
-  console.log("Listening on port 3000");
+app.listen(port);
+  console.log("Listening on port " + port);
