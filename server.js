@@ -3,7 +3,6 @@ var fs = require('fs');
 var app = express();
 
 app.get('/', function(req, res){
-  res.send('id: ' + req.query.message);
     console.log(req.query.user);
   console.log(req.query.message);
   writeLogLine(req.query.user, req.query.message)
@@ -20,3 +19,4 @@ function writeLogLine(file,line){
 }
 
 app.listen(3000);
+  console.log("Listening on port 3000");
