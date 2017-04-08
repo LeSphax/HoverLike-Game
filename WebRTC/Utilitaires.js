@@ -1,4 +1,47 @@
-var __extends = this && this.__extends || function(e, t) {
+function sendToLogServer(text) {
+    fetch("https://sb-logger.herokuapp.com/log", {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({ user: "JSON", message: text })
+    }).then(function () { /* handle response */ });
+}
+
+window.onload = function () {
+    var console = (function (oldCons) {
+        return {
+            log: function (text) {
+                oldCons.log(text);
+                sendToLogServer(text);
+            },
+            info: function (text) {
+                oldCons.info(text);
+                sendToLogServer(text);
+
+            },
+            debug: function (text) {
+                oldCons.debug(text);
+                sendToLogServer(text);
+
+            },
+            warn: function (text) {
+                oldCons.warn(text);
+                sendToLogServer(text);
+
+            },
+            error: function (text) {
+                oldCons.error(text);
+                sendToLogServer(text);
+
+            }
+        };
+    }(window.console));
+
+    //Then redefine the old console
+    window.console = console;
+}
+var __extends = this && this.__extends || function (e, t) {
     for (var n in t)
         if (t.hasOwnProperty(n)) e[n] = t[n];
     function i() {

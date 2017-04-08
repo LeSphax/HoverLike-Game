@@ -17,7 +17,8 @@ var PeerNetwork = function() {
         configurable: true
     });
     e.prototype.IncomingSignalingEvent = function (event) {
-        console.log("IncomingSignalingEvent " + event);
+        if (evt.Type != NetEventType.Log)
+            console.log("IncomingSignalingEvent " + event);
         if (event.Type == NetEventType.NewConnection) {
             var t = this.peerSignalingManager.GetSignalingPeer(event.ConnectionId);
             if (t) {
@@ -63,7 +64,7 @@ var PeerNetwork = function() {
     e.prototype.Shutdown = function() {
         for (var e = 0, t = this.mConnectionIds; e < t.length; e++) {
             var n = t[e];
-            this.DisconnecFromtPeer(n)
+            this.DisconnectFromPeer(n)
         }
     };
 
