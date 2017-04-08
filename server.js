@@ -12,7 +12,9 @@ var port = process.env.PORT || 3000;
 app.post('/log', function (req, res) {
     var user = req.body.user,
         message = req.body.message;
-    writeLogLine(user, message)
+    console.log(req.headers['x-forwarded-for'] + ": " + message);
+
+    writeLogLine(req.headers['x-forwarded-for'], message)
     res.send('')
     // ...
 });
@@ -28,7 +30,7 @@ function writeLogLine(file,line){
 	        return console.log(err);
 	    }
 
-	    console.log(line);
+	    console.log(file + ": " + line);
 	}); 
 }
 
