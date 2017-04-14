@@ -14,7 +14,6 @@ public class PlayerInfo : PlayerView
     [SerializeField]
     private Text latency;
 
-    private int updateLatency = 0;
 
     private Team CurrentTeam
     {
@@ -51,13 +50,8 @@ public class PlayerInfo : PlayerView
         if (id == playerConnectionId)
         {
             Latency = latency;
-            updateLatency++;
-            if (updateLatency == 10)
-            {
-                updateLatency = 0;
-                //We could avoid sending it to the owner of the view
-                View.RPC("RPCSetLatency", RPCTargets.Others, MessageFlags.SceneDependant, latency);
-            }
+            //We could avoid sending it to the owner of the view
+            View.RPC("RPCSetLatency", MessageFlags.SceneDependant, RPCTargets.Others, latency);
         }
     }
 

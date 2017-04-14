@@ -13,6 +13,7 @@ namespace Byn.Net
         ConnectionFailed,
         Disconnected,
         ConnectionToSignalingServerEstablished = 10,
+        Allowed_To_Enter,
         FatalError = 100,
         Warning,
         Log,

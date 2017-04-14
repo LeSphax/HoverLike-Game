@@ -66,8 +66,6 @@ public class RoomManager : MonoBehaviour
 
     public void StartGame()
     {
-        MyComponents.NetworkManagement.BlockRoom();
-        //Debug.LogWarning("There could be a problem if a player connects before the block room message reaches the signaling server");
         MyComponents.GameInitialization.StartGame();
     }
 

@@ -28,11 +28,10 @@ var SignalingServerConnection = function () {
         this.CheckSleep();
         var event;
         while ((event = this.Dequeue()) != null) {
-            console.log("new event " + event);
+           // console.log("new event " + event);
             this.peerNetwork.IncomingSignalingEvent(event);
             if (event.Type == NetEventType.RoomCreated || event.Type == NetEventType.RoomJoinFailed || event.Type == NetEventType.RoomCreateFailed || event.Type == NetEventType.RoomClosed || event.Type == NetEventType.UserCommand) {
-                console.log("Enqueue event in signaling " + event);
-                this.signalingEvents.Enqueue(new NetworkEvent(event.Type, ConnectionId.INVALID, event.RawData));
+                this.signalingEvents.Enqueue(new NetworkEvent(event.Type, event.ConnectionId, event.RawData));
             }
         }
     };
@@ -81,7 +80,6 @@ var SignalingServerConnection = function () {
         }
     };
     e.prototype.HandleIncomingEvent = function (evt) {
-        console.log(evt.Type);
         if (evt.Type == NetEventType.NewConnection) {
             this.TryRemoveConnecting(evt.ConnectionId);
             this.mConnections.push(evt.ConnectionId.id)
@@ -174,7 +172,7 @@ e.prototype.LeaveRoom = function () {
 };
 
 e.prototype.ConnectToRoom = function (e) {
-    console.log("ConnectToRoom");
+    console.log("ConnectToRoom " + e);
     this.socketConnection.EnsureServerConnection();
     var t = this.NextConnectionId();
     this.mConnecting.push(t.id);

@@ -78,6 +78,7 @@ namespace Byn.Net.Native
             PeerConnectionInterface.IceServer server = new PeerConnectionInterface.IceServer();
             for (int i = 0; i < urls.Length; i++)
             {
+                Debug.Log(urls[i]);
                 server.urls.Add(urls[i]);
             }
             config.servers.Add(server);

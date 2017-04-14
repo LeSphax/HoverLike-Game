@@ -59,14 +59,10 @@ namespace SlideBall
             }
         }
 
+        public bool CurrentlyPlaying = false;
+
         [HideInInspector]
         public string RoomName = null;
-
-        /// <summary>
-        /// Mozilla stun server. Used to get trough the firewall and establish direct connections.
-        /// Replace this with your own production server as well. 
-        /// </summary>
-        public string uStunServer = "stun:stun.l.google.com:19302";
 
         /// <summary>
         /// The network interface.
@@ -134,7 +130,7 @@ namespace SlideBall
         private void Setup()
         {
             Debug.LogWarning("Setup Network");
-            mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(EditorVariables.ServerURL, new string[] { uStunServer });
+            mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(EditorVariables.ServerURL);
             if (mNetwork != null)
             {
                 if (EditorVariables.AddLatency)
@@ -161,12 +157,6 @@ namespace SlideBall
         public void GetRooms()
         {
             SendUserCommand(GET_ROOMS_COMMAND);
-        }
-
-        public void BlockRoom()
-        {
-            Assert.IsTrue(isServer);
-            SendUserCommand(BLOCK_ROOMS_COMMAND, RoomName);
         }
 
         public void Reset()
@@ -285,9 +275,13 @@ namespace SlideBall
                             {
                                 MyComponents.PopUp.Show(Language.Instance.texts["Doesnt_Exist"]);
                             }
-                            else if (rawdata == NetEventMessage.ROOM_BLOCKED)
+                            else if (rawdata == NetEventMessage.GAME_STARTED)
                             {
-                                MyComponents.PopUp.Show(Language.Instance.texts["Room_Blocked"]);
+                                MyComponents.PopUp.Show(Language.Instance.texts["Game_Started"]);
+                            }
+                            else if (rawdata == NetEventMessage.ROOM_FULL)
+                            {
+                                MyComponents.PopUp.Show(Language.Instance.texts["Room_Full"]);
                             }
                             else if (rawdata == NetEventMessage.SERVER_CONNECTION_NOT_1)
                             {
@@ -295,6 +289,8 @@ namespace SlideBall
                             }
                             MyComponents.LobbyManager.RefreshServers();
                         }
+                        if (ConnectionFailed != null)
+                            ConnectionFailed.Invoke();
                         break;
                     //server shut down. reaction to "Shutdown" call or
                     //StopServer or the connection broke down
@@ -322,14 +318,29 @@ namespace SlideBall
                         }
                         break;
                     case NetEventType.UserCommand:
+
                         if (evt.RawData != null)
                         {
                             string rawData = (string)evt.RawData;
+                            Debug.LogWarning("Receive User Command " + rawData);
 
-                            string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
-                            if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                            if (rawData == NetEventMessage.ASK_IF_ALLOWED_TO_ENTER)
                             {
-                                MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
+                                if (Players.players.Count > 7)
+                                    SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.ROOM_FULL);
+                                else if (CurrentlyPlaying)
+                                    SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.GAME_STARTED);
+                                else
+                                    SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.ALLOWED_TO_ENTER);
+
+                            }
+                            else
+                            {
+                                string[] rooms = rawData.Split(ROOM_SEPARATOR_CHAR);
+                                if (rooms[0] == GET_ROOMS_COMMAND || rawData == GET_ROOMS_COMMAND)
+                                {
+                                    MyComponents.LobbyManager.UpdateRoomList(RoomData.GetRoomData(rooms));
+                                }
                             }
                         }
                         break;
@@ -372,7 +383,7 @@ namespace SlideBall
                         break;
                     case NetEventType.ConnectionFailed:
                         {
-                            Debug.LogError("Connection failed " + stateCurrent + "    " + (string)evt.RawData);
+                            Debug.LogError("Connection to peer failed " + stateCurrent + "    " + (string)evt.RawData);
                             //MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
                             if (ConnectionFailed != null)
                                 ConnectionFailed.Invoke();
@@ -520,6 +531,21 @@ namespace SlideBall
                 mNetwork.SendPeerEvent(id, data, 0, data.Length, reliable);
             if (!mConnections.Contains(id))
                 Debug.LogError("This isn't a valid connectionId " + id + "    " + mConnections.Count + "   " + mConnections.PrintContent());
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                Debug.Log("Tests for " + gameObject.name);
+                var sp = System.Diagnostics.Stopwatch.StartNew();
+                for (int i = 0; i < 1000; i++)
+                {
+                    SendToNetwork(new byte[30], mConnections[0], false);
+                }
+                sp.Stop();
+                Debug.Log("Time Send To Network " + sp.ElapsedMilliseconds);
+            }
         }
 
         public void ConnectToRoom(string roomName)

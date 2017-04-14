@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Byn.Net.Native
 {
@@ -68,6 +69,8 @@ namespace Byn.Net.Native
 
         internal void IncomingSignalingEvent(NetworkEvent evt)
         {
+            if (evt.Type != NetEventType.Log)
+                Debug.LogWarning("Incoming Signaling Event " + evt.Type);
             if (evt.Type == NetEventType.NewConnection)
             {
                 WebRtcDataPeer connection;
@@ -215,7 +218,7 @@ namespace Byn.Net.Native
 
         internal ConnectionId AddOutgoingConnection(ConnectionId signalingConId)
         {
-            SLog.L("new outgoing connection", new string[0]);
+            Debug.Log("new outgoing connection " + signalingConId);
             SignalingInfo info = new SignalingInfo(signalingConId, false, DateTime.Now);
             WebRtcDataPeer peer = this.CreatePeer(this.NextConnectionId(), this.mIceServers, this.mFactory);
             peer.SignalingInfo = info;
@@ -225,7 +228,7 @@ namespace Byn.Net.Native
 
         internal ConnectionId AddIncomingConnection(ConnectionId signalingConId)
         {
-            SLog.L("new incoming connection", new string[0]);
+            Debug.Log("new incoming connection " + signalingConId);
             SignalingInfo info = new SignalingInfo(signalingConId, true, DateTime.Now);
             WebRtcDataPeer peer = CreatePeer(this.NextConnectionId(), this.mIceServers, this.mFactory);
             peer.SignalingInfo = info;

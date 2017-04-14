@@ -29,8 +29,6 @@ public class ChatView : MonoBehaviour
         SetText();
 
         scrollRect = GetComponent<ScrollRect>();
-        
-        
     }
 
     private void OnEnable()

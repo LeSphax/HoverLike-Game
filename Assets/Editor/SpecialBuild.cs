@@ -164,12 +164,22 @@ public class SpecialBuild
     }
 
 
-    private static void ChangeScene(string sceneName)
+    private static void ChangeScene(string sceneName, bool tried = false)
     {
         if (SceneManager.GetActiveScene().name != sceneName)
         {
-            EditorSceneManager.SaveOpenScenes();// SaveScene();// SaveCurrentModifiedScenesIfUserWantsTo();
-            EditorSceneManager.OpenScene(sceneName);
+            try
+            {
+                EditorSceneManager.SaveOpenScenes();// SaveScene();// SaveCurrentModifiedScenesIfUserWantsTo();
+                EditorSceneManager.OpenScene(sceneName);
+            }
+            catch(InvalidOperationException)
+            {
+                if (!tried)
+                {
+                    ChangeScene(sceneName, true);
+                }
+            }
         }
     }
 }

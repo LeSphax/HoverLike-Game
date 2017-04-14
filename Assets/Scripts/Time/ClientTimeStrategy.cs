@@ -55,6 +55,7 @@ public class ClientTimeStrategy : TimeStrategy
     {
         return networkTime + Time.realtimeSinceStartup - lastNetworkUpdate;
     }
+
 }
 
 public struct ClientTimePacket

@@ -57,7 +57,7 @@ namespace Byn.Net.Native
             NetworkEvent evt;
             while (Dequeue(out evt))
             {
-                Debug.Log(evt);
+                //Debug.Log(evt);
                 peerNetwork.IncomingSignalingEvent(evt);
                 if (evt.Type == NetEventType.RoomCreated || evt.Type == NetEventType.SignalingConnectionFailed || evt.Type == NetEventType.RoomCreationFailed || evt.Type == NetEventType.RoomJoinFailed || evt.Type == NetEventType.RoomClosed || evt.Type == NetEventType.UserCommand)
                 {
@@ -332,7 +332,7 @@ namespace Byn.Net.Native
             this.mConnecting.Add(newConId);
             NetworkEvent evt = new NetworkEvent(NetEventType.NewConnection, newConId, address);
             this.EnqueueOutgoing(evt);
-            peerNetwork.AddOutgoingConnection(evt.ConnectionId);
+            //peerNetwork.AddOutgoingConnection(evt.ConnectionId);
 
             return newConId;
         }

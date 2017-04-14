@@ -22,6 +22,8 @@ public class MyNetworkView : ANetworkView
     //There are observedComponents that need updating
     public bool update = true;
 
+    private static bool init = false;
+
     protected void Awake()
     {
         rpcManager = gameObject.AddComponent<RPCManager>();
@@ -38,11 +40,22 @@ public class MyNetworkView : ANetworkView
         {
             observedComponents[i].StartUpdating();
         }
+        if (!init)
+        {
+            init = true;
+            //LateFixedUpdate.evt += MyLateFixedUpdate;
+        }
     }
 
     public bool TryGetRPCName(short methodId, out string name)
     {
         return rpcManager.TryGetRPCName(methodId, out name);
+    }
+
+    private void Update()
+    {
+        foreach (ObservedComponent component in observedComponents)
+            component.PreparePacket();
     }
 
     void FixedUpdate()
@@ -59,6 +72,16 @@ public class MyNetworkView : ANetworkView
                     component.SimulationUpdate();
                 }
             }
+    }
+
+    private void LateUpdate()
+    {
+        ObservedComponent.SendBatch();
+    }
+
+    static void MyLateFixedUpdate()
+    {
+        ObservedComponent.SendBatch();
     }
 
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
@@ -104,9 +127,9 @@ public class MyNetworkView : ANetworkView
         rpcManager.RPC(methodName, targets, parameters);
     }
 
-    public void RPC(string methodName, MessageFlags additionalFlags, RPCTargets targets,  params object[] parameters)
+    public void RPC(string methodName, MessageFlags additionalFlags, RPCTargets targets, params object[] parameters)
     {
         //Assert.IsFalse(targets.IsInvokedInPlace() && !MyComponents.NetworkManagement.isServer, methodName + "    " + targets);
-        rpcManager.RPC(methodName, targets, additionalFlags, parameters);
+        rpcManager.RPC(methodName, additionalFlags, targets, parameters);
     }
 }

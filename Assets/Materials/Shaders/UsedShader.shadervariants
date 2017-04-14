@@ -13,6 +13,8 @@ ShaderVariantCollection:
         variants:
         - keywords: 
           passType: 0
+        - keywords: UNITY_UI_ALPHACLIP
+          passType: 0
     data:
       first: {fileID: 66, guid: 0000000000000000f000000000000000, type: 0}
       second:
@@ -31,9 +33,13 @@ ShaderVariantCollection:
           passType: 4
         - keywords: DIRECTIONAL _EMISSION _NORMALMAP
           passType: 4
-        - keywords: DIRECTIONAL _NORMALMAP
+        - keywords: DIRECTIONAL _EMISSION _GLOSSYREFLECTIONS_OFF _NORMALMAP _SPECULARHIGHLIGHTS_OFF
+          passType: 4
+        - keywords: POINT
           passType: 5
         - keywords: POINT _NORMALMAP
+          passType: 5
+        - keywords: POINT _NORMALMAP _SPECULARHIGHLIGHTS_OFF
           passType: 5
         - keywords: SHADOWS_DEPTH
           passType: 8
@@ -82,18 +88,6 @@ ShaderVariantCollection:
         - keywords: 
           passType: 0
     data:
-      first: {fileID: 9002, guid: 0000000000000000f000000000000000, type: 0}
-      second:
-        variants:
-        - keywords: 
-          passType: 0
-    data:
-      first: {fileID: 9003, guid: 0000000000000000f000000000000000, type: 0}
-      second:
-        variants:
-        - keywords: 
-          passType: 0
-    data:
       first: {fileID: 10720, guid: 0000000000000000f000000000000000, type: 0}
       second:
         variants:
@@ -112,18 +106,6 @@ ShaderVariantCollection:
         - keywords: 
           passType: 0
     data:
-      first: {fileID: 4800000, guid: c7e45cea273234c4ba74499b7f36ace0, type: 3}
-      second:
-        variants:
-        - keywords: DIRECTIONAL DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF LIGHTMAP_OFF
-          passType: 4
-        - keywords: DIRECTIONAL DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF LIGHTMAP_OFF
-          passType: 5
-        - keywords: DIRLIGHTMAP_OFF DYNAMICLIGHTMAP_OFF LIGHTMAP_OFF POINT
-          passType: 5
-        - keywords: SHADOWS_DEPTH
-          passType: 8
-    data:
       first: {fileID: 4800000, guid: 5412e908c39e0744d9e19aebdbc1ef7d, type: 3}
       second:
         variants:
@@ -137,6 +119,10 @@ ShaderVariantCollection:
         variants:
         - keywords: DIRECTIONAL
           passType: 4
+        - keywords: POINT
+          passType: 5
+        - keywords: SHADOWS_DEPTH
+          passType: 8
     data:
       first: {fileID: 4800000, guid: be1c2af9665106e4f872196ae7d7ea9d, type: 3}
       second:
@@ -151,7 +137,7 @@ ShaderVariantCollection:
       first: {fileID: 4800000, guid: 21df5326bee9cfc469ef92bbc043c91c, type: 3}
       second:
         variants:
-        - keywords: 
+        - keywords: PIXELSNAP_ON
           passType: 0
     data:
       first: {fileID: 4800000, guid: f6ae87e1501b419428612d78248fd0b2, type: 3}

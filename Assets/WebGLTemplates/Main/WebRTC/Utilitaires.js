@@ -1,4 +1,4 @@
-var __extends = this && this.__extends || function(e, t) {
+var __extends = this && this.__extends || function (e, t) {
     for (var n in t)
         if (t.hasOwnProperty(n)) e[n] = t[n];
     function i() {

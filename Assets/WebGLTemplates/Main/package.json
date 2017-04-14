@@ -1,0 +1,11 @@
+{
+  "name": "Logger",
+  "version": "0.96.0",
+  "description": "A websocket signaling server for use with WebRTC Network and Video Chat assets for Unity.",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.3",
+    "body-parser": "^1.17.1",
+      "socket.io": "^1.7.3"
+  }
+}

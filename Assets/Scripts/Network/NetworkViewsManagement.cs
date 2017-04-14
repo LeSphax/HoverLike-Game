@@ -156,7 +156,18 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     internal void DistributeMessage(ConnectionId connectionId, NetworkMessage message)
     {
-        if (networkViews.ContainsKey(message.viewId) && (Scenes.IsCurrentScene(message.sceneId) || !message.isSceneDependant()))
+        if (message.type == MessageType.PacketBatch)
+        {
+            //Debug.Log("Packet nb : "+ BitConverter.ToInt16(message.data,0));
+            int currentIndex = 2;
+            while (currentIndex < message.data.Length)
+            {
+                int dataLength = BitConverter.ToInt16(message.data, currentIndex);
+                currentIndex += 2;
+                DistributeMessage(connectionId,NetworkMessage.Deserialize(message.data, ref currentIndex, dataLength));
+            }
+        }
+        else if (networkViews.ContainsKey(message.viewId) && (Scenes.IsCurrentScene(message.sceneId) || !message.isSceneDependant()))
         {
             if (message.traceMessage)
                 Debug.LogError("Message Sent to view " + message);

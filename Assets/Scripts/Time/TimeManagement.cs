@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using SlideBall.Networking;
+using UnityEngine;
 
 public delegate void LatencyChange(float newLatency);
 public delegate void SpecificLatencyChange(ConnectionId id, float newLatency);
@@ -69,6 +70,11 @@ public class TimeManagement : ObservedComponent
         return strategy.CreatePacket();
     }
 
+    public override bool ShouldBatchPackets()
+    {
+        return false;
+    }
+
     protected override bool IsSendingPackets()
     {
         return strategy.IsSendingPackets();
@@ -106,12 +112,20 @@ public class TimeManagement : ObservedComponent
 
     internal void Reset()
     {
-        MyComponents.NetworkManagement.ConnectedToRoom -= CreateClientStrategy;
-        MyComponents.NetworkManagement.RoomCreated -= CreateServerStrategy;
         latencyListeners = new Dictionary<ConnectionId, LatencyChange>();
         strategy = new NotConnectedTimeStrategy(this);
+    }
+
+    private void OnEnable()
+    {
         MyComponents.NetworkManagement.ConnectedToRoom += CreateClientStrategy;
         MyComponents.NetworkManagement.RoomCreated += CreateServerStrategy;
+    }
+
+    private void OnDisable()
+    {
+        MyComponents.NetworkManagement.ConnectedToRoom -= CreateClientStrategy;
+        MyComponents.NetworkManagement.RoomCreated -= CreateServerStrategy;
     }
 
     private void CreateServerStrategy()

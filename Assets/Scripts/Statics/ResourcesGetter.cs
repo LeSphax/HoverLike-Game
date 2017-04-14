@@ -6,14 +6,34 @@ public class ResourcesGetter
     private const string AUDIO_FOLDER = "Audio/";
     private const string PREFABS_FOLDER = "Prefabs/";
 
-    public static Material PlayerMaterial()
+    private static Material[] helmetMaterials;
+    public static Material[] HelmetMaterials
     {
-        return Resources.Load<Material>(MATERIALS_FOLDER + "Player");
+        get
+        {
+            if (helmetMaterials == null)
+            {
+                helmetMaterials = new Material[2];
+                helmetMaterials[0] = Resources.Load<Material>(MATERIALS_FOLDER + "BlueHelmet");
+                helmetMaterials[1] = Resources.Load<Material>(MATERIALS_FOLDER + "RedHelmet");
+            }
+            return helmetMaterials;
+        }
     }
 
-    public static Material OutLineMaterial()
+    private static Material[] skateMaterials;
+    public static Material[] SkateMaterials
     {
-        return Resources.Load<Material>(MATERIALS_FOLDER + "Outline");
+        get
+        {
+            if (skateMaterials == null)
+            {
+                skateMaterials = new Material[2];
+                skateMaterials[0] = Resources.Load<Material>(MATERIALS_FOLDER + "BlueSkate");
+                skateMaterials[1] = Resources.Load<Material>(MATERIALS_FOLDER + "RedSkate");
+            }
+            return skateMaterials;
+        }
     }
 
     internal static GameObject SettingsPanel()

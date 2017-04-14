@@ -100,7 +100,12 @@ public class PlayerMovementManager : ObservedComponent
 
     protected override byte[] CreatePacket(long sendId)
     {
-        return new PlayerPacket(transform.position, transform.rotation,TimeManagement.NetworkTimeInSeconds).Serialize();
+        return new PlayerPacket(transform.position, transform.rotation, TimeManagement.NetworkTimeInSeconds).Serialize();
+    }
+
+    public override bool ShouldBatchPackets()
+    {
+        return true;
     }
 
     public override void SimulationUpdate()

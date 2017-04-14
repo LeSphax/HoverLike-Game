@@ -34,10 +34,12 @@ public class UserSettings
             {
                 nickname = PlayerPrefs.GetString("Nickname", "");
             }
+            Debug.Log("Nickname is " + nickname);
             return nickname;
         }
         set
         {
+            Debug.Log("Nickname set to " + nickname);
             nickname = value;
             PlayerPrefs.SetString("Nickname", nickname);
             PlayerPrefs.Save();

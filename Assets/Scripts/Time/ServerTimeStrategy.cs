@@ -49,6 +49,11 @@ public class ServerTimeStrategy : TimeStrategy
     {
         return false;
     }
+
+    internal void Dispose()
+    {
+
+    }
 }
 
 [Serializable]

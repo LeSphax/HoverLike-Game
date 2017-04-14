@@ -23,6 +23,7 @@ var AWebRtcPeer = function() {
         return this.mState
     };
     e.prototype.SetupPeer = function(e) {
+    	console.log(url);
         var t = this;
         var n = {
             iceServers: [{
@@ -30,9 +31,10 @@ var AWebRtcPeer = function() {
             }]
         };
         n.iceServers = new Array;
-        for (var i = 0; i < e.length; i++) {
+        for (var i = 0; i < 1; i++) {
+            console.log(url);
             var o = {
-                urls: e[0]
+                urls: url//e[0]
             };
             n.iceServers.push(o)
         }

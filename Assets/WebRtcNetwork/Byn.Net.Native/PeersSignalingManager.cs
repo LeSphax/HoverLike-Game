@@ -50,6 +50,7 @@ namespace Byn.Net.Native
                 }
                 else if (v.Value.State == AWebRtcPeer.PeerState.SignalingFailed || timeAlive > this.mTimeout)
                 {
+                    Debug.LogError("Signaling failed after " + timeAlive);
                     failed.Add(v.Key);
                 }
             }
@@ -77,6 +78,7 @@ namespace Byn.Net.Native
 
         internal void SignalingFailed(ConnectionId signalingConId)
         {
+            Debug.LogError("Signaling failed, couldn't connect to the other peer");
             WebRtcDataPeer peer;
             if (this.signalingPeers.TryGetValue(signalingConId, out peer))
             {

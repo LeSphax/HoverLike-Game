@@ -30,6 +30,7 @@ namespace Navigation
         internal static void LoadScene(string scene, bool fading, bool waitToShowNextLevel)
         {
             Debug.Log("LoadScene");
+            MyComponents.NetworkManagement.CurrentlyPlaying = scene == Scenes.Main;
             previousSceneIndex = Scenes.currentSceneId;
             loader.StartLoading(scene, fading, waitToShowNextLevel);
         }
@@ -38,7 +39,7 @@ namespace Navigation
         {
             if (FinishedLoadingScene != null)
             {
-                FinishedLoadingScene.Invoke(previousSceneIndex,Scenes.currentSceneId);
+                FinishedLoadingScene.Invoke(previousSceneIndex, Scenes.currentSceneId);
             }
             if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
                 MyComponents.NetworkViewsManagement.ResetViews();

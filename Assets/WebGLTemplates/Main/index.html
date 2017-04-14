@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>SlideBall</title>
+    <title>%UNITY_WEB_NAME%</title>
     <link rel="stylesheet" href="TemplateData/style.css">
     <link rel="shortcut icon" href="TemplateData/favicon.ico" />
     <link href="webpage/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -50,19 +50,14 @@
 </head>
 <body class="template" style="background-color:#363636;">
 
-    <div id="unity-player" style="display: inline">
-        <div class="template-wrap clear">
-            <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" height="%UNITY_HEIGHT%px" width="%UNITY_WIDTH%px"></canvas>
-        </div>
-        <div class="unity_progress">
-            <b class="progress__bar">
-                <span class="progress__text">
-                    Progress: <em>0%</em>
-                </span>
-            </b>
-        </div>
-        %UNITY_WEBGL_LOADER_GLUE%
-    </div>
+<script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script>
+      var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
+    </script>
+  </head>
+  <body>
+    <div id="gameContainer" style="width: 100%; height: 100%; margin: auto"></div>
+  </body>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="webpage/bootstrap/js/bootstrap.min.js"></script>
@@ -79,5 +74,74 @@
     <script src="WebRTC/WebRtcNetwork.js"></script>
     <script src="WebRTC/WebRTC.js"></script>
 
-</body>
-</html>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+
+    <script>
+        var socket = io();
+        if (socket){
+
+            function sendToLogServer(text) {
+                socket.emit('log', text);
+            }
+
+            window.onload = function () {
+                var console = (function (oldCons) {
+                    return {
+                        log: function (text) {
+                            oldCons.log(text);
+                            sendToLogServer("[LOG] "+text);
+                        },
+                        info: function (text) {
+                            oldCons.info(text);
+                            sendToLogServer("[INFO] " + text);
+
+                        },
+                        debug: function (text) {
+                            oldCons.debug(text);
+                            sendToLogServer("[DEBUG] " + text);
+
+                        },
+                        warn: function (text) {
+                            oldCons.warn(text);
+                            sendToLogServer("[WARN] " + text);
+
+                        },
+                        error: function (text) {
+                            oldCons.error(text);
+                            sendToLogServer("[ERROR] " + text);
+
+                        }
+                    };
+                }(window.console));
+
+                    //Then redefine the old console
+                    window.console = console;
+                }
+            }
+        </script>
+
+        <script type="text/javascript">
+            var url= "" ;
+            $(document).ready(function() {
+                $.get("https://service.xirsys.com/ice",
+                {
+                    ident: "sphax",
+                    secret: "634cbe32-1ceb-11e7-9a28-fe052f7eaf1f",
+                    domain: "slideball",
+                    application: "default",
+                    room: "default",
+                    secure: 1
+                },
+                function(data, status) {
+                    var result = "Data: " + data +  + "\n\nStatus: " + status;
+                    data.d.iceServers.forEach(function (element){
+                        console.log(element.url + "    " + element.username + "    " + element.credential);
+                    });
+                    console.log(result);
+                    url = data.d.iceServers[0].url;
+                });
+            });
+        </script>
+
+    </body>
+    </html>

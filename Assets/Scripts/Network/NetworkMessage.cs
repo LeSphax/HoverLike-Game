@@ -143,6 +143,7 @@ namespace SlideBall.Networking
                 case MessageType.Synchronisation:
                     return true;
                 case MessageType.ViewPacket:
+                case MessageType.PacketBatch:
                     return false;
                 default:
                     throw new UnhandledSwitchCaseException(type);
@@ -159,6 +160,7 @@ namespace SlideBall.Networking
                 case MessageType.ViewPacket:
                 case MessageType.Properties:
                 case MessageType.Synchronisation:
+                case MessageType.PacketBatch:
                     return false;
                 default:
                     throw new UnhandledSwitchCaseException(type);
@@ -175,6 +177,7 @@ namespace SlideBall.Networking
                 case MessageType.RPC:
                 case MessageType.ViewPacket:
                 case MessageType.Properties:
+                case MessageType.PacketBatch:
                     return false;
                 case MessageType.Synchronisation:
                     return true;
@@ -191,6 +194,7 @@ namespace SlideBall.Networking
                 case MessageType.ViewPacket:
                 case MessageType.Properties:
                 case MessageType.Synchronisation:
+                case MessageType.PacketBatch:
                     return false;
                 default:
                     throw new UnhandledSwitchCaseException(type);
@@ -209,6 +213,11 @@ namespace SlideBall.Networking
         public static NetworkMessage Deserialize(byte[] data)
         {
             int currentIndex = 0;
+            return Deserialize(data, ref currentIndex, data.Length - 7);
+        }
+
+        public static NetworkMessage Deserialize(byte[] data, ref int currentIndex, int dataLength)
+        {
             int id = BitConverter.ToInt32(data, currentIndex);
             currentIndex += 4;
             bool traceMessage = BitConverter.ToBoolean(data, currentIndex);
@@ -217,7 +226,10 @@ namespace SlideBall.Networking
             currentIndex++;
             MessageFlags flags = (MessageFlags)data[currentIndex];
             currentIndex++;
-            byte[] content = data.SubArray(currentIndex);
+            //Debug.Log(dataLength + "   " + currentIndex + "     " + data.Length);
+            byte[] content = data.SubArray(currentIndex,dataLength);
+            currentIndex += content.Length;
+            Assert.AreEqual(dataLength, content.Length);
             return new NetworkMessage(id, traceMessage, type, flags, content);
         }
 
@@ -245,6 +257,7 @@ namespace SlideBall.Networking
         Properties,
         RPC,
         Synchronisation,
+        PacketBatch,
     }
 
     [Flags]

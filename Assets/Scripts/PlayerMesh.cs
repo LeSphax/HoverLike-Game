@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PlayerMesh : MonoBehaviour
 {
@@ -9,30 +8,30 @@ public class PlayerMesh : MonoBehaviour
     public GameObject skate;
     public GameObject body;
 
-    public Material blueTeamHelmet;
-    public Material redTeamHelmet;
+    private Material[] helmetMaterials
+    {
+        get
+        {
+            return ResourcesGetter.HelmetMaterials;
+        }
+    }
+    private Material[] skateMaterials
+    {
+        get
+        {
+            return ResourcesGetter.SkateMaterials;
+        }
+    }
 
     public GameObject ownerIndicator;
 
     public void SetTeam(Team team)
     {
-        switch (team)
-        {
-            case Team.BLUE:
-                helmet.GetComponent<Renderer>().material = blueTeamHelmet;
-                break;
-            case Team.RED:
-                helmet.GetComponent<Renderer>().material = redTeamHelmet;
-                break;
-            default:
-                Debug.LogError("This team hasn't an associated color " + team);
-                return;
-        }
+        Debug.Log(helmetMaterials);
+        Debug.Log(ResourcesGetter.HelmetMaterials);
+        helmet.GetComponent<Renderer>().material = helmetMaterials[(int)team];
         if (skate != null)
-            foreach (Renderer renderer in skate.GetComponentsInChildren<Renderer>())
-            {
-                renderer.material.color = Colors.Teams[(int)team];
-            }
+            skate.GetComponent<Renderer>().material = skateMaterials[(int)team];
     }
 
     public void SetOwner(bool isOwner)

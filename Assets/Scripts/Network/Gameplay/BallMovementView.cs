@@ -94,6 +94,11 @@ class BallMovementView : ObservedComponent
         return new BallPacket(transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
     }
 
+    public override bool ShouldBatchPackets()
+    {
+        return true;
+    }
+
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
         BallPacket newPacket = BallPacket.Deserialize(data);

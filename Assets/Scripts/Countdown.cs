@@ -29,8 +29,6 @@ public class Countdown : SlideBall.MonoBehaviour
         set
         {
             timeLeft = value;
-            Debug.Log("Set Timeleft " + value + "   " + ShownNumber);
-
             if (ShownNumber < 0)
             {
                 text.text = "";
