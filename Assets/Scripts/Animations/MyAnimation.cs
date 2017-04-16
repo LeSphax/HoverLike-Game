@@ -11,7 +11,6 @@ namespace CustomAnimations
         {
             get
             {
-                Debug.Log(state);
                 return state == State.COMPLETED;
             }
         }

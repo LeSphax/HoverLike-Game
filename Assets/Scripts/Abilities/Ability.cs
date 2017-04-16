@@ -55,7 +55,7 @@ public class Ability : MonoBehaviour
 #if UNITY_EDITOR
         if (trace)
         {
-            Debug.LogWarning(state);
+                Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
 #endif
         switch (state)

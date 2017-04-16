@@ -116,24 +116,11 @@ public class PlayerController : PlayerView
 
     private void SetMaterials(GameObject mesh)
     {
-        //if (Player.IsMyPlayer)
-        //{
-        //    foreach (Transform t in mesh.transform)
-        //    {
-        //        Renderer r = t.GetComponent<Renderer>();
-        //        if (r != null && t.name == "Body")
-        //        {
-        //           // r.material.SetColor("_OutlineColor", Color.white);
-        //            r.material = ResourcesGetter.OutLineMaterial();
-        //        }
-        //    }
-        //}
         Assert.IsNotNull(PlayerMesh);
         Assert.IsNotNull(Player);
         PlayerMesh.SetOwner(Player.IsMyPlayer);
         Color teamColor = Colors.Teams[(int)Player.Team];
         PlayerMesh.SetTeam(Player.Team);
-        //foreach (Renderer renderer in GetComponentsInChildren<Renderer>()) { if (renderer.tag == Tags.TeamColored) renderer.material.color = teamColor; }
         billboard.Color = teamColor;
     }
 

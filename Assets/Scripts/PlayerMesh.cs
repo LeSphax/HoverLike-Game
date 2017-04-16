@@ -27,8 +27,6 @@ public class PlayerMesh : MonoBehaviour
 
     public void SetTeam(Team team)
     {
-        Debug.Log(helmetMaterials);
-        Debug.Log(ResourcesGetter.HelmetMaterials);
         helmet.GetComponent<Renderer>().material = helmetMaterials[(int)team];
         if (skate != null)
             skate.GetComponent<Renderer>().material = skateMaterials[(int)team];

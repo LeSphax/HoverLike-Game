@@ -11,13 +11,11 @@ public class DestroyAfterTimeout : MonoBehaviour
     {
         if (m_animation != null)
         {
-            Debug.Log("Destruction in " + (timeout - m_animation.duration));
             Invoke("StartDestruction", timeout - m_animation.duration);
 
         }
         else
         {
-            Debug.Log("Destroy in " + (timeout));
             Invoke("Destroy", timeout);
         }
     }
@@ -25,7 +23,6 @@ public class DestroyAfterTimeout : MonoBehaviour
     void StartDestruction()
     {
         m_animation.FinishedAnimating += Destroy;
-        Debug.Log(m_animation.IsCompleted);
         if (m_animation.IsCompleted)
             m_animation.StartReverseAnimating();
         else

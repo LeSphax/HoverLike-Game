@@ -56,11 +56,6 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
         if (currentVelocity.magnitude != 0)
         {
             myRigidbody.velocity -= BRAKE_AMOUNT * Time.fixedDeltaTime * Vector3.Normalize(currentVelocity);
-            //if (Vector3.Normalize(currentVelocity) != Vector3.Normalize(myRigidbody.velocity))
-            //{
-            //    myRigidbody.velocity = Vector3.zero;
-            //    targetPosition = null;
-            //}
         }
     }
 
