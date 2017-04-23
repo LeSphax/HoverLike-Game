@@ -7,16 +7,6 @@ using UnityEngine.UI;
 public class AbilitiesFactory : MonoBehaviour
 {
 
-    private GameObject prefabAbility;
-    private GameObject PrefabAbility
-    {
-        get
-        {
-            if (prefabAbility == null)
-                prefabAbility = Resources.Load<GameObject>(Paths.ABILITIES + "Ability");
-            return prefabAbility;
-        }
-    }
     private List<GameObject> abilityGOs = new List<GameObject>();
 
     public void RecreateAbilities()
@@ -28,7 +18,7 @@ public class AbilitiesFactory : MonoBehaviour
         abilityGOs.Clear();
         foreach (string ability in Players.MyPlayer.MyAvatarSettings.abilities)
         {
-            GameObject layout = Instantiate(PrefabAbility);
+            GameObject layout = Instantiate(ResourcesGetter.AbilityPrefab);
             layout.transform.SetParent(transform, false);
             abilityGOs.Add(layout);
             layout.name = ability;

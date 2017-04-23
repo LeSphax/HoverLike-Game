@@ -9,6 +9,7 @@ public static class SlideBallInputs
     {
         ABILITY,
         CHAT,
+        MENU,
     }
 
     public const string RETURN = "Return";

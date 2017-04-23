@@ -57,6 +57,8 @@ namespace Byn.Net
         private static extern void UnityWebRtcNetworkDisconnectFromPeer(int lIndex, int lConnectionId);
         [DllImport("__Internal")]
         private static extern void UnityWebRtcNetworkSendPeerData(int lIndex, int lConnectionId, byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength, bool lReliable);
+        [DllImport("__Internal")]
+        private static extern void Empty(int lIndex, int lConnectionId, byte[] lUint8ArrayDataPtr, int lUint8ArrayDataOffset, int lUint8ArrayDataLength, bool lReliable);
 
         [DllImport("__Internal")]
         private static extern void UnityWebRtcNetworkSendSignalingData(int lIndex, int lConnectionId, int lTypeInt, string lContent);
@@ -367,10 +369,8 @@ namespace Byn.Net
         /// <param name="reliable">True to use the ordered, reliable transfer, false for unordered and unreliable</param>
         public void SendSignalingEvent(ConnectionId conId, string content, NetEventType type)
         {
-
             UnityWebRtcNetworkSendSignalingData(mReference, conId.id, (int)type,content);
         }
-
         /// <summary>
         /// Sends a byte array
         /// </summary>
@@ -382,6 +382,24 @@ namespace Byn.Net
         public void SendPeerEvent(ConnectionId conId, byte[] data, int offset, int length, bool reliable)
         {
             UnityWebRtcNetworkSendPeerData(mReference, conId.id, data, offset, length, reliable);
+            //if (first)
+            //{
+            //    first = false;
+            //    var sp = System.Diagnostics.Stopwatch.StartNew();
+            //    for (int i =0; i<1000; i++)
+            //    {
+            //        UnityWebRtcNetworkSendPeerData(mReference, conId.id, data, offset, length, reliable);
+            //    }
+            //    sp.Stop();
+            //    Debug.Log("Send Data BrowserWebRTC " + sp.ElapsedMilliseconds);
+            //    sp = System.Diagnostics.Stopwatch.StartNew();
+            //    for (int i = 0; i < 1000; i++)
+            //    {
+            //        Empty(mReference, conId.id, data, offset, length, reliable);
+            //    }
+            //    sp.Stop();
+            //    Debug.Log("Send Empty BrowserWebRTC " + sp.ElapsedMilliseconds);
+            //}
         }
 
         /// <summary>

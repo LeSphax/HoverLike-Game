@@ -12,7 +12,7 @@ namespace PlayerBallControl
         private PowerBar powerBar;
         private bool tryingToCatchBall = true;
 
-        private List<ConnectionId> idsPlayerInContact = new List<ConnectionId>();
+        private List<ConnectionId> idsPlayerInContact;
 
         private ShootInput shootInput;
 
@@ -52,6 +52,11 @@ namespace PlayerBallControl
         private void StartGame()
         {
             Physics.IgnoreCollision(GetComponent<Collider>(), Ball.GetComponent<Collider>(), true);
+        }
+
+        public void Reset()
+        {
+            idsPlayerInContact = new List<ConnectionId>();
         }
 
         private void TryStealing()

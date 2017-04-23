@@ -21,7 +21,7 @@ public class Scoreboard : SlideBall.MonoBehaviour
             if (myAudio == null)
             {
                 myAudio = GetComponent<AudioSource>();
-                AudioClip but = Resources.Load<AudioClip>("Audio/But");
+                AudioClip but = ResourcesGetter.ButSound;
                 myAudio.clip = but;
             }
             return myAudio;

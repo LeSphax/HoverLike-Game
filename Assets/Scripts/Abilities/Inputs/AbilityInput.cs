@@ -86,8 +86,7 @@ public abstract class AbilityInput : MonoBehaviour
         //If the ability has an icon, add a small GUI rectangle with the letter corresponding to the key.
         if (HasIcon())
         {
-            GameObject keyToUsePrefab = Resources.Load<GameObject>(Paths.KEY_TO_USE);
-            GameObject keyToUse = Instantiate(keyToUsePrefab);
+            GameObject keyToUse = Instantiate(ResourcesGetter.KeyToUsePrefab);
             keyToUse.transform.SetParent(transform, false);
             keyToUse.GetComponentInChildren<Text>().text = GetKeyForGUI();
         }

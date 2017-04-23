@@ -12,8 +12,7 @@ public class ShadowSimulator : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        shadowPrefab = Resources.Load<GameObject>(Paths.SHADOW_PREFAB);
-        shadow = Instantiate<GameObject>(shadowPrefab);
+        shadow = Instantiate(ResourcesGetter.ShadowPrefab);
         shadow.transform.localScale *= size;
         GameObject ground = GameObject.FindGameObjectWithTag(Tags.Ground);
         groundLevel = ground.transform.position.y + ground.transform.localScale.y / 2 + 0.1f;

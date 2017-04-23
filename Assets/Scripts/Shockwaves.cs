@@ -31,11 +31,11 @@ public class Shockwaves : MonoBehaviour
         m_audio = GetComponent<AudioSource>();
         if (Landing)
         {
-            m_audio.clip = Resources.Load<AudioClip>("Audio/Landing");
+            m_audio.clip = ResourcesGetter.LandingSound;
         }
         else
         {
-            m_audio.clip = Resources.Load<AudioClip>("Audio/Jumping");
+            m_audio.clip = ResourcesGetter.JumpingSound;
         }
         m_audio.Play();
     }

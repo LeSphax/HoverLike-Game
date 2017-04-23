@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(ScrollRect))]
+[RequireComponent(typeof(AudioSource))]
 public class ChatView : MonoBehaviour
 {
 
@@ -15,9 +16,11 @@ public class ChatView : MonoBehaviour
     private StringBuilder builder;
 
     private float oldVerticalPosition;
+    private AudioSource audioSource;
 
     void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
         text.text = "";
         builder = new StringBuilder("");
         //Add enough characters to fill the content size fitter
@@ -60,6 +63,7 @@ public class ChatView : MonoBehaviour
         oldVerticalPosition = scrollRect.verticalNormalizedPosition;
         builder.Append(message);
         SetText();
+        audioSource.Play();
     }
 
     private void SetText()

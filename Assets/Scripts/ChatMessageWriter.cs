@@ -17,23 +17,26 @@ public class ChatMessageWriter : MonoBehaviour
 
     private void Update()
     {
-        if (SlideBallInputs.AnyShiftDown())
-            SendToAllActivated.Invoke();
-        if (SlideBallInputs.AnyShiftUp())
-            SendToTeamActivated.Invoke();
-        if (SlideBallInputs.AnyEnterDown())
+        if (SlideBallInputs.currentPart != SlideBallInputs.GUIPart.MENU)
         {
-            if (input.gameObject.activeSelf)
-                SendContent(input.text, SlideBallInputs.AnyShift());
-            if (hideWhenNotActive)
+            if (SlideBallInputs.AnyShiftDown())
+                SendToAllActivated.Invoke();
+            if (SlideBallInputs.AnyShiftUp())
+                SendToTeamActivated.Invoke();
+            if (SlideBallInputs.AnyEnterDown())
             {
-                ActivateInput(!input.gameObject.activeSelf);
+                if (input.gameObject.activeSelf)
+                    SendContent(input.text, SlideBallInputs.AnyShift());
+                if (hideWhenNotActive)
+                {
+                    ActivateInput(!input.gameObject.activeSelf);
+                }
             }
-        }
-        if (input.gameObject.activeSelf)
-        {
-            input.Select();
-            input.ActivateInputField();
+            if (input.gameObject.activeSelf)
+            {
+                input.Select();
+                input.ActivateInputField();
+            }
         }
     }
 
@@ -43,7 +46,7 @@ public class ChatMessageWriter : MonoBehaviour
         if (input.gameObject.activeSelf)
             SlideBallInputs.currentPart = SlideBallInputs.GUIPart.CHAT;
         else
-            SlideBallInputs.currentPart = SlideBallInputs.GUIPart.ABILITY;
+            SlideBallInputs.currentPart = Scenes.CurrentSceneDefaultGUIPart();
     }
 
     public void SendContent(string content, bool sendToAll)

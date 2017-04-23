@@ -83,10 +83,14 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility())
             {
+
                 new DashPersistentEffect(this, position);
                 new StealPersistentEffect(this, DashPersistentEffect.dashDuration * 2);
                 EffectsManager.View.RPC("ShowSmoke", RPCTargets.All);
+
+
             }
+
         }
 
         [MyRPC]
@@ -136,7 +140,7 @@ namespace AbilitiesManagement
         [MyRPC]
         private void Teleport()
         {
-            if (CanUseAbility())
+            if (CanUseAbility() && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             {
                 MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", transform.position, Quaternion.identity);
                 MyComponents.NetworkViewsManagement.Instantiate("Effects/Teleportation", controller.Player.SpawningPoint, Quaternion.identity);
@@ -147,7 +151,7 @@ namespace AbilitiesManagement
         [MyRPC]
         private void Block()
         {
-            if (CanUseAbility())
+            if (CanUseAbility() && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             {
                 Collider[] colliders = Physics.OverlapSphere(transform.position, BlockExplosion.BLOCK_DIAMETER / 2, LayersGetter.BallMask());
                 foreach (Collider hit in colliders)
@@ -171,7 +175,7 @@ namespace AbilitiesManagement
         [MyRPC]
         private void TimeSlow(Vector3 epicenter)
         {
-            if (CanUseAbility())
+            if (CanUseAbility() && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             {
                 MyComponents.NetworkViewsManagement.Instantiate("Effects/TimeSlow", epicenter, Quaternion.identity,Colors.Teams[(int)controller.Player.Team]);
                 new TimeSlowPersistentEffect(this, epicenter);

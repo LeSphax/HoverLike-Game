@@ -14,12 +14,6 @@ namespace SlideBall
 {
     public class NetworkManagement : SlideBall.MonoBehaviour
     {
-        /* 
-     * Copyright (C) 2015 Christoph Kutza
-     * 
-     * Please refer to the LICENSE file for license information
-     */
-
         public static ConnectionId SERVER_CONNECTION_ID = new ConnectionId(-1);
         public static ConnectionId INVALID_CONNECTION_ID = new ConnectionId(-100);
 
@@ -80,6 +74,11 @@ namespace SlideBall
             {
                 return _stateCurrent == State.SERVER;
             }
+        }
+
+        internal void LeaveRoom()
+        {
+            mNetwork.LeaveRoom();
         }
 
         /// <summary>
@@ -533,20 +532,20 @@ namespace SlideBall
                 Debug.LogError("This isn't a valid connectionId " + id + "    " + mConnections.Count + "   " + mConnections.PrintContent());
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Y))
-            {
-                Debug.Log("Tests for " + gameObject.name);
-                var sp = System.Diagnostics.Stopwatch.StartNew();
-                for (int i = 0; i < 1000; i++)
-                {
-                    SendToNetwork(new byte[30], mConnections[0], false);
-                }
-                sp.Stop();
-                Debug.Log("Time Send To Network " + sp.ElapsedMilliseconds);
-            }
-        }
+        //private void Update()
+        //{
+        //    if (Input.GetKeyDown(KeyCode.Y))
+        //    {
+        //        Debug.Log("Tests for " + gameObject.name);
+        //        var sp = System.Diagnostics.Stopwatch.StartNew();
+        //        for (int i = 0; i < 1000; i++)
+        //        {
+        //            SendToNetwork(new byte[30], mConnections[0], false);
+        //        }
+        //        sp.Stop();
+        //        Debug.Log("Time Send To Network " + sp.ElapsedMilliseconds);
+        //    }
+        //}
 
         public void ConnectToRoom(string roomName)
         {

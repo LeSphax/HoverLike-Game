@@ -18,8 +18,7 @@ public static class CameraFade
         {
             if (_screenFader == null)
             {
-                GameObject screenFaderPrefab = Resources.Load<GameObject>(Paths.SCREEN_FADER);
-                _screenFader = UnityEngine.Object.Instantiate(screenFaderPrefab);
+                _screenFader = UnityEngine.Object.Instantiate(ResourcesGetter.ScreenFaderPrefab);
                 UnityEngine.Object.DontDestroyOnLoad(_screenFader);
             }
             return _screenFader;
@@ -46,7 +45,7 @@ public static class CameraFade
 
     public static void StartFade(FadeType type)
     {
-        StartFade(type, Color.black);
+        StartFade(type, Color.white);
     }
 
     private static void CreateAnimation(Color targetColor)

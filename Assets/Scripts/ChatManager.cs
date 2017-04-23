@@ -53,7 +53,6 @@ public class ChatManager : SlideBall.MonoBehaviour
                 result = "[ALL] ";
             else
                 result = "[TEAM] ";
-            Debug.LogError("NB players " + Players.players.Count);
             return result + Players.players[sender].nickname + " : " + content + "\n";
         }
     }

@@ -10,6 +10,8 @@ public class LobbyManager : MonoBehaviour
     public TopPanel topPanel;
     public RoomListPanel RoomListPanel;
 
+    private string HeaderRoomName;
+
     private enum State
     {
         IDLE,
@@ -72,7 +74,9 @@ public class LobbyManager : MonoBehaviour
     {
         if (RequestParameters.HasKey("RoomName"))
         {
-            MyComponents.NetworkManagement.ConnectToRoom(RequestParameters.GetValue("RoomName"));
+            HeaderRoomName = RequestParameters.GetValue("RoomName");
+            MyComponents.NetworkManagement.ConnectToRoom(HeaderRoomName);
+            MyComponents.NetworkManagement.ConnectionFailed += CreateHeaderRoom;
         }
         else
         {
@@ -94,6 +98,13 @@ public class LobbyManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void CreateHeaderRoom()
+    {
+        Debug.Log("CreateHeaderRoom " + HeaderRoomName);
+        MyComponents.NetworkManagement.ConnectionFailed -= CreateHeaderRoom;
+        MyComponents.NetworkManagement.CreateRoom(HeaderRoomName);
     }
 
     private void ConnectToDefaultRoom()

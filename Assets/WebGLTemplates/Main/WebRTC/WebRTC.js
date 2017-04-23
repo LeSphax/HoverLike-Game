@@ -70,12 +70,22 @@ function CAPIWebRtcNetworkDisconnectFromPeer(e, t) {
 function CAPIWebRtcNetworkSendData(e, t, n, i) {
     gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), n, i)
 }
+function Empty(e, t, n, i) {
+}
+/*$(document).ready(function() {
+    document.onkeydown = function(e) {
+        console.log("CharCode " + e.keyCode);
+        if (e.keyCode == 88){ //x
+            var t0 = performance.now();
+            gCAPIWebRtcNetworkInstances[1].peerNetwork.TestSendData();
+           var t1 = performance.now();
+            console.log('Took ' +  (t1 - t0).toFixed(4)+ ' milliseconds to send:');
+        }
+    }
+});*/
 function CAPIWebRtcNetworkSendPeerDataEm(e, t, n, i, o, r) {
-    //var t0 = performance.now();
     var a = new Uint8Array(n.buffer, i, o);
     gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), a, r);
-   // var t1 = performance.now();
-    //console.log('Took', (t1 - t0).toFixed(4), 'milliseconds to send:');
 }
 function CAPIWebRtcNetworkSendSignalingDataEm(e, connectionId,type_int, content) {
     console.log("Send Signaling Event : " + connectionId + "     " + type_int);

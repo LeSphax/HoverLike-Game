@@ -207,6 +207,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     private static void ShowGame()
     {
         Debug.Log("MatchManager : ShowGame");
+        ResourcesGetter.LoadAll();
         NavigationManager.ShowLevel();
     }
 

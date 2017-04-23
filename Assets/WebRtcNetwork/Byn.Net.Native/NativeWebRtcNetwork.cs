@@ -70,7 +70,7 @@ namespace Byn.Net.Native
         internal void IncomingSignalingEvent(NetworkEvent evt)
         {
             if (evt.Type != NetEventType.Log)
-                Debug.LogWarning("Incoming Signaling Event " + evt.Type);
+                Debug.Log("Incoming Signaling Event " + evt.Type);
             if (evt.Type == NetEventType.NewConnection)
             {
                 WebRtcDataPeer connection;

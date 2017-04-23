@@ -46,7 +46,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
 
     public virtual void PreparePacket()
     {
-        PerformanceTest();
+        //PerformanceTest();
 
 
         if (IsSendingPackets())

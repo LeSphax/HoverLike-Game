@@ -1,11 +1,9 @@
 ﻿using AbilitiesManagement;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class DevelopperCommands : MonoBehaviour
+public class DevelopperCommands : SlideBall.MonoBehaviour
 {
-    public static bool ActivateAI = false;
+    public static bool activateAI = false;
     // Use this for initialization
     void Start()
     {
@@ -37,14 +35,34 @@ public class DevelopperCommands : MonoBehaviour
                 PlayerPrefs.Save();
             }
             if (Input.GetKeyDown(KeyCode.W))
-                ActivateAI = !ActivateAI;
+            {
+                View.RPC("ActivateAI", RPCTargets.All);
+            }
             if (Input.GetKeyDown(KeyCode.X))
-                AIRandomMovement.activateOnServer = !AIRandomMovement.activateOnServer;
+            {
+                View.RPC("ActivateOnServer", RPCTargets.All);
+
+
+            }
             if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
             {
                 MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
             }
         }
+    }
+
+    [MyRPC]
+    private void ActivateAI()
+    {
+        activateAI = !activateAI;
+                Debug.LogError("ActivateAI  " + activateAI);
+    }
+
+    [MyRPC]
+    private void ActivateOnServer()
+    {
+        AIRandomMovement.activateOnServer = !AIRandomMovement.activateOnServer;
+        Debug.LogError("ActivateOnServer  " + AIRandomMovement.activateOnServer);
     }
 
 }

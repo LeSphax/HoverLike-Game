@@ -12,11 +12,9 @@ public class AbilityWithIcon : Ability
         base.Awake();
         CreateToolTip();
 
-        GameObject CooldownOverlayPrefab = Resources.Load<GameObject>(Paths.ABILITY_COOLDOWN);
-        CooldownOverlay = ((GameObject)Instantiate(CooldownOverlayPrefab, transform, false)).GetComponent<Image>();
+        CooldownOverlay = Instantiate(ResourcesGetter.CooldownPrefab, transform, false).GetComponent<Image>();
         //
-        GameObject DisabledOverlayPrefab = Resources.Load<GameObject>(Paths.ABILITY_DISABLED);
-        DisabledOverlay = (GameObject)Instantiate(DisabledOverlayPrefab, transform, false);
+        DisabledOverlay = Instantiate(ResourcesGetter.DisabledPrefab, transform, false);
     }
 
     private void CreateToolTip()

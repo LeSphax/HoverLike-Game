@@ -54,6 +54,13 @@ var UnityWebRtcNetwork =
 	{
 		CAPIWebRtcNetworkDisconnectFromPeer(lIndex, lConnectionId);
 	},
+	Empty:function(lIndex, lConnectionId, lUint8ArrayDataPtr, lUint8ArrayDataOffset, lUint8ArrayDataLength, lReliable)
+	{
+		var sndReliable = true;
+		if(lReliable == false || lReliable == 0 || lReliable == "false" || lReliable == "False")
+			sndReliable = false;
+		Empty(lIndex, lConnectionId, HEAPU8, lUint8ArrayDataPtr + lUint8ArrayDataOffset, lUint8ArrayDataLength, sndReliable);
+	},
 	UnityWebRtcNetworkSendPeerData:function(lIndex, lConnectionId, lUint8ArrayDataPtr, lUint8ArrayDataOffset, lUint8ArrayDataLength, lReliable)
 	{
 		var sndReliable = true;

@@ -10,13 +10,27 @@ public class UserSettingsPanel : MonoBehaviour
     public Text nicknamePlaceholder;
     public Slider volumeSlider;
 
+    private SlideBallInputs.GUIPart previousGUIPart;
+
     private int? currentButton;
+
+    private static GameObject settingsPanel;
+    private static GameObject SettingsPanel
+    {
+        get
+        {
+            if (settingsPanel == null)
+                settingsPanel = ResourcesGetter.SettingsPanelPrefab;
+            return settingsPanel;
+        }
+    }
 
     public static GameObject InstantiateSettingsPanel()
     {
-        GameObject panel = Instantiate(ResourcesGetter.SettingsPanel());
+        GameObject panel = Instantiate(SettingsPanel);
         return panel;
     }
+
 
     // Use this for initialization
     void Start()
@@ -44,6 +58,8 @@ public class UserSettingsPanel : MonoBehaviour
 
     private void Reset()
     {
+        previousGUIPart = SlideBallInputs.currentPart;
+        SlideBallInputs.currentPart = SlideBallInputs.GUIPart.MENU;
         nicknamePlaceholder.text = Random_Name_Generator.GetRandomName();
         nicknameField.text = UserSettings.Nickname;
         volumeSlider.value = UserSettings.Volume;
@@ -52,6 +68,9 @@ public class UserSettingsPanel : MonoBehaviour
             char key = UserSettings.GetKey(i);
             SetChar(i, key);
         }
+
+        nicknameField.Select();
+        nicknameField.ActivateInputField();
     }
 
     public void ButtonPressed(int number)
@@ -145,6 +164,7 @@ public class UserSettingsPanel : MonoBehaviour
 
     public void Close()
     {
+        SlideBallInputs.currentPart = previousGUIPart;
         Destroy(gameObject);
     }
 }

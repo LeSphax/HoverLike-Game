@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(AudioSource))]
 public class PlayerInfo : PlayerView
 {
 
@@ -13,7 +14,6 @@ public class PlayerInfo : PlayerView
     private Text playerName;
     [SerializeField]
     private Text latency;
-
 
     private Team CurrentTeam
     {
@@ -65,14 +65,36 @@ public class PlayerInfo : PlayerView
     {
         Latency = 0;
         if (View.isMine)
+        {
             if (Player.Team != Team.NONE)
                 SetInitialTeam(Player.Team);
             else
+            {
+                Debug.Log(gameObject.name + " InitialTeam");
+
                 View.RPC("GetInitialTeam", RPCTargets.Server, null);
+            }
+            Debug.Log(gameObject.name + " SendPlayEnterRoom");
+
+            View.RPC("PlayEnterRoomSound", RPCTargets.Others, null);
+        }
         if (MyComponents.NetworkManagement.isServer)
         {
             MyComponents.TimeManagement.LatencyChanged += SetLatency;
         }
+    }
+
+    [MyRPC]
+    public void LeaveRoom()
+    {
+        MyComponents.NetworkManagement.LeaveRoom();
+    }
+
+    [MyRPC]
+    private void PlayEnterRoomSound()
+    {
+        Debug.Log(gameObject.name + " PlayEnter");
+        GetComponent<AudioSource>().Play();
     }
 
     [MyRPC]

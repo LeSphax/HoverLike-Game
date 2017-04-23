@@ -46,6 +46,14 @@ var PeerNetwork = function() {
     e.prototype.Flush = function() {
         this.mSignalingNetwork.Flush()
     };
+	/*e.prototype.TestSendData = function(){
+		for (y =0; y<1000; y++){
+			var i = this.mIdToConnection[1];
+			var array = new Uint8Array(100);
+			i.SendData(array, false);
+		}
+	};*/
+
     e.prototype.SendData = function(e, t, n) {
         if (e == null || t == null || t.length == 0) return;
         var i = this.mIdToConnection[e.id];

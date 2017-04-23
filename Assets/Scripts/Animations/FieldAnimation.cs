@@ -9,17 +9,11 @@ namespace CustomAnimations
         private float yBeginning = 0;
         private float yEnd;
         private Material oldMaterial;
-
-        private Material fieldMaterial;
         private Material FieldMaterial
         {
             get
             {
-                if (fieldMaterial == null)
-                {
-                    fieldMaterial = Resources.Load<Material>("Materials/Field");
-                }
-                return fieldMaterial;
+                return ResourcesGetter.FieldMaterial;
             }
         }
 

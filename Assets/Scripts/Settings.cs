@@ -18,7 +18,7 @@ public static class Settings
         Dictionary<string, string> fileSettings;
         if (!_data.TryGetValue(fileName, out fileSettings))
         {
-            TextAsset settings = (TextAsset)Resources.Load(SETTINGS_PATH + fileName);
+            TextAsset settings = Resources.Load<TextAsset>(SETTINGS_PATH + fileName);
             Assert.IsTrue(settings != null, "This settings file doesn't exist " + fileName);
             fileSettings = ParseSettings(settings.text);
             _data.Add(fileName, fileSettings);

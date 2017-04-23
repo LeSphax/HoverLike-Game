@@ -66,6 +66,7 @@ public class PlayerController : PlayerView
     public void ResetPlayer()
     {
         movementManager.Reset(playerConnectionId);
+        ballController.Reset();
         targetManager.CancelTarget();
         if (Mesh != null)
         {

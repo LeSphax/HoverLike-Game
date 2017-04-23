@@ -4,24 +4,12 @@ using UnityEngine;
 
 public class PassTargeting : AbilityTargeting
 {
-    private static GameObject prefabTargeter;
-    private static GameObject PrefabTargeter
-    {
-        get
-        {
-            if (prefabTargeter == null)
-            {
-                prefabTargeter = Resources.Load<GameObject>(Paths.PASS_TARGETER);
-            }
-            return prefabTargeter;
-        }
-    }
 
     public static float DIAMETER_PASS_ZONE
     {
         get
         {
-            return PrefabTargeter.transform.localScale.x * 10;
+            return ResourcesGetter.PassTargeterPrefab.transform.localScale.x * 10;
         }
     }
 
@@ -33,7 +21,7 @@ public class PassTargeting : AbilityTargeting
     public override void ChooseTarget(CastOnTarget callback)
     {
         this.callback = callback;
-        targeter = (GameObject)Instantiate(PrefabTargeter, transform, true);
+        targeter = (GameObject)Instantiate(ResourcesGetter.PassTargeterPrefab, transform, true);
         IsTargeting = true;
         UpdateTargeterPosition();
     }

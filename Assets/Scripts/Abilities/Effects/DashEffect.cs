@@ -26,17 +26,23 @@ public class DashPersistentEffect : PersistentEffect
 
     public DashPersistentEffect(AbilitiesManager manager, Vector3 position) : base(manager)
     {
+
         myRigidbody = manager.GetComponent<Rigidbody>();
+        
         //
         manager.controller.targetManager.CancelTarget();
+
         manager.transform.LookAt(position + Vector3.up * manager.transform.position.y);
+       
         //
+
         force = new Vector3(position.x - manager.transform.position.x, 0, position.z - manager.transform.position.z);
         force.Normalize();
         //
         duration = dashDuration;
         myRigidbody.velocity = Vector3.zero;
         myRigidbody.angularVelocity = Vector3.zero;
+        
     }
 
 

@@ -8,18 +8,24 @@ public class PlayerMesh : MonoBehaviour
     public GameObject skate;
     public GameObject body;
 
-    private Material[] helmetMaterials
+    private Material[] helmetMaterials;
+    private Material[] HelmetMaterials
     {
         get
         {
-            return ResourcesGetter.HelmetMaterials;
+            if (helmetMaterials == null)
+                helmetMaterials = ResourcesGetter.HelmetMaterials;
+            return helmetMaterials;
         }
     }
-    private Material[] skateMaterials
+    private Material[] skateMaterials;
+    private Material[] SkateMaterials
     {
         get
         {
-            return ResourcesGetter.SkateMaterials;
+            if (skateMaterials == null)
+                skateMaterials = ResourcesGetter.SkateMaterials;
+            return skateMaterials;
         }
     }
 
@@ -27,9 +33,9 @@ public class PlayerMesh : MonoBehaviour
 
     public void SetTeam(Team team)
     {
-        helmet.GetComponent<Renderer>().material = helmetMaterials[(int)team];
+        helmet.GetComponent<Renderer>().material = HelmetMaterials[(int)team];
         if (skate != null)
-            skate.GetComponent<Renderer>().material = skateMaterials[(int)team];
+            skate.GetComponent<Renderer>().material = SkateMaterials[(int)team];
     }
 
     public void SetOwner(bool isOwner)

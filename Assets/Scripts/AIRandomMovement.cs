@@ -28,29 +28,29 @@ namespace AbilitiesManagement
         {
             //Changing scene
             if (controller.Player != null)
-                if (controller.Player.IsMyPlayer && !isActivated)
+                if (controller.Player.IsMyPlayer)
                 {
-                    if (!isActivated && DevelopperCommands.ActivateAI)
+                    if (activateOnServer || !MyComponents.NetworkManagement.isServer)
                     {
-                        if (activateOnServer || !MyComponents.NetworkManagement.isServer)
+                        //Debug.LogError("Self "+isActivated + "    " + DevelopperCommands.activateAI);
+                        if (!isActivated && DevelopperCommands.activateAI)
                         {
+
                             abilitiesManager = controller.abilitiesManager;
-                            Move();
-                            Steal();
-                            Dash();
-                            Pass();
-
+                            // Move();
+                            //Steal();
+                            //Dash();
+                            //Pass();
+                            Block();
+                            isActivated = true;
                         }
-                        isActivated = true;
-                    }
-                    if (isActivated && !DevelopperCommands.ActivateAI)
-                    {
-                        CancelInvoke();
-                        isActivated = false;
-
+                        if (isActivated && !DevelopperCommands.activateAI)
+                        {
+                            CancelInvoke();
+                            isActivated = false;
+                        }
                     }
                 }
-
         }
 
         private void Move()
@@ -85,6 +85,12 @@ namespace AbilitiesManagement
         {
             abilitiesManager.View.RPC("Steal", RPCTargets.Server, 0.5f);
             InvokeRandom("Steal", 1, 1.5f);
+        }
+
+        private void Block()
+        {
+            abilitiesManager.View.RPC("Block", RPCTargets.Server);
+            InvokeRandom("Block", 3, 3);
         }
 
         private void Dash()

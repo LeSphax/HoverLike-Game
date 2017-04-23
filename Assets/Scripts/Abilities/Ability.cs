@@ -33,7 +33,7 @@ public class Ability : MonoBehaviour
     {
         if (errorSound == null)
         {
-            errorSound = ResourcesGetter.ErrorSound();
+            errorSound = ResourcesGetter.SoftErrorSound;
         }
         input = GetComponent<AbilityInput>();
         input.CanBeActivatedChanged += EnableAbility;
@@ -55,7 +55,7 @@ public class Ability : MonoBehaviour
 #if UNITY_EDITOR
         if (trace)
         {
-                Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
+            Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
 #endif
         switch (state)
@@ -64,7 +64,9 @@ public class Ability : MonoBehaviour
                 if (input.FirstActivation())
                 {
                     if (isEnabled)
+                    {
                         CastAbility();
+                    }
                     else
                         PlayErrorSound();
 
@@ -123,8 +125,12 @@ public class Ability : MonoBehaviour
     {
         if (wasUsed)
         {
+
+
             foreach (AbilityEffect effect in effects)
+            {
                 effect.ApplyOnTarget(parameters);
+            }
             if (NoCooldown)
                 state = State.READY;
             else

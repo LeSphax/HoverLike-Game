@@ -10,6 +10,7 @@ public class BattleriteCamera : MonoBehaviour
     public float speed;
 
     private Vector3 startPosition;
+    private Vector3 previousBasePosition;
 
     public float xMinLimit;
     public float xMaxLimit;
@@ -30,6 +31,16 @@ public class BattleriteCamera : MonoBehaviour
     private void Awake()
     {
         startPosition = transform.localPosition;
+        previousBasePosition = transform.localPosition;
+    }
+
+    private void OnEnable()
+    {
+        LateFixedUpdate.evt += PositionCamera;
+    }
+    private void OnDisable()
+    {
+        LateFixedUpdate.evt -= PositionCamera;
     }
 
     public Vector3 ClampPosition(Vector3 initialPosition)
@@ -37,14 +48,16 @@ public class BattleriteCamera : MonoBehaviour
         return new Vector3(Mathf.Clamp(initialPosition.x, yMinLimit, yMaxLimit), initialPosition.y, Mathf.Clamp(initialPosition.z, xMinLimit, xMaxLimit));
     }
 
-    void LateUpdate()
+    void PositionCamera()
     {
         Vector2 mouseProportion = GetMouseProportion();
-
         Vector3 targetPosition = new Vector3(basePosition.x + mouseProportion.y * yOffset, basePosition.y, basePosition.z - mouseProportion.x * xOffset);
+
+        transform.position = transform.position + basePosition - previousBasePosition;
         transform.position = Vector3.Lerp(transform.position, targetPosition, speed);
 
         transform.position = ClampPosition(transform.position);
+        previousBasePosition = basePosition;
     }
 
     private Vector2 GetMouseProportion()

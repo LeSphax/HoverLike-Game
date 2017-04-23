@@ -14,7 +14,7 @@ public static class MonoBehaviourExtensions
     public static GameObject InstantiateFromMessage(this MonoBehaviour monoBehaviour, InstantiationMessage message)
     {
         GameObject prefab = Resources.Load<GameObject>(message.path);
-        return (GameObject)MonoBehaviour.Instantiate(prefab, message.position, message.rotation);
+        return Object.Instantiate(prefab, message.position, message.rotation);
     }
 }
 

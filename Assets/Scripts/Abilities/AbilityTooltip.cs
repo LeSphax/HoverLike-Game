@@ -14,8 +14,7 @@ public class AbilityTooltip : MonoBehaviour
         string abilityName = abilityType.FullName.Remove(abilityType.FullName.Length - "Targeting".Length);
 
 
-        GameObject tooltipPrefab = Resources.Load<GameObject>(Paths.TOOLTIP);
-        tooltip = ((GameObject)Instantiate(tooltipPrefab, transform.parent.parent, false)).GetComponent<Tooltip>();
+        tooltip = Instantiate(ResourcesGetter.TooltipPrefab, transform.parent.parent, false).GetComponent<Tooltip>();
         tooltip.gameObject.name = abilityName;
         tooltip.gameObject.SetActive(false);
 

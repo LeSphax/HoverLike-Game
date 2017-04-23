@@ -59,25 +59,25 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AOIntensity: 0.2
-    - _Brighness: 0.5
+    - _Brighness: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _Glossiness: 0.5
-    - _MaxRoughness: 1
+    - _MaxRoughness: 0
     - _MetalicValue: 0
     - _Metallic: 0
-    - _MinRoughness: 0.18
+    - _MinRoughness: 0
     - _Mode: 0
     - _NormalIntensity: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RoughnessValue: 0.4
+    - _RoughnessValue: 0
     - _SrcBlend: 1
     - _UVSec: 0
-    - _U_Tiling: 1.5
-    - _V_Tiling: 1.5
+    - _U_Tiling: 1
+    - _V_Tiling: 1
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
