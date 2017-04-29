@@ -223,7 +223,7 @@ var SignalingPeer = (function () {
                 console.log("GetRooms "+ evt.ConnectionId);
                 this.sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, inet.ConnectionId.INVALID, this.mConnectionPool.getRooms()));
             }
-			else if (splittedInfo[0]== "SetNumberPlayers"){
+			else if (splittedInfo[0]== inet.NetEventMessage.SetNumberPlayers){
                 console.log("SetNumberPlayers of room "+ splittedInfo[1] + " to "+ splittedInfo[2] + evt.ConnectionId);
 				this.mConnectionPool.mRoomsInfo[splittedInfo[1]] = splittedInfo[2];
             }
