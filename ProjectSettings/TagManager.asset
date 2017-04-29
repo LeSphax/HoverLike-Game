@@ -28,6 +28,8 @@ TagManager:
   - VictoryPose
   - VictoryUI
   - GlobalSound
+  - LogText
+  - BattleriteCamera
   layers:
   - Default
   - TransparentFX

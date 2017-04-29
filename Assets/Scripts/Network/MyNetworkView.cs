@@ -43,7 +43,7 @@ public class MyNetworkView : ANetworkView
         if (!init)
         {
             init = true;
-            //LateFixedUpdate.evt += MyLateFixedUpdate;
+            LateFixedUpdate.evt += MyLateFixedUpdate;
         }
     }
 
@@ -54,8 +54,7 @@ public class MyNetworkView : ANetworkView
 
     private void Update()
     {
-        foreach (ObservedComponent component in observedComponents)
-            component.PreparePacket();
+        //foreach (ObservedComponent component in observedComponents)
     }
 
     void FixedUpdate()
@@ -71,12 +70,13 @@ public class MyNetworkView : ANetworkView
                 {
                     component.SimulationUpdate();
                 }
+                component.PreparePacket();
             }
     }
 
     private void LateUpdate()
     {
-        ObservedComponent.SendBatch();
+        //ObservedComponent.SendBatch();
     }
 
     static void MyLateFixedUpdate()

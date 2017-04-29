@@ -1,4 +1,5 @@
-﻿using PlayerManagement;
+﻿using Navigation;
+using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -24,16 +25,9 @@ public class RoomManager : MonoBehaviour
 
     public void OnEnable()
     {
-        if (MyComponents.NetworkManagement.isServer)
-        {
-            StartButton.SetActive(true);
-        }
-        else
-        {
-            StartButton.SetActive(false);
-        }
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages += CreateMyPlayerInfo;
         topPanel.BackPressed += GoBack;
+        MyComponents.NetworkManagement.RoomClosed += GoBack;
 
     }
 
@@ -42,7 +36,7 @@ public class RoomManager : MonoBehaviour
         if (MyComponents.NetworkManagement != null)
             MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= CreateMyPlayerInfo;
         topPanel.BackPressed -= GoBack;
-
+        MyComponents.NetworkManagement.RoomClosed -= GoBack;
     }
 
     private void Start()
@@ -99,6 +93,7 @@ public class RoomManager : MonoBehaviour
     public void GoBack()
     {
         MyComponents.ResetNetworkComponents();
+        NavigationManager.LoadScene(Scenes.Lobby);
     }
 
     protected void OnDestroy()

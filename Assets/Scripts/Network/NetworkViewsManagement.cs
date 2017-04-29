@@ -159,7 +159,8 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         if (message.type == MessageType.PacketBatch)
         {
             //Debug.Log("Packet nb : "+ BitConverter.ToInt16(message.data,0));
-            int currentIndex = 2;
+            ObservedComponent.lastReceivedBatchNumber = BitConverter.ToInt32(message.data, 0);
+            int currentIndex = 4;
             while (currentIndex < message.data.Length)
             {
                 int dataLength = BitConverter.ToInt16(message.data, currentIndex);

@@ -9,7 +9,6 @@ public class CursorLocker : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-
             Screen.fullScreen = true;
             Cursor.lockState = CursorLockMode.Confined;
         }

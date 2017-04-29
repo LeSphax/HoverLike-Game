@@ -7,7 +7,10 @@ using UnityEngine;
 [RequireComponent(typeof(MyNetworkView))]
 public abstract class ObservedComponent : SlideBall.MonoBehaviour
 {
-    [NonSerialized]
+
+    public static int lastReceivedBatchNumber = 0;
+    private static int batchNb = 0;
+     [NonSerialized]
     public short observedId;
 
     public int sendRate = 60;
@@ -25,13 +28,12 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     }
 
 
-    private static short batchNb = 0;
     public static void SendBatch()
     {
         if (messagesBatch.Count > 0)
         {
             //Debug.LogError("Sending " + batchNb);
-            byte[] data = BitConverter.GetBytes(batchNb); ;
+            byte[] data = BitConverter.GetBytes(batchNb);
             for (int i = 0; i < messagesBatch.Count; i++)
             {
                 // Debug.Log(data.Length + "   " + messagesBatch[i].data.Length);

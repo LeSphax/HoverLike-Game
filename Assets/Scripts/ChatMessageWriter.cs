@@ -5,9 +5,9 @@ public class ChatMessageWriter : MonoBehaviour
 {
     public bool hideWhenNotActive;
     public InputField input;
+    public ChatTargetOfMessageLabel target;
 
-    public event EmptyEventHandler SendToTeamActivated;
-    public event EmptyEventHandler SendToAllActivated;
+    public event EmptyEventHandler ChangeContext;
 
     private void Awake()
     {
@@ -19,32 +19,38 @@ public class ChatMessageWriter : MonoBehaviour
     {
         if (SlideBallInputs.currentPart != SlideBallInputs.GUIPart.MENU)
         {
-            if (SlideBallInputs.AnyShiftDown())
-                SendToAllActivated.Invoke();
-            if (SlideBallInputs.AnyShiftUp())
-                SendToTeamActivated.Invoke();
+            if (Input.GetKeyDown(KeyCode.Tab))
+                ChangeContext.Invoke();
             if (SlideBallInputs.AnyEnterDown())
             {
                 if (input.gameObject.activeSelf)
-                    SendContent(input.text, SlideBallInputs.AnyShift());
+                    SendContent(input.text, target.SendToAll);
                 if (hideWhenNotActive)
                 {
                     ActivateInput(!input.gameObject.activeSelf);
                 }
-            }
-            if (input.gameObject.activeSelf)
-            {
-                input.Select();
-                input.ActivateInputField();
+                else
+                {
+                    FocusOnInputField();
+                }
             }
         }
+    }
+
+    private void FocusOnInputField()
+    {
+        input.Select();
+        input.ActivateInputField();
     }
 
     private void ActivateInput(bool active)
     {
         input.gameObject.SetActive(active);
         if (input.gameObject.activeSelf)
+        {
             SlideBallInputs.currentPart = SlideBallInputs.GUIPart.CHAT;
+            FocusOnInputField();
+        }
         else
             SlideBallInputs.currentPart = Scenes.CurrentSceneDefaultGUIPart();
     }

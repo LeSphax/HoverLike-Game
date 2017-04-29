@@ -1,5 +1,6 @@
 ﻿using PlayerBallControl;
 using PlayerManagement;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,8 +19,12 @@ namespace AbilitiesManagement
 
         public static bool isActivated;
 
+        bool noInvocation = false;
+
+        public event EmptyEventHandler FinishedUsingAllAbilities;
+
         // Use this for initialization
-        void Start()
+        void Awake()
         {
             controller = GetComponent<PlayerController>();
         }
@@ -35,7 +40,6 @@ namespace AbilitiesManagement
                         //Debug.LogError("Self "+isActivated + "    " + DevelopperCommands.activateAI);
                         if (!isActivated && DevelopperCommands.activateAI)
                         {
-
                             abilitiesManager = controller.abilitiesManager;
                             // Move();
                             //Steal();
@@ -53,32 +57,75 @@ namespace AbilitiesManagement
                 }
         }
 
-        private void Move()
+        public void UseAllAbilities(bool attacker)
         {
-            Vector2 target = new Vector2(GetRandomPointInTerrain().x, GetRandomPointInTerrain().y);
-            abilitiesManager.View.RPC("Move", RPCTargets.Server, target);
+            abilitiesManager = controller.abilitiesManager;
+            StartCoroutine(CoUseAllAbilities(attacker));
+        }
+
+        IEnumerator CoUseAllAbilities(bool attacker)
+        {
+            Debug.LogWarning("Use All Abilities " + attacker);
+            noInvocation = true;
+            Move(Vector3.zero);
+            yield return new WaitForSeconds(0.3f);
+            Dash(Vector3.zero);
+            yield return new WaitForSeconds(0.3f);
+            Steal();
+            yield return new WaitForSeconds(0.1f);
+            MyComponents.BallState.PutBallAtPosition(transform.position);
+            yield return new WaitForSeconds(0.05f);
+            Shoot();
+            yield return new WaitForSeconds(0.1f);
+            if (attacker)
+            {
+                MyComponents.BallState.PutBallAtPosition(transform.position);
+                yield return new WaitForSeconds(0.05f);
+                Pass();
+                yield return new WaitForSeconds(0.1f);
+            }
+            if (!attacker)
+            {
+                Block();
+                yield return new WaitForSeconds(0.1f);
+            }
+            if (!attacker)
+            {
+                TimeSlow();
+                yield return new WaitForSeconds(0.1f);
+            }
+            if (!attacker)
+            {
+                Teleport();
+                yield return new WaitForSeconds(2f);
+            }
+            enabled = false;
+            noInvocation = false;
+            if (FinishedUsingAllAbilities != null)
+                FinishedUsingAllAbilities.Invoke();
+        }
+
+        private void Move(Vector2? target = null)
+        {
+            if (target == null)
+                target = new Vector2(GetRandomPointInTerrain().x, GetRandomPointInTerrain().y);
+            abilitiesManager.View.RPC("Move", RPCTargets.Server, target.Value);
+
             InvokeRandom("Move", MoveDelay, MoveDelay * 2);
         }
 
-        private static Vector3 GetRandomPointInTerrain()
+        private void Shoot()
         {
-            return Functions.GetRandomPointInVolume(Vector3.zero, new Vector3(-30, 5, -70), new Vector3(30, 5, 70));
-        }
+            Vector3 target = GetRandomPointInTerrain();
+            abilitiesManager.View.RPC("Shoot", RPCTargets.Server, target, 1.0f);
 
-        private void InvokeMove()
-        {
-            Invoke("Move", Random.Range(MoveDelay, MoveDelay * 2f));
+            InvokeRandom("Shoot", MoveDelay, MoveDelay * 2);
         }
 
         private void Jump()
         {
             abilitiesManager.View.RPC("Jump", RPCTargets.Server);
             InvokeRandom("Jump", JumpDelay, JumpDelay * 2);
-        }
-
-        private void InvokeJump()
-        {
-            Invoke("Jump", Random.Range(JumpDelay, JumpDelay));
         }
 
         private void Steal()
@@ -93,11 +140,25 @@ namespace AbilitiesManagement
             InvokeRandom("Block", 3, 3);
         }
 
-        private void Dash()
+        private void Dash(Vector3? target = null)
+        {
+            if (target == null)
+                target = GetRandomPointInTerrain();
+            abilitiesManager.View.RPC("Dash", RPCTargets.Server, target.Value);
+            InvokeRandom("Dash", 3, 8);
+        }
+
+        private void TimeSlow()
         {
             Vector3 target = GetRandomPointInTerrain();
-            abilitiesManager.View.RPC("Dash", RPCTargets.Server, target);
-            InvokeRandom("Dash", 3, 8);
+            abilitiesManager.View.RPC("TimeSlow", RPCTargets.Server, target);
+            InvokeRandom("TimeSlow", 3, 8);
+        }
+
+        private void Teleport()
+        {
+            abilitiesManager.View.RPC("Teleport", RPCTargets.Server);
+            InvokeRandom("Teleport", 3, 8);
         }
 
         private void Pass()
@@ -113,9 +174,13 @@ namespace AbilitiesManagement
 
         private void InvokeRandom(string methodName, float minTime, float maxTime)
         {
-            Invoke(methodName, Random.Range(minTime, maxTime));
+            if (!noInvocation)
+                Invoke(methodName, Random.Range(minTime, maxTime));
         }
 
-
+        private static Vector3 GetRandomPointInTerrain()
+        {
+            return Functions.GetRandomPointInVolume(Vector3.zero, new Vector3(-30, 5, -70), new Vector3(30, 5, 70));
+        }
     }
 }

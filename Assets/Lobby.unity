@@ -626,10 +626,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   server: 1
   testURLParameters: 0
-  startGameImmediately: 0
-  editorIsServer: 1
-  numberPlayersToStartGame: 1
-  addLatency: 0
+  startGameImmediately: 1
+  editorIsServer: 0
+  numberPlayersToStartGame: 2
+  addLatency: 1
   numberFramesLatency: 2
   playAsGoalieInitialValue: 0
   noCooldowns: 1

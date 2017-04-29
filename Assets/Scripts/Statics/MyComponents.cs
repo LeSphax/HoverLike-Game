@@ -14,10 +14,12 @@ public static class MyComponents
         if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
         {
             NullifyMain();
+            NullifyRoom();
         }
         else if (Scenes.IsCurrentScene(Scenes.MainIndex))
         {
             NullifyLobby();
+            NullifyRoom();
         }
         else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
         {
@@ -31,6 +33,12 @@ public static class MyComponents
         lobbyManager = null;
     }
 
+    private static void NullifyRoom()
+    {
+        roomManager = null;
+        chatManager = null;
+    }
+
     private static void NullifyMain()
     {
         matchManager = null;
@@ -39,6 +47,8 @@ public static class MyComponents
         spawns = null;
         victoryPose = null;
         victoryUI = null;
+        chatManager = null;
+        battleriteCamera = null;
     }
 
     private static NetworkManagement networkManagement;
@@ -200,6 +210,20 @@ public static class MyComponents
         }
     }
 
+    private static RoomManager roomManager;
+    public static RoomManager RoomManager
+    {
+        get
+        {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.RoomIndex));
+            if (roomManager == null)
+            {
+                roomManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
+            }
+            return roomManager;
+        }
+    }
+
     private static NetworkViewsManagement networkViewsManagement;
     public static NetworkViewsManagement NetworkViewsManagement
     {
@@ -269,6 +293,22 @@ public static class MyComponents
         }
     }
 
+    private static BattleriteCamera battleriteCamera;
+    public static BattleriteCamera BattleriteCamera
+    {
+        get
+        {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+            if (battleriteCamera == null)
+            {
+                GameObject go = GameObject.FindGameObjectWithTag(Tags.BattleriteCamera);
+                if (go != null)
+                    battleriteCamera = go.GetComponent<BattleriteCamera>();
+            }
+            return battleriteCamera;
+        }
+    }
+
     public static GameObject UI()
     {
         return GameObject.FindGameObjectWithTag(Tags.UI);
@@ -296,25 +336,12 @@ public static class MyComponents
         NetworkManagement.Reset();
         ResetGameComponents();
         TimeManagement.Reset();
-        ResetScene();
     }
 
     public static void ResetGameComponents()
     {
         GameInitialization.Reset();
         PlayersSynchronisation.Reset();
-    }
-
-    public static void ResetScene()
-    {
-        if (Scenes.IsCurrentScene(Scenes.MainIndex))
-            NavigationManager.LoadScene(Scenes.Lobby, true, false);
-        //else if (Scenes.IsCurrentScene(Scenes.MainIndex) && !NetworkManagement.IsConnected)
-        //    NavigationManager.LoadScene(Scenes.Lobby, true, false);
-        else if (Scenes.IsCurrentScene(Scenes.RoomIndex)) 
-           NavigationManager.LoadScene(Scenes.Lobby);
-        else
-            MyComponents.LobbyManager.Reset();
     }
 }
 

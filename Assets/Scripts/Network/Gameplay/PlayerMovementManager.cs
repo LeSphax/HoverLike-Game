@@ -125,15 +125,22 @@ public class PlayerMovementManager : ObservedComponent
     {
         if (nextPacket != null)
         {
+            Vector3 previousPosition = transform.position;
             float completion = (SimulationTime - currentPacket.Value.timeSent) / (nextPacket.Value.timeSent - currentPacket.Value.timeSent);
             transform.position = Vector3.Lerp(currentPacket.Value.position, nextPacket.Value.position, completion);
             transform.rotation = Quaternion.Lerp(currentPacket.Value.rotation, nextPacket.Value.rotation, completion);
+            if (Player.IsMyPlayer)
+                Debug.Log("Deplacement " + (transform.position - previousPosition) + "    " + currentPacket.Value.timeSent + "    " + SimulationTime + "    " + nextPacket.Value.timeSent + "    " + completion + "   " + (nextPacket.Value.position- currentPacket.Value.position));
         }
         else
         {
             transform.position = currentPacket.Value.position;
             transform.rotation = currentPacket.Value.rotation;
         }
+        //if (Player.IsMyPlayer)
+        //{
+        //    MyComponents.BattleriteCamera.PositionCamera();
+        //}
     }
 
     public override void PacketReceived(ConnectionId id, byte[] data)
@@ -176,7 +183,7 @@ public struct PlayerPacket
     public byte[] Serialize()
     {
         byte[] data = NetworkExtensions.SerializeVector3(position);
-        data = ArrayExtensions.Concatenate(data,NetworkExtensions.SerializeQuaternion(rotation));
+        data = ArrayExtensions.Concatenate(data, NetworkExtensions.SerializeQuaternion(rotation));
         return data.Concatenate(BitConverter.GetBytes(timeSent));
     }
 
@@ -186,7 +193,7 @@ public struct PlayerPacket
         Vector3 position = NetworkExtensions.DeserializeVector3(data, ref currentIndex);
         Quaternion rotation = NetworkExtensions.DeserializeQuaternion(data, ref currentIndex);
         float timeSent = BitConverter.ToSingle(data, currentIndex);
-        return new PlayerPacket(position, rotation,timeSent);
+        return new PlayerPacket(position, rotation, timeSent);
     }
 
 }

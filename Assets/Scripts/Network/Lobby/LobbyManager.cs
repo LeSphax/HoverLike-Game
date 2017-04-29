@@ -170,9 +170,8 @@ public class LobbyManager : MonoBehaviour
 
     public void GoBack()
     {
-        Reset();
         MyComponents.ResetNetworkComponents();
-        MyState = State.IDLE;
+        Reset();
     }
 
     internal void Reset()

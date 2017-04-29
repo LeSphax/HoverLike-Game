@@ -103,6 +103,7 @@ namespace SlideBall
         public event EmptyEventHandler ConnectedToRoom;
         public event EmptyEventHandler ServerStartFailed;
         public event EmptyEventHandler ConnectionFailed;
+        public event EmptyEventHandler RoomClosed;
 
         public event EmptyEventHandler ReceivedAllBufferedMessages;
 
@@ -298,22 +299,18 @@ namespace SlideBall
                             switch (stateCurrent)
                             {
                                 case State.CONNECTED:
-                                    Reset();
-                                    //ConnectToRoom(RoomName);
                                     Debug.LogError("Room closed. No incoming connections possible until restart.");
                                     break;
                                 case State.IDLE:
                                     MyComponents.PopUp.Show(Language.Instance.texts["Cant_Create"] + "\n" + Language.Instance.texts["Feedback"]);
                                     Debug.LogError("Didn't manage to create the server " + RoomName);
-                                    //Reset();
-                                    //CreateRoom(RoomName);
                                     break;
                                 case State.SERVER:
                                     Debug.LogError("Room closed. Reseting connection");
-                                    Reset();
-                                    // CreateRoom(RoomName);
                                     break;
                             }
+                            if (RoomClosed != null)
+                                RoomClosed.Invoke();
                         }
                         break;
                     case NetEventType.UserCommand:
@@ -398,8 +395,12 @@ namespace SlideBall
                             if (isServer == false)
                             {
                                 Debug.LogError("Host disconnected ");
-                                MyComponents.ResetNetworkComponents();
-                                MyComponents.PopUp.Show(Language.Instance.texts["Host_Disconnected"]);
+                                if (stateCurrent == State.CONNECTED)
+                                {
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Host_Disconnected"]);
+                                    if (RoomClosed != null)
+                                        RoomClosed.Invoke();
+                                }
                             }
                             else
                             {

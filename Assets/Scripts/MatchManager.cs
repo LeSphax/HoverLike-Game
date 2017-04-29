@@ -1,4 +1,5 @@
-﻿using Byn.Net;
+﻿using AbilitiesManagement;
+using Byn.Net;
 using Navigation;
 using PlayerManagement;
 using System.Collections;
@@ -17,6 +18,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     public enum State : byte
     {
+        LOADING_SCENE,
         WARMUP,
         STARTING,
         PLAYING,
@@ -42,6 +44,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 View.RPC("SetState", RPCTargets.Others, value);
                 switch (state)
                 {
+                    case State.LOADING_SCENE:
                     case State.WARMUP:
                     case State.PLAYING:
                     case State.SUDDEN_DEATH:
@@ -88,9 +91,9 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     public void StartGame()
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer && MyState == State.WARMUP);
+        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
         Players.PlayerOwningBallChanged += BallChangedOwner;
-        StartCoroutine(Warmup());
+        MyState = State.LOADING_SCENE;
         Entry();
     }
 
@@ -99,6 +102,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         matchCountdown.View.RPC("StartWarmup", RPCTargets.All, syncId);
         MyState = State.WARMUP;
+        Entry();
         //Wait until everyone press the ready button
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
         matchCountdown.TimerFinished += LastChance;
@@ -136,7 +140,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         Debug.LogError("EndMatch " + Scoreboard.GetWinningTeam());
         //Don't play the gong sound at the same time as the "But" sound
-        
+
         Team winningTeam = Scoreboard.GetWinningTeam();
         if (winningTeam == Team.NONE)
         {
@@ -174,7 +178,8 @@ public class MatchManager : SlideBall.MonoBehaviour
     IEnumerator CoEntry()
     {
         Debug.Log("MatchManager : CoEntry - State : " + MyState);
-        Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH, "The entry shouldn't happen in this state " + MyState + " , maybe it was a manual entry?");
+        Assert.IsTrue(MyState == State.ENDING || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH || MyState == State.LOADING_SCENE, "The entry shouldn't happen in this state " + MyState + " , maybe it was a manual entry?");
+
         if (MyState == State.ENDING)
         {
             getReadyCountdown.TimerFinished += SendInvokeStartRound;
@@ -199,12 +204,44 @@ public class MatchManager : SlideBall.MonoBehaviour
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
 
         //
-        if (MyState == State.WARMUP)
+        if (MyState == State.LOADING_SCENE)
+        {
+            if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
+            {
+                //Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().enabled = true;
+                Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities += FinishedLoadingAttacker;
+                Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(true);
+
+            }
+            if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
+            {
+                //Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().enabled = true;
+                Players.MyPlayer.PlayAsGoalie = false;
+                Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities += FinishedLoading;
+                Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(false);
+            }
+        }
+            if (MyState == State.WARMUP)
+        {
             View.RPC("ShowGame", RPCTargets.All);
+        }
+    }
+
+    private void FinishedLoadingAttacker()
+    {
+        Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities -= FinishedLoadingAttacker;
+        Players.MyPlayer.PlayAsGoalie = true;
+        Entry();
+    }
+
+    private void FinishedLoading()
+    {
+        Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities -= FinishedLoading;
+        StartCoroutine(Warmup());
     }
 
     [MyRPC]
-    private static void ShowGame()
+    private void ShowGame()
     {
         Debug.Log("MatchManager : ShowGame");
         ResourcesGetter.LoadAll();
@@ -271,7 +308,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     private void InvokeStartRound()
     {
-        Invoke("StartRound", 0.2f - TimeManagement.LatencyInMiliseconds);
+        Invoke("StartRound", 0.2f - TimeManagement.LatencyInMiliseconds/2);
     }
 
     private void StartRound()

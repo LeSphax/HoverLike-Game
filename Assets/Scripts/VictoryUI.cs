@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using System;
 
 public class VictoryUI : MonoBehaviour
 {
     public GameObject panel;
     public Text text;
+    public MenuInGame menu;
 
     private void Start()
     {
@@ -15,8 +14,7 @@ public class VictoryUI : MonoBehaviour
 
     public void ReturnToRoom()
     {
-        MyComponents.ResetGameComponents();
-        MyComponents.ResetScene();
+        menu.ReturnToRoom();
     }
 
     public void SetVictoryText(Team team)

@@ -22,12 +22,7 @@ namespace Navigation
             return Scenes.currentSceneId == Scenes.MainIndex;
         }
 
-        internal static void LoadScene(string scene)
-        {
-            LoadScene(scene, false, false);
-        }
-
-        internal static void LoadScene(string scene, bool fading, bool waitToShowNextLevel)
+        internal static void LoadScene(string scene, bool fading = false, bool waitToShowNextLevel =false)
         {
             Debug.Log("LoadScene");
             MyComponents.NetworkManagement.CurrentlyPlaying = scene == Scenes.Main;

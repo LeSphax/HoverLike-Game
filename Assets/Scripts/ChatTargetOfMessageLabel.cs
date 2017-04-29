@@ -1,38 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Text))]
-public class ChatTargetOfMessageLabel : MonoBehaviour {
-
+public class ChatTargetOfMessageLabel : MonoBehaviour
+{
+    private const string AllLabel = "[ALL] :";
+    private const string TeamLabel = "[TEAM] :";
     public ChatMessageWriter writer;
-    private Text text;
+    public Text text;
 
-    private void Awake()
+    public bool SendToAll
     {
-        text = GetComponent<Text>();
+        get
+        {
+            return text.text == AllLabel;
+        }
     }
 
     void OnEnable()
     {
-        writer.SendToAllActivated += SendToAll;
-        writer.SendToTeamActivated += SendToTeam;
+        writer.ChangeContext += ChangeContext;
     }
 
     void OnDisable()
     {
-        writer.SendToAllActivated -= SendToAll;
-        writer.SendToTeamActivated -= SendToTeam;
+        writer.ChangeContext -= ChangeContext;
     }
 
-    void SendToAll()
+    public void ChangeContext()
     {
-        text.text = "[ALL] :";
-    }
-
-    void SendToTeam()
-    {
-        text.text = "[TEAM] :";
+        if (text.text == AllLabel)
+            text.text = TeamLabel;
+        else if (text.text == TeamLabel)
+            text.text = AllLabel;
     }
 }

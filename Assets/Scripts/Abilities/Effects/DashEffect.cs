@@ -26,7 +26,6 @@ public class DashPersistentEffect : PersistentEffect
 
     public DashPersistentEffect(AbilitiesManager manager, Vector3 position) : base(manager)
     {
-
         myRigidbody = manager.GetComponent<Rigidbody>();
         
         //

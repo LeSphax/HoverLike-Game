@@ -46,7 +46,7 @@ Game_Started "You cannot join this room : The game has already started."
 Room_Full "You cannot join this room : The room is full."
 Connection_Failed "It was not possible to connect to the room. Maybe the game has already started or the room doesn't exist."
 Room_Creation_Failed "Impossible to create the room : A room with this name already exists."
-
+Got_Kicked "You got kicked from the room. %e%e I may have something to do with what you said about the host's mother."
 
 Settings_Problem "Some controls weren't assigned. %e%e Ok, we get it, you're a badass and you don't need every ability to win.%e I've got what you need, for more challenge try the combination Q,X,N,M,$"
 

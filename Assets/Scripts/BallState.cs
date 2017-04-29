@@ -156,7 +156,12 @@ public class BallState : SlideBall.MonoBehaviour
             DetachBall();
             View.RPC("PutAtStartPosition", RPCTargets.Others);
         }
-        gameObject.transform.position = MyComponents.Spawns.BallSpawn;
+        PutBallAtPosition(MyComponents.Spawns.BallSpawn);
+    }
+
+    public void PutBallAtPosition(Vector3 position)
+    {
+        gameObject.transform.position = position;
         if (MyComponents.NetworkManagement.isServer)
         {
             gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;

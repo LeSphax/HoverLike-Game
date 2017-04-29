@@ -85,9 +85,17 @@ public class PlayerInfo : PlayerView
     }
 
     [MyRPC]
-    public void LeaveRoom()
+    private void GetKicked()
     {
-        MyComponents.NetworkManagement.LeaveRoom();
+        Debug.LogError("Getting kicked");
+        Assert.IsTrue(View.isMine);
+        MyComponents.PopUp.Show(Language.Instance.texts["Got_Kicked"]);
+        MyComponents.RoomManager.GoBack();
+    }
+
+    public void KickPlayer()
+    {
+        View.RPC("GetKicked", Player.id);
     }
 
     [MyRPC]
