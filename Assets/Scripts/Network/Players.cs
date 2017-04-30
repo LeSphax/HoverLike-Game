@@ -215,6 +215,7 @@ namespace PlayerManagement
             players.Add(id, player);
             if (NewPlayerCreated != null)
                 NewPlayerCreated.Invoke(id);
+            MyComponents.NetworkManagement.SetNumberPlayers();
             return player;
         }
 
@@ -255,7 +256,7 @@ namespace PlayerManagement
 
         internal static void Remove(ConnectionId connectionId)
         {
-            Debug.LogError("Remove " + connectionId);
+            Debug.Log("Player with id " + connectionId + " has left");
             Destroy(players[connectionId].gameobjectAvatar);
             if (MyComponents.NetworkManagement.isServer)
             {
@@ -265,7 +266,7 @@ namespace PlayerManagement
             {
                 players.Remove(connectionId);
             }
-
+            MyComponents.NetworkManagement.SetNumberPlayers();
         }
 
         protected void FixedUpdate()

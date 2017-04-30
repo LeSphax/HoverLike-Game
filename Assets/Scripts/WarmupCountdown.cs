@@ -21,7 +21,7 @@ public class WarmupCountdown : Countdown
             if ((int)base.TimeLeft == matchEndCountdownDuration)
             {
                 matchEndCountdownDuration = -1;
-                matchEndCountdown.TimeLeft = base.TimeLeft;
+                matchEndCountdown.StartTimer(base.TimeLeft,"");
             }
         }
     }

@@ -40,12 +40,15 @@ namespace SlideBall
                 {
                     case State.IDLE:
                         bufferedMessages = null;
+                        ObservedComponent.InitBatchNb(-1);
                         break;
                     case State.CONNECTED:
                         bufferedMessages = null;
+                        ObservedComponent.InitBatchNb(-1);
                         break;
                     case State.SERVER:
                         bufferedMessages = new BufferedMessages(this);
+                        ObservedComponent.InitBatchNb(0);
                         break;
                     default:
                         break;
@@ -159,6 +162,11 @@ namespace SlideBall
             SendUserCommand(GET_ROOMS_COMMAND);
         }
 
+        public void SetNumberPlayers()
+        {
+            SendUserCommand(NetEventMessage.SET_NUMBER_PLAYERS,RoomName,Players.players.Count.ToString());
+        }
+
         public void Reset()
         {
             Debug.LogWarning("Reset Network");
@@ -221,7 +229,7 @@ namespace SlideBall
                     case NetEventType.RoomCreated:
                         {
                             //server initialized message received
-                            Debug.LogError("Room Created. Address: " + RoomName + "   " + evt.ConnectionId.id);
+                            Debug.Log("Room Created. Address: " + RoomName + "   " + evt.ConnectionId.id);
                             if (stateCurrent == State.IDLE)
                             {
                                 stateCurrent = State.SERVER;
@@ -299,14 +307,14 @@ namespace SlideBall
                             switch (stateCurrent)
                             {
                                 case State.CONNECTED:
-                                    Debug.LogError("Room closed. No incoming connections possible until restart.");
+                                    Debug.LogWarning("Room closed. No incoming connections possible until restart.");
                                     break;
                                 case State.IDLE:
                                     MyComponents.PopUp.Show(Language.Instance.texts["Cant_Create"] + "\n" + Language.Instance.texts["Feedback"]);
-                                    Debug.LogError("Didn't manage to create the server " + RoomName);
+                                    Debug.LogWarning("Didn't manage to create the server " + RoomName);
                                     break;
                                 case State.SERVER:
-                                    Debug.LogError("Room closed. Reseting connection");
+                                    Debug.LogWarning("Room closed. Reseting connection");
                                     break;
                             }
                             if (RoomClosed != null)

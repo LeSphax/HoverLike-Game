@@ -208,14 +208,12 @@ public class MatchManager : SlideBall.MonoBehaviour
         {
             if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
-                //Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().enabled = true;
                 Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities += FinishedLoadingAttacker;
                 Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(true);
 
             }
             if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             {
-                //Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().enabled = true;
                 Players.MyPlayer.PlayAsGoalie = false;
                 Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities += FinishedLoading;
                 Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(false);
@@ -319,7 +317,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     public void ManualEnd()
     {
-        matchCountdown.TimeLeft = 2;
+        matchCountdown.TimeLeft = 12;
     }
 
     [MyRPC]

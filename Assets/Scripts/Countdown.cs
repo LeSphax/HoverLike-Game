@@ -105,7 +105,7 @@ public class Countdown : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    protected virtual void StartTimer(float timeLeft, string endMessage)
+    public virtual void StartTimer(float timeLeft, string endMessage)
     {
         paused = false;
         TimeLeft = timeLeft - TimeManagement.LatencyInMiliseconds / 2000f;

@@ -17,8 +17,6 @@ public class BattleriteCamera : MonoBehaviour
     public float yMinLimit;
     public float yMaxLimit;
 
-    private float previousTime;
-
     private Vector3 basePosition
     {
         get
@@ -61,10 +59,8 @@ public class BattleriteCamera : MonoBehaviour
         float currentTime = TimeManagement.NetworkTimeInSeconds;
 
         transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.fixedDeltaTime);
-        previousTime = currentTime;
-
         transform.position = ClampPosition(transform.position);
-        //Debug.Log("Camera base displacement: " + (basePosition - previousBasePosition) + (transform.position - previousPosition));
+       // Debug.Log("Camera base displacement: " + (basePosition - previousBasePosition) + (transform.position - previousPosition));
 
         previousBasePosition = basePosition;
     }

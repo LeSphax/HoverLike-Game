@@ -18,11 +18,14 @@ namespace TimeSlow
         {
             foreach (var pair in ObjectsBeforeUpdate)
             {
-                Vector3 currentPosition = pair.Key.transform.position;
-                pair.Key.transform.position = currentPosition - ((currentPosition - pair.Value.position) * (1 - TimeSlowProportion));
+                if (!pair.Key.isKinematic)
+                {
+                    Vector3 currentPosition = pair.Key.transform.position;
+                    pair.Key.transform.position = currentPosition - ((currentPosition - pair.Value.position) * (1 - TimeSlowProportion));
 
-                Vector3 currentVelocity = pair.Key.velocity;
-                pair.Key.velocity = currentVelocity - ((currentVelocity - pair.Value.velocity) * (1 - TimeSlowProportion));
+                    Vector3 currentVelocity = pair.Key.velocity;
+                    pair.Key.velocity = currentVelocity - ((currentVelocity - pair.Value.velocity) * (1 - TimeSlowProportion));
+                }
             }
             ObjectsBeforeUpdate.Clear();
         }

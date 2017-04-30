@@ -16,6 +16,7 @@ public class NetEventMessage
     public const string OUTGOING = "9";
     public const string ASK_IF_ALLOWED_TO_ENTER = "10";
     public const string ALLOWED_TO_ENTER = "11";
+    public const string SET_NUMBER_PLAYERS = "12";
 
 
 

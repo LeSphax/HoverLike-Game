@@ -1,7 +1,6 @@
 ﻿
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public static class RequestParameters
 {
@@ -35,9 +34,11 @@ public static class RequestParameters
     }
 
     // This can be called from Start(), but not earlier
-    public static string GetValue(string key)
+    public static string GetAndRemoveValue(string key)
     {
-        return URLParameters[key];
+        string result = URLParameters[key];
+        URLParameters.Remove(key);
+        return result;
     }
 
     public static void SetRequestParameters(string parametersString)

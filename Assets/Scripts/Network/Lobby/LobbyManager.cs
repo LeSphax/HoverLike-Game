@@ -74,7 +74,7 @@ public class LobbyManager : MonoBehaviour
     {
         if (RequestParameters.HasKey("RoomName"))
         {
-            HeaderRoomName = RequestParameters.GetValue("RoomName");
+            HeaderRoomName = RequestParameters.GetAndRemoveValue("RoomName");
             MyComponents.NetworkManagement.ConnectToRoom(HeaderRoomName);
             MyComponents.NetworkManagement.ConnectionFailed += CreateHeaderRoom;
         }

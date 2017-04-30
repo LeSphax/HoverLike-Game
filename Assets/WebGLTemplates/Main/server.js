@@ -11,7 +11,7 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-    console.log(socket);
+    //console.log(socket);
     var ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
     socket.on('log', function (msg) {
         console.log(ip + ": " + msg)

@@ -8,32 +8,51 @@ using UnityEngine;
 public abstract class ObservedComponent : SlideBall.MonoBehaviour
 {
 
-    public static int lastReceivedBatchNumber = 0;
-    private static int batchNb = 0;
-     [NonSerialized]
+    private static int lastReceivedBatchNumber = -1;
+    public static int LastReceivedBatchNumber
+    {
+        get
+        {
+            return lastReceivedBatchNumber;
+        }
+        set
+        {
+            if (CurrentlyShownBatchNb == -1)
+            {
+                InitBatchNb(value - 3);
+            }
+            lastReceivedBatchNumber = value;
+        }
+    }
+
+    public static int currentlyShownBatchNb = -1;
+    public static int CurrentlyShownBatchNb
+    {
+        get
+        {
+            return currentlyShownBatchNb;
+        }
+        set
+        {
+            if (currentlyShownBatchNb != -1)
+                currentlyShownBatchNb = value;
+        }
+    }
+
+    [NonSerialized]
     public short observedId;
 
     public int sendRate = 60;
-
-    //TODO : use an int with a sliding window
-    private long sendId = 0;
 
     private static List<NetworkMessage> messagesBatch = new List<NetworkMessage>();
 
     private float shouldSendFloat;
 
-    public void StartUpdating()
-    {
-        //InvokeRepeating("SendPacket", 0, 1f / sendRate);
-    }
-
-
     public static void SendBatch()
     {
         if (messagesBatch.Count > 0)
         {
-            //Debug.LogError("Sending " + batchNb);
-            byte[] data = BitConverter.GetBytes(batchNb);
+            byte[] data = BitConverter.GetBytes(CurrentlyShownBatchNb);
             for (int i = 0; i < messagesBatch.Count; i++)
             {
                 // Debug.Log(data.Length + "   " + messagesBatch[i].data.Length);
@@ -42,8 +61,12 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
             }
             MyComponents.NetworkManagement.SendNetworkMessage(new NetworkMessage(MyComponents.NetworkViewsManagement.View.ViewId, MessageType.PacketBatch, data));
             messagesBatch.Clear();
-            batchNb++;
         }
+    }
+
+    internal static void InitBatchNb(int v)
+    {
+        currentlyShownBatchNb = v;
     }
 
     public virtual void PreparePacket()
@@ -61,11 +84,10 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
                 MessageFlags flags;
                 if (SetFlags(out flags))
                 {
-                    SendData(MessageType.ViewPacket, CreatePacket(sendId), flags);
+                    SendData(MessageType.ViewPacket, CreatePacket(), flags);
                 }
                 else
-                    SendData(MessageType.ViewPacket, CreatePacket(sendId));
-                sendId++;
+                    SendData(MessageType.ViewPacket, CreatePacket());
             }
         }
     }
@@ -83,11 +105,10 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
                     MessageFlags flags;
                     if (SetFlags(out flags))
                     {
-                        SendData(MessageType.ViewPacket, CreatePacket(sendId), flags);
+                        SendData(MessageType.ViewPacket, CreatePacket(), flags);
                     }
                     else
-                        SendData(MessageType.ViewPacket, CreatePacket(sendId));
-                    sendId++;
+                        SendData(MessageType.ViewPacket, CreatePacket());
                 }
             }
             sp.Stop();
@@ -95,7 +116,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
             sp = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < 1000; i++)
             {
-                CreatePacket(sendId);
+                CreatePacket();
             }
             sp.Stop();
             Debug.Log("Time Create Packet " + sp.ElapsedMilliseconds);
@@ -108,7 +129,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     public abstract void SimulationUpdate();
     public abstract bool ShouldBatchPackets();
 
-    protected abstract byte[] CreatePacket(long sendId);
+    protected abstract byte[] CreatePacket();
 
     public abstract void PacketReceived(ConnectionId id, byte[] data);
 

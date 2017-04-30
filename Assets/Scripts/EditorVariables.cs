@@ -4,7 +4,8 @@ using System.Collections;
 public class EditorVariables : MonoBehaviour
 {
 
-    private const string HEROKU_URL = "ws://sphaxtest.herokuapp.com";
+    private const string HEROKU_URL = "ws://slideball-signaling.herokuapp.com/";
+    private const string HEROKU_TEST_URL = "ws://slideball-signaling-test.herokuapp.com/";
     private const string BCS_URL = "wss://because-why-not.com:12777/chatapp";
 
     private const string LOCALHOST_URL = "ws://localhost:5000";
@@ -13,6 +14,7 @@ public class EditorVariables : MonoBehaviour
     {
         LOCALHOST,
         HEROKU,
+        HEROKU_TEST,
         BCS,
     }
 
@@ -28,6 +30,8 @@ public class EditorVariables : MonoBehaviour
                     return LOCALHOST_URL;
                 case Server.HEROKU:
                     return HEROKU_URL;
+                case Server.HEROKU_TEST:
+                    return HEROKU_TEST_URL;
                 case Server.BCS:
                     return BCS_URL;
                 default:

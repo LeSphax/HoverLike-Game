@@ -19,14 +19,17 @@ public class TeleportPersistentEffect : PersistentEffect
     {
         duration = TimeBeforeTeleportation;
         manager.controller.StopMoving();
+        manager.controller.GetComponent<Rigidbody>().isKinematic = true;
     }
 
     protected override void Apply(float dt)
     {
+
     }
 
     public override void StopEffect()
     {
         manager.transform.position = manager.controller.Player.SpawningPoint;
+        manager.controller.GetComponent<Rigidbody>().isKinematic = false;
     }
 }

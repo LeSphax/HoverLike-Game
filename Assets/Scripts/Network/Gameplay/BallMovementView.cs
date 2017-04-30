@@ -3,6 +3,7 @@ using Byn.Net;
 using UnityEngine;
 using UnityEngine.Assertions;
 using System.Collections.Generic;
+using Wintellect.PowerCollections;
 
 class BallMovementView : ObservedComponent
 {
@@ -13,17 +14,17 @@ class BallMovementView : ObservedComponent
 
     PacketHandler packetHandler;
 
-    private Queue<BallPacket> StateBuffer = new Queue<BallPacket>();
-    private BallPacket? currentPacket = null;
+    private OrderedSet<BallPacket> StateBuffer = new OrderedSet<BallPacket>();
+    private BallPacket currentPacket = null;
 
 
-    private BallPacket? nextPacket
+    private BallPacket nextPacket
     {
         get
         {
             if (StateBuffer.Count > 0)
             {
-                return StateBuffer.Peek();
+                return StateBuffer.GetFirst();
             }
             else
             {
@@ -60,9 +61,10 @@ class BallMovementView : ObservedComponent
 
     public override void SimulationUpdate()
     {
-        while (StateBuffer.Count > 0 && SimulationTime >= StateBuffer.Peek().timeSent)
+        while (StateBuffer.Count > 0 && CurrentlyShownBatchNb > StateBuffer.GetFirst().batchNumber)
         {
-            currentPacket = StateBuffer.Dequeue();
+            currentPacket = StateBuffer.GetFirst();
+            currentPacket = StateBuffer.RemoveFirst();
         }
 
         if (MyComponents.BallState.IsAttached())
@@ -80,18 +82,18 @@ class BallMovementView : ObservedComponent
     {
         if (nextPacket != null)
         {
-            float completion = (SimulationTime - currentPacket.Value.timeSent) / (nextPacket.Value.timeSent - currentPacket.Value.timeSent);
-            transform.position = Vector3.Lerp(currentPacket.Value.position, nextPacket.Value.position, completion);
+            float completion = (CurrentlyShownBatchNb - currentPacket.batchNumber) / (nextPacket.batchNumber - currentPacket.batchNumber);
+            transform.position = Vector3.Lerp(currentPacket.position, nextPacket.position, completion);
         }
         else
         {
-            transform.position = currentPacket.Value.position;
+            transform.position = currentPacket.position;
         }
     }
 
-    protected override byte[] CreatePacket(long sendId)
+    protected override byte[] CreatePacket()
     {
-        return new BallPacket(transform.position, TimeManagement.NetworkTimeInSeconds).Serialize();
+        return new BallPacket(transform.position).Serialize();
     }
 
     public override bool ShouldBatchPackets()
@@ -102,7 +104,7 @@ class BallMovementView : ObservedComponent
     public override void PacketReceived(ConnectionId id, byte[] data)
     {
         BallPacket newPacket = BallPacket.Deserialize(data);
-        StateBuffer.Enqueue(newPacket);
+        StateBuffer.Add(newPacket);
     }
 
     protected override bool IsSendingPackets()
@@ -110,30 +112,38 @@ class BallMovementView : ObservedComponent
         return MyComponents.NetworkManagement.isServer;
     }
 
-    [Serializable]
-    public struct BallPacket
+    public class BallPacket : IComparable
     {
         public Vector3 position;
-        public float timeSent;
+        public int batchNumber;
 
-        public BallPacket(Vector3 position, float time) : this()
+        public BallPacket(Vector3 position)
         {
             this.position = position;
-            this.timeSent = time;
+        }
+
+        public BallPacket(Vector3 position, int batchNumber) : this(position)
+        {
+            this.batchNumber = batchNumber;
         }
 
         public byte[] Serialize()
         {
-            byte[] data = NetworkExtensions.SerializeVector3(position);
-            return data.Concatenate(BitConverter.GetBytes(timeSent));
+            return NetworkExtensions.SerializeVector3(position);
         }
 
         public static BallPacket Deserialize(byte[] data)
         {
             int currentIndex = 0;
             Vector3 position = NetworkExtensions.DeserializeVector3(data, ref currentIndex);
-            float timeSent = BitConverter.ToSingle(data, currentIndex);
-            return new BallPacket(position, timeSent);
+            return new BallPacket(position, ObservedComponent.LastReceivedBatchNumber);
+        }
+
+        public int CompareTo(object obj)
+        {
+            Assert.IsTrue(obj is BallPacket);
+            BallPacket other = (BallPacket)obj;
+            return batchNumber - other.batchNumber;
         }
     }
 }

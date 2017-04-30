@@ -36,10 +36,6 @@ public class MyNetworkView : ANetworkView
     protected override void Start()
     {
         base.Start();
-        for (int i = 0; i < observedComponents.Count; i++)
-        {
-            observedComponents[i].StartUpdating();
-        }
         if (!init)
         {
             init = true;
@@ -50,11 +46,6 @@ public class MyNetworkView : ANetworkView
     public bool TryGetRPCName(short methodId, out string name)
     {
         return rpcManager.TryGetRPCName(methodId, out name);
-    }
-
-    private void Update()
-    {
-        //foreach (ObservedComponent component in observedComponents)
     }
 
     void FixedUpdate()
@@ -74,14 +65,11 @@ public class MyNetworkView : ANetworkView
             }
     }
 
-    private void LateUpdate()
-    {
-        //ObservedComponent.SendBatch();
-    }
-
     static void MyLateFixedUpdate()
     {
-        ObservedComponent.SendBatch();
+        if (MyComponents.NetworkManagement.isServer)
+            ObservedComponent.SendBatch();
+        ObservedComponent.CurrentlyShownBatchNb++;
     }
 
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)

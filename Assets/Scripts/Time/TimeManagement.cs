@@ -65,7 +65,7 @@ public class TimeManagement : ObservedComponent
         //DoNothing
     }
 
-    protected override byte[] CreatePacket(long sendId)
+    protected override byte[] CreatePacket()
     {
         return strategy.CreatePacket();
     }
