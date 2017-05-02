@@ -111,8 +111,6 @@ public class PlayerMovementManager : ObservedComponent
 
     public override void SimulationUpdate()
     {
-        //Debug.Log(CurrentlyShownBatchNb + "     " + LastReceivedBatchNumber + "     " + StateBuffer.GetFirst().batchNumber);
-
         while (StateBuffer.Count > 0 && CurrentlyShownBatchNb > StateBuffer.GetFirst().batchNumber)
         {
             currentPacket = StateBuffer.GetFirst();
@@ -153,10 +151,10 @@ public class PlayerMovementManager : ObservedComponent
         return MyComponents.NetworkManagement.isServer;
     }
 
-    public void Brake()
+    public void Brake(bool activate)
     {
         Assert.IsTrue(strategy.GetType() == typeof(AttackerMovementStrategy));
-        ((AttackerMovementStrategy)strategy).Brake();
+        ((AttackerMovementStrategy)strategy).Brake(activate);
     }
 
     public void Jump()

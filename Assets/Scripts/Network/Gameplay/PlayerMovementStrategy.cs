@@ -38,8 +38,11 @@ public abstract class PlayerMovementStrategy : MonoBehaviour
         {
             Move();
         }
+        OtherMovementEffects();
     }
 
     protected abstract void Move();
+    protected virtual void OtherMovementEffects() { }
+
     protected abstract void StopMoving();
 }

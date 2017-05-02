@@ -130,7 +130,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     private void SuddenDeath()
     {
-        Debug.LogError("SuddenDeath");
+        Debug.Log("SuddenDeath");
         matchCountdown.StopTimerAndSetText(Language.Instance.texts["Sudden_Death"]);
     }
 
@@ -138,7 +138,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void EndMatch()
     {
-        Debug.LogError("EndMatch " + Scoreboard.GetWinningTeam());
+        Debug.Log("EndMatch " + Scoreboard.GetWinningTeam());
         //Don't play the gong sound at the same time as the "But" sound
 
         Team winningTeam = Scoreboard.GetWinningTeam();
@@ -359,5 +359,10 @@ public class MatchManager : SlideBall.MonoBehaviour
                 //Do nothing
                 break;
         }
+    }
+
+    private void OnDestroy()
+    {
+        Players.PlayerOwningBallChanged -= BallChangedOwner;
     }
 }

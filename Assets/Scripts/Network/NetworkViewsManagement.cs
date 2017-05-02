@@ -54,7 +54,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
             if (pair.Value == null)
             {
                 networkViews.Remove(pair.Key);
-                Debug.LogError("Remove view " + pair.Key);
+                Debug.Log("Remove view " + pair.Key);
             }
         }
     }
@@ -176,7 +176,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
         else if (networkViews.ContainsKey(message.viewId) && message.isSceneDependant())
         {
-            Debug.LogError("Message received in wrong scene " + Scenes.currentSceneId + "  vs " + message.sceneId + "   " + message);
+            Debug.LogWarning("Message received in wrong scene " + Scenes.currentSceneId + "  vs " + message.sceneId + "   " + message);
             if (networkViews.ContainsKey(message.viewId))
             {
                 Debug.LogError(networkViews[message.viewId] + "   " + BitConverter.ToInt16(message.data,0));
@@ -188,9 +188,9 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
         else
         {
-            if (logCount < 5)
+            if (logCount < 30)
             {
-                Debug.LogError("No view was registered with this Id " + message.viewId + "\n" + PrintViews());
+                Debug.LogWarning("No view was registered with this Id " + message.viewId + "\n" + PrintViews());
                 logCount++;
             }
         }

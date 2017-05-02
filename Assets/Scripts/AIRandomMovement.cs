@@ -65,7 +65,7 @@ namespace AbilitiesManagement
 
         IEnumerator CoUseAllAbilities(bool attacker)
         {
-            Debug.LogWarning("Use All Abilities " + attacker);
+            Debug.Log("Use All Abilities " + attacker);
             noInvocation = true;
             Move(Vector3.zero);
             yield return new WaitForSeconds(0.3f);

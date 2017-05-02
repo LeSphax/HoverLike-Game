@@ -16,13 +16,14 @@ public class BattleriteCamera : MonoBehaviour
     public float xMaxLimit;
     public float yMinLimit;
     public float yMaxLimit;
+    public Vector3 offset;
 
     private Vector3 basePosition
     {
         get
         {
             if (Players.MyPlayer != null && Players.MyPlayer.controller != null)
-                return startPosition + Vector3.forward * Players.MyPlayer.controller.transform.position.z + Vector3.right * Players.MyPlayer.controller.transform.position.x;
+                return startPosition + Vector3.forward * Players.MyPlayer.controller.transform.position.z + Vector3.right * Players.MyPlayer.controller.transform.position.x + offset;
             else
                 return transform.localPosition;
         }

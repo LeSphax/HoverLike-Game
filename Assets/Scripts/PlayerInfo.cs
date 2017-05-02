@@ -87,7 +87,7 @@ public class PlayerInfo : PlayerView
     [MyRPC]
     private void GetKicked()
     {
-        Debug.LogError("Getting kicked");
+        Debug.Log("Getting kicked");
         Assert.IsTrue(View.isMine);
         MyComponents.PopUp.Show(Language.Instance.texts["Got_Kicked"]);
         MyComponents.RoomManager.GoBack();
@@ -101,7 +101,6 @@ public class PlayerInfo : PlayerView
     [MyRPC]
     private void PlayEnterRoomSound()
     {
-        Debug.Log(gameObject.name + " PlayEnter");
         GetComponent<AudioSource>().Play();
     }
 

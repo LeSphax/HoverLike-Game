@@ -13,11 +13,11 @@ public class DetectPlayersOnCage : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("OnCollisiionEnter " + collision.gameObject.name + "   " + collision.gameObject.tag);
+        //Debug.Log("OnCollisiionEnter " + collision.gameObject.name + "   " + collision.gameObject.tag);
         GameObject player = collision.gameObject;
         if (LayersGetter.IsAttacker(collision.gameObject.layer))
         {
-            Debug.Log("Add gameobject " + player.name);
+            //Debug.Log("Add gameobject " + player.name);
             playersOnCage.Add(player);
             Coroutine coroutine = StartCoroutine(RemovePlayerOnCage(player, delayTime));
             playersRemoval.Add(player, coroutine);

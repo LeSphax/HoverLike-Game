@@ -180,4 +180,9 @@ public class Countdown : SlideBall.MonoBehaviour
             audioSource.Play();
         }
     }
+
+    private void OnDestroy()
+    {
+        TimerFinished = null;
+    }
 }

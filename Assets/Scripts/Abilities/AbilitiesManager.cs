@@ -104,10 +104,10 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
-        private void Brake()
+        private void Brake(bool activate)
         {
             if (CanUseAbility())
-                controller.movementManager.Brake();
+                controller.movementManager.Brake(activate);
         }
 
 

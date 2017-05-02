@@ -55,14 +55,14 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
     private void ActivateAI()
     {
         activateAI = !activateAI;
-                Debug.LogError("ActivateAI  " + activateAI);
+                Debug.Log("ActivateAI  " + activateAI);
     }
 
     [MyRPC]
     private void ActivateOnServer()
     {
         AIRandomMovement.activateOnServer = !AIRandomMovement.activateOnServer;
-        Debug.LogError("ActivateOnServer  " + AIRandomMovement.activateOnServer);
+        Debug.Log("ActivateOnServer  " + AIRandomMovement.activateOnServer);
     }
 
 }

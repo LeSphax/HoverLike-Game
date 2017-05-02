@@ -78,11 +78,17 @@ var WebRtcDataPeer = function(e) {
     };
     t.prototype.SendData = function(e, t) {
         var n = e;
-        if (t) {
-            this.mReliableDataChannel.send(n)
-        } else {
-            this.mUnreliableDataChannel.send(n)
-        }
+		try {
+			if (t) {
+				this.mReliableDataChannel.send(n)
+			} else {
+				this.mUnreliableDataChannel.send(n)
+			}
+		}
+		catch(err) {
+			console.error("Could not send data of type reliable: " + t + " with error " + err);
+		}
+        
     };
     t.prototype.DequeueEvent = function(e) {
         {

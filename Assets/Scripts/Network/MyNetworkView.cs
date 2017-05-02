@@ -68,8 +68,25 @@ public class MyNetworkView : ANetworkView
     static void MyLateFixedUpdate()
     {
         if (MyComponents.NetworkManagement.isServer)
+        {
             ObservedComponent.SendBatch();
-        ObservedComponent.CurrentlyShownBatchNb++;
+            ObservedComponent.BatchNumberToSend++;
+        }
+        else
+        {
+            ObservedComponent.CurrentlyShownBatchNb++;
+            if (ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb > 5)
+            {
+                ObservedComponent.CurrentlyShownBatchNb = ObservedComponent.TargetBatchNumber;
+            }
+            else
+            {
+                ObservedComponent.CurrentlyShownBatchNb = Mathf.Lerp(ObservedComponent.CurrentlyShownBatchNb, ObservedComponent.TargetBatchNumber, Time.fixedDeltaTime * 3);
+            }
+        }
+        //Debug.Log(ObservedComponent.CurrentlyShownBatchNb
+        //    + "     " + ObservedComponent.LastReceivedBatchNumber +
+        //    "    " + (ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb));
     }
 
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)

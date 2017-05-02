@@ -50,9 +50,10 @@ public class EffectsManager : SlideBall.MonoBehaviour
     {
         GameObject source = Instantiate(ResourcesGetter.TempAudioSourcePrefab);
         source.transform.position = point;
-        source.GetComponent<AudioSource>().clip = clip;
-        source.GetComponent<AudioSource>().volume = volume;
-        source.GetComponent<AudioSource>().Play();
+        AudioSource audioSource = source.GetComponent<AudioSource>();
+        audioSource.clip = clip;
+        audioSource.volume = volume;
+        audioSource.Play();
     }
 
 }

@@ -258,7 +258,9 @@ public static class MyComponents
         {
             if (chatManager == null)
             {
-                chatManager = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<ChatManager>();
+                GameObject go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts);
+                if (go != null)
+                    chatManager = go.GetComponent<ChatManager>();
             }
             return chatManager;
         }

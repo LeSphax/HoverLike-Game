@@ -40,15 +40,15 @@ namespace SlideBall
                 {
                     case State.IDLE:
                         bufferedMessages = null;
-                        ObservedComponent.InitBatchNb(-1);
+                        ObservedComponent.CurrentlyShownBatchNb = -1;
                         break;
                     case State.CONNECTED:
                         bufferedMessages = null;
-                        ObservedComponent.InitBatchNb(-1);
+                        ObservedComponent.CurrentlyShownBatchNb = -1;
                         break;
                     case State.SERVER:
                         bufferedMessages = new BufferedMessages(this);
-                        ObservedComponent.InitBatchNb(0);
+                        ObservedComponent.BatchNumberToSend = 0;
                         break;
                     default:
                         break;
@@ -132,7 +132,7 @@ namespace SlideBall
 
         private void Setup()
         {
-            Debug.LogWarning("Setup Network");
+            Debug.Log("Setup Network");
             mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(EditorVariables.ServerURL);
             if (mNetwork != null)
             {
@@ -169,7 +169,7 @@ namespace SlideBall
 
         public void Reset()
         {
-            Debug.LogWarning("Reset Network");
+            Debug.Log("Reset Network");
             Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
             stateCurrent = State.IDLE;
             mConnections = new List<ConnectionId>();
@@ -270,11 +270,11 @@ namespace SlideBall
                                 Reset();
                                 MyComponents.PopUp.Show(Language.Instance.texts["Room_Creation_Failed"]);
                             }
-                            Debug.LogError("Room creation failed " + evt.RawData);
+                            Debug.LogWarning("Room creation failed " + evt.RawData);
                         }
                         break;
                     case NetEventType.RoomJoinFailed:
-                        Debug.LogError("Room join failed " + evt.RawData);
+                        Debug.LogWarning("Room join failed " + evt.RawData);
 
                         if (evt.RawData != null)
                         {
@@ -349,7 +349,7 @@ namespace SlideBall
                         }
                         break;
                     default:
-                        Debug.LogError("The signaling network shouldn't receive that type of events " + evt.Type + "   " + evt.Info + "    " + evt.MessageData);
+                        Debug.LogWarning("The signaling network shouldn't receive that type of events " + evt.Type + "   " + evt.Info + "    " + evt.MessageData);
                         break;
 
                 }
@@ -368,7 +368,7 @@ namespace SlideBall
                     //user runs the server and a new client connected
                     case NetEventType.NewConnection:
                         {
-                            Debug.LogError("NewConnection " + evt.Info + "  " + evt.ConnectionId.id);
+                            Debug.Log("NewConnection " + evt.Info + "  " + evt.ConnectionId.id);
 
                             mConnections.Add(evt.ConnectionId);
 
@@ -387,7 +387,7 @@ namespace SlideBall
                         break;
                     case NetEventType.ConnectionFailed:
                         {
-                            Debug.LogError("Connection to peer failed " + stateCurrent + "    " + (string)evt.RawData);
+                            Debug.LogWarning("Connection to peer failed " + stateCurrent + "    " + (string)evt.RawData);
                             //MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
                             if (ConnectionFailed != null)
                                 ConnectionFailed.Invoke();
@@ -399,10 +399,10 @@ namespace SlideBall
                             //A connection was disconnected
                             //If this was the client then he was disconnected from the server
                             //if it was the server this just means that one of the clients left
-                            Debug.LogError("Local Connection ID " + evt.ConnectionId + " disconnected");
+                            Debug.Log("Local Connection ID " + evt.ConnectionId + " disconnected");
                             if (isServer == false)
                             {
-                                Debug.LogError("Host disconnected ");
+                                Debug.Log("Host disconnected ");
                                 if (stateCurrent == State.CONNECTED)
                                 {
                                     MyComponents.PopUp.Show(Language.Instance.texts["Host_Disconnected"]);
@@ -414,7 +414,7 @@ namespace SlideBall
                             {
                                 mConnections.Remove(evt.ConnectionId);
                                 Players.Remove(evt.ConnectionId);
-                                Debug.LogError("User " + evt.ConnectionId + " left the room.");
+                                Debug.Log("User " + evt.ConnectionId + " left the room.");
                             }
                         }
                         break;
@@ -561,7 +561,7 @@ namespace SlideBall
             RoomName = roomName;
             mNetwork.ConnectToRoom(roomName);
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
-            Debug.LogError("Connecting to room : " + roomName + " ...");
+            Debug.Log("Connecting to room : " + roomName + " ...");
         }
 
         private void EnsureLength(string roomName)
@@ -579,7 +579,7 @@ namespace SlideBall
             RoomName = roomName;
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
 
-            Debug.LogError("CreateRoom " + roomName);
+            Debug.Log("CreateRoom " + roomName);
         }
 
         private void ClosePopUp()

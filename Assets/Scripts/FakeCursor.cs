@@ -30,7 +30,7 @@ public class FakeCursor : BaseInputModule
         base.Start();
         if (cursorObject == null || m_eventSystem == null)
         {
-            Debug.LogError("Set the game objects in the cursor module.");
+            Debug.Log("Set the game objects in the cursor module.");
             GameObject.Destroy(gameObject);
         }
     }

@@ -6,7 +6,6 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
 {
     private float BRAKE_AMOUNT;
     private bool braking;
-    private bool hasBraked;
     private const float JUMP_FORCE = 60f;
 
     [SerializeField]
@@ -20,7 +19,7 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
     protected override void Awake()
     {
         base.Awake();
-        BRAKE_AMOUNT = ACCELERATION * 5 / 7;
+        BRAKE_AMOUNT = ACCELERATION * 4 / 7;
     }
 
     public void ClampPlayerVelocity()
@@ -39,35 +38,31 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
         ClampPlayerVelocity();
     }
 
-    protected override void StopMoving()
+    protected override void OtherMovementEffects()
     {
-    }
-
-    internal void Brake()
-    {
-        //If the player just started to brake, cancel his target.
-        if (!braking)
-        {
-            TargetPosition = null;
-            braking = true;
-        }
-        hasBraked = true;
         Vector3 currentVelocity = myRigidbody.velocity;
-        if (currentVelocity.magnitude != 0)
+        if (braking && currentVelocity.magnitude != 0)
         {
             myRigidbody.velocity -= BRAKE_AMOUNT * Time.fixedDeltaTime * Vector3.Normalize(currentVelocity);
         }
     }
 
+    protected override void StopMoving()
+    {
+    }
+
+    internal void Brake(bool activate)
+    {
+        //If the player just started to brake, cancel his target.
+        if (activate)
+        {
+            TargetPosition = null;
+        }
+        braking = activate;
+    }
+
     internal void Jump()
     {
         myRigidbody.AddForce(Vector3.up * JUMP_FORCE, ForceMode.VelocityChange);
-    }
-
-    private void LateUpdate()
-    {
-        if (!hasBraked)
-            braking = false;
-        hasBraked = false;
     }
 }

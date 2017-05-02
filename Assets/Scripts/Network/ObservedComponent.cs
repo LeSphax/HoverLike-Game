@@ -8,6 +8,14 @@ using UnityEngine;
 public abstract class ObservedComponent : SlideBall.MonoBehaviour
 {
 
+    public static int TargetBatchNumber
+    {
+        get
+        {
+            return LastReceivedBatchNumber - 2;
+        }
+    }
+
     private static int lastReceivedBatchNumber = -1;
     public static int LastReceivedBatchNumber
     {
@@ -17,16 +25,18 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
         }
         set
         {
+            lastReceivedBatchNumber = value;
             if (CurrentlyShownBatchNb == -1)
             {
-                InitBatchNb(value - 3);
+                currentlyShownBatchNb = TargetBatchNumber;
             }
-            lastReceivedBatchNumber = value;
         }
     }
 
-    public static int currentlyShownBatchNb = -1;
-    public static int CurrentlyShownBatchNb
+    public static int BatchNumberToSend = 0;
+
+    public static float currentlyShownBatchNb = -1;
+    public static float CurrentlyShownBatchNb
     {
         get
         {
@@ -52,7 +62,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     {
         if (messagesBatch.Count > 0)
         {
-            byte[] data = BitConverter.GetBytes(CurrentlyShownBatchNb);
+            byte[] data = BitConverter.GetBytes(BatchNumberToSend);
             for (int i = 0; i < messagesBatch.Count; i++)
             {
                 // Debug.Log(data.Length + "   " + messagesBatch[i].data.Length);
@@ -62,11 +72,6 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
             MyComponents.NetworkManagement.SendNetworkMessage(new NetworkMessage(MyComponents.NetworkViewsManagement.View.ViewId, MessageType.PacketBatch, data));
             messagesBatch.Clear();
         }
-    }
-
-    internal static void InitBatchNb(int v)
-    {
-        currentlyShownBatchNb = v;
     }
 
     public virtual void PreparePacket()

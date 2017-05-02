@@ -9,7 +9,7 @@ public class Goal : MonoBehaviour
     {
         if (EditorVariables.CanScoreGoals && MyComponents.NetworkManagement.isServer && collider.gameObject.tag == Tags.Ball)
         {
-            if (!MyComponents.BallState.IsAttached())
+            if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.UnCatchable)
                 MyComponents.MatchManager.TeamScored(teamNumber);
         }
     }

@@ -46,7 +46,7 @@ namespace Byn.Net.Native
 
         public ServerConnection(string url)
         {
-            Debug.LogWarning("New server connection " + url);
+            Debug.Log("New server connection " + url);
             this.websocket = new WebSocketConnection(this, url);
         }
 
@@ -304,7 +304,7 @@ namespace Byn.Net.Native
             }
             else
             {
-                Debug.LogError("Can't create room, not connected to the signaling server");
+                Debug.LogWarning("Can't create room, not connected to the signaling server");
             }
         }
 
@@ -316,7 +316,7 @@ namespace Byn.Net.Native
                 this.mServerStatus = WebsocketServerStatus.Starting;
                 return;
             }
-            Debug.LogError("Already connected to the server");
+            Debug.LogWarning("Already connected to the server");
             //this.EnqueueIncoming(new NetworkEvent(NetEventType.ServerConnectionFailed, ConnectionId.INVALID, "Already connected to the server"));
         }
 

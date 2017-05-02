@@ -1,9 +1,15 @@
 ﻿using PlayerManagement;
 
-public class BrakeTargeting : AbilityTargeting
+public class BrakeTargeting: AbilityTargeting
 {
     public override void ChooseTarget(CastOnTarget callback)
     {
-        callback.Invoke(true,Players.MyPlayer.controller);
+        Players.MyPlayer.controller.abilitiesManager.View.RPC("Brake", RPCTargets.Server, true);
+    }
+
+    public override void CancelTargeting()
+    {
+        Players.MyPlayer.controller.abilitiesManager.View.RPC("Brake", RPCTargets.Server, false);
     }
 }
+

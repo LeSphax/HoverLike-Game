@@ -19,7 +19,7 @@ public class VictoryPose : SlideBall.MonoBehaviour
 
     public void SetVictoryPose(Team team)
     {
-        Debug.LogError("SetVictoryPose");
+        Debug.Log("SetVictoryPose");
         switch (team)
         {
             case Team.BLUE:
