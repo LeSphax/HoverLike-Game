@@ -6,8 +6,6 @@ public class Countdown : SlideBall.MonoBehaviour
     [SerializeField]
     protected Text text;
 
-    protected string endMessage;
-
     protected AudioSource audioSource;
 
     public AudioClip tickSound;
@@ -16,7 +14,7 @@ public class Countdown : SlideBall.MonoBehaviour
 
     public event EmptyEventHandler TimerFinished;
 
-    private bool paused;
+    protected bool paused = true;
 
     [SerializeField]
     private float timeLeft = -1;
@@ -35,11 +33,7 @@ public class Countdown : SlideBall.MonoBehaviour
             }
             else
             {
-                if (ShownNumber == 0)
-                {
-                    text.text = endMessage;
-                }
-                else if (ShownNumber > 60)
+                if (ShownNumber > 60)
                     if (ShownNumber % 60 >= 10)
                         text.text = "" + ShownNumber / 60 + ":" + ShownNumber % 60;
                     else
@@ -105,12 +99,9 @@ public class Countdown : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    public virtual void StartTimer(float timeLeft, string endMessage)
+    public virtual void StartTimer(float timeLeft)
     {
-        paused = false;
         TimeLeft = timeLeft - TimeManagement.LatencyInMiliseconds / 2000f;
-        this.endMessage = endMessage;
-        PlayTickSound();
     }
 
     public virtual void PauseTimer(bool pause)
@@ -136,7 +127,6 @@ public class Countdown : SlideBall.MonoBehaviour
     [MyRPC]
     protected void StopTimer()
     {
-        TimerFinished = null;
         TimeLeft = -1;
         paused = true;
     }

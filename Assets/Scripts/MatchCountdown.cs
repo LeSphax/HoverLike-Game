@@ -1,27 +1,28 @@
 ﻿using UnityEngine;
 
-public class WarmupCountdown : Countdown
+public class MatchCountdown : Countdown
 {
 
     [SerializeField]
     private GameObject readyButton;
     [SerializeField]
     private GameObject warmupInfo;
-    [SerializeField]
-    private Countdown matchEndCountdown;
 
     private short syncId;
-    private int matchEndCountdownDuration = -1;
+    private float timeToCallCloseToEnd = -1;
+
+    public event EmptyEventHandler CloseToEnd;
 
     public override float TimeLeft
     {
         set
         {
             base.TimeLeft = value;
-            if ((int)base.TimeLeft == matchEndCountdownDuration)
+            if (base.TimeLeft < timeToCallCloseToEnd)
             {
-                matchEndCountdownDuration = -1;
-                matchEndCountdown.StartTimer(base.TimeLeft,"");
+                if (CloseToEnd != null)
+                    CloseToEnd.Invoke();
+                CloseToEnd = null;
             }
         }
     }
@@ -31,6 +32,19 @@ public class WarmupCountdown : Countdown
         base.Awake();
         warmupInfo.SetActive(false);
         readyButton.SetActive(false);
+    }
+
+    public void RegisterCloseToEnd(EmptyEventHandler callback, float timeToCall, bool doRegister = true)
+    {
+        if (doRegister)
+        {
+            timeToCallCloseToEnd = timeToCall;
+            CloseToEnd += callback;
+        }
+        else
+        {
+            CloseToEnd -= callback;
+        }
     }
 
     //Called by MatchManager
@@ -52,10 +66,9 @@ public class WarmupCountdown : Countdown
     }
 
     [MyRPC]
-    protected void StartMatch(float timeLeft, int matchEndCountdownDuration)
+    protected void StartMatch(float timeLeft)
     {
-        base.StartTimer(timeLeft, "0");
-        this.matchEndCountdownDuration = matchEndCountdownDuration;
+        base.StartTimer(timeLeft);
         warmupInfo.SetActive(false);
     }
 }

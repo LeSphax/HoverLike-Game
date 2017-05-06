@@ -16,7 +16,7 @@
 
 		//#pragma vertex vert
 		//#pragma fragment frag
-		#pragma surface surf Lambert alpha
+		#pragma surface surf NoLighting alpha noforwardadd
 
 			//#include "UnityCG.cginc"
 
@@ -34,6 +34,13 @@
 				float4 color : Color;
 				float3 worldPos;
 			};
+
+			half4 LightingNoLighting(SurfaceOutput s, fixed3 lightDir, fixed atten) { 
+			half4 c;
+           c.rgb = s.Albedo;
+           c.a = s.Alpha;
+           return c;
+		   }
 
 			// r = radius
 			// d = distance

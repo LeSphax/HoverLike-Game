@@ -46,7 +46,7 @@ public class Scoreboard : SlideBall.MonoBehaviour
             Audio.Play();
     }
 
-    public static void IncrementTeamScore(int teamNumber)
+    public static bool IncrementTeamScore(int teamNumber)
     {
         if (MyComponents.NetworkManagement.isServer)
         {
@@ -55,9 +55,14 @@ public class Scoreboard : SlideBall.MonoBehaviour
                 timeLastGoal = Time.realtimeSinceStartup;
                 scores[teamNumber] += 1;
                 scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, scores, true);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
-
+        return false;
     }
 
     public static void ResetScore()

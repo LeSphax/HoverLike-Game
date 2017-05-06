@@ -28,6 +28,7 @@ public class AvatarSettings
 
     public enum AvatarSettingsTypes
     {
+        NONE,
         GOALIE,
         ATTACKER,
     }
@@ -50,16 +51,19 @@ public class AvatarSettings
         data = new Dictionary<AvatarSettingsTypes, AvatarSettings>();
         foreach (AvatarSettingsTypes type in Enum.GetValues(typeof(AvatarSettingsTypes)))
         {
-            AvatarSettings a = new AvatarSettings();
-            Dictionary<string, string> settings = Settings.GetSettings(GetFileName(type));
-            a.MESH_NAME = settings["MESH_NAME"];
-            a.acceleration = float.Parse(settings["acceleration"]);
-            a.maxSpeed = float.Parse(settings["maxSpeed"]);
-            a.catchColliderRadius = float.Parse(settings["catchColliderRadius"]);
-            a.catchColliderZPos = float.Parse(settings["catchColliderZPos"]);
-            a.catchColliderHeight = float.Parse(settings["catchColliderHeight"]);
-            a.abilities = Settings.ParseTable(settings["abilities"]);
-            data.Add(type, a);
+            if (type != AvatarSettingsTypes.NONE)
+            {
+                AvatarSettings a = new AvatarSettings();
+                Dictionary<string, string> settings = Settings.GetSettings(GetFileName(type));
+                a.MESH_NAME = settings["MESH_NAME"];
+                a.acceleration = float.Parse(settings["acceleration"]);
+                a.maxSpeed = float.Parse(settings["maxSpeed"]);
+                a.catchColliderRadius = float.Parse(settings["catchColliderRadius"]);
+                a.catchColliderZPos = float.Parse(settings["catchColliderZPos"]);
+                a.catchColliderHeight = float.Parse(settings["catchColliderHeight"]);
+                a.abilities = Settings.ParseTable(settings["abilities"]);
+                data.Add(type, a);
+            }
         }
     }
 }

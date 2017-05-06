@@ -1,23 +1,19 @@
 fileFormatVersion: 2
-guid: 2b99f483a7276c042b746c284f2668b3
-timeCreated: 1474563584
+guid: a9c7e60296b84b94f8392a8422f31685
+timeCreated: 1494059212
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: Camera
-    100002: Cylinder
-    100004: //RootNode
-    100006: Lamp
-    400000: Camera
-    400002: Cylinder
-    400004: //RootNode
-    400006: Lamp
-    2300000: Cylinder
-    3300000: Cylinder
-    4300000: Cylinder
+    100000: //RootNode
+    100002: pasted__pasted__pasted__Sphere01_pasted__pasted__group_pasted__group35_group
+    400000: //RootNode
+    400002: pasted__pasted__pasted__Sphere01_pasted__pasted__group_pasted__group35_group
+    2300000: pasted__pasted__pasted__Sphere01_pasted__pasted__group_pasted__group35_group
+    3300000: pasted__pasted__pasted__Sphere01_pasted__pasted__group_pasted__group35_group
+    4300000: pasted__pasted__pasted__Sphere01_pasted__pasted__group_pasted__group35_group
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
@@ -78,7 +74,7 @@ ModelImporter:
     rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
-    skeletonHasParents: 0
+    skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 0
   humanoidOversampling: 1

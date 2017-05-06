@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 11441008}
   - component: {fileID: 114000010466602004}
   - component: {fileID: 114000011786650558}
+  - component: {fileID: 114128303843457040}
   m_Layer: 9
   m_Name: Ball
   m_TagString: Ball
@@ -351,7 +352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1000012789302824
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,6 +523,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DestroyFullObject: 1
+--- !u!114 &114128303843457040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 144164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -900027084, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!135 &135000012004152544
 SphereCollider:
   m_ObjectHideFlags: 1
