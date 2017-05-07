@@ -1,7 +1,2 @@
 MESH_NAME : GoalieMesh
-acceleration : 35
-maxSpeed : 22
-catchColliderRadius : 1.5
-catchColliderZPos : 0
-catchColliderHeight : 8
 abilities : Move|Shoot|Dash|Block|TimeSlow|Teleport|Steal

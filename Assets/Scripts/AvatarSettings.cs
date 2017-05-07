@@ -6,11 +6,6 @@ using System.Collections.Generic;
 public class AvatarSettings
 {
     public string MESH_NAME;
-    public float acceleration;
-    public float maxSpeed;
-    public float catchColliderRadius;
-    public float catchColliderZPos;
-    public float catchColliderHeight;
     public string[] abilities;
 
     private static Dictionary<AvatarSettingsTypes, AvatarSettings> data;
@@ -56,11 +51,6 @@ public class AvatarSettings
                 AvatarSettings a = new AvatarSettings();
                 Dictionary<string, string> settings = Settings.GetSettings(GetFileName(type));
                 a.MESH_NAME = settings["MESH_NAME"];
-                a.acceleration = float.Parse(settings["acceleration"]);
-                a.maxSpeed = float.Parse(settings["maxSpeed"]);
-                a.catchColliderRadius = float.Parse(settings["catchColliderRadius"]);
-                a.catchColliderZPos = float.Parse(settings["catchColliderZPos"]);
-                a.catchColliderHeight = float.Parse(settings["catchColliderHeight"]);
                 a.abilities = Settings.ParseTable(settings["abilities"]);
                 data.Add(type, a);
             }
