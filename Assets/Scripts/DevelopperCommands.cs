@@ -15,6 +15,7 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
         if (Functions.IsDevelopperComboPressed())
         {
             if (MyComponents.MatchManager != null)
+            {
                 if (Input.GetKeyDown(KeyCode.S))
                     MyComponents.MatchManager.View.RPC("SetReady", RPCTargets.All);
                 else if (Input.GetKeyDown(KeyCode.E))
@@ -28,34 +29,37 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
                 }
                 else if (Input.GetKeyDown(KeyCode.R))
                     MyComponents.MatchManager.View.RPC("ManualScoreGoal", RPCTargets.Server, 1);
+            }
             if (Input.GetKeyDown(KeyCode.D))
             {
                 Debug.Log("Delete Player Prefs");
                 PlayerPrefs.DeleteAll();
                 PlayerPrefs.Save();
             }
-            if (Input.GetKeyDown(KeyCode.W))
+            else if (Input.GetKeyDown(KeyCode.W))
             {
                 View.RPC("ActivateAI", RPCTargets.All);
             }
-            if (Input.GetKeyDown(KeyCode.X))
+            else if (Input.GetKeyDown(KeyCode.X))
             {
                 View.RPC("ActivateOnServer", RPCTargets.All);
 
 
             }
-            if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
-            {
-                MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
-            }
         }
+        if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
+        {
+            MyComponents.BallState.transform.position = new Vector3(0, 10, 0);
+            MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
+        }
+
     }
 
     [MyRPC]
     private void ActivateAI()
     {
         activateAI = !activateAI;
-                Debug.Log("ActivateAI  " + activateAI);
+        Debug.Log("ActivateAI  " + activateAI);
     }
 
     [MyRPC]

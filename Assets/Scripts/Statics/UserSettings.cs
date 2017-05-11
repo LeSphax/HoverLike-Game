@@ -39,7 +39,7 @@ public class UserSettings
         }
         set
         {
-            Debug.Log("Nickname set to " + nickname);
+            Debug.Log("Nickname set to " + value);
             nickname = value;
             PlayerPrefs.SetString("Nickname", nickname);
             PlayerPrefs.Save();

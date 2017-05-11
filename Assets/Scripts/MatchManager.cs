@@ -68,6 +68,8 @@ public class MatchManager : SlideBall.MonoBehaviour
                         switch (previousState)
                         {
                             case State.WARMUP:
+                                method = Entry;
+                                break;
                             case State.PLAYING:
                                 if (matchCountdown.TimeLeft <= 0)
                                 {
@@ -521,8 +523,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     public void BallChangedOwner(ConnectionId previousPlayer, ConnectionId newPlayer)
     {
-        Debug.Log("BallChangedOwner " + MyState + "    " + lastChanceTeam);
-
+        //Debug.Log("BallChangedOwner " + MyState + "    " + lastChanceTeam);
         switch (MyState)
         {
             case State.BEFORE_BALL_PICKED:
@@ -568,6 +569,28 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     public void ManualEntry()
     {
+        switch (MyState)
+        {
+            case State.LOADING_SCENE:
+                MyState = State.LOADING_SCENE;
+                break;
+            case State.WARMUP:
+                MyState = State.WARMUP;
+                break;
+            case State.STARTING:
+            case State.BEFORE_BALL_PICKED:
+            case State.PLAYING:
+            case State.ENDING_ROUND:
+            case State.LAST_CHANCE:
+            case State.VICTORY_POSE:
+                MyState = State.PLAYING;
+                break;
+            case State.SUDDEN_DEATH:
+                MyState = State.SUDDEN_DEATH;
+                break;
+            default:
+                break;
+        }
         MyState = State.ENDING_ROUND;
     }
 

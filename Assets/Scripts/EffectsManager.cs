@@ -20,6 +20,13 @@ public class EffectsManager : SlideBall.MonoBehaviour
     {
         controller.animator.SetTrigger("Throw");
         PlayClipAtPoint(ResourcesGetter.PassSound, controller.transform.position, 0.5f);
+        ShowArmAnimation(false);
+    }
+
+    [MyRPC]
+    public void ShowArmAnimation(bool isArming)
+    {
+        controller.animator.SetBool("Arming",isArming);
     }
 
     [MyRPC]

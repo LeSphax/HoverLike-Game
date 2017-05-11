@@ -41,10 +41,11 @@ namespace AbilitiesManagement
                         if (!isActivated && DevelopperCommands.activateAI)
                         {
                             abilitiesManager = controller.abilitiesManager;
-                            // Move();
-                            //Steal();
-                            //Dash();
-                            //Pass();
+                            Move();
+                            Jump();
+                            Steal();
+                            Dash();
+                            Pass();
                             Block();
                             isActivated = true;
                         }
@@ -105,7 +106,12 @@ namespace AbilitiesManagement
                 FinishedUsingAllAbilities.Invoke();
         }
 
-        private void Move(Vector2? target = null)
+        private void Move()
+        {
+            Move(null);
+        }
+
+        private void Move(Vector2? target)
         {
             if (target == null)
                 target = new Vector2(GetRandomPointInTerrain().x, GetRandomPointInTerrain().y);
@@ -137,15 +143,20 @@ namespace AbilitiesManagement
         private void Block()
         {
             abilitiesManager.View.RPC("Block", RPCTargets.Server);
-            InvokeRandom("Block", 3, 3);
+            InvokeRandom("Block", 3, 4.5f);
         }
 
-        private void Dash(Vector3? target = null)
+        private void Dash()
+        {
+            Dash(null);
+        }
+
+        private void Dash(Vector3? target)
         {
             if (target == null)
                 target = GetRandomPointInTerrain();
             abilitiesManager.View.RPC("Dash", RPCTargets.Server, target.Value);
-            InvokeRandom("Dash", 3, 8);
+            InvokeRandom("Dash", 3, 5);
         }
 
         private void TimeSlow()

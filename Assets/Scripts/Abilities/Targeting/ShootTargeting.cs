@@ -15,6 +15,14 @@ public class ShootTargeting : AbilityTargeting
         powerBar.StartFilling();
         this.callback = callback;
         isActivated = true;
+        ShowArmingAnimation(true);
+    }
+
+    //Instant for self to hide latency
+    private void ShowArmingAnimation(bool isArming)
+    {
+        Players.MyPlayer.controller.abilitiesManager.View.RPC("Arm", RPCTargets.Server, isArming);
+        Players.MyPlayer.controller.abilitiesManager.EffectsManager.ShowArmAnimation(isArming);
     }
 
     public override void CancelTargeting()
@@ -23,6 +31,7 @@ public class ShootTargeting : AbilityTargeting
         {
             isActivated = false;
             powerBar.Hide();
+            ShowArmingAnimation(false);
         }
     }
 

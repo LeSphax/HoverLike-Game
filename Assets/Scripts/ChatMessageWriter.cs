@@ -57,7 +57,10 @@ public class ChatMessageWriter : MonoBehaviour
 
     public void SendContent(string content, bool sendToAll)
     {
-        MyComponents.ChatManager.UserWriteMessage(content, sendToAll);
-        input.text = "";
+        if (content != "")
+        {
+            MyComponents.ChatManager.UserWriteMessage(content, sendToAll);
+            input.text = "";
+        }
     }
 }

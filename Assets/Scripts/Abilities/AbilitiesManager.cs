@@ -69,6 +69,15 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
+        internal void Arm(bool isArming)
+        {
+            if (CanUseAbility() && controller.Player.HasBall)
+            {
+                EffectsManager.View.RPC("ShowArmAnimation", RPCTargets.All, isArming);
+            }
+        }
+
+        [MyRPC]
         internal void Shoot(Vector3 target, float power)
         {
             if (CanUseAbility() && controller.Player.HasBall)

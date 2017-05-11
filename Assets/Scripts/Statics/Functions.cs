@@ -66,7 +66,7 @@ class Functions
 
     public static bool IsDevelopperComboPressed()
     {
-        return Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift);
+        return Input.GetKey(KeyCode.UpArrow) && Input.GetKey(KeyCode.DownArrow);
     }
 }
 
