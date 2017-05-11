@@ -9,10 +9,10 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
     private const float JUMP_FORCE = 60f;
 
     [SerializeField]
-    private float ACCELERATION = 70;
+    private float ACCELERATION = 100;
 
     [SerializeField]
-    private float MAX_VELOCITY = 45;
+    private float MAX_VELOCITY = 75;
     [SerializeField]
     private float ANGULAR_SPEED = 500;
 

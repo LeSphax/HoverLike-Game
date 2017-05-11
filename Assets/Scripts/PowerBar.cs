@@ -6,7 +6,7 @@ public class PowerBar : MonoBehaviour
 {
 
     public float powerValue;
-    public const float FILLING_INCREMENT = 2.5f;
+    public const float TIME_TO_FILL = 1f;
     public GameObject sliderPrefab;
 
     private Slider slider;
@@ -53,14 +53,14 @@ public class PowerBar : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         switch (state)
         {
             case State.HIDDEN:
                 break;
             case State.FILLING:
-                powerValue = Mathf.Min(1.0f, powerValue + FILLING_INCREMENT * Time.deltaTime);
+                powerValue = Mathf.Min(1.0f, powerValue + 1/TIME_TO_FILL * Time.fixedDeltaTime);
                 slider.value = powerValue;
                 break;
         }

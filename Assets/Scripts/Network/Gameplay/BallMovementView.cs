@@ -10,7 +10,10 @@ class BallMovementView : ObservedComponent
 
     Rigidbody myRigidbody;
 
-    private float MAX_SPEED = 150;
+    [SerializeField]
+    private float MAX_SPEED = 250;
+    [SerializeField]
+    private float MINIMUM_THROW_SPEED_PROPORTION = 0.3f;
 
     PacketHandler packetHandler;
 
@@ -50,7 +53,7 @@ class BallMovementView : ObservedComponent
     {
         Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         velocity.Normalize();
-        myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, 0.4f);
+        myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, MINIMUM_THROW_SPEED_PROPORTION);
         transform.position = transform.position;
     }
 

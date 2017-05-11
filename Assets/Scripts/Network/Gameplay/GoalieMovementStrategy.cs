@@ -6,7 +6,7 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
     [SerializeField]
     private float ANGULAR_SPEED = 2000;
     [SerializeField]
-    private float SPEED = 22;
+    private float SPEED = 30;
 
     private int inZone = 0;
 
@@ -19,7 +19,7 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
 
         if (Quaternion.Angle(transform.rotation, targetRotation) < 0.05f)
         {
-            myRigidbody.velocity = transform.forward * SPEED * (1 + 0.4f * inZone);
+            myRigidbody.velocity = transform.forward * SPEED * (1 + 0.3f * inZone);
         }
     }
 
