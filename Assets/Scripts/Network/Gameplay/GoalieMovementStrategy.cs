@@ -8,6 +8,14 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
     [SerializeField]
     private float SPEED = 30;
 
+    public override float MaxPlayerVelocity
+    {
+        get
+        {
+            return SPEED;
+        }
+    }
+
     private int inZone = 0;
 
     protected override void Move()

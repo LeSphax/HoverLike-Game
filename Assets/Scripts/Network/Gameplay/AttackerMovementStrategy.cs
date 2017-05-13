@@ -16,6 +16,14 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
     [SerializeField]
     private float ANGULAR_SPEED = 500;
 
+    public override float MaxPlayerVelocity
+    {
+        get
+        {
+            return MAX_VELOCITY;
+        }
+    }
+
     protected override void Awake()
     {
         base.Awake();

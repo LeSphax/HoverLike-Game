@@ -16,14 +16,14 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000012243518958}
-  - 222: {fileID: 222000012803013000}
-  - 114: {fileID: 114000012569595948}
-  - 114: {fileID: 114000013953099162}
-  - 114: {fileID: 114000012878711642}
-  - 114: {fileID: 114000011488320584}
+  - component: {fileID: 224000012243518958}
+  - component: {fileID: 222000012803013000}
+  - component: {fileID: 114000012569595948}
+  - component: {fileID: 114000013953099162}
+  - component: {fileID: 114000012878711642}
+  - component: {fileID: 114000011488320584}
   m_Layer: 0
   m_Name: Move
   m_TagString: Untagged
@@ -53,8 +53,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b705fe14c3f110f4cbb7d9284ace1105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NoCooldown: 1
-  cooldownDuration: 5
+  NoCooldown: 0
+  cooldownDuration: 0.1
+  trace: 0
 --- !u!114 &114000012878711642
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -92,10 +93,10 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}

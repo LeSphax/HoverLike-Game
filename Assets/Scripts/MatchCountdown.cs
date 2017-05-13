@@ -49,12 +49,13 @@ public class MatchCountdown : Countdown
 
     //Called by MatchManager
     [MyRPC]
-    private void StartWarmup(short syncId)
+    private void StartWarmup(float duration, short syncId)
     {
+        base.StartTimer(duration);
         warmupInfo.SetActive(false);
         readyButton.SetActive(true);
         this.syncId = syncId;
-        text.text = Language.Instance.texts["Warmup"];
+        //text.text = Language.Instance.texts["Warmup"];
     }
 
     //Called by Ready button
@@ -66,9 +67,9 @@ public class MatchCountdown : Countdown
     }
 
     [MyRPC]
-    protected void StartMatch(float timeLeft)
+    protected void StartMatch(float duration)
     {
-        base.StartTimer(timeLeft);
+        base.StartTimer(duration);
         warmupInfo.SetActive(false);
     }
 }

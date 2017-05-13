@@ -92,12 +92,9 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility())
             {
-
-                new DashPersistentEffect(this, position);
+                new DashPersistentEffect(this, position, controller.movementManager.MaxPlayerVelocity);
                 new StealPersistentEffect(this, DashPersistentEffect.dashDuration * 2);
                 EffectsManager.View.RPC("ShowSmoke", RPCTargets.All);
-
-
             }
 
         }

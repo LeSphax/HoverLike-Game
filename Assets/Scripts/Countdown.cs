@@ -83,17 +83,13 @@ public class Countdown : SlideBall.MonoBehaviour
                 else if (ShownNumber == 0)
                     PlayEntrySound();
             }
-
-            if (TimeLeft <= 0)
+            if (TimeLeft <= -1)
             {
+                StopTimer();
                 if (TimerFinished != null)
                 {
                     TimerFinished.Invoke();
                 }
-            }
-            if (TimeLeft <= -1)
-            {
-                StopTimer();
             }
         }
     }
@@ -134,7 +130,8 @@ public class Countdown : SlideBall.MonoBehaviour
     [MyRPC]
     public void StopTimerAndSetText(string newText)
     {
-        TimeLeft = 0;
+        Debug.Log("StopTimer " + gameObject.name+ "  " + newText);
+        TimeLeft = -1;
         paused = true;
         text.text = newText;
     }

@@ -17,15 +17,16 @@ public class DashEffect : AbilityEffect
 
 public class DashPersistentEffect : PersistentEffect
 {
-    public float speed = 100f;
-    public float endSpeed = 30f;
+    public float speed = 130f;
+    public float endSpeed;
     public const float dashDuration = 0.25f;
 
     private Vector3 force;
     private Rigidbody myRigidbody;
 
-    public DashPersistentEffect(AbilitiesManager manager, Vector3 position) : base(manager)
+    public DashPersistentEffect(AbilitiesManager manager, Vector3 position, float endSpeed) : base(manager)
     {
+        this.endSpeed = endSpeed;
         myRigidbody = manager.GetComponent<Rigidbody>();
         
         //

@@ -48,7 +48,7 @@ public class PassPersistentEffect : PersistentEffect
 
         //Proportion du mouvement horizontal effectué
         float H_completion = Vector3.Distance(manager.transform.position, newPositionOnLine) / Vector3.Distance(manager.transform.position, target.position);
-
+        Debug.Log(H_completion);
         // A partir de la proportion du mouvement horizontal, on calcule la position verticale
         float yPos = curve.Evaluate(H_completion) * VERTICAL_MAXIMUM;
 

@@ -628,9 +628,9 @@ MonoBehaviour:
   testURLParameters: 0
   startGameImmediately: 1
   editorIsServer: 1
-  numberPlayersToStartGame: 4
-  addLatency: 0
-  numberFramesLatency: 2
+  numberPlayersToStartGame: 6
+  addLatency: 1
+  numberFramesLatency: 1
   playAsGoalieInitialValue: 0
   noCooldowns: 1
   editorFloat: 100

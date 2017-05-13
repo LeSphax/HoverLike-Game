@@ -21,7 +21,15 @@ public class PlayerMovementManager : ObservedComponent
         }
     }
 
-    private PlayerMovementStrategy strategy;
+    public float MaxPlayerVelocity
+    {
+        get
+        {
+            return strategy.MaxPlayerVelocity;
+        }
+    }
+
+private PlayerMovementStrategy strategy;
     internal PlayerController controller;
 
     private OrderedSet<PlayerPacket> StateBuffer = new OrderedSet<PlayerPacket>();

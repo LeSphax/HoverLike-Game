@@ -33,6 +33,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private const float END_POINT_DURATION = 3f;
     private const float MATCH_DURATION = 300f;
+    private const float WARMUP_DURATION = 5f;
     private const float MATCH_END_DURATION = 10f;
     private const float ENTRY_DURATION = 3f;
     private State state;
@@ -44,6 +45,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         }
         set
         {
+            Debug.Log("Set State " + value);
             State previousState = state;
             state = value;
             if (MyComponents.NetworkManagement.isServer)
@@ -80,7 +82,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                                 break;
                             case State.LAST_CHANCE:
                             case State.SUDDEN_DEATH:
-                                matchCountdown.PlayMatchEndSound();
+                                entryCountdown.PlayMatchEndSound();
                                 method = EndMatch;
                                 break;
                             default:
@@ -132,19 +134,17 @@ public class MatchManager : SlideBall.MonoBehaviour
                     break;
                 case State.WARMUP:
                     break;
-                case State.STARTING:
-                    break;
-                case State.BEFORE_BALL_PICKED:
-                    break;
                 case State.PLAYING:
-                    break;
-                case State.ENDING_ROUND:
                     break;
                 case State.LAST_CHANCE:
                     matchCountdown.StopTimerAndSetText(Language.Instance.texts["Last_Chance"]);
                     break;
+                case State.ENDING_ROUND:
+                case State.STARTING:
+                case State.BEFORE_BALL_PICKED:
                 case State.SUDDEN_DEATH:
-                    matchCountdown.StopTimerAndSetText(Language.Instance.texts["Sudden_Death"]);
+                    if (suddenDeath)
+                        matchCountdown.StopTimerAndSetText(Language.Instance.texts["Sudden_Death"]);
                     break;
                 case State.VICTORY_POSE:
                     matchCountdown.StopTimerAndSetText("");
@@ -156,7 +156,6 @@ public class MatchManager : SlideBall.MonoBehaviour
             switch (MyState)
             {
                 case State.LOADING_SCENE:
-                case State.WARMUP:
                 case State.BEFORE_BALL_PICKED:
                 case State.LAST_CHANCE:
                 case State.STARTING:
@@ -165,6 +164,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 case State.VICTORY_POSE:
                     matchCountdown.PauseTimer(true);
                     break;
+                case State.WARMUP:
                 case State.PLAYING:
                     matchCountdown.PauseTimer(false);
                     break;
@@ -208,7 +208,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         entryCountdown.StartTimer(matchCountdown.TimeLeft);
         entryCountdown.PauseTimer(false);
-        matchCountdown.RegisterCloseToEnd(StartLastSecondsTimer,MATCH_END_DURATION,false);
+        matchCountdown.RegisterCloseToEnd(StartLastSecondsTimer, MATCH_END_DURATION, false);
     }
 
     [MyRPC]
@@ -230,10 +230,11 @@ public class MatchManager : SlideBall.MonoBehaviour
     IEnumerator Warmup()
     {
         short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
-        matchCountdown.View.RPC("StartWarmup", RPCTargets.All, syncId);
+        matchCountdown.View.RPC("StartWarmup", RPCTargets.All, WARMUP_DURATION, syncId);
         Entry();
         //Wait until everyone press the ready button
         yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
+        entryCountdown.PlayMatchEndSound();
         matchCountdown.View.RPC("StartMatch", RPCTargets.All, MATCH_DURATION, 10);
         Scoreboard.ResetScore();
         MyState = State.ENDING_ROUND;
@@ -385,8 +386,11 @@ public class MatchManager : SlideBall.MonoBehaviour
             else if (players.Count > 1)
             {
                 Player oldGoalie = null;
-                players.Map(player => { if (player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE 
-                    || player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.NONE) oldGoalie = player; });
+                players.Map(player =>
+                {
+                    if (player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE
+|| player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.NONE) oldGoalie = player;
+                });
                 Assert.IsTrue(oldGoalie != null);
 
                 List<Player> potentialGoalies = new List<Player>();
@@ -465,6 +469,9 @@ public class MatchManager : SlideBall.MonoBehaviour
                 SendInvokeStartRound();
                 MyState = State.BEFORE_BALL_PICKED;
                 break;
+            case State.PLAYING:
+                //End of match
+                break;
             default:
                 Debug.LogError("The entry timer shouldn't end in this state " + MyState);
                 break;
@@ -473,6 +480,8 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     public void MatchCountdownTimerFinished()
     {
+        Debug.Log("Timer Finished " + MyState);
+
         switch (MyState)
         {
             case State.PLAYING:
@@ -484,6 +493,9 @@ public class MatchManager : SlideBall.MonoBehaviour
                 {
                     MyState = State.ENDING_ROUND;
                 }
+                break;
+            case State.WARMUP:
+                MyComponents.MatchManager.View.RPC("SetReady", RPCTargets.All);
                 break;
             default:
                 Debug.LogError("The match timer shouldn't end in this state " + MyState);
@@ -518,7 +530,7 @@ public class MatchManager : SlideBall.MonoBehaviour
             default:
                 break;
         }
-        
+
     }
 
     public void BallChangedOwner(ConnectionId previousPlayer, ConnectionId newPlayer)
@@ -527,14 +539,12 @@ public class MatchManager : SlideBall.MonoBehaviour
         switch (MyState)
         {
             case State.BEFORE_BALL_PICKED:
-
                 MyState = suddenDeath ? State.SUDDEN_DEATH : State.PLAYING;
                 break;
             case State.LAST_CHANCE:
                 if (newPlayer != BallState.NO_PLAYER_ID && Players.players[newPlayer].Team != lastChanceTeam)
                 {
                     Debug.Log("BallChangedOwner " + lastChanceTeam + "    " + Players.players[newPlayer].Team);
-                    matchCountdown.PlayMatchEndSound();
                     MyState = State.ENDING_ROUND;
                 }
                 break;
@@ -557,7 +567,12 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     public void ManualEnd()
     {
-        matchCountdown.TimeLeft = 12;
+        if (matchCountdown.TimeLeft < 20)
+            matchCountdown.TimeLeft = 2;
+        else
+            matchCountdown.TimeLeft = 12;
+
+
     }
 
     [MyRPC]

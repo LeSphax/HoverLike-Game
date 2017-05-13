@@ -3,6 +3,11 @@
 [RequireComponent(typeof(PlayerMovementManager))]
 public abstract class PlayerMovementStrategy : MonoBehaviour
 {
+    public abstract float MaxPlayerVelocity
+    {
+        get;
+    }
+
     public Vector3? targetPosition;
     public Vector3? TargetPosition
     {

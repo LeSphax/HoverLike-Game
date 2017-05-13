@@ -22,7 +22,7 @@ var MyPlugin = {
 
     ShowLink: function(roomName){
         var str_roomName = Pointer_stringify(roomName);
-        window.prompt("Copy to clipboard: Ctrl+C, Enter",window.location+"?RoomName=" + str_roomName);
+        window.prompt("Copy to clipboard: Ctrl+C, Enter",window.location.href.split('?')[0]+"?RoomName=" + encodeURIComponent(str_roomName.trim()));
     },
 };
 
