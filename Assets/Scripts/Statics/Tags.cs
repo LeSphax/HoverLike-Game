@@ -34,6 +34,7 @@ public class Tags : MonoBehaviour
     public const string VictoryUI = "VictoryUI";
     public static string GlobalSound = "GlobalSound";
     public static string BattleriteCamera = "BattleriteCamera";
+    public static string GameplaySettings = "GameplaySettings";
 
     public static bool IsPlayer(string tag)
     {

@@ -33,7 +33,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private const float END_POINT_DURATION = 3f;
     private const float MATCH_DURATION = 300f;
-    private const float WARMUP_DURATION = 5f;
+    private const float WARMUP_DURATION = 90f;
     private const float MATCH_END_DURATION = 10f;
     private const float ENTRY_DURATION = 3f;
     private State state;

@@ -9,6 +9,10 @@ public class RoomManager : MonoBehaviour
     public GameObject[] teamPanels;
     public GameObject StartButton;
 
+    public static int MaxNumberPlayers = 7;
+    public static string Password = "";
+
+
     private static RoomManager instance;
     public static RoomManager Instance
     {

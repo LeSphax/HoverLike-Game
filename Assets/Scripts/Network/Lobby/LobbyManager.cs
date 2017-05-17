@@ -84,7 +84,7 @@ public class LobbyManager : MonoBehaviour
 #if UNITY_EDITOR
             editor = true;
 #endif
-            if (EditorVariables.StartGameImmediately)
+            if (EditorVariables.JoinRoomImmediately)
             {
                 if (editor == EditorVariables.EditorIsServer)
                 {

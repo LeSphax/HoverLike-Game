@@ -9,12 +9,17 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
     private const float JUMP_FORCE = 60f;
 
     [SerializeField]
-    private float ACCELERATION = 100;
+    private float ACCELERATION;
+    public static float Acceleration = 100;
 
     [SerializeField]
-    private float MAX_VELOCITY = 75;
+    private float MAX_VELOCITY;
+    public static float MaxVelocity = 75;
+
     [SerializeField]
-    private float ANGULAR_SPEED = 500;
+    private float ANGULAR_SPEED;
+    public static float AngularSpeed = 500;
+
 
     public override float MaxPlayerVelocity
     {
@@ -28,6 +33,9 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
     {
         base.Awake();
         BRAKE_AMOUNT = ACCELERATION * 4 / 7;
+        ACCELERATION = Acceleration;
+        MAX_VELOCITY = MaxVelocity;
+        ANGULAR_SPEED = AngularSpeed;
     }
 
     public void ClampPlayerVelocity()

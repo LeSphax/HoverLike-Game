@@ -66,6 +66,21 @@ public static class MyComponents
         }
     }
 
+    private static GameplaySettings gameplaySettings;
+    public static GameplaySettings GameplaySettings
+    {
+        get
+        {
+            if (gameplaySettings == null)
+            {
+                GameObject go = GameObject.FindGameObjectWithTag(Tags.GameplaySettings);
+                if (go != null)
+                    gameplaySettings = go.GetComponent<GameplaySettings>();
+            }
+            return gameplaySettings;
+        }
+    }
+
     private static PopUp popUp;
     public static PopUp PopUp
     {

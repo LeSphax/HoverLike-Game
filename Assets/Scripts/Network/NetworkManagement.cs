@@ -330,7 +330,7 @@ namespace SlideBall
 
                             if (rawData == NetEventMessage.ASK_IF_ALLOWED_TO_ENTER)
                             {
-                                if (Players.players.Count > 7)
+                                if (Players.players.Count > RoomManager.MaxNumberPlayers)
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.ROOM_FULL);
                                 else if (CurrentlyPlaying)
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.GAME_STARTED);

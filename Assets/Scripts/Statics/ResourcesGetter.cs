@@ -1,311 +1,292 @@
+//*************************************************************
+//THIS CLASS WAS GENERATED, USE THE CORRESPONDING GENERATOR TO CHANGE IT (CodeGenerator folder)
+//*************************************************************
 using UnityEngine;
-public class ResourcesGetter
-{
-    private static AudioClip timeslow;
-    public static AudioClip TimeSlowSound
-    {
-        get
-        {
-            if (timeslow == null)
-            {
-                timeslow = Resources.Load<AudioClip>("Sounds/TimeSlow");
-            }
-            return timeslow;
-        }
-    }
-    private static AudioClip teleport2;
-    public static AudioClip Teleport2Sound
-    {
-        get
-        {
-            if (teleport2 == null)
-            {
-                teleport2 = Resources.Load<AudioClip>("Sounds/Teleport2");
-            }
-            return teleport2;
-        }
-    }
-    private static AudioClip boost;
-    public static AudioClip BoostSound
-    {
-        get
-        {
-            if (boost == null)
-            {
-                boost = Resources.Load<AudioClip>("Sounds/Boost");
-            }
-            return boost;
-        }
-    }
-    private static AudioClip pass;
-    public static AudioClip PassSound
-    {
-        get
-        {
-            if (pass == null)
-            {
-                pass = Resources.Load<AudioClip>("Sounds/Pass");
-            }
-            return pass;
-        }
-    }
-    private static AudioClip softerror;
-    public static AudioClip SoftErrorSound
-    {
-        get
-        {
-            if (softerror == null)
-            {
-                softerror = Resources.Load<AudioClip>("Sounds/SoftError");
-            }
-            return softerror;
-        }
-    }
-    private static AudioClip landing;
-    public static AudioClip LandingSound
-    {
-        get
-        {
-            if (landing == null)
-            {
-                landing = Resources.Load<AudioClip>("Sounds/Landing");
-            }
-            return landing;
-        }
-    }
-    private static AudioClip jumping;
-    public static AudioClip JumpingSound
-    {
-        get
-        {
-            if (jumping == null)
-            {
-                jumping = Resources.Load<AudioClip>("Sounds/Jumping");
-            }
-            return jumping;
-        }
-    }
-    private static AudioClip but;
-    public static AudioClip ButSound
-    {
-        get
-        {
-            if (but == null)
-            {
-                but = Resources.Load<AudioClip>("Sounds/But");
-            }
-            return but;
-        }
-    }
-    private static GameObject settingspanel;
-    public static GameObject SettingsPanelPrefab
-    {
-        get
-        {
-            if (settingspanel == null)
-            {
-                settingspanel = Resources.Load<GameObject>("Prefabs/SettingsPanel");
-            }
-            return settingspanel;
-        }
-    }
-    private static GameObject tempaudiosource;
-    public static GameObject TempAudioSourcePrefab
-    {
-        get
-        {
-            if (tempaudiosource == null)
-            {
-                tempaudiosource = Resources.Load<GameObject>("Prefabs/TempAudioSource");
-            }
-            return tempaudiosource;
-        }
-    }
-    private static GameObject timeslowtargeter;
-    public static GameObject TimeSlowTargeterPrefab
-    {
-        get
-        {
-            if (timeslowtargeter == null)
-            {
-                timeslowtargeter = Resources.Load<GameObject>("Prefabs/TimeSlowTargeter");
-            }
-            return timeslowtargeter;
-        }
-    }
-    private static GameObject passtargeter;
-    public static GameObject PassTargeterPrefab
-    {
-        get
-        {
-            if (passtargeter == null)
-            {
-                passtargeter = Resources.Load<GameObject>("Prefabs/PassTargeter");
-            }
-            return passtargeter;
-        }
-    }
-    private static GameObject screenfader;
-    public static GameObject ScreenFaderPrefab
-    {
-        get
-        {
-            if (screenfader == null)
-            {
-                screenfader = Resources.Load<GameObject>("Prefabs/ScreenFader");
-            }
-            return screenfader;
-        }
-    }
-    private static GameObject tooltip;
-    public static GameObject TooltipPrefab
-    {
-        get
-        {
-            if (tooltip == null)
-            {
-                tooltip = Resources.Load<GameObject>("Prefabs/Tooltip");
-            }
-            return tooltip;
-        }
-    }
-    private static GameObject shadow;
-    public static GameObject ShadowPrefab
-    {
-        get
-        {
-            if (shadow == null)
-            {
-                shadow = Resources.Load<GameObject>("Prefabs/Shadow");
-            }
-            return shadow;
-        }
-    }
-    private static GameObject keytouse;
-    public static GameObject KeyToUsePrefab
-    {
-        get
-        {
-            if (keytouse == null)
-            {
-                keytouse = Resources.Load<GameObject>("Prefabs/KeyToUse");
-            }
-            return keytouse;
-        }
-    }
-    private static GameObject disabled;
-    public static GameObject DisabledPrefab
-    {
-        get
-        {
-            if (disabled == null)
-            {
-                disabled = Resources.Load<GameObject>("Prefabs/Abilities/Disabled");
-            }
-            return disabled;
-        }
-    }
-    private static GameObject cooldown;
-    public static GameObject CooldownPrefab
-    {
-        get
-        {
-            if (cooldown == null)
-            {
-                cooldown = Resources.Load<GameObject>("Prefabs/Abilities/Cooldown");
-            }
-            return cooldown;
-        }
-    }
-    private static GameObject ability;
-    public static GameObject AbilityPrefab
-    {
-        get
-        {
-            if (ability == null)
-            {
-                ability = Resources.Load<GameObject>("Prefabs/Abilities/Ability");
-            }
-            return ability;
-        }
-    }
-    private static GameObject moveuianimation;
-    public static GameObject MoveUIAnimationPrefab
-    {
-        get
-        {
-            if (moveuianimation == null)
-            {
-                moveuianimation = Resources.Load<GameObject>("Prefabs/MoveUIAnimation");
-            }
-            return moveuianimation;
-        }
-    }
-    private static Material field;
-    public static Material FieldMaterial
-    {
-        get
-        {
-            if (field == null)
-            {
-                field = Resources.Load<Material>("Materials/Field");
-            }
-            return field;
-        }
-    }
-    private static Material[] helmet;
-    public static Material[] HelmetMaterials
-    {
-        get
-        {
-            if (helmet == null)
-            {
-                helmet = new Material[2];
-                helmet[0] = Resources.Load<Material>("Materials/BlueHelmet");
-                helmet[1] = Resources.Load<Material>("Materials/RedHelmet");
-            }
-            return helmet;
-        }
-    }
-    private static Material[] skate;
-    public static Material[] SkateMaterials
-    {
-        get
-        {
-            if (skate == null)
-            {
-                skate = new Material[2];
-                skate[0] = Resources.Load<Material>("Materials/BlueSkate");
-                skate[1] = Resources.Load<Material>("Materials/RedSkate");
-            }
-            return skate;
-        }
-    }
-    public static void LoadAll()
-    {
-        var tempTimeSlowSound = TimeSlowSound;
-        var tempTeleport2Sound = Teleport2Sound;
-        var tempBoostSound = BoostSound;
-        var tempPassSound = PassSound;
-        var tempSoftErrorSound = SoftErrorSound;
-        var tempLandingSound = LandingSound;
-        var tempJumpingSound = JumpingSound;
-        var tempButSound = ButSound;
-        var tempSettingsPanelPrefab = SettingsPanelPrefab;
-        var tempTempAudioSourcePrefab = TempAudioSourcePrefab;
-        var tempTimeSlowTargeterPrefab = TimeSlowTargeterPrefab;
-        var tempPassTargeterPrefab = PassTargeterPrefab;
-        var tempScreenFaderPrefab = ScreenFaderPrefab;
-        var tempTooltipPrefab = TooltipPrefab;
-        var tempShadowPrefab = ShadowPrefab;
-        var tempKeyToUsePrefab = KeyToUsePrefab;
-        var tempDisabledPrefab = DisabledPrefab;
-        var tempCooldownPrefab = CooldownPrefab;
-        var tempAbilityPrefab = AbilityPrefab;
-        var tempMoveUIAnimationPrefab = MoveUIAnimationPrefab;
-        var tempFieldMaterial = FieldMaterial;
-        var tempHelmetMaterials = HelmetMaterials;
-        var tempSkateMaterials = SkateMaterials;
-    }
+public class ResourcesGetter{
+private static AudioClip timeSlowSound;
+public static AudioClip TimeSlowSound{
+get {
+if (timeSlowSound == null ){
+timeSlowSound= Resources.Load<AudioClip>("Sounds/TimeSlow");
+}
+return timeSlowSound;
+}}
+private static AudioClip teleport2Sound;
+public static AudioClip Teleport2Sound{
+get {
+if (teleport2Sound == null ){
+teleport2Sound= Resources.Load<AudioClip>("Sounds/Teleport2");
+}
+return teleport2Sound;
+}}
+private static AudioClip boostSound;
+public static AudioClip BoostSound{
+get {
+if (boostSound == null ){
+boostSound= Resources.Load<AudioClip>("Sounds/Boost");
+}
+return boostSound;
+}}
+private static AudioClip passSound;
+public static AudioClip PassSound{
+get {
+if (passSound == null ){
+passSound= Resources.Load<AudioClip>("Sounds/Pass");
+}
+return passSound;
+}}
+private static AudioClip softErrorSound;
+public static AudioClip SoftErrorSound{
+get {
+if (softErrorSound == null ){
+softErrorSound= Resources.Load<AudioClip>("Sounds/SoftError");
+}
+return softErrorSound;
+}}
+private static AudioClip landingSound;
+public static AudioClip LandingSound{
+get {
+if (landingSound == null ){
+landingSound= Resources.Load<AudioClip>("Sounds/Landing");
+}
+return landingSound;
+}}
+private static AudioClip jumpingSound;
+public static AudioClip JumpingSound{
+get {
+if (jumpingSound == null ){
+jumpingSound= Resources.Load<AudioClip>("Sounds/Jumping");
+}
+return jumpingSound;
+}}
+private static AudioClip butSound;
+public static AudioClip ButSound{
+get {
+if (butSound == null ){
+butSound= Resources.Load<AudioClip>("Sounds/But");
+}
+return butSound;
+}}
+private static GameObject settingsPanelPrefab;
+public static GameObject SettingsPanelPrefab{
+get {
+if (settingsPanelPrefab == null ){
+settingsPanelPrefab= Resources.Load<GameObject>("Prefabs/SettingsPanel");
+}
+return settingsPanelPrefab;
+}}
+private static GameObject tempAudioSourcePrefab;
+public static GameObject TempAudioSourcePrefab{
+get {
+if (tempAudioSourcePrefab == null ){
+tempAudioSourcePrefab= Resources.Load<GameObject>("Prefabs/TempAudioSource");
+}
+return tempAudioSourcePrefab;
+}}
+private static GameObject timeSlowTargeterPrefab;
+public static GameObject TimeSlowTargeterPrefab{
+get {
+if (timeSlowTargeterPrefab == null ){
+timeSlowTargeterPrefab= Resources.Load<GameObject>("Prefabs/TimeSlowTargeter");
+}
+return timeSlowTargeterPrefab;
+}}
+private static GameObject passTargeterPrefab;
+public static GameObject PassTargeterPrefab{
+get {
+if (passTargeterPrefab == null ){
+passTargeterPrefab= Resources.Load<GameObject>("Prefabs/PassTargeter");
+}
+return passTargeterPrefab;
+}}
+private static GameObject screenFaderPrefab;
+public static GameObject ScreenFaderPrefab{
+get {
+if (screenFaderPrefab == null ){
+screenFaderPrefab= Resources.Load<GameObject>("Prefabs/ScreenFader");
+}
+return screenFaderPrefab;
+}}
+private static GameObject tooltipPrefab;
+public static GameObject TooltipPrefab{
+get {
+if (tooltipPrefab == null ){
+tooltipPrefab= Resources.Load<GameObject>("Prefabs/Tooltip");
+}
+return tooltipPrefab;
+}}
+private static GameObject shadowPrefab;
+public static GameObject ShadowPrefab{
+get {
+if (shadowPrefab == null ){
+shadowPrefab= Resources.Load<GameObject>("Prefabs/Shadow");
+}
+return shadowPrefab;
+}}
+private static GameObject keyToUsePrefab;
+public static GameObject KeyToUsePrefab{
+get {
+if (keyToUsePrefab == null ){
+keyToUsePrefab= Resources.Load<GameObject>("Prefabs/KeyToUse");
+}
+return keyToUsePrefab;
+}}
+private static GameObject disabledPrefab;
+public static GameObject DisabledPrefab{
+get {
+if (disabledPrefab == null ){
+disabledPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Disabled");
+}
+return disabledPrefab;
+}}
+private static GameObject cooldownPrefab;
+public static GameObject CooldownPrefab{
+get {
+if (cooldownPrefab == null ){
+cooldownPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Cooldown");
+}
+return cooldownPrefab;
+}}
+private static GameObject abilityPrefab;
+public static GameObject AbilityPrefab{
+get {
+if (abilityPrefab == null ){
+abilityPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Ability");
+}
+return abilityPrefab;
+}}
+private static GameObject moveUIAnimationPrefab;
+public static GameObject MoveUIAnimationPrefab{
+get {
+if (moveUIAnimationPrefab == null ){
+moveUIAnimationPrefab= Resources.Load<GameObject>("Prefabs/MoveUIAnimation");
+}
+return moveUIAnimationPrefab;
+}}
+private static Material fieldMaterial;
+public static Material FieldMaterial{
+get {
+if (fieldMaterial == null ){
+fieldMaterial= Resources.Load<Material>("Materials/Field");
+}
+return fieldMaterial;
+}}
+private static Material[] helmetMaterials;
+public static Material[] HelmetMaterials{
+get {
+if (helmetMaterials == null ){
+helmetMaterials= new Material[2];
+helmetMaterials[0]= Resources.Load<Material>("Materials/BlueHelmet");
+helmetMaterials[1]= Resources.Load<Material>("Materials/RedHelmet");
+}
+return helmetMaterials;
+}}
+private static Material[] skateMaterials;
+public static Material[] SkateMaterials{
+get {
+if (skateMaterials == null ){
+skateMaterials= new Material[2];
+skateMaterials[0]= Resources.Load<Material>("Materials/BlueSkate");
+skateMaterials[1]= Resources.Load<Material>("Materials/RedSkate");
+}
+return skateMaterials;
+}}
+private static GameObject movePrefab;
+public static GameObject MovePrefab{
+get {
+if (movePrefab == null ){
+movePrefab= Resources.Load<GameObject>("Prefabs/Abilities/Move");
+}
+return movePrefab;
+}}
+private static GameObject dashPrefab;
+public static GameObject DashPrefab{
+get {
+if (dashPrefab == null ){
+dashPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Dash");
+}
+return dashPrefab;
+}}
+private static GameObject jumpPrefab;
+public static GameObject JumpPrefab{
+get {
+if (jumpPrefab == null ){
+jumpPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Jump");
+}
+return jumpPrefab;
+}}
+private static GameObject passPrefab;
+public static GameObject PassPrefab{
+get {
+if (passPrefab == null ){
+passPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Pass");
+}
+return passPrefab;
+}}
+private static GameObject stealPrefab;
+public static GameObject StealPrefab{
+get {
+if (stealPrefab == null ){
+stealPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Steal");
+}
+return stealPrefab;
+}}
+private static GameObject blockPrefab;
+public static GameObject BlockPrefab{
+get {
+if (blockPrefab == null ){
+blockPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Block");
+}
+return blockPrefab;
+}}
+private static GameObject timeSlowPrefab;
+public static GameObject TimeSlowPrefab{
+get {
+if (timeSlowPrefab == null ){
+timeSlowPrefab= Resources.Load<GameObject>("Prefabs/Abilities/TimeSlow");
+}
+return timeSlowPrefab;
+}}
+private static GameObject teleportPrefab;
+public static GameObject TeleportPrefab{
+get {
+if (teleportPrefab == null ){
+teleportPrefab= Resources.Load<GameObject>("Prefabs/Abilities/Teleport");
+}
+return teleportPrefab;
+}}
+public static void LoadAll(){
+var tempTimeSlowSound = TimeSlowSound;
+var tempTeleport2Sound = Teleport2Sound;
+var tempBoostSound = BoostSound;
+var tempPassSound = PassSound;
+var tempSoftErrorSound = SoftErrorSound;
+var tempLandingSound = LandingSound;
+var tempJumpingSound = JumpingSound;
+var tempButSound = ButSound;
+var tempSettingsPanelPrefab = SettingsPanelPrefab;
+var tempTempAudioSourcePrefab = TempAudioSourcePrefab;
+var tempTimeSlowTargeterPrefab = TimeSlowTargeterPrefab;
+var tempPassTargeterPrefab = PassTargeterPrefab;
+var tempScreenFaderPrefab = ScreenFaderPrefab;
+var tempTooltipPrefab = TooltipPrefab;
+var tempShadowPrefab = ShadowPrefab;
+var tempKeyToUsePrefab = KeyToUsePrefab;
+var tempDisabledPrefab = DisabledPrefab;
+var tempCooldownPrefab = CooldownPrefab;
+var tempAbilityPrefab = AbilityPrefab;
+var tempMoveUIAnimationPrefab = MoveUIAnimationPrefab;
+var tempFieldMaterial = FieldMaterial;
+var tempHelmetMaterials = HelmetMaterials;
+var tempSkateMaterials = SkateMaterials;
+var tempMovePrefab = MovePrefab;
+var tempDashPrefab = DashPrefab;
+var tempJumpPrefab = JumpPrefab;
+var tempPassPrefab = PassPrefab;
+var tempStealPrefab = StealPrefab;
+var tempBlockPrefab = BlockPrefab;
+var tempTimeSlowPrefab = TimeSlowPrefab;
+var tempTeleportPrefab = TeleportPrefab;
+}
 }
 

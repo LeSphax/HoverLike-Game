@@ -43,6 +43,9 @@ public class EditorVariables : MonoBehaviour
     public bool testURLParameters;
     public static bool TestURLParameters;
 
+    public bool joinRoomImmediately;
+    public static bool JoinRoomImmediately;
+
     public bool startGameImmediately;
     public static bool StartGameImmediately;
 
@@ -82,6 +85,7 @@ public class EditorVariables : MonoBehaviour
         NoCooldowns = false;
 #else
         StartGameImmediately = startGameImmediately;
+        JoinRoomImmediately = joinRoomImmediately;
         EditorIsServer = editorIsServer;
         NumberFramesLatency = numberFramesLatency;
         NumberPlayersToStartGame = numberPlayersToStartGame;

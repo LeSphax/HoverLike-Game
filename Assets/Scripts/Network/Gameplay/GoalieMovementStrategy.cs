@@ -6,7 +6,8 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
     [SerializeField]
     private float ANGULAR_SPEED = 2000;
     [SerializeField]
-    private float SPEED = 30;
+    private float SPEED;
+    public static float Speed = 30;
 
     public override float MaxPlayerVelocity
     {
@@ -17,6 +18,12 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
     }
 
     private int inZone = 0;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        SPEED = Speed;
+    }
 
     protected override void Move()
     {

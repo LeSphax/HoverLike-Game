@@ -43,8 +43,10 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.X))
             {
                 View.RPC("ActivateOnServer", RPCTargets.All);
-
-
+            }
+            else if (Input.GetKeyDown(KeyCode.G))
+            {
+                MyComponents.GameplaySettings.Show(true);
             }
         }
         if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)

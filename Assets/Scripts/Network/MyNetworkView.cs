@@ -65,6 +65,9 @@ public class MyNetworkView : ANetworkView
             }
     }
 
+    private static float averageDifference = 0;
+    private static int nbDifferencesMeasured = 0;
+
     static void MyLateFixedUpdate()
     {
         if (MyComponents.NetworkManagement.isServer)
@@ -75,6 +78,8 @@ public class MyNetworkView : ANetworkView
         else
         {
             ObservedComponent.CurrentlyShownBatchNb++;
+            nbDifferencesMeasured++;
+            averageDifference = averageDifference + ((ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb) - averageDifference) * nbDifferencesMeasured;
             if (ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb > 5)
             {
                 ObservedComponent.CurrentlyShownBatchNb = ObservedComponent.TargetBatchNumber;

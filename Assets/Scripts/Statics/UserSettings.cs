@@ -11,7 +11,7 @@ public class UserSettings
         {
             if (seenTutorial == null)
             {
-                int value = PlayerPrefs.GetInt("SeenTutorial", 1);
+                int value = PlayerPrefs.GetInt("SeenTutorial", 0);
                 seenTutorial = value == 1;
                 PlayerPrefs.Save();
             }

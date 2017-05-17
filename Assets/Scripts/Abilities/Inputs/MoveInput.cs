@@ -3,9 +3,15 @@
 public class MoveInput : AbilityInput
 {
 
+    public static bool ContinuousMovement = false;
+
     public override bool FirstActivation()
     {
-        return Input.GetMouseButton(1);
+        if (ContinuousMovement)
+            return Input.GetMouseButton(1);
+        else
+            return Input.GetMouseButtonDown(1);
+
     }
 
     public override bool HasIcon()

@@ -11,9 +11,11 @@ class BallMovementView : ObservedComponent
     Rigidbody myRigidbody;
 
     [SerializeField]
-    private float MAX_SPEED = 250;
+    private float MAX_SPEED;
+    public static float ShootPowerLevel = 250;
     [SerializeField]
-    private float MINIMUM_THROW_SPEED_PROPORTION = 0.3f;
+    private float MINIMUM_THROW_SPEED_PROPORTION;
+    public static float MinimumShootPowerLevelProportion = 0.3f;
 
     PacketHandler packetHandler;
 
@@ -47,6 +49,8 @@ class BallMovementView : ObservedComponent
     protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
+        MAX_SPEED = ShootPowerLevel;
+        MINIMUM_THROW_SPEED_PROPORTION = MinimumShootPowerLevelProportion;
     }
 
     public void Throw(Vector3 target, float power)

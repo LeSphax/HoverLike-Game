@@ -62,6 +62,7 @@ public class Tutorial : MonoBehaviour
 
     public void Start()
     {
+        Debug.Log(!UserSettings.SeenTutorial);
         if (!UserSettings.SeenTutorial)
         {
             Reset();
