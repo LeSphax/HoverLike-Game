@@ -8,6 +8,18 @@ using UnityEngine;
 public abstract class ObservedComponent : SlideBall.MonoBehaviour
 {
 
+    public static int NumberPacketsReceived
+    {
+        get;
+        private set;
+    }
+
+    public static int NumberPacketsMissed
+    {
+        get;
+        private set;
+    }
+
     public static int TargetBatchNumber
     {
         get
@@ -25,6 +37,9 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
         }
         set
         {
+            int differenceWithPrevious = value - lastReceivedBatchNumber;
+            NumberPacketsReceived += differenceWithPrevious;
+            NumberPacketsMissed += differenceWithPrevious - 1;
             lastReceivedBatchNumber = value;
             if (CurrentlyShownBatchNb == -1)
             {

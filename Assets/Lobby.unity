@@ -1553,13 +1553,13 @@ MonoBehaviour:
   server: 1
   testURLParameters: 0
   joinRoomImmediately: 1
-  startGameImmediately: 0
+  startGameImmediately: 1
   editorIsServer: 1
-  numberPlayersToStartGame: 2
-  addLatency: 1
+  numberPlayersToStartGame: 8
+  addLatency: 0
   numberFramesLatency: 2
   playAsGoalieInitialValue: 0
-  noCooldowns: 0
+  noCooldowns: 1
   editorFloat: 100
 --- !u!1 &339845194
 GameObject:

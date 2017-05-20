@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PlayerBallControl;
+using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
 public class EffectsManager : SlideBall.MonoBehaviour
@@ -18,6 +19,9 @@ public class EffectsManager : SlideBall.MonoBehaviour
     [MyRPC]
     public void ThrowBall()
     {
+        if (controller.Player.IsMyPlayer)
+
+            ActualAbilitiesLatency.Received(typeof(ShootEffect));
         controller.animator.SetTrigger("Throw");
         PlayClipAtPoint(ResourcesGetter.PassSound, controller.transform.position, 0.5f);
         ShowArmAnimation(false);
@@ -26,12 +30,14 @@ public class EffectsManager : SlideBall.MonoBehaviour
     [MyRPC]
     public void ShowArmAnimation(bool isArming)
     {
-        controller.animator.SetBool("Arming",isArming);
+        controller.animator.SetBool("Arming", isArming);
     }
 
     [MyRPC]
     public void ShowSmoke()
     {
+        if (controller.Player.IsMyPlayer)
+            ActualAbilitiesLatency.Received(typeof(DashEffect));
         BlueSmoke.Play();
         PlayClipAtPoint(ResourcesGetter.BoostSound, controller.transform.position, 0.2f);
     }
@@ -39,6 +45,8 @@ public class EffectsManager : SlideBall.MonoBehaviour
     [MyRPC]
     public void ShowStealing()
     {
+        if (controller.Player.IsMyPlayer)
+            ActualAbilitiesLatency.Received(typeof(StealEffect));
         controller.animator.SetTrigger("Steal");
     }
 

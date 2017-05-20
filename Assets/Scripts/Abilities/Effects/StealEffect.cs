@@ -8,6 +8,7 @@ public class StealEffect : AbilityEffect
 
     public override void ApplyOnTarget(params object[] parameters)
     {
+        base.ApplyOnTarget(parameters);
         PlayerController controller = (PlayerController)parameters[0];
         controller.abilitiesManager.View.RPC("Steal", RPCTargets.Server, stealingDuration);
     }

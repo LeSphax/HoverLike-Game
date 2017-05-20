@@ -8,6 +8,7 @@ public class DashEffect : AbilityEffect
 
     public override void ApplyOnTarget(params object[] parameters)
     {
+        base.ApplyOnTarget(parameters);
         PlayerController controller = (PlayerController)parameters[0];
         Vector3 position = (Vector3)parameters[1];
         controller.View.RPC("Dash", RPCTargets.Server, position);

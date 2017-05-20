@@ -1,9 +1,12 @@
 ﻿using AbilitiesManagement;
+using PlayerManagement;
+using System.Text;
 using UnityEngine;
 
 public class DevelopperCommands : SlideBall.MonoBehaviour
 {
     public static bool activateAI = false;
+    public static bool askedForReport = false;
     // Use this for initialization
     void Start()
     {
@@ -48,13 +51,22 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
             {
                 MyComponents.GameplaySettings.Show(true);
             }
-        }
-        if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
-        {
-            MyComponents.BallState.transform.position = new Vector3(0, 10, 0);
-            MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
-        }
+            else if (Input.GetKeyDown(KeyCode.N))
+            {
+                askedForReport = true;
+                View.RPC("SendNetworkData", RPCTargets.All);
+            }
+            else if (Input.GetKeyDown(KeyCode.L))
+            {
+                Debug.Log("[REPORT]" + ActualAbilitiesLatency.PrintAll());
+            }
+            if (MyComponents.BallState != null && MyComponents.MatchManager != null && Vector3.Distance(MyComponents.BallState.transform.position, Vector3.zero) > 300f)
+            {
+                MyComponents.BallState.transform.position = new Vector3(0, 10, 0);
+                MyComponents.MatchManager.View.RPC("ManualEntry", RPCTargets.Server);
+            }
 
+        }
     }
 
     [MyRPC]
@@ -71,4 +83,28 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
         Debug.Log("ActivateOnServer  " + AIRandomMovement.activateOnServer);
     }
 
+    [MyRPC]
+    private void SendNetworkData()
+    {
+        Debug.Log("SendNetworkData");
+        if (!MyComponents.NetworkManagement.isServer)
+        {
+            StringBuilder builder = new StringBuilder(4096);
+            builder.Append("[REPORT]" + Players.MyPlayer.Nickname);
+            builder.Append("[REPORT]Average difference : " + MyNetworkView.averageDifference + ", Number of Resets : " + MyNetworkView.nbOfResets);
+            builder.Append("[REPORT]" + ActualAbilitiesLatency.Print());
+            builder.Append("[REPORT]Packet loss ratio : " + (float)(ObservedComponent.NumberPacketsMissed / ObservedComponent.NumberPacketsReceived) + ", Missed : "
+                + ObservedComponent.NumberPacketsMissed + ", Received : " + ObservedComponent.NumberPacketsReceived);
+            View.RPC("GetAndPrintIndividualNetworkReport", RPCTargets.All, builder.ToString());
+        }
+    }
+
+    [MyRPC]
+    private void GetAndPrintIndividualNetworkReport(string report)
+    {
+        if (askedForReport)
+        {
+            Debug.Log(report);
+        }
+    }
 }

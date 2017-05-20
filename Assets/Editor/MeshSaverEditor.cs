@@ -28,11 +28,11 @@ public static class MeshSaverEditor
         if (string.IsNullOrEmpty(path)) return;
 
         path = FileUtil.GetProjectRelativePath(path);
-
+         
         Mesh meshToSave = (makeNewInstance) ? Object.Instantiate(mesh) as Mesh : mesh;
 
-        if (optimizeMesh)
-            ;
+        //if (optimizeMesh)
+        //    ;
 
         AssetDatabase.CreateAsset(meshToSave, path);
         AssetDatabase.SaveAssets();
