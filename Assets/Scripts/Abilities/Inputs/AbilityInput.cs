@@ -50,6 +50,13 @@ public abstract class AbilityInput : MonoBehaviour
         return SlideBallInputs.GetKeyDown(UserSettings.GetKeyCode(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
     }
 
+    public virtual bool ContinuousActivation()
+    {
+        if (INPUT_NUMBER != -1)
+            return SlideBallInputs.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
+        return false;
+    }
+
     //For abilities that need targeting, there is a first phase with the targeting UI and a second one to actually fire the ability.
     public virtual bool SecondActivation()
     {

@@ -23,7 +23,8 @@ public class Ability : MonoBehaviour
     private enum State
     {
         READY,
-        CHOOSINGTARGET,
+        TRYING_TO_ACTIVATE,
+        CHOOSING_TARGET,
         LOADING,
     }
 
@@ -70,23 +71,29 @@ public class Ability : MonoBehaviour
                 if (input.FirstActivation())
                 {
                     if (isEnabled)
-                    {
                         CastAbility();
-                    }
                     else
-                        PlayErrorSound();
+                        state = State.TRYING_TO_ACTIVATE;
                 }
                 //Used to stop the visual effect for the brake effect
                 input.Cancellation();
                 break;
-            case State.CHOOSINGTARGET:
+            case State.TRYING_TO_ACTIVATE:
+                if (input.FirstActivation() || input.ContinuousActivation())
+                {
+                    if (isEnabled)
+                        CastAbility();
+                }
+                input.Cancellation();
+                break;
+            case State.CHOOSING_TARGET:
                 if (input.Cancellation())
                 {
                     CancelTargeting();
                 }
                 if (input.SecondActivation())
                 {
-                    state = State.CHOOSINGTARGET;
+                    state = State.CHOOSING_TARGET;
                     targeting.ReactivateTargeting();
                 }
                 break;
@@ -124,13 +131,13 @@ public class Ability : MonoBehaviour
 
     private void CastAbility()
     {
-        if(NewAbilityUsed != null)
+        if (NewAbilityUsed != null)
         {
             NewAbilityUsed.Invoke();
         }
         if (currentCooldown == 0)
         {
-            state = State.CHOOSINGTARGET;
+            state = State.CHOOSING_TARGET;
             targeting.ChooseTarget(CastOnTarget);
         }
     }
@@ -161,7 +168,7 @@ public class Ability : MonoBehaviour
     {
         isEnabled = enable;
         if (!isEnabled)
-            if (state == State.CHOOSINGTARGET)
+            if (state == State.CHOOSING_TARGET)
             {
                 targeting.CancelTargeting();
                 state = State.READY;
@@ -184,7 +191,8 @@ public class Ability : MonoBehaviour
         {
             case State.READY:
                 break;
-            case State.CHOOSINGTARGET:
+            case State.TRYING_TO_ACTIVATE:
+            case State.CHOOSING_TARGET:
                 CancelTargeting();
                 break;
             case State.LOADING:

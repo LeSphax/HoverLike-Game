@@ -5,6 +5,11 @@ public class ShootInput : AbilityInputWithBall
 
     public override bool FirstActivation()
     {
+        return Input.GetMouseButtonDown(0) && !AbilityTargeting.IsTargeting;
+    }
+
+    public override bool ContinuousActivation()
+    {
         return Input.GetMouseButton(0) && !AbilityTargeting.IsTargeting;
     }
 

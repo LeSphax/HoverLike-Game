@@ -73,6 +73,7 @@ public class UserSettings
 
     public static char GetKey(int number)
     {
+        Debug.Log("GetKey " + number);
         if (keys == null)
         {
             string defaultKeys = "QWER A";
