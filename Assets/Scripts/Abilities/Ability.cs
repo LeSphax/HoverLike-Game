@@ -6,6 +6,8 @@
 //Manages the state of the ability and its cooldown. Links the input, targeting and effects components of the ability.
 public class Ability : MonoBehaviour
 {
+
+    private static event EmptyEventHandler NewAbilityUsed;
     private AbilityInput input;
     private AbilityTargeting targeting;
     private AbilityEffect[] effects;
@@ -58,6 +60,10 @@ public class Ability : MonoBehaviour
             Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
 #endif
+        if (SlideBallInputs.GetKeyDown(UserSettings.GetKeyCode(5), SlideBallInputs.GUIPart.ABILITY))
+        {
+            TryCancelTargeting();
+        }
         switch (state)
         {
             case State.READY:
@@ -69,7 +75,6 @@ public class Ability : MonoBehaviour
                     }
                     else
                         PlayErrorSound();
-
                 }
                 //Used to stop the visual effect for the brake effect
                 input.Cancellation();
@@ -77,8 +82,7 @@ public class Ability : MonoBehaviour
             case State.CHOOSINGTARGET:
                 if (input.Cancellation())
                 {
-                    state = State.READY;
-                    targeting.CancelTargeting();
+                    CancelTargeting();
                 }
                 if (input.SecondActivation())
                 {
@@ -104,6 +108,12 @@ public class Ability : MonoBehaviour
         }
     }
 
+    private void CancelTargeting()
+    {
+        state = State.READY;
+        targeting.CancelTargeting();
+    }
+
     private void PlayErrorSound()
     {
         if (input.HasErrorSound())
@@ -114,6 +124,10 @@ public class Ability : MonoBehaviour
 
     private void CastAbility()
     {
+        if(NewAbilityUsed != null)
+        {
+            NewAbilityUsed.Invoke();
+        }
         if (currentCooldown == 0)
         {
             state = State.CHOOSINGTARGET;
@@ -125,8 +139,6 @@ public class Ability : MonoBehaviour
     {
         if (wasUsed)
         {
-
-
             foreach (AbilityEffect effect in effects)
             {
                 effect.ApplyOnTarget(parameters);
@@ -154,5 +166,31 @@ public class Ability : MonoBehaviour
                 targeting.CancelTargeting();
                 state = State.READY;
             }
+    }
+
+    private void OnEnable()
+    {
+        NewAbilityUsed += TryCancelTargeting;
+    }
+
+    private void OnDisable()
+    {
+        NewAbilityUsed += TryCancelTargeting;
+    }
+
+    private void TryCancelTargeting()
+    {
+        switch (state)
+        {
+            case State.READY:
+                break;
+            case State.CHOOSINGTARGET:
+                CancelTargeting();
+                break;
+            case State.LOADING:
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -5,7 +5,7 @@ public class ShootInput : AbilityInputWithBall
 
     public override bool FirstActivation()
     {
-        return Input.GetMouseButtonDown(0) && !AbilityTargeting.IsTargeting;
+        return Input.GetMouseButton(0) && !AbilityTargeting.IsTargeting;
     }
 
     public override bool SecondActivation()
@@ -23,7 +23,7 @@ public class ShootInput : AbilityInputWithBall
         return false;
     }
 
-public override bool HasErrorSound()
+    public override bool HasErrorSound()
     {
         return false;
     }

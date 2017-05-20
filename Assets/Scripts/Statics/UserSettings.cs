@@ -75,12 +75,12 @@ public class UserSettings
     {
         if (keys == null)
         {
-            string defaultKeys = "QWER ";
+            string defaultKeys = "QWER A";
             Debug.Log("---------LANGUAGE " + Application.systemLanguage);
             if (Application.systemLanguage == SystemLanguage.French)
             {
                 Debug.Log("Language is French !");
-                defaultKeys = "AZER ";
+                defaultKeys = "AZER Q";
             }
             keys = PlayerPrefs.GetString("Keys", defaultKeys);
         }

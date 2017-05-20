@@ -12,18 +12,21 @@ class ActualAbilitiesLatency
 
     public static void Received(Type type)
     {
-        float timeReceived = Time.realtimeSinceStartup *1000;
-        float timeSent = commandsSent.PopQueue(type);
-        if (timeSent == 0)
+        if (!MyComponents.NetworkManagement.isServer)
         {
-            Debug.LogError("The command sent wasn't registered");
-            return;
+            float timeReceived = Time.realtimeSinceStartup * 1000;
+            float timeSent = commandsSent.PopQueue(type);
+            if (timeSent == 0)
+            {
+                Debug.LogError("The command sent wasn't registered");
+                return;
+            }
+            while (timeReceived - timeSent > 1 && commandsSent[type].Count > 0)
+            {
+                timeSent = commandsSent.PopQueue(type);
+            }
+            abilitiesLatency.AddItem(type, timeReceived - timeSent);
         }
-        while (timeReceived - timeSent > 1 && commandsSent[type].Count > 0)
-        {
-            timeSent = commandsSent.PopQueue(type);
-        }
-        abilitiesLatency.AddItem(type, timeReceived - timeSent);
     }
 
     public static string Print()

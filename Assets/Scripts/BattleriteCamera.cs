@@ -4,8 +4,56 @@ using UnityEngine;
 //Put on the camera
 public class BattleriteCamera : MonoBehaviour
 {
-    public float xOffset;
-    public float yOffset;
+    public float YOffset
+    {
+        get
+        {
+            return (DownVisionLength + UpVisionLength)/2;
+        }
+    }
+
+    private float VerticalAngle
+    {
+        get
+        {
+            return 90 - Camera.main.transform.eulerAngles.x;
+        }
+    }
+
+    private float DownVisionLength
+    {
+        get
+        {
+            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 + VerticalAngle));
+        }
+    }
+
+    private float UpVisionLength
+    {
+        get
+        {
+            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 - VerticalAngle));
+        }
+    }
+
+    private static float HorizontalFOV
+    {
+        get
+        {
+            var radAngle = Camera.main.fieldOfView * Mathf.Deg2Rad;
+            var radHFOV = 2 * Mathf.Atan(Mathf.Tan(radAngle / 2) * Camera.main.aspect);
+            var horizontalFOV = Mathf.Rad2Deg * radHFOV;
+            return horizontalFOV;
+        }
+    }
+
+    private float XOffset
+    {
+        get
+        {
+            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (HorizontalFOV/2));
+        }
+    }
 
     public float speed;
 
@@ -46,14 +94,22 @@ public class BattleriteCamera : MonoBehaviour
 
     public Vector3 ClampPosition(Vector3 initialPosition)
     {
-        return new Vector3(Mathf.Clamp(initialPosition.x, yMinLimit, yMaxLimit), initialPosition.y, Mathf.Clamp(initialPosition.z, xMinLimit, xMaxLimit));
+        return new Vector3(
+            Mathf.Clamp(initialPosition.x, yMinLimit + UpVisionLength, yMaxLimit - DownVisionLength),
+            initialPosition.y,
+            Mathf.Clamp(initialPosition.z, xMinLimit + XOffset, xMaxLimit - XOffset));
+    }
+
+    private float GetHalfVisionLength(float fov, float angleOffset)
+    {
+        return transform.position.y * (Mathf.Tan(Mathf.Deg2Rad * (fov / 2 - angleOffset)) + Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 + angleOffset))) /2;
     }
 
     public void PositionCamera()
     {
         Vector3 previousPosition = transform.position;
         Vector2 mouseProportion = GetMouseProportion();
-        Vector3 targetPosition = new Vector3(basePosition.x + mouseProportion.y * yOffset, basePosition.y, basePosition.z - mouseProportion.x * xOffset);
+        Vector3 targetPosition = new Vector3(basePosition.x + mouseProportion.y * YOffset, basePosition.y, basePosition.z - mouseProportion.x * XOffset);
 
 
         transform.position = transform.position + basePosition - previousBasePosition;
@@ -61,7 +117,7 @@ public class BattleriteCamera : MonoBehaviour
 
         transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.fixedDeltaTime);
         transform.position = ClampPosition(transform.position);
-       // Debug.Log("Camera base displacement: " + (basePosition - previousBasePosition) + (transform.position - previousPosition));
+        // Debug.Log("Camera base displacement: " + (basePosition - previousBasePosition) + (transform.position - previousPosition));
 
         previousBasePosition = basePosition;
     }

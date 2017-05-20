@@ -1555,7 +1555,7 @@ MonoBehaviour:
   joinRoomImmediately: 1
   startGameImmediately: 1
   editorIsServer: 1
-  numberPlayersToStartGame: 8
+  numberPlayersToStartGame: 1
   addLatency: 0
   numberFramesLatency: 2
   playAsGoalieInitialValue: 0

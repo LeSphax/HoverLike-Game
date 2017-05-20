@@ -20,7 +20,6 @@ public class EffectsManager : SlideBall.MonoBehaviour
     public void ThrowBall()
     {
         if (controller.Player.IsMyPlayer)
-
             ActualAbilitiesLatency.Received(typeof(ShootEffect));
         controller.animator.SetTrigger("Throw");
         PlayClipAtPoint(ResourcesGetter.PassSound, controller.transform.position, 0.5f);

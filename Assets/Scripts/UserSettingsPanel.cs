@@ -48,7 +48,6 @@ public class UserSettingsPanel : MonoBehaviour
             {
                 if ((c >= ' ' && c <= 'z'))
                 {
-
                     SetChar(currentButton.Value, c);
                     currentButton = null;
                 }

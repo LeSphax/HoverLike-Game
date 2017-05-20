@@ -48,7 +48,7 @@ Connection_Failed "It was not possible to connect to the room. Maybe the game ha
 Room_Creation_Failed "Impossible to create the room : A room with this name already exists."
 Got_Kicked "You got kicked from the room. %e%e I may have something to do with what you said about the host's mother."
 
-Settings_Problem "Some controls weren't assigned. %e%e Ok, we get it, you're a badass and you don't need every ability to win.%e I've got what you need, for more challenge try the combination Q,X,N,M,$"
+Settings_Problem "Some controls weren't assigned. %e%e Ok, I get it, you're a badass and you don't need every ability to win.%e%e No worries, I've got what you need, for more challenge try to use the keys Q,X,N,M and $ to cast abilities"
 
 
 Sudden_Death "Sudden death"

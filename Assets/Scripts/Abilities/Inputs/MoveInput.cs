@@ -3,7 +3,7 @@
 public class MoveInput : AbilityInput
 {
 
-    public static bool ContinuousMovement = false;
+    public static bool ContinuousMovement = true;
 
     public override bool FirstActivation()
     {
