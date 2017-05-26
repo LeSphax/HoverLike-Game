@@ -34,7 +34,6 @@ namespace Ball
 
         public ThrowTrajectoryStrategy(Vector3[] controlPoints, float power)
         {
-            Debug.Log("ThrowTrajectoryStrategy");
             Assert.IsTrue(MyComponents.NetworkManagement.isServer);
             MyComponents.BallState.DetachBall();
             MyComponents.BallState.UnCatchable = false;
@@ -51,38 +50,12 @@ namespace Ball
         }
         public override void MoveBall()
         {
-            Debug.Log(speed + "    " + curveLength);
             float increment = speed * Time.fixedDeltaTime / curveLength;
-            if (previousCompletion + increment <= 1)
+            float newCompletion = previousCompletion + increment;
+            if (newCompletion <= 1)
             {
-                //Vector3 originalCurvePosition = Functions.Bezier3(controlPoints, newCompletion);
-                //Vector3 previousCurvePosition = Functions.Bezier3(controlPoints, previousCompletion);
-
-                //Vector3 previousWorldPosition = new Vector3(
-                //   previousCurvePosition.x,
-                //   MyComponents.BallState.transform.position.y,
-                //   previousCurvePosition.z
-                //   );
-
-                //Vector3 originalWorldPosition = new Vector3(
-                //    originalCurvePosition.x,
-                //    MyComponents.BallState.transform.position.y,
-                //    originalCurvePosition.z
-                //    );
-
-                //float increment = (newCompletion - previousCompletion) * (speed * Time.fixedDeltaTime) / Vector3.Distance(previousWorldPosition, originalWorldPosition);
-
-
-                //The TimeSlowApplier effect doesn't matter since we depend on the previousCompletion
-                //It still takes cares of having the ball fall twice as slow though
-                if (TimeSlowApplier.ObjectsBeforeUpdate.Keys.Contains(MyComponents.BallState.Rigidbody))
-                {
-                    increment *= TimeSlowApplier.TimeSlowProportion;
-                }
-                previousCompletion += increment;
-
                 Vector3 previousPosition = MyComponents.BallState.transform.position;
-                Vector3 newPosition = Functions.Bezier3(controlPoints, previousCompletion);
+                Vector3 newPosition = Functions.Bezier3(controlPoints, newCompletion);
                 MyComponents.BallState.transform.position = new Vector3(
                     newPosition.x,
                     MyComponents.BallState.transform.position.y,
@@ -90,8 +63,22 @@ namespace Ball
                     );
                 float displacement = Vector3.Distance(MyComponents.BallState.transform.position, previousPosition) / Time.fixedDeltaTime;
                 float reducedProportion = (displacement * Time.fixedDeltaTime * MyComponents.BallState.Rigidbody.drag) / displacement;
-                Debug.Log(displacement + "     "  + reducedProportion);
+                //The TimeSlowApplier effect doesn't matter since we depend on the previousCompletion
+                //It still takes cares of having the ball fall twice as slow though
+                if (TimeSlowApplier.ObjectsBeforeUpdate.Keys.Contains(MyComponents.BallState.Rigidbody))
+                {
+                    increment *= TimeSlowApplier.TimeSlowProportion;
+                    newCompletion = previousCompletion + increment;
+                    newPosition = Functions.Bezier3(controlPoints, newCompletion);
+                    MyComponents.BallState.transform.position = new Vector3(
+                        newPosition.x,
+                        MyComponents.BallState.transform.position.y,
+                        newPosition.z
+                        );
+                    reducedProportion *= TimeSlowApplier.TimeSlowProportion;
+                }
                 speed *= 1 - reducedProportion;
+                previousCompletion = newCompletion;
             }
             else
             {

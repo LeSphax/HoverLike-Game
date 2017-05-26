@@ -309,18 +309,14 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void Entry()
     {
-        StartCoroutine(CoEntry());
-    }
 
-    IEnumerator CoEntry()
-    {
         Debug.Log("MatchManager : CoEntry - State : " + MyState);
         Assert.IsTrue(MyState == State.ENDING_ROUND || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH || MyState == State.LOADING_SCENE, "The entry shouldn't happen in this state " + MyState + " , maybe it was a manual entry?");
 
         switch (MyState)
         {
             case State.LOADING_SCENE:
-                yield return EntryPlayersCreation();
+                EntryPlayersCreation();
                 if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
                 {
                     Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities += FinishedUsingAllAbilities;
@@ -332,13 +328,13 @@ public class MatchManager : SlideBall.MonoBehaviour
                 }
                 break;
             case State.WARMUP:
-                yield return EntryPlayersCreation();
+                EntryPlayersCreation();
                 View.RPC("ShowGame", RPCTargets.All);
                 break;
             case State.ENDING_ROUND:
                 entryCountdown.View.RPC("StartTimer", RPCTargets.All, ENTRY_DURATION);
                 MyState = State.STARTING;
-                yield return EntryPlayersCreation();
+                EntryPlayersCreation();
                 break;
             case State.LAST_CHANCE:
             case State.STARTING:
@@ -351,25 +347,15 @@ public class MatchManager : SlideBall.MonoBehaviour
         }
     }
 
-    IEnumerator EntryPlayersCreation()
+    void EntryPlayersCreation()
     {
         PlayerSpawner spawner = gameObject.GetComponent<PlayerSpawner>();
-        short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
-        spawner.View.RPC("DesactivatePlayers", RPCTargets.All, syncId);
-
-        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-
+        spawner.View.RPC("DesactivatePlayers", RPCTargets.All);
         MyComponents.BallState.PutAtStartPosition();
         SetPlayerRoles();
         MyComponents.Players.SendChanges();
-        MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
-        spawner.View.RPC("ResetPlayers", RPCTargets.All, syncId);
-        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-
-        MyComponents.PlayersSynchronisation.ResetSyncId(syncId);
-        spawner.View.RPC("ReactivatePlayers", RPCTargets.All, syncId);
-        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-
+        spawner.View.RPC("ResetPlayers", RPCTargets.All);
+        spawner.View.RPC("ReactivatePlayers", RPCTargets.All);
     }
 
     private void SetPlayerRoles()

@@ -6,26 +6,23 @@ using UnityEngine;
 public class PlayerSpawner : SlideBall.MonoBehaviour
 {
     [MyRPC]
-    public void DesactivatePlayers(short syncId)
+    public void DesactivatePlayers()
     {
         Players.players.Values.Map(player =>
         {
             if (player.controller != null)
                 player.controller.gameObject.SetActive(false);
         });
-        MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
     [MyRPC]
-    public void ResetPlayers(short syncId)
+    public void ResetPlayers()
     {
         Players.players.Values.Map(player =>
         {
             if (player.controller != null)
                 player.controller.ResetPlayer();
         });
-
-        MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
     [MyRPC]
@@ -36,7 +33,6 @@ public class PlayerSpawner : SlideBall.MonoBehaviour
             if (player.controller != null)
                 player.controller.gameObject.SetActive(true);
         });
-        MyComponents.PlayersSynchronisation.SendSynchronisation(syncId);
     }
 
 }
