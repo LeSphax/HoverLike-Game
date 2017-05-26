@@ -287,7 +287,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 else
                 {
                     Debug.Log("FinishedUsingAllAbilities Start Warmup");
-
+                    Players.MyPlayer.PlayAsGoalie = EditorVariables.PlayAsGoalieInitialValue;
                     Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities -= FinishedUsingAllAbilities;
                     MyState = State.WARMUP;
                 }
@@ -325,11 +325,9 @@ public class MatchManager : SlideBall.MonoBehaviour
                 {
                     Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities += FinishedUsingAllAbilities;
                     Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(true);
-
                 }
                 else if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
                 {
-                    Players.MyPlayer.PlayAsGoalie = false;
                     Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(false);
                 }
                 break;

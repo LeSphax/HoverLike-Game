@@ -26,7 +26,6 @@ namespace Ball
 
         Vector3[] controlPoints;
         Vector3 previousPosition;
-        float duration;
         float curveLength;
         float startingTime;
         float previousCompletion;
@@ -46,57 +45,55 @@ namespace Ball
 
             this.curveLength = Functions.LengthBezier3(controlPoints, 10);
             this.speed = ShootPowerLevel * power;
-            this.duration = curveLength / power;
             this.controlPoints = controlPoints;
             previousCompletion = 0;
             startingTime = Time.realtimeSinceStartup;
         }
         public override void MoveBall()
         {
-            float newCompletion = previousCompletion + speed * Time.fixedDeltaTime / curveLength;
-            if (newCompletion <= 1)
+            Debug.Log(speed + "    " + curveLength);
+            float increment = speed * Time.fixedDeltaTime / curveLength;
+            if (previousCompletion + increment <= 1)
             {
-                Vector3 originalCurvePosition = Functions.Bezier3(controlPoints, newCompletion);
-                Vector3 previousCurvePosition = Functions.Bezier3(controlPoints, previousCompletion);
+                //Vector3 originalCurvePosition = Functions.Bezier3(controlPoints, newCompletion);
+                //Vector3 previousCurvePosition = Functions.Bezier3(controlPoints, previousCompletion);
 
-                Vector3 previousWorldPosition = new Vector3(
-                   previousCurvePosition.x,
-                   MyComponents.BallState.transform.position.y,
-                   previousCurvePosition.z
-                   );
+                //Vector3 previousWorldPosition = new Vector3(
+                //   previousCurvePosition.x,
+                //   MyComponents.BallState.transform.position.y,
+                //   previousCurvePosition.z
+                //   );
 
-                Vector3 originalWorldPosition = new Vector3(
-                    originalCurvePosition.x,
-                    MyComponents.BallState.transform.position.y,
-                    originalCurvePosition.z
-                    );
+                //Vector3 originalWorldPosition = new Vector3(
+                //    originalCurvePosition.x,
+                //    MyComponents.BallState.transform.position.y,
+                //    originalCurvePosition.z
+                //    );
 
-                float increment = (newCompletion - previousCompletion) * (speed * Time.fixedDeltaTime) / Vector3.Distance(previousWorldPosition, originalWorldPosition);
-                float newSpeed = speed * (1 - Time.fixedDeltaTime * MyComponents.BallState.Rigidbody.drag);
+                //float increment = (newCompletion - previousCompletion) * (speed * Time.fixedDeltaTime) / Vector3.Distance(previousWorldPosition, originalWorldPosition);
+
 
                 //The TimeSlowApplier effect doesn't matter since we depend on the previousCompletion
                 //It still takes cares of having the ball fall twice as slow though
                 if (TimeSlowApplier.ObjectsBeforeUpdate.Keys.Contains(MyComponents.BallState.Rigidbody))
                 {
                     increment *= TimeSlowApplier.TimeSlowProportion;
-                    newSpeed = speed + (newSpeed - speed) * TimeSlowApplier.TimeSlowProportion;
                 }
-                speed = newSpeed;
                 previousCompletion += increment;
-                //Debug.Log(Vector3.Distance(MyComponents.BallState.transform.position, originalWorldPosition) + "    " + curveLength + "    " + completion);
 
-                if (previousCompletion <= 1)
-                {
-                    Vector3 newPosition = Functions.Bezier3(controlPoints, newCompletion);
-                    MyComponents.BallState.transform.position = new Vector3(
-                        newPosition.x,
-                        MyComponents.BallState.transform.position.y,
-                        newPosition.z
-                        );
-                }
-
+                Vector3 previousPosition = MyComponents.BallState.transform.position;
+                Vector3 newPosition = Functions.Bezier3(controlPoints, previousCompletion);
+                MyComponents.BallState.transform.position = new Vector3(
+                    newPosition.x,
+                    MyComponents.BallState.transform.position.y,
+                    newPosition.z
+                    );
+                float displacement = Vector3.Distance(MyComponents.BallState.transform.position, previousPosition) / Time.fixedDeltaTime;
+                float reducedProportion = (displacement * Time.fixedDeltaTime * MyComponents.BallState.Rigidbody.drag) / displacement;
+                Debug.Log(displacement + "     "  + reducedProportion);
+                speed *= 1 - reducedProportion;
             }
-            if (previousCompletion > 1 || newCompletion > 1)
+            else
             {
                 MyComponents.BallState.Rigidbody.velocity = new Vector3(CurrentVelocity.x, MyComponents.BallState.Rigidbody.velocity.y, CurrentVelocity.z);
                 MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();

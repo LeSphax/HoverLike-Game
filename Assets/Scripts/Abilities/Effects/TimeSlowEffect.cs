@@ -39,15 +39,10 @@ namespace TimeSlow
             foreach (var collider in colliders)
             {
                 Rigidbody rb = GetObjectsWithRigidbody(collider.transform);
-                Debug.Log(rb.gameObject.name);
                 if (rb != null && !rb.isKinematic)
                 {
-                    Debug.Log("OK");
-                    Debug.Log(TimeSlowApplier.ObjectsBeforeUpdate.ContainsKey(rb));
                     if (!TimeSlowApplier.ObjectsBeforeUpdate.ContainsKey(rb))
                         TimeSlowApplier.ObjectsBeforeUpdate.Add(rb, new RigidbodyState(rb.transform.position, rb.velocity));
-                    Debug.Log(TimeSlowApplier.ObjectsBeforeUpdate.ContainsKey(rb));
-
                 }
             }
         }

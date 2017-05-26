@@ -11,7 +11,7 @@ public class PlayAsGoalie : MonoBehaviour {
     void Awake()
     {
         toggle = GetComponent<Toggle>();
-        toggle.isOn = EditorVariables.PlayAsGoalieInitialValue;
+        toggle.isOn = false;
         SetActivated();
     }
 

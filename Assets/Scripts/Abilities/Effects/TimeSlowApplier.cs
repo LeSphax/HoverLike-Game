@@ -27,7 +27,6 @@ namespace TimeSlow
                     pair.Key.velocity = currentVelocity - ((currentVelocity - pair.Value.velocity) * (1 - TimeSlowProportion));
                 }
             }
-            Debug.Log("Clear");
             ObjectsBeforeUpdate.Clear();
         }
 
