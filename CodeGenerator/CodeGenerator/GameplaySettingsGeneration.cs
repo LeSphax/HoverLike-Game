@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 class GameplaySettingsGeneration
 {
-    public static readonly string[] Abilities = { "Move", "Dash", "Jump", "Pass", "Steal", "Block", "TimeSlow", "Teleport" };
 
     private static Dictionary<string, string> typeToUIComponent;
     private static Dictionary<string, string> TypeToUIComponent
@@ -137,6 +136,8 @@ class GameplaySettingsGeneration
         return "ResourcesGetter." + abilityName + "Prefab.GetComponent<Ability>().cooldownDuration";
     }
 
+    public static readonly string[] Abilities = { "Move", "Dash", "Jump", "Pass", "Steal", "Block", "TimeSlow", "Teleport" };
+
     public static void Main()
     {
         List<string> gameplayContent =new List<string>
@@ -145,7 +146,8 @@ class GameplaySettingsGeneration
             "float","attackerAcceleration","AttackerMovementStrategy.Acceleration",
             "float","attackerMaxSpeed","AttackerMovementStrategy.MaxVelocity",
             "float","goalieSpeed","GoalieMovementStrategy.Speed",
-            "float","shootPowerLevel","BallMovementView.ShootPowerLevel"
+            "float","shootPowerLevel","BallMovementView.ShootPowerLevel",
+            "float","brakeProportion","AttackerMovementStrategy.BrakeProportion"
 
         };
         foreach(string ability in Abilities)

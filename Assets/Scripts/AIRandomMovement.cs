@@ -122,8 +122,13 @@ namespace AbilitiesManagement
 
         private void Shoot()
         {
-            Vector3 target = GetRandomPointInTerrain();
-            abilitiesManager.View.RPC("Shoot", RPCTargets.Server, target, 1.0f);
+            Vector3[] controlPoints = new Vector3[]
+            {
+                controller.transform.position,
+                GetRandomPointInTerrain(),
+                GetRandomPointInTerrain()
+            };
+            abilitiesManager.View.RPC("Shoot", RPCTargets.Server, controlPoints, 1.0f);
 
             InvokeRandom("Shoot", MoveDelay, MoveDelay * 2);
         }

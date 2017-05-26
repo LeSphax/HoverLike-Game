@@ -4,17 +4,15 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using System.Collections.Generic;
 using Wintellect.PowerCollections;
+using Ball;
 
 class BallMovementView : ObservedComponent
 {
 
     Rigidbody myRigidbody;
 
-    [SerializeField]
-    private float MAX_SPEED;
     public static float ShootPowerLevel = 250;
-    [SerializeField]
-    private float MINIMUM_THROW_SPEED_PROPORTION;
+
     public static float MinimumShootPowerLevelProportion = 0.3f;
 
     PacketHandler packetHandler;
@@ -49,15 +47,13 @@ class BallMovementView : ObservedComponent
     protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
-        MAX_SPEED = ShootPowerLevel;
-        MINIMUM_THROW_SPEED_PROPORTION = MinimumShootPowerLevelProportion;
     }
 
     public void Throw(Vector3 target, float power)
     {
-        Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
-        velocity.Normalize();
-        myRigidbody.velocity = velocity * MAX_SPEED * Mathf.Max(power, MINIMUM_THROW_SPEED_PROPORTION);
+        Vector3 direction = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
+        direction.Normalize();
+        myRigidbody.velocity = direction * ShootPowerLevel * Mathf.Max(power, MinimumShootPowerLevelProportion);
         transform.position = transform.position;
     }
 
@@ -76,7 +72,7 @@ class BallMovementView : ObservedComponent
 
         if (MyComponents.BallState.IsAttached())
         {
-            transform.localPosition = BallState.ballHoldingPosition;
+            transform.localPosition = AttachedTrajectoryStrategy.ballHoldingPosition;
             return;
         }
         else if (currentPacket != null)

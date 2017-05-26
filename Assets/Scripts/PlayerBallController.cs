@@ -1,4 +1,5 @@
-﻿using Byn.Net;
+﻿using Ball;
+using Byn.Net;
 using PlayerManagement;
 using System.Collections.Generic;
 using UnityEngine;
@@ -110,13 +111,16 @@ namespace PlayerBallControl
             }
         }
 
+        public void ThrowBallCurve(Vector3[] controlPoints, float power)
+        {
+            MyComponents.BallState.trajectoryStrategy = new ThrowTrajectoryStrategy(controlPoints, power);
+        }
+
         public void ThrowBall(Vector3 target, float power)
         {
-            if (playerConnectionId == MyComponents.BallState.GetIdOfPlayerOwningBall())
-            {
-                MyComponents.BallState.DetachBall();
-                SetBallSpeed(target, power);
-            }
+            Debug.Log("ThrowBall");
+            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+            SetBallSpeed(target, power);
         }
 
         public void SetBallSpeed(Vector3 target, float power)
@@ -127,7 +131,6 @@ namespace PlayerBallControl
 
         private void PrepareForThrowing()
         {
-            AttractionBall.DeactivatePlayer(gameObject);
             tryingToCatchBall = false;
             Invoke("ReactivateAttraction", 0.5f);
         }
@@ -135,7 +138,6 @@ namespace PlayerBallControl
         private void ReactivateAttraction()
         {
             tryingToCatchBall = true;
-            AttractionBall.ActivatePlayer(gameObject);
         }
     }
 }

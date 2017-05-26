@@ -37,9 +37,12 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
         }
         set
         {
-            int differenceWithPrevious = value - lastReceivedBatchNumber;
-            NumberPacketsReceived += differenceWithPrevious;
-            NumberPacketsMissed += differenceWithPrevious - 1;
+            if (lastReceivedBatchNumber != -1)
+            {
+                int differenceWithPrevious = value - lastReceivedBatchNumber;
+                NumberPacketsReceived += differenceWithPrevious;
+                NumberPacketsMissed += differenceWithPrevious - 1;
+            }
             lastReceivedBatchNumber = value;
             if (CurrentlyShownBatchNb == -1)
             {

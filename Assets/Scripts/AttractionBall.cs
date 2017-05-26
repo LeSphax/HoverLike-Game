@@ -6,8 +6,9 @@ public class AttractionBall : MonoBehaviour
 
     public float power = 2f;
 
-    static List<GameObject> deactivatedPlayers = new List<GameObject>();
     List<GameObject> playersAttracting = new List<GameObject>();
+
+    public static bool Activated = true;
 
     void OnTriggerEnter(Collider collider)
     {
@@ -17,7 +18,6 @@ public class AttractionBall : MonoBehaviour
 
     public void Reset()
     {
-        deactivatedPlayers.Clear();
         playersAttracting.Clear();
     }
 
@@ -27,28 +27,15 @@ public class AttractionBall : MonoBehaviour
             playersAttracting.Remove(collider.gameObject);
     }
 
-    public static void ActivatePlayer(GameObject player)
-    {
-        deactivatedPlayers.Remove(player);
-    }
-
-    public static void DeactivatePlayer(GameObject player)
-    {
-        deactivatedPlayers.Add(player);
-    }
-
     void Update()
     {
-        if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.UnCatchable)
+        if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.UnCatchable && Activated)
             foreach (GameObject player in playersAttracting)
             {
-                if (!deactivatedPlayers.Contains(player))
-                {
-                    Vector3 target = player.transform.position;
-                    Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
-                    velocity.Normalize();
-                    transform.parent.GetComponent<Rigidbody>().velocity += velocity * power;
-                }
+                Vector3 target = player.transform.position;
+                Vector3 velocity = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
+                velocity.Normalize();
+                transform.parent.GetComponent<Rigidbody>().velocity += velocity * power;
             }
     }
 }

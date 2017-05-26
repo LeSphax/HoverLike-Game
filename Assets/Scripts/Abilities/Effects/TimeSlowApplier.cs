@@ -6,7 +6,7 @@ namespace TimeSlow
 {
     public class TimeSlowApplier : MonoBehaviour
     {
-        private const float TimeSlowProportion = 0.6f;
+        public const float TimeSlowProportion = 0.3f;
         internal static Dictionary<Rigidbody, RigidbodyState> ObjectsBeforeUpdate = new Dictionary<Rigidbody, RigidbodyState>();
 
         protected void Start()
@@ -27,6 +27,7 @@ namespace TimeSlow
                     pair.Key.velocity = currentVelocity - ((currentVelocity - pair.Value.velocity) * (1 - TimeSlowProportion));
                 }
             }
+            Debug.Log("Clear");
             ObjectsBeforeUpdate.Clear();
         }
 

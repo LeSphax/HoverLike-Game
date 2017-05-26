@@ -5,6 +5,7 @@ using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using Ball;
 
 public static class MyComponents
 {

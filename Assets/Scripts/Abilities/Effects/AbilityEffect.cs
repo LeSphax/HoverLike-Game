@@ -5,6 +5,19 @@ public abstract class AbilityEffect : MonoBehaviour
 {
     public virtual void ApplyOnTarget(params object[] parameters)
     {
-        ActualAbilitiesLatency.commandsSent.AddInQueue(this.GetType(), Time.realtimeSinceStartup * 1000);
+        if (!MyComponents.NetworkManagement.isServer)
+            ActualAbilitiesLatency.commandsSent.AddInQueue(this.GetType(), Time.realtimeSinceStartup * 1000);
+    }
+
+    public virtual void ApplyOnTargetCancel(params object[] parameters)
+    {
+    }
+
+    public virtual bool LongEffect
+    {
+        get
+        {
+            return false;
+        }
     }
 }

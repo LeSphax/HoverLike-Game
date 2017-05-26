@@ -93,7 +93,7 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
             builder.Append("[REPORT]" + Players.MyPlayer.Nickname);
             builder.Append("[REPORT]Average difference : " + MyNetworkView.averageDifference + ", Number of Resets : " + MyNetworkView.nbOfResets);
             builder.Append("[REPORT]" + ActualAbilitiesLatency.Print());
-            builder.Append("[REPORT]Packet loss ratio : " + (float)(ObservedComponent.NumberPacketsMissed / ObservedComponent.NumberPacketsReceived) + ", Missed : "
+            builder.Append("[REPORT]Packet loss ratio : " + ((float)ObservedComponent.NumberPacketsMissed / ObservedComponent.NumberPacketsReceived) + ", Missed : "
                 + ObservedComponent.NumberPacketsMissed + ", Received : " + ObservedComponent.NumberPacketsReceived);
             View.RPC("GetAndPrintIndividualNetworkReport", RPCTargets.All, builder.ToString());
         }

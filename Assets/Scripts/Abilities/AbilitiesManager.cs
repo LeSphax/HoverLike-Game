@@ -1,4 +1,5 @@
-﻿using Byn.Net;
+﻿using Ball;
+using Byn.Net;
 using PlayerBallControl;
 using PlayerManagement;
 using System;
@@ -79,6 +80,16 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
+        internal void ShootCurved(Vector3[] controlPoints, float power)
+        {
+            if (CanUseAbility() && controller.Player.HasBall)
+            {
+                controller.ballController.ThrowBallCurve(controlPoints, power);
+                EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
+            }
+        }
+
+        [MyRPC]
         internal void Shoot(Vector3 target, float power)
         {
             if (CanUseAbility() && controller.Player.HasBall)
@@ -134,12 +145,13 @@ namespace AbilitiesManagement
         }
 
         [MyRPC]
-        private void Pass(ConnectionId id)
+        private void Pass(ConnectionId targetId)
         {
             if (CanUseAbility() && controller.Player.HasBall && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
-                Debug.LogWarning("Pass from " + this + " to " + Players.players[id].controller);
-                new PassPersistentEffect(this, id, passCurve);
+                //Debug.LogWarning("Pass from " + this + " to " + Players.players[id].controller);
+                //new PassPersistentEffect(this, id, passCurve);
+                MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(controller.playerConnectionId, targetId, passCurve);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }
         }
@@ -172,7 +184,10 @@ namespace AbilitiesManagement
                         {
                             rb.AddForce(force * BLOCK_POWER, ForceMode.VelocityChange);
                         }
-
+                        if(MyComponents.BallState.trajectoryStrategy.GetType() == typeof(ThrowTrajectoryStrategy))
+                        {
+                            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+                        }
                     }
                 }
                 MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", Vector3.zero, Quaternion.identity, controller.playerConnectionId);

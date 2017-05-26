@@ -5,15 +5,14 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
 {
     [SerializeField]
     private float ANGULAR_SPEED = 2000;
-    [SerializeField]
-    private float SPEED;
+
     public static float Speed = 30;
 
     public override float MaxPlayerVelocity
     {
         get
         {
-            return SPEED;
+            return Speed;
         }
     }
 
@@ -22,7 +21,6 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
     protected override void Awake()
     {
         base.Awake();
-        SPEED = Speed;
     }
 
     protected override void Move()
@@ -34,7 +32,7 @@ public class GoalieMovementStrategy : PlayerMovementStrategy
 
         if (Quaternion.Angle(transform.rotation, targetRotation) < 0.05f)
         {
-            myRigidbody.velocity = transform.forward * SPEED * (1 + 0.3f * inZone);
+            myRigidbody.velocity = transform.forward * Speed * (1 + 0.3f * inZone);
         }
     }
 

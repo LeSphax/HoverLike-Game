@@ -11,6 +11,7 @@ public InputField attackerAccelerationInputField;
 public InputField attackerMaxSpeedInputField;
 public InputField goalieSpeedInputField;
 public InputField shootPowerLevelInputField;
+public InputField brakeProportionInputField;
 public InputField moveCooldownInputField;
 public InputField dashCooldownInputField;
 public InputField jumpCooldownInputField;
@@ -85,6 +86,17 @@ return BallMovementView.ShootPowerLevel;
 set
 {
 BallMovementView.ShootPowerLevel = value;
+}
+}
+public float BrakeProportion
+{
+get
+{
+return AttackerMovementStrategy.BrakeProportion;
+}
+set
+{
+AttackerMovementStrategy.BrakeProportion = value;
 }
 }
 public float MoveCooldown
@@ -182,10 +194,10 @@ private void SettingsAsked()
  }
 public void Save()
 {
-   View.RPC("SetSettings", RPCTargets.All, continuouMovementToggle.isOn, ParseFloat(attackerAccelerationInputField.text, AttackerAcceleration), ParseFloat(attackerMaxSpeedInputField.text, AttackerMaxSpeed), ParseFloat(goalieSpeedInputField.text, GoalieSpeed), ParseFloat(shootPowerLevelInputField.text, ShootPowerLevel), ParseFloat(moveCooldownInputField.text, MoveCooldown), ParseFloat(dashCooldownInputField.text, DashCooldown), ParseFloat(jumpCooldownInputField.text, JumpCooldown), ParseFloat(passCooldownInputField.text, PassCooldown), ParseFloat(stealCooldownInputField.text, StealCooldown), ParseFloat(blockCooldownInputField.text, BlockCooldown), ParseFloat(timeSlowCooldownInputField.text, TimeSlowCooldown), ParseFloat(teleportCooldownInputField.text, TeleportCooldown));
+   View.RPC("SetSettings", RPCTargets.All, continuouMovementToggle.isOn, ParseFloat(attackerAccelerationInputField.text, AttackerAcceleration), ParseFloat(attackerMaxSpeedInputField.text, AttackerMaxSpeed), ParseFloat(goalieSpeedInputField.text, GoalieSpeed), ParseFloat(shootPowerLevelInputField.text, ShootPowerLevel), ParseFloat(brakeProportionInputField.text, BrakeProportion), ParseFloat(moveCooldownInputField.text, MoveCooldown), ParseFloat(dashCooldownInputField.text, DashCooldown), ParseFloat(jumpCooldownInputField.text, JumpCooldown), ParseFloat(passCooldownInputField.text, PassCooldown), ParseFloat(stealCooldownInputField.text, StealCooldown), ParseFloat(blockCooldownInputField.text, BlockCooldown), ParseFloat(timeSlowCooldownInputField.text, TimeSlowCooldown), ParseFloat(teleportCooldownInputField.text, TeleportCooldown));
 }
 [MyRPC]
-public void SetSettings(bool continuouMovement, float attackerAcceleration, float attackerMaxSpeed, float goalieSpeed, float shootPowerLevel, float moveCooldown, float dashCooldown, float jumpCooldown, float passCooldown, float stealCooldown, float blockCooldown, float timeSlowCooldown, float teleportCooldown)
+public void SetSettings(bool continuouMovement, float attackerAcceleration, float attackerMaxSpeed, float goalieSpeed, float shootPowerLevel, float brakeProportion, float moveCooldown, float dashCooldown, float jumpCooldown, float passCooldown, float stealCooldown, float blockCooldown, float timeSlowCooldown, float teleportCooldown)
 {
 ContinuouMovement = continuouMovement;
 continuouMovementToggle.isOn = ContinuouMovement;
@@ -197,6 +209,8 @@ GoalieSpeed = goalieSpeed;
 goalieSpeedInputField.text = GoalieSpeed+"";
 ShootPowerLevel = shootPowerLevel;
 shootPowerLevelInputField.text = ShootPowerLevel+"";
+BrakeProportion = brakeProportion;
+brakeProportionInputField.text = BrakeProportion+"";
 MoveCooldown = moveCooldown;
 moveCooldownInputField.text = MoveCooldown+"";
 DashCooldown = dashCooldown;
@@ -228,6 +242,7 @@ attackerAccelerationInputField.text = AttackerAcceleration+"";
 attackerMaxSpeedInputField.text = AttackerMaxSpeed+"";
 goalieSpeedInputField.text = GoalieSpeed+"";
 shootPowerLevelInputField.text = ShootPowerLevel+"";
+brakeProportionInputField.text = BrakeProportion+"";
 moveCooldownInputField.text = MoveCooldown+"";
 dashCooldownInputField.text = DashCooldown+"";
 jumpCooldownInputField.text = JumpCooldown+"";

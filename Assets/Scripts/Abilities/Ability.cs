@@ -25,6 +25,7 @@ public class Ability : MonoBehaviour
         READY,
         TRYING_TO_ACTIVATE,
         CHOOSING_TARGET,
+        APPLYING_EFFECT,
         LOADING,
     }
 
@@ -75,8 +76,6 @@ public class Ability : MonoBehaviour
                     else
                         state = State.TRYING_TO_ACTIVATE;
                 }
-                //Used to stop the visual effect for the brake effect
-                input.Cancellation();
                 break;
             case State.TRYING_TO_ACTIVATE:
                 if (input.FirstActivation() || input.ContinuousActivation())
@@ -84,7 +83,6 @@ public class Ability : MonoBehaviour
                     if (isEnabled)
                         CastAbility();
                 }
-                input.Cancellation();
                 break;
             case State.CHOOSING_TARGET:
                 if (input.Cancellation())
@@ -95,6 +93,12 @@ public class Ability : MonoBehaviour
                 {
                     state = State.CHOOSING_TARGET;
                     targeting.ReactivateTargeting();
+                }
+                break;
+            case State.APPLYING_EFFECT:
+                if (input.Cancellation())
+                {
+                    CastCancelAbility();
                 }
                 break;
             case State.LOADING:
@@ -142,15 +146,55 @@ public class Ability : MonoBehaviour
         }
     }
 
-    private void CastOnTarget(bool wasUsed, params object[] parameters)
+    private void CastCancelAbility()
+    {
+        targeting.ChooseTarget(CastOnCancelTarget);
+    }
+
+    private void CastOnCancelTarget(bool wasUsed, params object[] parameters)
     {
         if (wasUsed)
         {
             foreach (AbilityEffect effect in effects)
             {
-                effect.ApplyOnTarget(parameters);
+
+                if (effect.LongEffect)
+                    effect.ApplyOnTargetCancel(parameters);
             }
             if (NoCooldown)
+                state = State.READY;
+            else
+            {
+                currentCooldown = cooldownDuration;
+                state = State.LOADING;
+            }
+        }
+        else
+        {
+            state = State.READY;
+        }
+    }
+
+    private void CastOnTarget(bool wasUsed, params object[] parameters)
+    {
+        if (wasUsed)
+        {
+            if (trace)
+                Debug.Log("Cast On Target");
+            bool hasLongEffect = false;
+            foreach (AbilityEffect effect in effects)
+            {
+                effect.ApplyOnTarget(parameters);
+                if (effect.LongEffect)
+                    hasLongEffect = true;
+            }
+            if (trace)
+                Debug.Log(gameObject.name + " Long Effect " + hasLongEffect);
+            if (hasLongEffect)
+            {
+                state = State.APPLYING_EFFECT;
+            }
+            else if (NoCooldown)
                 state = State.READY;
             else
             {

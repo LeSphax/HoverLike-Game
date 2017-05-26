@@ -4,43 +4,43 @@ using UnityEngine;
 
 public class AttackerMovementStrategy : PlayerMovementStrategy
 {
-    private float BRAKE_AMOUNT;
     private bool braking;
     private const float JUMP_FORCE = 60f;
 
-    [SerializeField]
-    private float ACCELERATION;
     public static float Acceleration = 100;
 
-    [SerializeField]
-    private float MAX_VELOCITY;
     public static float MaxVelocity = 75;
 
-    [SerializeField]
-    private float ANGULAR_SPEED;
     public static float AngularSpeed = 500;
+
+    public static float BrakeProportion = 5.5f/7;
+
+    private float BrakeAmount
+    {
+        get
+        {
+            return BrakeProportion * Acceleration;
+        }
+    }
+
 
 
     public override float MaxPlayerVelocity
     {
         get
         {
-            return MAX_VELOCITY;
+            return MaxVelocity;
         }
     }
 
     protected override void Awake()
     {
         base.Awake();
-        BRAKE_AMOUNT = ACCELERATION * 4 / 7;
-        ACCELERATION = Acceleration;
-        MAX_VELOCITY = MaxVelocity;
-        ANGULAR_SPEED = AngularSpeed;
     }
 
     public void ClampPlayerVelocity()
     {
-        myRigidbody.velocity *= Mathf.Min(1.0f, MAX_VELOCITY / myRigidbody.velocity.magnitude);
+        myRigidbody.velocity *= Mathf.Min(1.0f, MaxVelocity / myRigidbody.velocity.magnitude);
     }
 
     protected override void Move()
@@ -48,8 +48,8 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
         var lookPos = TargetPosition.Value - transform.position;
         lookPos.y = 0;
         var targetRotation = Quaternion.LookRotation(lookPos);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.fixedDeltaTime * ANGULAR_SPEED);
-        myRigidbody.AddForce(transform.forward * ACCELERATION, ForceMode.Acceleration);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.fixedDeltaTime * AngularSpeed);
+        myRigidbody.AddForce(transform.forward * Acceleration, ForceMode.Acceleration);
 
         ClampPlayerVelocity();
     }
@@ -59,7 +59,7 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
         Vector3 currentVelocity = myRigidbody.velocity;
         if (braking && currentVelocity.magnitude != 0)
         {
-            myRigidbody.velocity -= BRAKE_AMOUNT * Time.fixedDeltaTime * Vector3.Normalize(currentVelocity);
+            myRigidbody.velocity -= BrakeAmount * Time.fixedDeltaTime * Vector3.Normalize(currentVelocity);
         }
     }
 

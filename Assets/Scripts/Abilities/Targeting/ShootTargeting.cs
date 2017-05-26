@@ -1,20 +1,43 @@
 ﻿using PlayerManagement;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(PowerBar))]
+[RequireComponent(typeof(Bezier))]
 public class ShootTargeting : AbilityTargeting
 {
     PowerBar powerBar;
+    Bezier bezier;
     CastOnTarget callback;
 
+    private bool curving;
+
     private bool isActivated;
+    private bool IsActivated
+    {
+        get
+        {
+            return isActivated;
+        }
+        set
+        {
+            bezier.Activated = value;
+            isActivated = value;
+        }
+    }
+
+    private void Start()
+    {
+        powerBar = GetComponent<PowerBar>();
+        bezier = GetComponent<Bezier>();
+    }
 
     public override void ChooseTarget(CastOnTarget callback)
     {
-        powerBar = GetComponent<PowerBar>();
         powerBar.StartFilling();
+
         this.callback = callback;
-        isActivated = true;
+        IsActivated = true;
         ShowArmingAnimation(true);
     }
 
@@ -25,11 +48,31 @@ public class ShootTargeting : AbilityTargeting
         Players.MyPlayer.controller.abilitiesManager.EffectsManager.ShowArmAnimation(isArming);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            curving = true;
+            bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
+        }
+        else if (Input.GetKeyUp(KeyCode.T))
+        {
+            curving = false;
+        }
+        if (IsActivated)
+        {
+            bezier.controlPoints[0] = Players.MyPlayer.controller.transform.position;
+            bezier.controlPoints[1] = Functions.GetMouseWorldPosition();
+            if (!curving)
+                bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
+        }
+    }
+
     public override void CancelTargeting()
     {
-        if (isActivated && powerBar.IsFilling())
+        if (IsActivated && powerBar.IsFilling())
         {
-            isActivated = false;
+            IsActivated = false;
             powerBar.Hide();
             ShowArmingAnimation(false);
         }
@@ -37,9 +80,9 @@ public class ShootTargeting : AbilityTargeting
 
     public override void ReactivateTargeting()
     {
-        if (isActivated && powerBar.IsFilling())
+        if (IsActivated && powerBar.IsFilling())
         {
-            isActivated = false;
+            IsActivated = false;
             Activate();
             powerBar.Hide();
         }
@@ -47,7 +90,7 @@ public class ShootTargeting : AbilityTargeting
 
     private void Activate()
     {
-        Vector3 position = Functions.GetMouseWorldPosition();
-        callback.Invoke(true,Players.MyPlayer.controller, position);
+        Vector3[] controlPoints = bezier.controlPoints.Select(point => point.Value).ToArray();
+        callback.Invoke(true,Players.MyPlayer.controller, controlPoints);
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using PlayerBallControl;
 using SlideBall.Networking;
+using Ball;
 
 namespace PlayerManagement
 {

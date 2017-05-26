@@ -66,7 +66,7 @@ public class BattleriteCamera : MonoBehaviour
     public float yMaxLimit;
     public Vector3 offset;
 
-    private Vector3 basePosition
+    private Vector3 BasePosition
     {
         get
         {
@@ -107,19 +107,22 @@ public class BattleriteCamera : MonoBehaviour
 
     public void PositionCamera()
     {
-        Vector3 previousPosition = transform.position;
-        Vector2 mouseProportion = GetMouseProportion();
-        Vector3 targetPosition = new Vector3(basePosition.x + mouseProportion.y * YOffset, basePosition.y, basePosition.z - mouseProportion.x * XOffset);
+        if (Camera.main.enabled)
+        {
+            Vector3 previousPosition = transform.position;
+            Vector2 mouseProportion = GetMouseProportion();
+            Vector3 targetPosition = new Vector3(BasePosition.x + mouseProportion.y * YOffset, BasePosition.y, BasePosition.z - mouseProportion.x * XOffset);
 
 
-        transform.position = transform.position + basePosition - previousBasePosition;
-        float currentTime = TimeManagement.NetworkTimeInSeconds;
+            transform.position = transform.position + BasePosition - previousBasePosition;
+            float currentTime = TimeManagement.NetworkTimeInSeconds;
 
-        transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.fixedDeltaTime);
-        transform.position = ClampPosition(transform.position);
-        // Debug.Log("Camera base displacement: " + (basePosition - previousBasePosition) + (transform.position - previousPosition));
+            transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.fixedDeltaTime);
+            transform.position = ClampPosition(transform.position);
+            // Debug.Log("Camera base displacement: " + (basePosition - previousBasePosition) + (transform.position - previousPosition));
 
-        previousBasePosition = basePosition;
+            previousBasePosition = BasePosition;
+        }
     }
 
     private Vector2 GetMouseProportion()

@@ -1,5 +1,6 @@
 ﻿using PlayerManagement;
 using System;
+using System.Text;
 using UnityEngine;
 
 public class UserSettings
@@ -73,19 +74,29 @@ public class UserSettings
 
     public static char GetKey(int number)
     {
-        Debug.Log("GetKey " + number);
         if (keys == null)
         {
-            string defaultKeys = "QWER A";
-            Debug.Log("---------LANGUAGE " + Application.systemLanguage);
-            if (Application.systemLanguage == SystemLanguage.French)
-            {
-                Debug.Log("Language is French !");
-                defaultKeys = "AZER Q";
-            }
+            string defaultKeys = GetDefaultKeys();
             keys = PlayerPrefs.GetString("Keys", defaultKeys);
+            if (keys.Length != defaultKeys.Length)
+            {
+                keys = defaultKeys;
+            }
         }
         return keys[number];
+    }
+
+    private static string GetDefaultKeys()
+    {
+        string defaultKeys = "QWER A";
+        Debug.Log("---------LANGUAGE " + Application.systemLanguage);
+        if (Application.systemLanguage == SystemLanguage.French)
+        {
+            Debug.Log("Language is French !");
+            defaultKeys = "AZER Q";
+        }
+
+        return defaultKeys;
     }
 
     public static void SetKeys(string newKeys)

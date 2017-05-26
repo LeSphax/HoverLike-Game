@@ -165,13 +165,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 144164}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3598f510cb371024fa006dd9b10c8813, type: 3}
+  m_Script: {fileID: 11500000, guid: 007a0d2651c76ab41a83511dab12c214, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IdPlayerOwningBall:
-    id: -100
-  PassTarget:
-    id: -100
   protectionSphere: {fileID: 1000012789302824}
 --- !u!114 &11438112
 MonoBehaviour:
@@ -200,6 +196,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sendRate: -1
+  MAX_SPEED: 0
+  MINIMUM_THROW_SPEED_PROPORTION: 0
 --- !u!114 &11466236
 MonoBehaviour:
   m_ObjectHideFlags: 1
