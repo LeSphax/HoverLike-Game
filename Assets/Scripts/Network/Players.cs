@@ -7,6 +7,7 @@ using UnityEngine.Assertions;
 using PlayerBallControl;
 using SlideBall.Networking;
 using Ball;
+using Navigation;
 
 namespace PlayerManagement
 {
@@ -68,7 +69,7 @@ namespace PlayerManagement
         public void ChangePlayerOwningBall(ConnectionId previousPlayer, ConnectionId newPlayer, bool sendUpdate)
         {
             //Debug.LogError("PlayerOwningBallChanged " + previousPlayer + "   " + newPlayer);
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
                 ballOwnerChanged = sendUpdate;
             if (newPlayer != previousPlayer)
             {
@@ -100,7 +101,7 @@ namespace PlayerManagement
             currentIndex++;
             if (hasBallOwnerChanged)
             {
-                Assert.IsTrue(!MyComponents.NetworkManagement.isServer);
+                Assert.IsTrue(!MyComponents.NetworkManagement.IsServer);
                 if (MyComponents.BallState != null)
                     MyComponents.BallState.SetAttached(new ConnectionId(BitConverter.ToInt16(message.data, currentIndex)), false);
                 currentIndex += 2;
@@ -204,9 +205,21 @@ namespace PlayerManagement
             if (!players.TryGetValue(id, out player))
             {
                 player = CreatePlayer(id);
+                MyComponents.GlobalSound.Play(ResourcesGetter.JoinRoomSound);
             }
 
             return player;
+        }
+
+        private static Team GetInitialTeam()
+        {
+            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
+            Team team;
+            if (Players.GetPlayersInTeam(Team.BLUE).Count <= Players.GetPlayersInTeam(Team.RED).Count)
+                team = Team.BLUE;
+            else
+                team = Team.RED;
+            return team;
         }
 
         public static Player CreatePlayer(ConnectionId id)
@@ -216,7 +229,8 @@ namespace PlayerManagement
             players.Add(id, player);
             if (NewPlayerCreated != null)
                 NewPlayerCreated.Invoke(id);
-            MyComponents.NetworkManagement.SetNumberPlayers();
+            MyComponents.NetworkManagement.SetNumberPlayersInSignaling();
+            player.Team = GetInitialTeam();
             return player;
         }
 
@@ -242,7 +256,7 @@ namespace PlayerManagement
 
         public void SendPlayersData(ConnectionId recipientId)
         {
-            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
             byte[] packet = BitConverter.GetBytes(false);
             foreach (Player player in players.Values)
                 packet = ArrayExtensions.Concatenate(packet, CreatePlayerPacket(player, PlayerFlags.ALL));
@@ -259,15 +273,21 @@ namespace PlayerManagement
         {
             Debug.Log("Player with id " + connectionId + " has left");
             Destroy(players[connectionId].gameobjectAvatar);
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 players[connectionId].flagsChanged = PlayerFlags.DESTROYED;
             }
             else
             {
                 players.Remove(connectionId);
+                if (connectionId == MyPlayer.id)
+                {
+                    MyComponents.PopUp.Show(Language.Instance.texts["Got_Kicked"]);
+                    MyComponents.ResetNetworkComponents();
+                    NavigationManager.LoadScene(Scenes.Lobby);
+                }
             }
-            MyComponents.NetworkManagement.SetNumberPlayers();
+            MyComponents.NetworkManagement.SetNumberPlayersInSignaling();
         }
 
         protected void FixedUpdate()
@@ -317,220 +337,4 @@ namespace PlayerManagement
         DESTROYED = 1 << 7,
         ALL = ~(~0 << 7),//PLAY_AS_GOALIE + TEAM + NICKNAME + SPAWNINGPOINT + AVATAR_SETTINGS + STATE + SCENEID,
     }
-
-
-    public class Player
-    {
-        public enum State
-        {
-            CONNECTED,
-            READY,
-            PLAYING,
-            FROZEN,
-            NO_MOVEMENT,
-        }
-
-        public delegate void TeamChangeHandler(Team team);
-        public delegate void HasBallChangeHandler(bool hasBall);
-        public delegate void StateChangeHandler(State newState);
-        public delegate void NicknameChangeHandler(string nickname);
-        public delegate void SceneChangeHandler(ConnectionId connectionId, short scene);
-
-
-        public event TeamChangeHandler TeamChanged;
-        public event SceneChangeHandler SceneChanged;
-        public event StateChangeHandler StateChanged;
-        public event HasBallChangeHandler HasBallChanged;
-        public event NicknameChangeHandler NicknameChanged;
-
-        public PlayerController controller;
-        public PlayerBallController ballController;
-        public GameObject gameobjectAvatar;
-
-        internal PlayerFlags flagsChanged;
-
-        internal void NotifyNicknameChanged()
-        {
-            if (NicknameChanged != null)
-                NicknameChanged.Invoke(nickname);
-        }
-
-        internal void NotifyTeamChanged()
-        {
-            if (TeamChanged != null)
-                TeamChanged.Invoke(team);
-        }
-
-        internal void NotifySceneChanged()
-        {
-            if (SceneChanged != null)
-                SceneChanged.Invoke(id, sceneId);
-        }
-
-        internal void NotifyStateChanged()
-        {
-            if (StateChanged != null)
-                StateChanged.Invoke(state);
-        }
-
-        internal bool IsHoldingBall()
-        {
-            return MyComponents.BallState.GetIdOfPlayerOwningBall() == id;
-        }
-
-        public ConnectionId id;
-        public bool isReady = false;
-
-        internal Team team = Team.NONE;
-
-        public Team Team
-        {
-            get
-            {
-                return team;
-            }
-            set
-            {
-                team = value;
-                if (id == Players.myPlayerId)
-                    flagsChanged |= PlayerFlags.TEAM;
-                NotifyTeamChanged();
-            }
-        }
-        internal string nickname;
-        public string Nickname
-        {
-            get
-            {
-                return nickname;
-            }
-            set
-            {
-                nickname = value;
-                if (id == Players.myPlayerId)
-                    flagsChanged |= PlayerFlags.NICKNAME;
-                NotifyNicknameChanged();
-            }
-        }
-
-        internal short spawnNumber;
-        public short SpawnNumber
-        {
-            get
-            {
-                return spawnNumber;
-            }
-            set
-            {
-                spawnNumber = value;
-                flagsChanged |= PlayerFlags.SPAWNINGPOINT;
-            }
-        }
-
-        internal short sceneId;
-        public short SceneId
-        {
-            get
-            {
-                return sceneId;
-            }
-            set
-            {
-                sceneId = value;
-                if (id == Players.myPlayerId)
-                    flagsChanged |= PlayerFlags.SCENEID;
-                NotifySceneChanged();
-            }
-        }
-
-        internal State state;
-        public State CurrentState
-        {
-            get
-            {
-                return state;
-            }
-            set
-            {
-                state = value;
-                flagsChanged |= PlayerFlags.STATE;
-                NotifyStateChanged();
-            }
-        }
-
-        internal AvatarSettings.AvatarSettingsTypes avatarSettingsType;
-        public AvatarSettings.AvatarSettingsTypes AvatarSettingsType
-        {
-            get
-            {
-                return avatarSettingsType;
-            }
-            set
-            {
-                avatarSettingsType = value;
-                flagsChanged |= PlayerFlags.AVATAR_SETTINGS;
-            }
-        }
-
-        internal bool playAsGoalie;
-        public bool PlayAsGoalie
-        {
-            get
-            {
-                return playAsGoalie;
-            }
-            set
-            {
-                playAsGoalie = value;
-                if (id == Players.myPlayerId)
-                    flagsChanged |= PlayerFlags.PLAY_AS_GOALIE;
-            }
-        }
-
-        public AvatarSettings MyAvatarSettings
-        {
-            get
-            {
-                return AvatarSettings.Data[avatarSettingsType];
-            }
-        }
-
-        public Vector3 SpawningPoint
-        {
-            get
-            {
-                return MyComponents.Spawns.GetSpawn(Team, SpawnNumber);
-            }
-        }
-
-        private bool hasBall;
-        public bool HasBall
-        {
-            get
-            {
-                return hasBall;
-            }
-            set
-            {
-                hasBall = value;
-                if (HasBallChanged != null)
-                    HasBallChanged.Invoke(value);
-            }
-        }
-
-        public bool IsMyPlayer { get { return id == Players.myPlayerId; } }
-
-        public Player(ConnectionId id)
-        {
-            this.id = id;
-        }
-
-        public override string ToString()
-        {
-            return "Player " + id + " Nickname: " + Nickname + " Team : " + Team + "   HasBall : " + hasBall;
-        }
-    }
-
-
-
 }

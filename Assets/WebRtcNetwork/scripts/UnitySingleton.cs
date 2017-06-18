@@ -32,6 +32,7 @@ namespace Byn.Common
 
                         if (sInstance == null)
                         {
+
                             GameObject singleton = new GameObject();
                             sInstance = singleton.AddComponent<T>();
                             singleton.name = typeof(T).Name;

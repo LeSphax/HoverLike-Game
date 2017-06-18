@@ -156,7 +156,7 @@ private PlayerMovementStrategy strategy;
 
     protected override bool IsSendingPackets()
     {
-        return MyComponents.NetworkManagement.isServer;
+        return MyComponents.NetworkManagement.IsServer;
     }
 
     public void Brake(bool activate)

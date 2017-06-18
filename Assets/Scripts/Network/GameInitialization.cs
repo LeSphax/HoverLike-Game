@@ -28,37 +28,42 @@ public class GameInitialization : SlideBall.MonoBehaviour
     public void StartGame()
     {
         Debug.Log("StartGame");
-        StartCoroutine(CoStartGame());
+        Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
+
+        // short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
+        Debug.Log("Before LoadRoom");
+        View.RPC("LoadRoom", RPCTargets.All);
     }
 
-    public IEnumerator CoStartGame()
+    private void SetupScene(ConnectionId id, short newSceneId)
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
-
-        short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
-        Debug.Log("Before LoadRoom");
-        View.RPC("LoadRoom", RPCTargets.All, syncId);
-        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-        //
-        Debug.Log("InstantiateObjects");
-        syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
         InstantiateNewObjects();
-        Debug.Log("AfterInstantiate");
-        View.RPC("SendReady", RPCTargets.All, syncId);
-        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-        //
-        Debug.Log("GameInitialization : All Ready, Start the game");
         MyComponents.MatchManager.StartGame();
     }
 
     [MyRPC]
-    private void LoadRoom(short syncId)
+    private void LoadRoom()
     {
         Debug.Log("LoadRoom");
-        this.syncId = syncId;
-        NavigationManager.LoadScene(Scenes.Main, true, true);
-        Players.MyPlayer.SceneChanged += SendReady;
+        if (MyComponents.NetworkManagement.IsServer) {
+
+            NavigationManager.LoadScene(Scenes.Main, true, true);
+            Players.MyPlayer.SceneChanged += SetupScene;
+        }
+        else
+        {
+            NavigationManager.LoadScene(Scenes.Main, true, true);
+        }
         Debug.Log("EndLoadRoom");
+    }
+
+    IEnumerator WaitThenLoad()
+    {
+        float t = Random.Range(0, 10);
+        if (((int)t) % 2 == 0)
+            t = 0;
+        yield return new WaitForSeconds(10);
+        NavigationManager.LoadScene(Scenes.Main, true, true);
     }
 
     private void InstantiateNewObjects()

@@ -2,7 +2,6 @@
 using PlayerManagement;
 using System;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Ball
 {
@@ -66,7 +65,7 @@ namespace Ball
 
         internal void TrySetKinematic()
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 if (uncatchable || IsAttached())
                     Rigidbody.isKinematic = true;
@@ -97,17 +96,19 @@ namespace Ball
         void Start()
         {
             trajectoryStrategy = new FreeTrajectoryStrategy();
+            MakeBallUncatchable(UnCatchable);
+            TrySetKinematic();
         }
 
         private void FixedUpdate()
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
                 trajectoryStrategy.MoveBall();
         }
 
         public void StartGame()
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 IdPlayerOwningBall = NO_PLAYER_ID;
             }
@@ -156,7 +157,7 @@ namespace Ball
             {
                 trajectoryStrategy = new AttachedTrajectoryStrategy();
             }
-            else if (!MyComponents.NetworkManagement.isServer)
+            else if (!MyComponents.NetworkManagement.IsServer)
             {
                 trajectoryStrategy = new FreeTrajectoryStrategy();
             }
@@ -165,7 +166,7 @@ namespace Ball
         [MyRPC]
         internal void PutAtStartPosition()
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 trajectoryStrategy = new FreeTrajectoryStrategy();
                 View.RPC("PutAtStartPosition", RPCTargets.Others);
@@ -176,7 +177,7 @@ namespace Ball
         public void PutBallAtPosition(Vector3 position)
         {
             gameObject.transform.position = position;
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 Rigidbody.velocity = Vector3.zero;
                 gameObject.GetComponentInChildren<AttractionBall>().Reset();
@@ -188,6 +189,9 @@ namespace Ball
             if (collision.collider.tag != Tags.Ground)
                 if (trajectoryStrategy.GetType() == typeof(ThrowTrajectoryStrategy))
                 {
+                    //Debug.Log(collision.collider.tag);
+                    //Debug.Log(collision.collider.name);
+                    //EditorApplication.isPaused = true;
                     Rigidbody.velocity = trajectoryStrategy.CurrentVelocity;
                     trajectoryStrategy = new FreeTrajectoryStrategy();
                 }

@@ -10,7 +10,7 @@ public class RemovePhysicsIfClient : MonoBehaviour
 
     void Awake()
     {
-        if (MyComponents.NetworkManagement.IsConnected && !MyComponents.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.IsConnected && !MyComponents.NetworkManagement.IsServer)
             DestroyPhysics();
         else if (!MyComponents.NetworkManagement.IsConnected)
             MyComponents.NetworkManagement.ConnectedToRoom += DestroyPhysics;
@@ -18,7 +18,7 @@ public class RemovePhysicsIfClient : MonoBehaviour
 
     void DestroyPhysics()
     {
-        Assert.IsTrue(!MyComponents.NetworkManagement.isServer);
+        Assert.IsTrue(!MyComponents.NetworkManagement.IsServer);
         if (DestroyFullObject)
             Destroy(gameObject);
         else

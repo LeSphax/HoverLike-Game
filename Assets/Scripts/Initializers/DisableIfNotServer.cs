@@ -6,7 +6,7 @@ public class DisableIfNotServer : MonoBehaviour
 {
     void Start()
     {
-        if (!MyComponents.NetworkManagement.isServer)
+        if (!MyComponents.NetworkManagement.IsServer)
             GetComponent<Selectable>().interactable = false;
     }
 }

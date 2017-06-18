@@ -124,8 +124,7 @@ namespace AbilitiesManagement
         [MyRPC]
         private void Brake(bool activate)
         {
-            if (CanUseAbility())
-                controller.movementManager.Brake(activate);
+            controller.movementManager.Brake(activate);
         }
 
 
@@ -149,8 +148,6 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility() && controller.Player.HasBall && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
-                //Debug.LogWarning("Pass from " + this + " to " + Players.players[id].controller);
-                //new PassPersistentEffect(this, id, passCurve);
                 MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(controller.playerConnectionId, targetId, passCurve);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }
@@ -184,7 +181,7 @@ namespace AbilitiesManagement
                         {
                             rb.AddForce(force * BLOCK_POWER, ForceMode.VelocityChange);
                         }
-                        if(MyComponents.BallState.trajectoryStrategy.GetType() == typeof(ThrowTrajectoryStrategy))
+                        if (MyComponents.BallState.trajectoryStrategy.GetType() == typeof(ThrowTrajectoryStrategy))
                         {
                             MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
                         }
@@ -199,7 +196,7 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility() && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             {
-                MyComponents.NetworkViewsManagement.Instantiate("Effects/TimeSlow", epicenter, Quaternion.identity,Colors.Teams[(int)controller.Player.Team]);
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/TimeSlow", epicenter, Quaternion.identity, Colors.Teams[(int)controller.Player.Team]);
                 new TimeSlowPersistentEffect(this, epicenter);
             }
         }

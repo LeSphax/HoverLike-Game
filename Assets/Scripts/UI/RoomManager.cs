@@ -55,7 +55,7 @@ public class RoomManager : MonoBehaviour
 
     void CheckStartGame()
     {
-        if (MyComponents.NetworkManagement.isServer && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
+        if (MyComponents.NetworkManagement.IsServer && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
         {
             Invoke("StartGame", 2f);
             CancelInvoke("CheckStartGame");

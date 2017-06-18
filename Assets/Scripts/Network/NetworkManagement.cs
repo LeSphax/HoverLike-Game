@@ -27,7 +27,7 @@ namespace SlideBall
         }
 
         private State _stateCurrent;
-        private State stateCurrent
+        private State StateCurrent
         {
             get
             {
@@ -71,7 +71,7 @@ namespace SlideBall
         /// <summary>
         /// True if the user opened an own room allowing incoming connections
         /// </summary>
-        public bool isServer
+        public bool IsServer
         {
             get
             {
@@ -112,9 +112,6 @@ namespace SlideBall
 
         private void Start()
         {
-            WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
-            if (factory != null)
-                Debug.Log("WebRtcNetworkFactory created");
             Reset();
         }
 
@@ -162,7 +159,7 @@ namespace SlideBall
             SendUserCommand(GET_ROOMS_COMMAND);
         }
 
-        public void SetNumberPlayers()
+        public void SetNumberPlayersInSignaling()
         {
             SendUserCommand(NetEventMessage.SET_NUMBER_PLAYERS,RoomName,Players.players.Count.ToString());
         }
@@ -171,7 +168,7 @@ namespace SlideBall
         {
             Debug.Log("Reset Network");
             Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
-            stateCurrent = State.IDLE;
+            StateCurrent = State.IDLE;
             mConnections = new List<ConnectionId>();
             Cleanup();
             Setup();
@@ -230,9 +227,9 @@ namespace SlideBall
                         {
                             //server initialized message received
                             Debug.Log("Room Created. Address: " + RoomName + "   " + evt.ConnectionId.id);
-                            if (stateCurrent == State.IDLE)
+                            if (StateCurrent == State.IDLE)
                             {
-                                stateCurrent = State.SERVER;
+                                StateCurrent = State.SERVER;
                                 Players.NewPlayerCreated += SendBufferedMessagesOnSceneChange;
                                 SetConnectionId(ConnectionId.INVALID);
                                 RoomCreated.Invoke();
@@ -278,6 +275,7 @@ namespace SlideBall
 
                         if (evt.RawData != null)
                         {
+                            //MyComponents.LobbyManager.RefreshServers();
                             string rawdata = (string)evt.RawData;
                             if (rawdata == NetEventMessage.ROOM_DOESNT_EXIST)
                             {
@@ -295,7 +293,7 @@ namespace SlideBall
                             {
                                 MyComponents.PopUp.Show("Server Connection is not 1");
                             }
-                            MyComponents.LobbyManager.RefreshServers();
+                            
                         }
                         if (ConnectionFailed != null)
                             ConnectionFailed.Invoke();
@@ -304,7 +302,7 @@ namespace SlideBall
                     //StopServer or the connection broke down
                     case NetEventType.RoomClosed:
                         {
-                            switch (stateCurrent)
+                            switch (StateCurrent)
                             {
                                 case State.CONNECTED:
                                     Debug.LogWarning("Room closed. No incoming connections possible until restart.");
@@ -372,7 +370,7 @@ namespace SlideBall
 
                             mConnections.Add(evt.ConnectionId);
 
-                            if (isServer)
+                            if (IsServer)
                             {
                                 MyComponents.NetworkViewsManagement.SendClientInstanciationInterval(evt.ConnectionId);
                                 MyComponents.Players.SendPlayersData(evt.ConnectionId);
@@ -380,14 +378,14 @@ namespace SlideBall
                             }
                             else if (ConnectedToRoom != null)
                             {
-                                stateCurrent = State.CONNECTED;
+                                StateCurrent = State.CONNECTED;
                                 ConnectedToRoom.Invoke();
                             }
                         }
                         break;
                     case NetEventType.ConnectionFailed:
                         {
-                            Debug.LogWarning("Connection to peer failed " + stateCurrent + "    " + (string)evt.RawData);
+                            Debug.LogWarning("Connection to peer failed " + StateCurrent + "    " + (string)evt.RawData);
                             //MyComponents.PopUp.Show(Language.Instance.texts["Connection_Failed"]);
                             if (ConnectionFailed != null)
                                 ConnectionFailed.Invoke();
@@ -400,10 +398,10 @@ namespace SlideBall
                             //If this was the client then he was disconnected from the server
                             //if it was the server this just means that one of the clients left
                             Debug.Log("Local Connection ID " + evt.ConnectionId + " disconnected");
-                            if (isServer == false)
+                            if (IsServer == false)
                             {
                                 Debug.Log("Host disconnected ");
-                                if (stateCurrent == State.CONNECTED)
+                                if (StateCurrent == State.CONNECTED)
                                 {
                                     MyComponents.PopUp.Show(Language.Instance.texts["Host_Disconnected"]);
                                     if (RoomClosed != null)
@@ -449,7 +447,7 @@ namespace SlideBall
             {
                 Debug.LogError("HandleTracedMessage " + message + "   RPCID :" + BitConverter.ToInt16(message.data, 0));
             }
-            if (isServer && message.isDistributed())
+            if (IsServer && message.isDistributed())
             {
                 List<ConnectionId> receivers;
                 if (message.isSentToTeam())
@@ -465,10 +463,10 @@ namespace SlideBall
                 }
                 SendNetworkMessage(message, receivers.ToArray());
             }
-            if (isServer)
+            if (IsServer)
                 bufferedMessages.TryAddBuffered(senderId, message);
 
-            if (!isServer || !message.isSentToTeam() || Players.players[senderId].Team == Players.MyPlayer.Team)
+            if (!IsServer || !message.isSentToTeam() || Players.players[senderId].Team == Players.MyPlayer.Team)
                 MyComponents.NetworkViewsManagement.DistributeMessage(senderId, message);
 
             //This line of code is causing random crashes. 
@@ -505,7 +503,7 @@ namespace SlideBall
 
         public void SendNetworkMessage(NetworkMessage message)
         {
-            if (message.isSentToTeam() && isServer)
+            if (message.isSentToTeam() && IsServer)
             {
                 List<ConnectionId> connectionIds = new List<ConnectionId>();
                 List<Player> teamMates = Players.GetPlayersInTeam(Players.MyPlayer.Team);
@@ -527,7 +525,7 @@ namespace SlideBall
             {
                 SendToNetwork(dataToSend, connectionIds[i], message.isReliable());
             }
-            if (isServer)
+            if (IsServer)
                 bufferedMessages.TryAddBuffered(SERVER_CONNECTION_ID, message);
         }
 
@@ -590,7 +588,7 @@ namespace SlideBall
         #region host
         public int GetNumberPlayers()
         {
-            Assert.IsTrue(isServer);
+            Assert.IsTrue(IsServer);
             return mConnections.Count + 1;
         }
 

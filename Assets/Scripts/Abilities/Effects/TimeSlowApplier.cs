@@ -6,7 +6,7 @@ namespace TimeSlow
 {
     public class TimeSlowApplier : MonoBehaviour
     {
-        public const float TimeSlowProportion = 0.3f;
+        public static float TimeSlowProportion = 0.3f;
         internal static Dictionary<Rigidbody, RigidbodyState> ObjectsBeforeUpdate = new Dictionary<Rigidbody, RigidbodyState>();
 
         protected void Start()

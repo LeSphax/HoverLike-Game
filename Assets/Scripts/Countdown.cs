@@ -78,13 +78,13 @@ public class Countdown : SlideBall.MonoBehaviour
             //Because shownNumber is timeLeft+1, we avoid the problem of (int)0.5 = (int)-0.7
             if (integer != ShownNumber)
             {
-                if (ShownNumber > 0)
+                if (ShownNumber > -1)
                     PlayTickSound();
-                else if (ShownNumber == 0)
-                    PlayEntrySound();
+                    
             }
             if (TimeLeft <= -1)
             {
+                PlayEntrySound();
                 StopTimer();
                 if (TimerFinished != null)
                 {

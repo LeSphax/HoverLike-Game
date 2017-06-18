@@ -24,6 +24,11 @@ var MyPlugin = {
         var str_roomName = Pointer_stringify(roomName);
         window.prompt("Copy to clipboard: Ctrl+C, Enter",window.location.href.split('?')[0]+"?RoomName=" + encodeURIComponent(str_roomName.trim()));
     },
+	 SendFeedback: function(header, message){
+        var str_header = Pointer_stringify(header);
+        var str_message = Pointer_stringify(message);
+        sendEmail(str_header,str_message) 
+    },
 };
 
 mergeInto(LibraryManager.library, MyPlugin);

@@ -5,7 +5,7 @@
 
         public FreeTrajectoryStrategy()
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 AttractionBall.Activated = true;
                 MyComponents.BallState.UnCatchable = false;

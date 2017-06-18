@@ -5,11 +5,17 @@ public class MenuInGame : MonoBehaviour {
 
 
     public GameObject background;
+    public MatchPanel matchPanel;
     SlideBallInputs.GUIPart previousPart;
 
     public void OpenSettings()
     {
         UserSettingsPanel.InstantiateSettingsPanel().transform.SetParent(transform.parent, false);
+    }
+
+    public void OpenMatch()
+    {
+        matchPanel.Open();
     }
 
     public void OpenMenu()

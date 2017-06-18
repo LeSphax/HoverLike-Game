@@ -48,11 +48,11 @@ namespace Byn.Net
             
             mFactory = new Byn.Net.BrowserWebRtcNetworkFactory();
 #else
-            LogNativeSupportInfo();
+            //LogNativeSupportInfo();
             Byn.Net.Native.NativeWebRtcNetworkFactory factory = new Byn.Net.Native.NativeWebRtcNetworkFactory();
             factory.Initialize(true);
             mFactory = factory;
-            Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
+            //Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
 #endif
 
         }

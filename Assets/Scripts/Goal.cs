@@ -7,7 +7,7 @@ public class Goal : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if (EditorVariables.CanScoreGoals && MyComponents.NetworkManagement.isServer && collider.gameObject.tag == Tags.Ball)
+        if (EditorVariables.CanScoreGoals && MyComponents.NetworkManagement.IsServer && collider.gameObject.tag == Tags.Ball)
         {
             if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.UnCatchable)
                 MyComponents.MatchManager.TeamScored(teamNumber);

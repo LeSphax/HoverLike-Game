@@ -5,7 +5,7 @@ public abstract class AbilityEffect : MonoBehaviour
 {
     public virtual void ApplyOnTarget(params object[] parameters)
     {
-        if (!MyComponents.NetworkManagement.isServer)
+        if (!MyComponents.NetworkManagement.IsServer)
             ActualAbilitiesLatency.commandsSent.AddInQueue(this.GetType(), Time.realtimeSinceStartup * 1000);
     }
 

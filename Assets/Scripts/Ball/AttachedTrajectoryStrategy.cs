@@ -13,7 +13,7 @@ namespace Ball
             Transform hand = MyComponents.BallState.GetAttachedPlayer().PlayerMesh.hand;
             MyComponents.BallState.transform.SetParent(hand);
 
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 MyComponents.BallState.UnCatchable = false;
                 MyComponents.BallState.TrySetKinematic();

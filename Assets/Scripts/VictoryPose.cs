@@ -41,7 +41,7 @@ public class VictoryPose : SlideBall.MonoBehaviour
         MyComponents.VictoryUI.SetVictoryText(team);
 
 
-        if (MyComponents.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.IsServer)
         {
             List<Player> players = Players.GetPlayersInTeam(team);
             int attackersPutInPlace = 0;

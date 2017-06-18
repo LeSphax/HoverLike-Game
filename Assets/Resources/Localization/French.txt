@@ -29,6 +29,7 @@ Button_Cancel "Annuler"
 Button_Leave "Quitter"
 Button_Ok "Ok"
 Button_Settings "Options"
+Button_Match "Match"
 Button_Help "Aide"
 Button_Leave_Game "Quitter la partie"
 

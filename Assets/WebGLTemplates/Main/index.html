@@ -1,146 +1,154 @@
 ﻿<!doctype html>
 <html lang="en-us">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>%UNITY_WEB_NAME%</title>
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
-    <link href="webpage/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>%UNITY_WEB_NAME%</title>
+	<link rel="stylesheet" href="TemplateData/style.css">
+	<link rel="shortcut icon" href="TemplateData/favicon.ico" />
+	<link href="webpage/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="TemplateData/ProgressBar.css">
-    <script src="webpage/jquery/jquery.min.js"></script>
-    <script src="TemplateData/UnityProgress.js"></script>
-    <style>
-        .center {
-            margin: 0 auto;
-            width: 50%;
-            border: 3px solid green;
-            padding: 10px;
-        }
+	<link rel="stylesheet" href="TemplateData/ProgressBar.css">
+	<script src="webpage/jquery/jquery.min.js"></script>
+	<script src="TemplateData/UnityProgress.js"></script>
+	<style>
+		.center {
+			margin: 0 auto;
+			width: 50%;
+			border: 3px solid green;
+			padding: 10px;
+		}
 
-        .outer {
-            display: table;
-            position: absolute;
-            height: 100%;
-            width: 100%;
-        }
+		.outer {
+			display: table;
+			position: absolute;
+			height: 100%;
+			width: 100%;
+		}
 
-        .middle {
-            display: table-cell;
-            vertical-align: middle;
-        }
+		.middle {
+			display: table-cell;
+			vertical-align: middle;
+		}
 
-        .inner {
-            margin-left: auto;
-            margin-right: auto;
-            width: 50%; /*whatever width you want*/
-            ;
-            background-color: #0095FF;
-            padding: 20px;
-            border-radius: 25px;
-        }
+		.inner {
+			margin-left: auto;
+			margin-right: auto;
+			width: 50%; /*whatever width you want*/
+			;
+			background-color: #0095FF;
+			padding: 20px;
+			border-radius: 25px;
+		}
 
-        .content {
-            margin-left: auto;
-            margin-right: auto;
-            width: 70%;
-        }
-    </style>
+		.content {
+			margin-left: auto;
+			margin-right: auto;
+			width: 70%;
+		}
+	</style>
 </head>
 <body class="template" style="background-color:#363636;">
 
-<script src="%UNITY_WEBGL_LOADER_URL%"></script>
-    <script>
-      var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
-    </script>
-  </head>
-  <body>
-    <div id="gameContainer" style="width: 100%; height: 100%; margin: auto"></div>
-  </body>
+	<script src="%UNITY_WEBGL_LOADER_URL%"></script>
+	<script>
+		var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
+	</script>
+</head>
+<body>
+	<div id="gameContainer" style="width: 100%; height: 100%; margin: auto"></div>
+</body>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="webpage/bootstrap/js/bootstrap.min.js"></script>
-    <script src="WebRTC/ConnectionId.js"></script>
-    <script src="WebRTC/NetworkEvent.js"></script>
-    <script src="WebRTC/Utilitaires.js"></script>
-    <script src="WebRTC/AWebRTCPeer.js"></script>
-    <script src="WebRTC/WebRTCDataPeer.js"></script>
-    <script src="WebRTC/LocalNetwork.js"></script>
-    <script src="WebRTC/WebSocketConnection.js"></script>
-    <script src="WebRTC/SignalingServerConnection.js"></script>
-    <script src="WebRTC/PeerSignalingManager.js"></script>
-    <script src="WebRTC/PeerNetwork.js"></script>
-    <script src="WebRTC/WebRtcNetwork.js"></script>
-    <script src="WebRTC/WebRTC.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="webpage/bootstrap/js/bootstrap.min.js"></script>
+<script src="WebRTC/ConnectionId.js"></script>
+<script src="WebRTC/NetworkEvent.js"></script>
+<script src="WebRTC/Utilitaires.js"></script>
+<script src="WebRTC/AWebRTCPeer.js"></script>
+<script src="WebRTC/WebRTCDataPeer.js"></script>
+<script src="WebRTC/LocalNetwork.js"></script>
+<script src="WebRTC/WebSocketConnection.js"></script>
+<script src="WebRTC/SignalingServerConnection.js"></script>
+<script src="WebRTC/PeerSignalingManager.js"></script>
+<script src="WebRTC/PeerNetwork.js"></script>
+<script src="WebRTC/WebRtcNetwork.js"></script>
+<script src="WebRTC/WebRTC.js"></script>
 
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 
-    <script>
-        var socket = io();
-        if (socket){
+<script>
+	var socket = io();
+	if (socket){
 
-            function sendToLogServer(text) {
-                socket.emit('log', text);
-            }
+		function sendToLogServer(text) {
+			socket.emit('log', text);
+		}
+		
+		function sendEmail(header,message) {
+            header = header.replace("@", "[at]");
+            message = message.replace("@", "[at]");
+			socket.emit('mail', header + "@@" + message );
+		}
 
-            window.onload = function () {
-                var console = (function (oldCons) {
-                    return {
-                        log: function (text) {
-                            oldCons.log(text);
-                            sendToLogServer("[LOG] "+text);
-                        },
-                        info: function (text) {
-                            oldCons.info(text);
-                            sendToLogServer("[INFO] " + text);
+		window.onload = function () {
+			var console = (function (oldCons) {
+				return {
+					log: function (text) {
+						oldCons.log(text);
+						sendToLogServer("[LOG] "+text);
+					},
+					info: function (text) {
+						oldCons.info(text);
+						sendToLogServer("[INFO] " + text);
 
-                        },
-                        debug: function (text) {
-                            oldCons.debug(text);
-                            sendToLogServer("[DEBUG] " + text);
+					},
+					debug: function (text) {
+						oldCons.debug(text);
+						sendToLogServer("[DEBUG] " + text);
 
-                        },
-                        warn: function (text) {
-                            oldCons.warn(text);
-                            sendToLogServer("[WARN] " + text);
+					},
+					warn: function (text) {
+						oldCons.warn(text);
+						sendToLogServer("[WARN] " + text);
 
-                        },
-                        error: function (text) {
-                            oldCons.error(text);
-                            sendToLogServer("[ERROR] " + text);
+					},
+					error: function (text) {
+						oldCons.error(text);
+						sendToLogServer("[ERROR] " + text);
 
-                        }
-                    };
-                }(window.console));
+					}
+				};
+			}(window.console));
 
                     //Then redefine the old console
                     window.console = console;
                 }
             }
+
+
         </script>
 
         <script type="text/javascript">
-            var url= "stun:stun.services.mozilla.com" ;
-            $(document).ready(function() {
-                $.get("https://service.xirsys.com/ice",
-                {
-                    ident: "sphax",
-                    secret: "634cbe32-1ceb-11e7-9a28-fe052f7eaf1f",
-                    domain: "slideball",
-                    application: "default",
-                    room: "default",
-                    secure: 1
-                },
-                function(data, status) {
-                    var result = "Data: " + data +  + "\n\nStatus: " + status;
-                    data.d.iceServers.forEach(function (element){
-                        console.log(element.url + "    " + element.username + "    " + element.credential);
-                    });
-                    console.log(result);
-                    url = data.d.iceServers[0].url;
-                });
-            });
+        	var url= "stun:stun.services.mozilla.com" ;
+        	$(document).ready(function() {
+        		$.get("https://service.xirsys.com/ice",
+        		{
+        			ident: "sphax",
+        			secret: "634cbe32-1ceb-11e7-9a28-fe052f7eaf1f",
+        			domain: "slideball",
+        			application: "default",
+        			room: "default",
+        			secure: 1
+        		},
+        		function(data, status) {
+        			var result = "Data: " + data +  + "\n\nStatus: " + status;
+        			data.d.iceServers.forEach(function (element){
+        				console.log(element.url + "    " + element.username + "    " + element.credential);
+        			});
+        			console.log(result);
+        			url = data.d.iceServers[0].url;
+        		});
+        	});
         </script>
 
     </body>

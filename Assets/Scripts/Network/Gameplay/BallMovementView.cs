@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Ball;
 using Byn.Net;
+using System;
 using UnityEngine;
 using UnityEngine.Assertions;
-using System.Collections.Generic;
 using Wintellect.PowerCollections;
-using Ball;
 
 class BallMovementView : ObservedComponent
 {
 
     Rigidbody myRigidbody;
 
-    public static float ShootPowerLevel = 250;
+    public static float ShootPowerLevel = 220;
 
     public static float MinimumShootPowerLevelProportion = 0.3f;
 
@@ -21,7 +20,7 @@ class BallMovementView : ObservedComponent
     private BallPacket currentPacket = null;
 
 
-    private BallPacket nextPacket
+    private BallPacket NextPacket
     {
         get
         {
@@ -53,8 +52,13 @@ class BallMovementView : ObservedComponent
     {
         Vector3 direction = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
         direction.Normalize();
-        myRigidbody.velocity = direction * ShootPowerLevel * Mathf.Max(power, MinimumShootPowerLevelProportion);
+        myRigidbody.velocity = direction * GetShootPowerLevel(power);
         transform.position = transform.position;
+    }
+
+    public static float GetShootPowerLevel(float power)
+    {
+        return ShootPowerLevel * (power + MinimumShootPowerLevelProportion);
     }
 
     public override void OwnerUpdate()
@@ -83,10 +87,10 @@ class BallMovementView : ObservedComponent
 
     private void InterpolateMovement()
     {
-        if (nextPacket != null)
+        if (NextPacket != null)
         {
-            float completion = (CurrentlyShownBatchNb - currentPacket.batchNumber) / (nextPacket.batchNumber - currentPacket.batchNumber);
-            transform.position = Vector3.Lerp(currentPacket.position, nextPacket.position, completion);
+            float completion = (CurrentlyShownBatchNb - currentPacket.batchNumber) / (NextPacket.batchNumber - currentPacket.batchNumber);
+            transform.position = Vector3.Lerp(currentPacket.position, NextPacket.position, completion);
         }
         else
         {
@@ -112,7 +116,7 @@ class BallMovementView : ObservedComponent
 
     protected override bool IsSendingPackets()
     {
-        return MyComponents.NetworkManagement.isServer;
+        return MyComponents.NetworkManagement.IsServer;
     }
 
     public class BallPacket : IComparable

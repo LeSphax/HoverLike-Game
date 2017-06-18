@@ -67,7 +67,6 @@ namespace Navigation
 
         public void ShowNewLevel()
         {
-            Debug.Log("ShowNewLevel");
             if (CameraFade.IsBlack)
                 CameraFade.StartFade(CameraFade.FadeType.FADEOUT);
         }

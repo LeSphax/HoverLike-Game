@@ -14,6 +14,7 @@ public static class LayersGetter
     public static int[] players = new int[4] { GOALIE_0, GOALIE_1, ATTACKER_0, ATTACKER_1 };
     public static int[] attackers = new int[2] { ATTACKER_0, ATTACKER_1 };
     public static int[][] teams  = {new int[2] { ATTACKER_0, GOALIE_0}, new int[2] { ATTACKER_1, GOALIE_1 } };
+    public static int[][] teamAttackers  = {new int[1] { ATTACKER_0}, new int[1] { ATTACKER_1 } };
 
     public const int BALL = 9;
 
@@ -30,6 +31,11 @@ public static class LayersGetter
     public static LayerMask TeamMask(Team team)
     {
         return CombineLayers(teams[(int)team]);
+    }
+
+    public static LayerMask TeamAttackersMask(Team team)
+    {
+        return CombineLayers(teamAttackers[(int)team]);
     }
 
     internal static bool IsPlayer(int layer)

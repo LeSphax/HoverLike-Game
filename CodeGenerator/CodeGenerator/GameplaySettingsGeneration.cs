@@ -147,7 +147,8 @@ class GameplaySettingsGeneration
             "float","attackerMaxSpeed","AttackerMovementStrategy.MaxVelocity",
             "float","goalieSpeed","GoalieMovementStrategy.Speed",
             "float","shootPowerLevel","BallMovementView.ShootPowerLevel",
-            "float","brakeProportion","AttackerMovementStrategy.BrakeProportion"
+            "float","brakeProportion","AttackerMovementStrategy.BrakeProportion",
+            "float","timeSlowProportion","TimeSlowApplier.TimeSlowProportion"
 
         };
         foreach(string ability in Abilities)
@@ -189,6 +190,7 @@ class GameplaySettingsGeneration
         dc.AppendLine("using System;");
         dc.AppendLine("using UnityEngine;");
         dc.AppendLine("using UnityEngine.UI;");
+        dc.AppendLine("using TimeSlow;");
 
         dc.AppendLine("public class " + className + " : SlideBall.MonoBehaviour {");
         dc.AppendLine("public GameObject panel;");
@@ -303,7 +305,7 @@ class GameplaySettingsGeneration
     {
         dc.AppendLine("private void Reset()");
         dc.AppendLine("{");
-        dc.AppendLine("if (!MyComponents.NetworkManagement.isServer)");
+        dc.AppendLine("if (!MyComponents.NetworkManagement.IsServer)");
         dc.AppendLine("  View.RPC(\"SettingsAsked\", RPCTargets.Server);");
         foreach (Field mField in fields)
         {

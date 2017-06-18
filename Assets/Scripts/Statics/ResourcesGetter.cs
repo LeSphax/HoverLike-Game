@@ -67,6 +67,14 @@ butSound= Resources.Load<AudioClip>("Sounds/But");
 }
 return butSound;
 }}
+private static AudioClip joinRoomSound;
+public static AudioClip JoinRoomSound{
+get {
+if (joinRoomSound == null ){
+joinRoomSound= Resources.Load<AudioClip>("Sounds/JoinRoom");
+}
+return joinRoomSound;
+}}
 private static GameObject settingsPanelPrefab;
 public static GameObject SettingsPanelPrefab{
 get {
@@ -130,6 +138,14 @@ if (keyToUsePrefab == null ){
 keyToUsePrefab= Resources.Load<GameObject>("Prefabs/KeyToUse");
 }
 return keyToUsePrefab;
+}}
+private static GameObject playerInfoPrefab;
+public static GameObject PlayerInfoPrefab{
+get {
+if (playerInfoPrefab == null ){
+playerInfoPrefab= Resources.Load<GameObject>("Prefabs/PlayerInfo");
+}
+return playerInfoPrefab;
 }}
 private static GameObject disabledPrefab;
 public static GameObject DisabledPrefab{
@@ -264,6 +280,7 @@ var tempSoftErrorSound = SoftErrorSound;
 var tempLandingSound = LandingSound;
 var tempJumpingSound = JumpingSound;
 var tempButSound = ButSound;
+var tempJoinRoomSound = JoinRoomSound;
 var tempSettingsPanelPrefab = SettingsPanelPrefab;
 var tempTempAudioSourcePrefab = TempAudioSourcePrefab;
 var tempTimeSlowTargeterPrefab = TimeSlowTargeterPrefab;
@@ -272,6 +289,7 @@ var tempScreenFaderPrefab = ScreenFaderPrefab;
 var tempTooltipPrefab = TooltipPrefab;
 var tempShadowPrefab = ShadowPrefab;
 var tempKeyToUsePrefab = KeyToUsePrefab;
+var tempPlayerInfoPrefab = PlayerInfoPrefab;
 var tempDisabledPrefab = DisabledPrefab;
 var tempCooldownPrefab = CooldownPrefab;
 var tempAbilityPrefab = AbilityPrefab;

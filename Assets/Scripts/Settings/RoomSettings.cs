@@ -4,6 +4,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TimeSlow;
 public class RoomSettings : SlideBall.MonoBehaviour {
 public GameObject panel;
 public Dropdown numberPlayersDropdown;
@@ -67,7 +68,7 @@ public void Show(bool show)
 }
 private void Reset()
 {
-if (!MyComponents.NetworkManagement.isServer)
+if (!MyComponents.NetworkManagement.IsServer)
   View.RPC("SettingsAsked", RPCTargets.Server);
 numberPlayersDropdown.value = NumberPlayers - 1;
 passwordInputField.text = Password;

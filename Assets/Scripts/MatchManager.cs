@@ -49,7 +49,7 @@ public class MatchManager : SlideBall.MonoBehaviour
             Debug.Log("Set State " + value);
             State previousState = state;
             state = value;
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 View.RPC("SetState", RPCTargets.Others, value);
                 switch (MyState)
@@ -213,18 +213,38 @@ public class MatchManager : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
+    private void AskState(ConnectionId RPCSenderId)
+    {
+        View.RPC("SetState", RPCSenderId, state);
+    }
+
+    [MyRPC]
     private void SetState(State newState)
     {
         MyState = newState;
     }
 
+    public void Start()
+    {
+        View.RPC("AskState", RPCTargets.Server);
+        MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupScene;
+    }
+
+    private void SetupScene()
+    {
+        GetComponent<PlayerSpawner>().Reset();
+        ResourcesGetter.LoadAll();
+        ShowGame();
+    }
+
     public void StartGame()
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+        Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
         Players.PlayerOwningBallChanged += BallChangedOwner;
         matchCountdown.TimerFinished += MatchCountdownTimerFinished;
         entryCountdown.TimerFinished += EntryCountdownTimerFinished;
         MyState = State.LOADING_SCENE;
+        ResourcesGetter.LoadAll();
         Entry();
     }
 
@@ -245,7 +265,6 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         Debug.Log("EndMatch " + Scoreboard.GetWinningTeam());
         //Don't play the gong sound at the same time as the "But" sound
-
         Team winningTeam = Scoreboard.GetWinningTeam();
         if (winningTeam == Team.NONE)
         {
@@ -300,8 +319,6 @@ public class MatchManager : SlideBall.MonoBehaviour
     [MyRPC]
     private void ShowGame()
     {
-        Debug.Log("MatchManager : ShowGame");
-        ResourcesGetter.LoadAll();
         NavigationManager.ShowLevel();
     }
 
@@ -312,7 +329,10 @@ public class MatchManager : SlideBall.MonoBehaviour
 
         Debug.Log("MatchManager : CoEntry - State : " + MyState);
         Assert.IsTrue(MyState == State.ENDING_ROUND || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH || MyState == State.LOADING_SCENE, "The entry shouldn't happen in this state " + MyState + " , maybe it was a manual entry?");
-
+        if (MyState == State.LOADING_SCENE)
+        {
+            MyState = State.WARMUP;
+        }
         switch (MyState)
         {
             case State.LOADING_SCENE:
@@ -329,7 +349,6 @@ public class MatchManager : SlideBall.MonoBehaviour
                 break;
             case State.WARMUP:
                 EntryPlayersCreation();
-                View.RPC("ShowGame", RPCTargets.All);
                 break;
             case State.ENDING_ROUND:
                 entryCountdown.View.RPC("StartTimer", RPCTargets.All, ENTRY_DURATION);
@@ -344,6 +363,10 @@ public class MatchManager : SlideBall.MonoBehaviour
                 break;
             default:
                 break;
+        }
+        if(state != State.LOADING_SCENE)
+        {
+            ShowGame();
         }
     }
 

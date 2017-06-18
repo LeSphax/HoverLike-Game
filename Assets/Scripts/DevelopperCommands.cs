@@ -87,7 +87,7 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
     private void SendNetworkData()
     {
         Debug.Log("SendNetworkData");
-        if (!MyComponents.NetworkManagement.isServer)
+        if (!MyComponents.NetworkManagement.IsServer)
         {
             StringBuilder builder = new StringBuilder(4096);
             builder.Append("[REPORT]" + Players.MyPlayer.Nickname);

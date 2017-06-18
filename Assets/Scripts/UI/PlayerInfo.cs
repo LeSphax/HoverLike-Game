@@ -50,78 +50,21 @@ public class PlayerInfo : PlayerView
         if (id == playerConnectionId)
         {
             Latency = latency;
-            //We could avoid sending it to the owner of the view
-            View.RPC("RPCSetLatency", MessageFlags.SceneDependant, RPCTargets.Others, latency);
         }
-    }
-
-    [MyRPC]
-    private void RPCSetLatency(float latency)
-    {
-        Latency = latency;
     }
 
     void Start()
     {
         Latency = 0;
-        if (View.isMine)
-        {
-            if (Player.Team != Team.NONE)
-                SetInitialTeam(Player.Team);
-            else
-            {
-                Debug.Log(gameObject.name + " InitialTeam");
-
-                View.RPC("GetInitialTeam", RPCTargets.Server, null);
-            }
-            Debug.Log(gameObject.name + " SendPlayEnterRoom");
-
-            View.RPC("PlayEnterRoomSound", RPCTargets.Others, null);
-        }
-        if (MyComponents.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.IsServer)
         {
             MyComponents.TimeManagement.LatencyChanged += SetLatency;
         }
     }
 
-    [MyRPC]
-    private void GetKicked()
-    {
-        Debug.Log("Getting kicked");
-        Assert.IsTrue(View.isMine);
-        MyComponents.PopUp.Show(Language.Instance.texts["Got_Kicked"]);
-        MyComponents.RoomManager.GoBack();
-    }
-
     public void KickPlayer()
     {
-        View.RPC("GetKicked", Player.id);
-    }
-
-    [MyRPC]
-    private void PlayEnterRoomSound()
-    {
-        GetComponent<AudioSource>().Play();
-    }
-
-    [MyRPC]
-    public void GetInitialTeam(ConnectionId RPCSenderId)
-    {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
-        Team team;
-        if (Players.GetPlayersInTeam(Team.BLUE).Count <= Players.GetPlayersInTeam(Team.RED).Count)
-            team = Team.BLUE;
-        else
-            team = Team.RED;
-        View.RPC("SetInitialTeam", RPCSenderId, team);
-        Players.players[RPCSenderId].Team = team;
-    }
-
-    [MyRPC]
-    public void SetInitialTeam(Team team)
-    {
-        Players.MyPlayer.Team = team;
-        NavigationManager.ShowLevel();
+        Players.Remove(Player.id);
     }
 
     public void InitView(object[] parameters)

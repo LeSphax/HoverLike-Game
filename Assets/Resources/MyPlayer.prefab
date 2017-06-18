@@ -452,8 +452,8 @@ MonoBehaviour:
     - serializedVersion: 2
       time: 0.006722223
       value: 0
-      inSlope: 0.00025953652
-      outSlope: 0.00025953652
+      inSlope: 3.6503694
+      outSlope: 3.6503694
       tangentMode: 0
     - serializedVersion: 2
       time: 0.5025555

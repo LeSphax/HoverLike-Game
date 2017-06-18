@@ -92,7 +92,7 @@ public class PlayerController : PlayerView
 
     private void ConfigureColliders()
     {
-        if (MyComponents.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.IsServer)
         {
             //GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
             //GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
@@ -129,7 +129,7 @@ public class PlayerController : PlayerView
     {
         transform.position = Player.SpawningPoint;
         transform.LookAt(Vector3.zero);
-        if (MyComponents.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.IsServer)
             StopMoving();
     }
 

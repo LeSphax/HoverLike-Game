@@ -71,7 +71,7 @@ public class MyNetworkView : ANetworkView
 
     static void MyLateFixedUpdate()
     {
-        if (MyComponents.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.IsServer)
         {
             ObservedComponent.SendBatch();
             ObservedComponent.BatchNumberToSend++;

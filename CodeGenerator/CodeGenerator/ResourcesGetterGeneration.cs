@@ -108,6 +108,7 @@ public class ResourcesGetterGeneration
             "AudioClip","Landing",
             "AudioClip","Jumping",
             "AudioClip","But",
+            "AudioClip","JoinRoom",
             "GameObject","SettingsPanel",
             "GameObject","TempAudioSource",
             "GameObject","TimeSlowTargeter",
@@ -116,6 +117,7 @@ public class ResourcesGetterGeneration
             "GameObject","Tooltip",
             "GameObject","Shadow",
             "GameObject","KeyToUse",
+            "GameObject","PlayerInfo",
 
 
             "GameObject/Abilities","Disabled",

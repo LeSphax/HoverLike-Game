@@ -4,6 +4,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TimeSlow;
 public class GameplaySettings : SlideBall.MonoBehaviour {
 public GameObject panel;
 public Toggle continuouMovementToggle;
@@ -12,6 +13,7 @@ public InputField attackerMaxSpeedInputField;
 public InputField goalieSpeedInputField;
 public InputField shootPowerLevelInputField;
 public InputField brakeProportionInputField;
+public InputField timeSlowProportionInputField;
 public InputField moveCooldownInputField;
 public InputField dashCooldownInputField;
 public InputField jumpCooldownInputField;
@@ -97,6 +99,17 @@ return AttackerMovementStrategy.BrakeProportion;
 set
 {
 AttackerMovementStrategy.BrakeProportion = value;
+}
+}
+public float TimeSlowProportion
+{
+get
+{
+return TimeSlowApplier.TimeSlowProportion;
+}
+set
+{
+TimeSlowApplier.TimeSlowProportion = value;
 }
 }
 public float MoveCooldown
@@ -194,10 +207,10 @@ private void SettingsAsked()
  }
 public void Save()
 {
-   View.RPC("SetSettings", RPCTargets.All, continuouMovementToggle.isOn, ParseFloat(attackerAccelerationInputField.text, AttackerAcceleration), ParseFloat(attackerMaxSpeedInputField.text, AttackerMaxSpeed), ParseFloat(goalieSpeedInputField.text, GoalieSpeed), ParseFloat(shootPowerLevelInputField.text, ShootPowerLevel), ParseFloat(brakeProportionInputField.text, BrakeProportion), ParseFloat(moveCooldownInputField.text, MoveCooldown), ParseFloat(dashCooldownInputField.text, DashCooldown), ParseFloat(jumpCooldownInputField.text, JumpCooldown), ParseFloat(passCooldownInputField.text, PassCooldown), ParseFloat(stealCooldownInputField.text, StealCooldown), ParseFloat(blockCooldownInputField.text, BlockCooldown), ParseFloat(timeSlowCooldownInputField.text, TimeSlowCooldown), ParseFloat(teleportCooldownInputField.text, TeleportCooldown));
+   View.RPC("SetSettings", RPCTargets.All, continuouMovementToggle.isOn, ParseFloat(attackerAccelerationInputField.text, AttackerAcceleration), ParseFloat(attackerMaxSpeedInputField.text, AttackerMaxSpeed), ParseFloat(goalieSpeedInputField.text, GoalieSpeed), ParseFloat(shootPowerLevelInputField.text, ShootPowerLevel), ParseFloat(brakeProportionInputField.text, BrakeProportion), ParseFloat(timeSlowProportionInputField.text, TimeSlowProportion), ParseFloat(moveCooldownInputField.text, MoveCooldown), ParseFloat(dashCooldownInputField.text, DashCooldown), ParseFloat(jumpCooldownInputField.text, JumpCooldown), ParseFloat(passCooldownInputField.text, PassCooldown), ParseFloat(stealCooldownInputField.text, StealCooldown), ParseFloat(blockCooldownInputField.text, BlockCooldown), ParseFloat(timeSlowCooldownInputField.text, TimeSlowCooldown), ParseFloat(teleportCooldownInputField.text, TeleportCooldown));
 }
 [MyRPC]
-public void SetSettings(bool continuouMovement, float attackerAcceleration, float attackerMaxSpeed, float goalieSpeed, float shootPowerLevel, float brakeProportion, float moveCooldown, float dashCooldown, float jumpCooldown, float passCooldown, float stealCooldown, float blockCooldown, float timeSlowCooldown, float teleportCooldown)
+public void SetSettings(bool continuouMovement, float attackerAcceleration, float attackerMaxSpeed, float goalieSpeed, float shootPowerLevel, float brakeProportion, float timeSlowProportion, float moveCooldown, float dashCooldown, float jumpCooldown, float passCooldown, float stealCooldown, float blockCooldown, float timeSlowCooldown, float teleportCooldown)
 {
 ContinuouMovement = continuouMovement;
 continuouMovementToggle.isOn = ContinuouMovement;
@@ -211,6 +224,8 @@ ShootPowerLevel = shootPowerLevel;
 shootPowerLevelInputField.text = ShootPowerLevel+"";
 BrakeProportion = brakeProportion;
 brakeProportionInputField.text = BrakeProportion+"";
+TimeSlowProportion = timeSlowProportion;
+timeSlowProportionInputField.text = TimeSlowProportion+"";
 MoveCooldown = moveCooldown;
 moveCooldownInputField.text = MoveCooldown+"";
 DashCooldown = dashCooldown;
@@ -235,7 +250,7 @@ public void Show(bool show)
 }
 private void Reset()
 {
-if (!MyComponents.NetworkManagement.isServer)
+if (!MyComponents.NetworkManagement.IsServer)
   View.RPC("SettingsAsked", RPCTargets.Server);
 continuouMovementToggle.isOn = ContinuouMovement;
 attackerAccelerationInputField.text = AttackerAcceleration+"";
@@ -243,6 +258,7 @@ attackerMaxSpeedInputField.text = AttackerMaxSpeed+"";
 goalieSpeedInputField.text = GoalieSpeed+"";
 shootPowerLevelInputField.text = ShootPowerLevel+"";
 brakeProportionInputField.text = BrakeProportion+"";
+timeSlowProportionInputField.text = TimeSlowProportion+"";
 moveCooldownInputField.text = MoveCooldown+"";
 dashCooldownInputField.text = DashCooldown+"";
 jumpCooldownInputField.text = JumpCooldown+"";

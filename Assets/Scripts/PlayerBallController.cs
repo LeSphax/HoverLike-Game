@@ -76,7 +76,7 @@ namespace PlayerBallControl
 
         void OnCollisionEnter(Collision collision)
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
@@ -89,7 +89,7 @@ namespace PlayerBallControl
 
         void OnCollisionExit(Collision collision)
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
@@ -101,7 +101,7 @@ namespace PlayerBallControl
 
         void OnTriggerEnter(Collider collider)
         {
-            if (MyComponents.NetworkManagement.isServer)
+            if (MyComponents.NetworkManagement.IsServer)
             {
                 if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached() && tryingToCatchBall && (!MyComponents.BallState.UnCatchable || stealing || MyComponents.BallState.PassTarget == playerConnectionId))
                 {

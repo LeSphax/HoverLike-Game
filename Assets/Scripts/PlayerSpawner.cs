@@ -26,13 +26,20 @@ public class PlayerSpawner : SlideBall.MonoBehaviour
     }
 
     [MyRPC]
-    public void ReactivatePlayers(short syncId)
+    public void ReactivatePlayers()
     {
         Players.players.Values.Map(player =>
         {
             if (player.controller != null)
                 player.controller.gameObject.SetActive(true);
         });
+    }
+
+    public void Reset()
+    {
+        DesactivatePlayers();
+        ResetPlayers();
+        ReactivatePlayers();
     }
 
 }

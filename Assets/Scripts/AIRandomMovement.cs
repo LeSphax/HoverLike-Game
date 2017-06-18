@@ -35,7 +35,7 @@ namespace AbilitiesManagement
             if (controller.Player != null)
                 if (controller.Player.IsMyPlayer)
                 {
-                    if (activateOnServer || !MyComponents.NetworkManagement.isServer)
+                    if (activateOnServer || !MyComponents.NetworkManagement.IsServer)
                     {
                         //Debug.LogError("Self "+isActivated + "    " + DevelopperCommands.activateAI);
                         if (!isActivated && DevelopperCommands.activateAI)

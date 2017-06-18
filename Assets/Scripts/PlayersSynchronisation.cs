@@ -26,14 +26,14 @@ public class PlayersSynchronisation : ANetworkView
 
     public short GetNewSynchronisationId()
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+        Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
         currentSynchronisationId++;
         Assert.IsFalse(currentSynchronisationId - 1 == INVALID_SYNC_ID);
         return (short)(currentSynchronisationId - 1);
     }
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+        Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
         short syncId = BitConverter.ToInt16(message.data, 0);
         ConnectionId connectionId = new ConnectionId(BitConverter.ToInt16(message.data, 2));
         Synchronise(syncId, connectionId);
@@ -55,7 +55,7 @@ public class PlayersSynchronisation : ANetworkView
     {
         Assert.IsFalse(syncId == INVALID_SYNC_ID);
         ConnectionId connectionId = Players.myPlayerId;
-        if (!MyComponents.NetworkManagement.isServer)
+        if (!MyComponents.NetworkManagement.IsServer)
         {
             byte[] syncIdData = BitConverter.GetBytes(syncId);
             byte[] connectionIdData = BitConverter.GetBytes(connectionId.id);

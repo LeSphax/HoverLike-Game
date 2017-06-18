@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using TimeSlow;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -25,28 +22,24 @@ namespace Ball
         }
 
         Vector3[] controlPoints;
-        Vector3 previousPosition;
         float curveLength;
-        float startingTime;
         float previousCompletion;
         public static float ShootPowerLevel = 250;
         float speed;
 
         public ThrowTrajectoryStrategy(Vector3[] controlPoints, float power)
         {
-            Assert.IsTrue(MyComponents.NetworkManagement.isServer);
+            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
             MyComponents.BallState.DetachBall();
             MyComponents.BallState.UnCatchable = false;
             AttractionBall.Activated = false;
             MyComponents.BallState.TrySetKinematic();
-            //MyComponents.BallState.protectionSphere.SetActive(false);
             MyComponents.BallState.transform.SetParent(null);
 
             this.curveLength = Functions.LengthBezier3(controlPoints, 10);
-            this.speed = ShootPowerLevel * power;
+            this.speed = BallMovementView.GetShootPowerLevel(power);
             this.controlPoints = controlPoints;
             previousCompletion = 0;
-            startingTime = Time.realtimeSinceStartup;
         }
         public override void MoveBall()
         {
@@ -56,12 +49,15 @@ namespace Ball
             {
                 Vector3 previousPosition = MyComponents.BallState.transform.position;
                 Vector3 newPosition = Functions.Bezier3(controlPoints, newCompletion);
-                MyComponents.BallState.transform.position = new Vector3(
+                newPosition = new Vector3(
                     newPosition.x,
                     MyComponents.BallState.transform.position.y,
                     newPosition.z
                     );
-                float displacement = Vector3.Distance(MyComponents.BallState.transform.position, previousPosition) / Time.fixedDeltaTime;
+
+
+
+                float displacement = Vector3.Distance(newPosition, previousPosition) / Time.fixedDeltaTime;
                 float reducedProportion = (displacement * Time.fixedDeltaTime * MyComponents.BallState.Rigidbody.drag) / displacement;
                 //The TimeSlowApplier effect doesn't matter since we depend on the previousCompletion
                 //It still takes cares of having the ball fall twice as slow though
@@ -70,7 +66,7 @@ namespace Ball
                     increment *= TimeSlowApplier.TimeSlowProportion;
                     newCompletion = previousCompletion + increment;
                     newPosition = Functions.Bezier3(controlPoints, newCompletion);
-                    MyComponents.BallState.transform.position = new Vector3(
+                    newPosition = new Vector3(
                         newPosition.x,
                         MyComponents.BallState.transform.position.y,
                         newPosition.z
@@ -79,13 +75,48 @@ namespace Ball
                 }
                 speed *= 1 - reducedProportion;
                 previousCompletion = newCompletion;
+
+                if (CheckIfGoingThroughWall(previousPosition, newPosition))
+                {
+                    StopControlledTrajectory();
+                }
+                else
+                    MyComponents.BallState.transform.position = newPosition;
             }
             else
             {
-                MyComponents.BallState.Rigidbody.velocity = new Vector3(CurrentVelocity.x, MyComponents.BallState.Rigidbody.velocity.y, CurrentVelocity.z);
-                MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+                StopControlledTrajectory();
             }
-            previousPosition = MyComponents.BallState.transform.position;
+        }
+
+        private bool CheckIfGoingThroughWall(Vector3 previousPosition, Vector3 newPosition)
+        {
+            Ray ray = new Ray(previousPosition, newPosition - previousPosition);
+            RaycastHit hit;
+            LayerMask layerMask = (1 << Layers.Default);
+            //GizmosDrawer.DrawRay(ray);
+            //GizmosDrawer.DrawLine(previousPosition, newPosition);
+            //EditorApplication.isPaused = true;
+            if (Physics.Raycast(ray, out hit, Vector3.Distance(newPosition, previousPosition), layerMask))
+            {
+                //Debug.Log(ray.origin);
+                //Debug.Log(ray.direction);
+                //Debug.Log(previousPosition);
+                //Debug.Log(newPosition);
+                //Debug.Log(hit.distance);
+                //Debug.Log(hit.point);
+                //Debug.Log(hit.collider.name);
+                return true;
+            }
+            return false;
+        }
+
+        private void StopControlledTrajectory()
+        {
+            MyComponents.BallState.Rigidbody.velocity = new Vector3(CurrentVelocity.x, MyComponents.BallState.Rigidbody.velocity.y, CurrentVelocity.z);
+            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+            //EditorApplication.isPaused = true;
+
         }
     }
 }

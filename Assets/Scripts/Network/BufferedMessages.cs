@@ -18,7 +18,7 @@ namespace SlideBall.Networking
 
         public BufferedMessages(NetworkManagement networkManagement)
         {
-            Assert.IsTrue(networkManagement.isServer);
+            Assert.IsTrue(networkManagement.IsServer);
             this.networkManagement = networkManagement;
             NavigationManager.FinishedLoadingScene += SceneChanged;
         }

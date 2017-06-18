@@ -22,8 +22,20 @@ class QueueDictionary<T, R> : Dictionary<T, Queue<R>>
         Queue<R> queue;
         if (TryGetValue(key, out queue))
         {
-            return queue.Dequeue();
+            if (queue.Count > 0)
+                return queue.Dequeue();
         }
         return default(R);
+    }
+
+    public int QueueCount(T key)
+    {
+        Queue<R> queue;
+        if (TryGetValue(key, out queue))
+        {
+            if (queue.Count > 0)
+                return queue.Count;
+        }
+        return 0;
     }
 }

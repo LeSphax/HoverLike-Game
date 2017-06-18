@@ -4,7 +4,7 @@ public class DestroyIfNotServer : MonoBehaviour
 {
     void Start()
     {
-        if (!MyComponents.NetworkManagement.isServer)
+        if (!MyComponents.NetworkManagement.IsServer)
             Destroy(gameObject);
     }
 }

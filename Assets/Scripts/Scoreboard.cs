@@ -48,7 +48,7 @@ public class Scoreboard : SlideBall.MonoBehaviour
 
     public static bool IncrementTeamScore(int teamNumber)
     {
-        if (MyComponents.NetworkManagement.isServer)
+        if (MyComponents.NetworkManagement.IsServer)
         {
             if (Time.realtimeSinceStartup - timeLastGoal > 1)
             {

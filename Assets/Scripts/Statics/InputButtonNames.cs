@@ -29,6 +29,11 @@ public static class SlideBallInputs
         return Input.GetKeyDown(keycode) && part == currentPart;
     }
 
+    internal static bool GetKeyUp(KeyCode keycode, GUIPart part)
+    {
+        return Input.GetKeyUp(keycode) && part == currentPart;
+    }
+
     public static bool AnyShiftDown()
     {
         return Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
