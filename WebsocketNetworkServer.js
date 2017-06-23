@@ -1,4 +1,5 @@
 "use strict";
+var SEPARATOR = "@";
 var inet = require('./INetwork');
 var WebsocketNetworkServer = (function () {
     function WebsocketNetworkServer() {
@@ -45,9 +46,9 @@ var PeerPool = (function () {
     };
 
     PeerPool.prototype.getRooms = function () {
-        var rooms = "GetRooms@";
+        var rooms = "GetRooms" + SEPARATOR;
         for (var key in this.mServers) {
-			rooms += key + "|" + this.mRoomsInfo[key] + "@";
+			rooms += key + "|" + this.mRoomsInfo[key].numberPlayers + "|" + this.mRoomsInfo[key].gameStarted + "|" + this.mRoomsInfo[key].hasPassword + SEPARATOR;
         }
         //Remove the last @
         rooms = rooms.substring(0, rooms.length - 1);
@@ -57,7 +58,7 @@ var PeerPool = (function () {
     PeerPool.prototype.addServer = function (client, address) {
         if (this.mServers[address] == null) {
             this.mServers[address] = new Array();
-            this.mRoomsInfo[address] = 1;
+            this.mRoomsInfo[address] = {numberPlayers: 1,gameStarted : 0, hasPassword : 0 };
         }
         this.mServers[address].push(client);
         console.log("ADD SERVER ------ " + address);
@@ -225,8 +226,11 @@ var SignalingPeer = (function () {
             }
 			else if (splittedInfo[0]== inet.NetEventMessage.SetNumberPlayers){
                 console.log("SetNumberPlayers of room "+ splittedInfo[1] + " to "+ splittedInfo[2] + evt.ConnectionId);
-				this.mConnectionPool.mRoomsInfo[splittedInfo[1]] = splittedInfo[2];
+				this.mConnectionPool.mRoomsInfo[splittedInfo[1]].numberPlayers = splittedInfo[2];
             }
+			else if (splittedInfo[0] == inet.NetEventMessage.GameStarted) {
+				this.mConnectionPool.mRoomsInfo[splittedInfo[1]].gameStarted = splittedInfo[2];
+			}
             else if (splittedInfo[0] == inet.NetEventMessage.AskIfAllowedToEnter) {
                 var peerConnectionId = parseInt(splittedInfo[1]);
                 if (splittedInfo[2] == inet.NetEventMessage.GameStarted) {
@@ -242,6 +246,7 @@ var SignalingPeer = (function () {
                     this.mWaitingForConnection[peerConnectionId].connect(this, new inet.ConnectionId(peerConnectionId));
                 }
             }
+			
         }
     };
     SignalingPeer.prototype.internalAddIncomingPeer = function (peer,id) {
