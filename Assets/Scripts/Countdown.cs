@@ -130,7 +130,6 @@ public class Countdown : SlideBall.MonoBehaviour
     [MyRPC]
     public void StopTimerAndSetText(string newText)
     {
-        Debug.Log("StopTimer " + gameObject.name+ "  " + newText);
         TimeLeft = -1;
         paused = true;
         text.text = newText;

@@ -36,13 +36,13 @@ public static class MyComponents
 
     private static void NullifyRoom()
     {
-        roomManager = null;
         chatManager = null;
     }
 
     private static void NullifyMain()
     {
         matchManager = null;
+        warmupManager = null;
         abilitiesFactory = null;
         ballState = null;
         spawns = null;
@@ -173,7 +173,7 @@ public static class MyComponents
     {
         get
         {
-            //Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
             if (matchManager == null)
             {
                 GameObject go = GameObject.FindGameObjectWithTag(Tags.Room);
@@ -181,6 +181,22 @@ public static class MyComponents
                     matchManager = go.GetComponent<MatchManager>();
             }
             return matchManager;
+        }
+    }
+
+    private static WarmupManager warmupManager;
+    public static WarmupManager WarmupManager
+    {
+        get
+        {
+            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+            if (warmupManager == null)
+            {
+                GameObject go = GameObject.FindGameObjectWithTag(Tags.Room);
+                if (go != null)
+                    warmupManager = go.GetComponent<WarmupManager>();
+            }
+            return warmupManager;
         }
     }
 
@@ -226,19 +242,19 @@ public static class MyComponents
         }
     }
 
-    private static RoomManager roomManager;
-    public static RoomManager RoomManager
-    {
-        get
-        {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.RoomIndex));
-            if (roomManager == null)
-            {
-                roomManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
-            }
-            return roomManager;
-        }
-    }
+    //private static RoomManager roomManager;
+    //public static RoomManager RoomManager
+    //{
+    //    get
+    //    {
+    //        Assert.IsTrue(Scenes.IsCurrentScene(Scenes.RoomIndex));
+    //        if (roomManager == null)
+    //        {
+    //            roomManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
+    //        }
+    //        return roomManager;
+    //    }
+    //}
 
     private static NetworkViewsManagement networkViewsManagement;
     public static NetworkViewsManagement NetworkViewsManagement
@@ -254,14 +270,14 @@ public static class MyComponents
         }
     }
 
-    private static GameInitialization gameInitialization;
-    public static GameInitialization GameInitialization
+    private static GameState gameInitialization;
+    public static GameState GameInitialization
     {
         get
         {
             if (gameInitialization == null)
             {
-                gameInitialization = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<GameInitialization>();
+                gameInitialization = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<GameState>();
             }
             return gameInitialization;
         }

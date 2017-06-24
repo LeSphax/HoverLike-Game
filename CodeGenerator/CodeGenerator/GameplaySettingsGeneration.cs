@@ -159,8 +159,8 @@ class GameplaySettingsGeneration
         }
         List<string> roomContent = new List<string>
         {
-            "int","numberPlayers","RoomManager.MaxNumberPlayers",
-            "string","password","RoomManager.Password",
+            "int","numberPlayers","MatchPanel.MaxNumberPlayers",
+            "string","password","MatchPanel.Password",
         };
         List<Field> gameplayFields = GetFields(gameplayContent);
         List<Field> roomFields = GetFields(roomContent);

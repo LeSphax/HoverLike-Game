@@ -57,14 +57,18 @@ public class PlayerController : PlayerView
     {
         playerConnectionId = (ConnectionId)parameters[0];
         Player.controller = this;
-        Player.gameobjectAvatar = gameObject;
         Player.ballController = GetComponent<PlayerBallController>();
         GetComponent<PlayerBallController>().Init(playerConnectionId);
+        Players.NotifyNewPlayerInstantiated(playerConnectionId);
     }
 
     [MyRPC]
     public void ResetPlayer()
     {
+        if (Player.Team == Team.NONE || Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.NONE)
+        {
+            return;
+        }
         movementManager.Reset(playerConnectionId);
         ballController.Reset();
         targetManager.CancelTarget();
@@ -87,7 +91,9 @@ public class PlayerController : PlayerView
         ConfigureColliders();
 
         abilitiesManager.ResetAllEffects();
-        MyComponents.AbilitiesFactory.RecreateAbilities();
+
+        if (Player.IsMyPlayer)
+            MyComponents.AbilitiesFactory.RecreateAbilities();
     }
 
     private void ConfigureColliders()

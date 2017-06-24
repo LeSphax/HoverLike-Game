@@ -115,8 +115,8 @@ public class LobbyManager : MonoBehaviour
 
     protected void OnEnable()
     {
-        MyComponents.NetworkManagement.RoomCreated += LoadRoom;
-        MyComponents.NetworkManagement.ConnectedToRoom += LoadRoom;
+        MyComponents.NetworkManagement.RoomCreated += InitGame;
+        MyComponents.NetworkManagement.ConnectedToRoom += InitGame;
 
         topPanel.BackPressed += GoBack;
     }
@@ -127,15 +127,15 @@ public class LobbyManager : MonoBehaviour
         {
             MyComponents.NetworkManagement.ConnectionFailed -= ConnectToDefaultRoom;
             MyComponents.NetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
-            MyComponents.NetworkManagement.RoomCreated -= LoadRoom;
-            MyComponents.NetworkManagement.ConnectedToRoom -= LoadRoom;
+            MyComponents.NetworkManagement.RoomCreated -= InitGame;
+            MyComponents.NetworkManagement.ConnectedToRoom -= InitGame;
             topPanel.BackPressed -= GoBack;
         }
     }
 
-    private void LoadRoom()
+    private void InitGame()
     {
-        NavigationManager.LoadScene(Scenes.Room, false, false);
+        MyComponents.GameInitialization.InitGame();
     }
 
     public void CreateGame()

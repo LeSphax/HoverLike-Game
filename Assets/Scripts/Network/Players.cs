@@ -16,6 +16,7 @@ namespace PlayerManagement
 
     public class Players : ANetworkView
     {
+
         public static ConnectionId INVALID_PLAYER_ID = new ConnectionId(-100);
 
         private bool ballOwnerChanged;
@@ -36,7 +37,17 @@ namespace PlayerManagement
         public static Dictionary<ConnectionId, Player> players = new Dictionary<ConnectionId, Player>();
 
         public static event ConnectionEventHandler NewPlayerCreated;
+        public static event ConnectionEventHandler NewPlayerInstantiated;
         public static event OwnerChangeHandler PlayerOwningBallChanged;
+        public static event EmptyEventHandler PlayersDataReceived;
+
+        public static void NotifyNewPlayerInstantiated(ConnectionId playerId)
+        {
+            if (NewPlayerInstantiated != null)
+            {
+                NewPlayerInstantiated.Invoke(playerId);
+            }
+        }
 
         //This variable only exists on client, on the server it is contained in the dictionary 'players'
         public static ConnectionId myPlayerId;
@@ -135,6 +146,7 @@ namespace PlayerManagement
             if (flags.HasFlag(PlayerFlags.AVATAR_SETTINGS))
             {
                 player.avatarSettingsType = (AvatarSettings.AvatarSettingsTypes)data[currentIndex];
+                player.NotifyAvatarSettingsChanged();
                 currentIndex++;
             }
             if (flags.HasFlag(PlayerFlags.PLAY_AS_GOALIE))
@@ -153,12 +165,15 @@ namespace PlayerManagement
                 short length = BitConverter.ToInt16(data, currentIndex);
                 currentIndex += 2;
                 player.Nickname = Encoding.UTF8.GetString(data, currentIndex, length);
+                player.NotifyNicknameChanged();
                 currentIndex += length;
             }
             if (flags.HasFlag(PlayerFlags.DESTROYED))
             {
                 Remove(player.id);
             }
+            if (PlayersDataReceived != null)
+                PlayersDataReceived.Invoke();
         }
 
         private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
@@ -211,26 +226,23 @@ namespace PlayerManagement
             return player;
         }
 
-        private static Team GetInitialTeam()
-        {
-            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
-            Team team;
-            if (Players.GetPlayersInTeam(Team.BLUE).Count <= Players.GetPlayersInTeam(Team.RED).Count)
-                team = Team.BLUE;
-            else
-                team = Team.RED;
-            return team;
-        }
-
         public static Player CreatePlayer(ConnectionId id)
         {
+            Debug.LogError("Create Player " + id);
             Player player;
             player = new Player(id);
             players.Add(id, player);
+            MyComponents.NetworkManagement.SetNumberPlayersInSignaling();
+            if (MyComponents.NetworkManagement.IsServer)
+            {
+                if (Scenes.IsCurrentScene(Scenes.MainIndex))
+                {
+                    player.gameobjectAvatar = Functions.InstantiatePlayer(id);
+                }
+            }
+
             if (NewPlayerCreated != null)
                 NewPlayerCreated.Invoke(id);
-            MyComponents.NetworkManagement.SetNumberPlayersInSignaling();
-            player.Team = GetInitialTeam();
             return player;
         }
 
@@ -272,14 +284,12 @@ namespace PlayerManagement
         internal static void Remove(ConnectionId connectionId)
         {
             Debug.Log("Player with id " + connectionId + " has left");
-            Destroy(players[connectionId].gameobjectAvatar);
             if (MyComponents.NetworkManagement.IsServer)
             {
                 players[connectionId].flagsChanged = PlayerFlags.DESTROYED;
             }
             else
             {
-                players.Remove(connectionId);
                 if (connectionId == MyPlayer.id)
                 {
                     MyComponents.PopUp.Show(Language.Instance.texts["Got_Kicked"]);
@@ -287,7 +297,10 @@ namespace PlayerManagement
                     NavigationManager.LoadScene(Scenes.Lobby);
                 }
             }
+            players[connectionId].Destroy();
+            players.Remove(connectionId);
             MyComponents.NetworkManagement.SetNumberPlayersInSignaling();
+
         }
 
         protected void FixedUpdate()

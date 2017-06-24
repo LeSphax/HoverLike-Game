@@ -56,7 +56,19 @@ namespace SlideBall
             }
         }
 
-        public bool CurrentlyPlaying = false;
+        private bool currentlyPlaying = false;
+        public bool CurrentlyPlaying {
+            get
+            {
+                return currentlyPlaying;
+            }
+            set
+            {
+                currentlyPlaying = value;
+                SendUserCommand(NetEventMessage.GAME_STARTED, RoomName, (value ? 1 : 0).ToString());
+            }
+        }
+        
 
         [HideInInspector]
         public string RoomName = null;
@@ -151,6 +163,7 @@ namespace SlideBall
                 {
                     content += "@" + args[i];
                 }
+            Debug.Log("Send User Command " + content);
             mNetwork.SendSignalingEvent(Players.myPlayerId, content, NetEventType.UserCommand);
         }
 
@@ -328,7 +341,7 @@ namespace SlideBall
 
                             if (rawData == NetEventMessage.ASK_IF_ALLOWED_TO_ENTER)
                             {
-                                if (Players.players.Count > RoomManager.MaxNumberPlayers)
+                                if (Players.players.Count > MatchPanel.MaxNumberPlayers)
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.ROOM_FULL);
                                 else if (CurrentlyPlaying)
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.GAME_STARTED);
@@ -373,8 +386,8 @@ namespace SlideBall
                             if (IsServer)
                             {
                                 MyComponents.NetworkViewsManagement.SendClientInstanciationInterval(evt.ConnectionId);
-                                MyComponents.Players.SendPlayersData(evt.ConnectionId);
                                 View.RPC("SetConnectionId", evt.ConnectionId, evt.ConnectionId);
+                                MyComponents.Players.SendPlayersData(evt.ConnectionId);
                             }
                             else if (ConnectedToRoom != null)
                             {
@@ -431,7 +444,7 @@ namespace SlideBall
 
         private void SendBufferedMessagesOnSceneChange(ConnectionId id)
         {
-            Players.players[id].SceneChanged += (connectionId, sceneId) => { bufferedMessages.SendBufferedMessages(connectionId, sceneId); };
+            Players.players[id].SceneChanged += bufferedMessages.SendBufferedMessages;
         }
 
         private void HandleIncomingEvent(ref NetworkEvent evt)

@@ -1,12 +1,18 @@
 ﻿using Navigation;
 using UnityEngine;
 
-public class MenuInGame : MonoBehaviour {
+public class MenuInGame : MonoBehaviour
+{
 
 
     public GameObject background;
     public MatchPanel matchPanel;
     SlideBallInputs.GUIPart previousPart;
+
+    private void Start()
+    {
+        OpenMatch();
+    }
 
     public void OpenSettings()
     {
@@ -15,7 +21,8 @@ public class MenuInGame : MonoBehaviour {
 
     public void OpenMatch()
     {
-        matchPanel.Open();
+        CloseMenu();
+        matchPanel.Open(true);
     }
 
     public void OpenMenu()
@@ -40,7 +47,7 @@ public class MenuInGame : MonoBehaviour {
     public void ReturnToRoom()
     {
         MyComponents.ResetGameComponents();
-        NavigationManager.LoadScene(Scenes.Room,true);
+        NavigationManager.LoadScene(Scenes.Room, true);
     }
 
     private void OnEnable()
@@ -51,5 +58,6 @@ public class MenuInGame : MonoBehaviour {
     private void OnDisable()
     {
         MyComponents.NetworkManagement.RoomClosed -= LeaveRoom;
+
     }
 }

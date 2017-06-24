@@ -67,6 +67,7 @@ public class Scoreboard : SlideBall.MonoBehaviour
 
     public static void ResetScore()
     {
+        scores = new int[2] { 0, 0 };
         scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, scores, false);
     }
 

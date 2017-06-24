@@ -6,21 +6,33 @@ public class VictoryUI : MonoBehaviour
     public GameObject panel;
     public Text text;
     public MenuInGame menu;
+    public Button playAgainButton;
+    public Text clientText;
+
+
 
     private void Start()
     {
-        panel.SetActive(false);
+        Show(false);
     }
 
-    public void ReturnToRoom()
+    public void PlayAgain()
     {
-        menu.ReturnToRoom();
+        MyComponents.VictoryPose.StopVictoryPose();
+    }
+
+    public void Show(bool show)
+    {
+        panel.SetActive(show);
     }
 
     public void SetVictoryText(Team team)
     {
-        panel.SetActive(true);
+        Show(true);
         text.text = Language.Instance.texts["Won_Match"].Replace("%s", Language.Instance.texts[Teams.GetTeamNameKey(team)]);
         text.color = Colors.Teams[(int)team];
+
+        playAgainButton.gameObject.SetActive( MyComponents.NetworkManagement.IsServer);
+        clientText.gameObject.SetActive(!MyComponents.NetworkManagement.IsServer);
     }
 }

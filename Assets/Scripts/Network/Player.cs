@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace PlayerManagement
 {
@@ -12,25 +13,26 @@ namespace PlayerManagement
     {
         public enum State
         {
-            CONNECTED,
-            READY,
             PLAYING,
             FROZEN,
             NO_MOVEMENT,
         }
 
-        public delegate void TeamChangeHandler(Team team);
+        public delegate void PlayerChangeHandler(Player player);
         public delegate void HasBallChangeHandler(bool hasBall);
         public delegate void StateChangeHandler(State newState);
         public delegate void NicknameChangeHandler(string nickname);
         public delegate void SceneChangeHandler(ConnectionId connectionId, short scene);
 
 
-        public event TeamChangeHandler TeamChanged;
+        public event PlayerChangeHandler TeamChanged;
         public event SceneChangeHandler SceneChanged;
         public event StateChangeHandler StateChanged;
         public event HasBallChangeHandler HasBallChanged;
         public event NicknameChangeHandler NicknameChanged;
+        public event PlayerChangeHandler AvatarChanged;
+        public event PlayerChangeHandler PlayAsGoalieChanged;
+        public event PlayerChangeHandler Destroyed;
 
         public PlayerController controller;
         public PlayerBallController ballController;
@@ -38,28 +40,28 @@ namespace PlayerManagement
 
         internal PlayerFlags flagsChanged;
 
-        internal void NotifyNicknameChanged()
-        {
-            if (NicknameChanged != null)
-                NicknameChanged.Invoke(nickname);
-        }
-
         internal void NotifyTeamChanged()
         {
             if (TeamChanged != null)
-                TeamChanged.Invoke(team);
-        }
-
-        internal void NotifySceneChanged()
-        {
-            if (SceneChanged != null)
-                SceneChanged.Invoke(id, sceneId);
+                TeamChanged.Invoke(this);
         }
 
         internal void NotifyStateChanged()
         {
             if (StateChanged != null)
                 StateChanged.Invoke(state);
+        }
+
+        internal void NotifyAvatarSettingsChanged()
+        {
+            if (AvatarChanged != null)
+                AvatarChanged.Invoke(this);
+        }
+
+        internal void NotifyNicknameChanged()
+        {
+            if (NicknameChanged != null)
+                NicknameChanged.Invoke(nickname);
         }
 
         internal bool IsHoldingBall()
@@ -72,6 +74,13 @@ namespace PlayerManagement
 
         internal Team team = Team.NONE;
 
+        public void ChangeTeam(Team newTeam)
+        {
+            Team = newTeam;
+            flagsChanged |= PlayerFlags.TEAM;
+            NotifyTeamChanged();
+        }
+
         public Team Team
         {
             get
@@ -81,7 +90,7 @@ namespace PlayerManagement
             set
             {
                 team = value;
-                if (id == Players.myPlayerId)
+                if (MyComponents.NetworkManagement.IsServer)
                     flagsChanged |= PlayerFlags.TEAM;
                 NotifyTeamChanged();
             }
@@ -116,7 +125,7 @@ namespace PlayerManagement
             }
         }
 
-        internal short sceneId;
+        internal short sceneId = -1;
         public short SceneId
         {
             get
@@ -128,7 +137,8 @@ namespace PlayerManagement
                 sceneId = value;
                 if (id == Players.myPlayerId)
                     flagsChanged |= PlayerFlags.SCENEID;
-                NotifySceneChanged();
+                if (SceneChanged != null)
+                    SceneChanged.Invoke(id, sceneId);
             }
         }
 
@@ -147,7 +157,7 @@ namespace PlayerManagement
             }
         }
 
-        internal AvatarSettings.AvatarSettingsTypes avatarSettingsType;
+        internal AvatarSettings.AvatarSettingsTypes avatarSettingsType = AvatarSettings.AvatarSettingsTypes.NONE;
         public AvatarSettings.AvatarSettingsTypes AvatarSettingsType
         {
             get
@@ -158,6 +168,7 @@ namespace PlayerManagement
             {
                 avatarSettingsType = value;
                 flagsChanged |= PlayerFlags.AVATAR_SETTINGS;
+                NotifyAvatarSettingsChanged();
             }
         }
 
@@ -173,6 +184,8 @@ namespace PlayerManagement
                 playAsGoalie = value;
                 if (id == Players.myPlayerId)
                     flagsChanged |= PlayerFlags.PLAY_AS_GOALIE;
+                if (PlayAsGoalieChanged != null)
+                    PlayAsGoalieChanged.Invoke(this);
             }
         }
 
@@ -180,6 +193,7 @@ namespace PlayerManagement
         {
             get
             {
+                Assert.IsTrue(avatarSettingsType != AvatarSettings.AvatarSettingsTypes.NONE);
                 return AvatarSettings.Data[avatarSettingsType];
             }
         }
@@ -207,6 +221,14 @@ namespace PlayerManagement
             }
         }
 
+        internal void Destroy()
+        {
+            if(Destroyed != null)
+            {
+                Destroyed.Invoke(this);
+            }
+        }
+
         public bool IsMyPlayer { get { return id == Players.myPlayerId; } }
 
         public Player(ConnectionId id)
@@ -216,7 +238,9 @@ namespace PlayerManagement
 
         public override string ToString()
         {
-            return "Player " + id + " Nickname: " + Nickname + " Team : " + Team + "   HasBall : " + hasBall;
+            return "Player " + (IsMyPlayer ? "(mine) " : "") + id + " Nickname: " + Nickname + " Team : " + Team + "   HasBall : " + hasBall + " Avatar " + AvatarSettingsType + " State " + CurrentState + " SpawningPoint " + SpawningPoint;
         }
+
+
     }
 }

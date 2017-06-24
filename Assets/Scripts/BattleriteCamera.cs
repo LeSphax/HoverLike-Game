@@ -107,7 +107,7 @@ public class BattleriteCamera : MonoBehaviour
 
     public void PositionCamera()
     {
-        if (Camera.main.enabled)
+        if (Camera.main != null && Camera.main.enabled)
         {
             Vector3 previousPosition = transform.position;
             Vector2 mouseProportion = GetMouseProportion();

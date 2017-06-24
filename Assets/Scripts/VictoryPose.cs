@@ -6,11 +6,14 @@ using UnityEngine.Assertions;
 
 public class VictoryPose : SlideBall.MonoBehaviour
 {
+    public Camera mainCamera;
     public GameObject victoryCamera;
     public Transform goaliePosition;
     public Transform frontPosition;
     public Transform leftPosition;
     public Transform rightPosition;
+
+    public event EmptyEventHandler PlayAgain;
 
     private void Start()
     {
@@ -19,7 +22,6 @@ public class VictoryPose : SlideBall.MonoBehaviour
 
     public void SetVictoryPose(Team team)
     {
-        Debug.Log("SetVictoryPose");
         switch (team)
         {
             case Team.BLUE:
@@ -35,7 +37,7 @@ public class VictoryPose : SlideBall.MonoBehaviour
                 break;
         }
         MyComponents.AbilitiesFactory.gameObject.SetActive(false);
-        Camera.main.gameObject.SetActive(false);
+        mainCamera.gameObject.SetActive(false);
         victoryCamera.gameObject.SetActive(true);
         //
         MyComponents.VictoryUI.SetVictoryText(team);
@@ -77,8 +79,25 @@ public class VictoryPose : SlideBall.MonoBehaviour
         }
     }
 
-    private static void SetBillboardHeightAttacker(Player player)
+    private void SetBillboardHeightAttacker(Player player)
     {
         player.controller.billboard.SetHeight(-0.7f);
+    }
+
+    [MyRPC]
+    public void StopVictoryPose()
+    {
+        if (MyComponents.NetworkManagement.IsServer)
+        {
+            View.RPC("StopVictoryPose", RPCTargets.Others);
+        }
+        MyComponents.AbilitiesFactory.gameObject.SetActive(true);
+        mainCamera.gameObject.SetActive(true);
+        victoryCamera.gameObject.SetActive(false);
+        MyComponents.VictoryUI.Show(false);
+        if (PlayAgain != null)
+        {
+            PlayAgain.Invoke();
+        }
     }
 }

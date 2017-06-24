@@ -57,7 +57,6 @@ GameObject:
   - component: {fileID: 114000011312007424}
   - component: {fileID: 114000013304511782}
   - component: {fileID: 114000010081264546}
-  - component: {fileID: 114000011537848504}
   - component: {fileID: 82896301942367596}
   m_Layer: 5
   m_Name: PlayerInfo
@@ -260,20 +259,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 150 ms
---- !u!114 &114000011537848504
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013991857186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewId: 0
-  observedComponents: []
-  update: 1
 --- !u!114 &114000013304511782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -285,8 +270,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c23885596b2163b4f94c7a83d5e1572d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerConnectionId:
-    id: -100
   playerName: {fileID: 114000013430524764}
   latency: {fileID: 114000011501761222}
 --- !u!114 &114000013430524764

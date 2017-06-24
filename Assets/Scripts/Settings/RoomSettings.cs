@@ -26,22 +26,22 @@ public int NumberPlayers
 {
 get
 {
-return RoomManager.MaxNumberPlayers;
+return MatchPanel.MaxNumberPlayers;
 }
 set
 {
-RoomManager.MaxNumberPlayers = value;
+MatchPanel.MaxNumberPlayers = value;
 }
 }
 public string Password
 {
 get
 {
-return RoomManager.Password;
+return MatchPanel.Password;
 }
 set
 {
-RoomManager.Password = value;
+MatchPanel.Password = value;
 }
 }
 [MyRPC]

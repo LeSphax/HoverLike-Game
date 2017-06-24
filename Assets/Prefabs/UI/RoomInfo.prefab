@@ -58,7 +58,7 @@ GameObject:
   m_Layer: 5
   m_Name: RoomInfo
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -220,7 +220,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.6397059, g: 0.6397059, b: 0.6397059, a: 1}
     m_PressedColor: {r: 0.42647058, g: 0.42647058, b: 0.42647058, a: 1}
-    m_DisabledColor: {r: 1, g: 0, b: 0.39607847, a: 0.5019608}
+    m_DisabledColor: {r: 0.30147058, g: 0.30147058, b: 0.30147058, a: 0.296}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -381,6 +381,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomNameLabel: {fileID: 114000011059300532}
   nbPlayersLabel: {fileID: 114000013412827656}
+  joinButton: {fileID: 114000011194543700}
 --- !u!114 &114000013925205082
 MonoBehaviour:
   m_ObjectHideFlags: 1

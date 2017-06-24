@@ -22,18 +22,23 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         {
             if (nextViewId == INVALID_VIEW_ID)
             {
-                if (MyComponents.NetworkManagement.IsServer)
-                {
-                    nextViewId = Settings.GetNextViewId();
-                    nextClientViewId = (short)(nextViewId + INSTANCIATION_INTERVAL);
-                }
-                else
-                {
+                //if (MyComponents.NetworkManagement.IsServer)
+                //{
+                    
+                //}
+                //else
+                //{
                     Debug.LogError("Call to nextViewId before it was set");
-                }
+                //}
             }
             return nextViewId;
         }
+    }
+
+    private void Start()
+    {
+        nextViewId = Settings.GetNextViewId();
+        nextClientViewId = (short)(nextViewId + INSTANCIATION_INTERVAL);
     }
 
     public void IncrementNextViewId()
@@ -180,11 +185,13 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         }
         else
         {
+#if UNITY_EDITOR
             if (logCount < 30)
             {
                 Debug.LogWarning("No view was registered with this Id " + message.viewId + "\n" + PrintViews());
                 logCount++;
             }
+#endif
         }
     }
 

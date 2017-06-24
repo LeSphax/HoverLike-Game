@@ -25,7 +25,6 @@ namespace Navigation
         internal static void LoadScene(string scene, bool fading = false, bool waitToShowNextLevel =false)
         {
             Debug.Log("LoadScene");
-            MyComponents.NetworkManagement.CurrentlyPlaying = scene == Scenes.Main;
             previousSceneIndex = Scenes.currentSceneId;
             loader.StartLoading(scene, fading, waitToShowNextLevel);
         }

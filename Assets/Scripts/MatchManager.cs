@@ -21,7 +21,6 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     public enum State : byte
     {
-        LOADING_SCENE,
         WARMUP,
         STARTING,
         BEFORE_BALL_PICKED,
@@ -34,10 +33,9 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private const float END_POINT_DURATION = 3f;
     private const float MATCH_DURATION = 300f;
-    private const float WARMUP_DURATION = 90f;
     private const float MATCH_END_DURATION = 10f;
     private const float ENTRY_DURATION = 3f;
-    private State state;
+    private State state = State.WARMUP;
     private State MyState
     {
         get
@@ -46,7 +44,6 @@ public class MatchManager : SlideBall.MonoBehaviour
         }
         set
         {
-            Debug.Log("Set State " + value);
             State previousState = state;
             state = value;
             if (MyComponents.NetworkManagement.IsServer)
@@ -54,10 +51,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 View.RPC("SetState", RPCTargets.Others, value);
                 switch (MyState)
                 {
-                    case State.LOADING_SCENE:
-                        break;
                     case State.WARMUP:
-                        StartCoroutine(Warmup());
                         break;
                     case State.STARTING:
                         break;
@@ -112,7 +106,6 @@ public class MatchManager : SlideBall.MonoBehaviour
                 }
                 switch (MyState)
                 {
-                    case State.LOADING_SCENE:
                     case State.WARMUP:
                     case State.BEFORE_BALL_PICKED:
                     case State.PLAYING:
@@ -131,8 +124,6 @@ public class MatchManager : SlideBall.MonoBehaviour
             }
             switch (MyState)
             {
-                case State.LOADING_SCENE:
-                    break;
                 case State.WARMUP:
                     break;
                 case State.PLAYING:
@@ -156,7 +147,9 @@ public class MatchManager : SlideBall.MonoBehaviour
             }
             switch (MyState)
             {
-                case State.LOADING_SCENE:
+                case State.WARMUP:
+                    matchCountdown.StopTimerAndSetText("Warmup");
+                    break;
                 case State.BEFORE_BALL_PICKED:
                 case State.LAST_CHANCE:
                 case State.STARTING:
@@ -165,7 +158,6 @@ public class MatchManager : SlideBall.MonoBehaviour
                 case State.VICTORY_POSE:
                     matchCountdown.PauseTimer(true);
                     break;
-                case State.WARMUP:
                 case State.PLAYING:
                     matchCountdown.PauseTimer(false);
                     break;
@@ -174,8 +166,8 @@ public class MatchManager : SlideBall.MonoBehaviour
             }
             switch (MyState)
             {
-                case State.LOADING_SCENE:
                 case State.WARMUP:
+                    break;
                 case State.LAST_CHANCE:
                 case State.ENDING_ROUND:
                 case State.SUDDEN_DEATH:
@@ -227,38 +219,31 @@ public class MatchManager : SlideBall.MonoBehaviour
     public void Start()
     {
         View.RPC("AskState", RPCTargets.Server);
-        MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupScene;
     }
 
-    private void SetupScene()
+    public void Activate(bool activate)
     {
-        GetComponent<PlayerSpawner>().Reset();
-        ResourcesGetter.LoadAll();
-        ShowGame();
-    }
-
-    public void StartGame()
-    {
-        Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
-        Players.PlayerOwningBallChanged += BallChangedOwner;
-        matchCountdown.TimerFinished += MatchCountdownTimerFinished;
-        entryCountdown.TimerFinished += EntryCountdownTimerFinished;
-        MyState = State.LOADING_SCENE;
-        ResourcesGetter.LoadAll();
-        Entry();
-    }
-
-    IEnumerator Warmup()
-    {
-        short syncId = MyComponents.PlayersSynchronisation.GetNewSynchronisationId();
-        matchCountdown.View.RPC("StartWarmup", RPCTargets.All, WARMUP_DURATION, syncId);
-        Entry();
-        //Wait until everyone press the ready button
-        yield return new WaitUntil(() => MyComponents.PlayersSynchronisation.IsSynchronised(syncId));
-        entryCountdown.PlayMatchEndSound();
-        matchCountdown.View.RPC("StartMatch", RPCTargets.All, MATCH_DURATION, 10);
-        Scoreboard.ResetScore();
-        MyState = State.ENDING_ROUND;
+        if (activate)
+        {
+            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
+            Scoreboard.ResetScore();
+            Players.PlayerOwningBallChanged += BallChangedOwner;
+            matchCountdown.TimerFinished += MatchCountdownTimerFinished;
+            entryCountdown.TimerFinished += EntryCountdownTimerFinished;
+            entryCountdown.PlayMatchEndSound();
+            ResourcesGetter.LoadAll();
+            matchCountdown.View.RPC("StartTimer", RPCTargets.All, MATCH_DURATION);
+            MyState = State.ENDING_ROUND;
+        }
+        else
+        {
+            Debug.LogWarning("Deactivate MatchManager");
+            Scoreboard.ResetScore();
+            Players.PlayerOwningBallChanged -= BallChangedOwner;
+            matchCountdown.TimerFinished -= MatchCountdownTimerFinished;
+            entryCountdown.TimerFinished -= EntryCountdownTimerFinished;
+            MyState = State.WARMUP;
+        }
     }
 
     private void EndMatch()
@@ -290,72 +275,22 @@ public class MatchManager : SlideBall.MonoBehaviour
         MyComponents.VictoryPose.SetVictoryPose(team);
     }
 
-
-
-    private void FinishedUsingAllAbilities()
-    {
-        Debug.Log("FinishedUsingAllAbilities");
-        switch (MyState)
-        {
-            case State.LOADING_SCENE:
-                if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
-                {
-                    Players.MyPlayer.PlayAsGoalie = true;
-                    Entry();
-                }
-                else
-                {
-                    Debug.Log("FinishedUsingAllAbilities Start Warmup");
-                    Players.MyPlayer.PlayAsGoalie = EditorVariables.PlayAsGoalieInitialValue;
-                    Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities -= FinishedUsingAllAbilities;
-                    MyState = State.WARMUP;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    [MyRPC]
-    private void ShowGame()
-    {
-        NavigationManager.ShowLevel();
-    }
-
     #region Entry
 
     private void Entry()
     {
 
         Debug.Log("MatchManager : CoEntry - State : " + MyState);
-        Assert.IsTrue(MyState == State.ENDING_ROUND || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH || MyState == State.LOADING_SCENE, "The entry shouldn't happen in this state " + MyState + " , maybe it was a manual entry?");
-        if (MyState == State.LOADING_SCENE)
-        {
-            MyState = State.WARMUP;
-        }
+        Assert.IsTrue(MyState == State.ENDING_ROUND || MyState == State.WARMUP || MyState == State.SUDDEN_DEATH, "The entry shouldn't happen in this state " + MyState + " , maybe it was a manual entry?");
         switch (MyState)
         {
-            case State.LOADING_SCENE:
-                EntryPlayersCreation();
-                if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
-                {
-                    Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().FinishedUsingAllAbilities += FinishedUsingAllAbilities;
-                    Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(true);
-                }
-                else if (Players.MyPlayer.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
-                {
-                    Players.MyPlayer.gameobjectAvatar.GetComponent<AIRandomMovement>().UseAllAbilities(false);
-                }
-                break;
-            case State.WARMUP:
-                EntryPlayersCreation();
-                break;
             case State.ENDING_ROUND:
                 entryCountdown.View.RPC("StartTimer", RPCTargets.All, ENTRY_DURATION);
                 MyState = State.STARTING;
                 EntryPlayersCreation();
                 break;
             case State.LAST_CHANCE:
+            case State.WARMUP:
             case State.STARTING:
             case State.PLAYING:
             case State.VICTORY_POSE:
@@ -363,10 +298,6 @@ public class MatchManager : SlideBall.MonoBehaviour
                 break;
             default:
                 break;
-        }
-        if(state != State.LOADING_SCENE)
-        {
-            ShowGame();
         }
     }
 
@@ -396,31 +327,18 @@ public class MatchManager : SlideBall.MonoBehaviour
                 Player oldGoalie = null;
                 players.Map(player =>
                 {
-                    if (player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE
-|| player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.NONE) oldGoalie = player;
+                    if (player.SpawnNumber == 0) oldGoalie = player;
                 });
-                Assert.IsTrue(oldGoalie != null);
 
                 List<Player> potentialGoalies = new List<Player>();
-                if (MyState == State.LOADING_SCENE && team == Players.MyPlayer.Team)
-                {
-                    if (Players.MyPlayer.PlayAsGoalie)
-                        potentialGoalies.Add(Players.MyPlayer);
-                    else
-                    {
-                        potentialGoalies = new List<Player>(players);
-                        potentialGoalies.Remove(Players.MyPlayer);
-                    }
-                }
-                else
-                {
-                    players.Map(player => { if (player.PlayAsGoalie) potentialGoalies.Add(player); });
-                    if (potentialGoalies.Count == 0)
-                        potentialGoalies = new List<Player>(players);
-                }
+
+                players.Map(player => { if (player.PlayAsGoalie) potentialGoalies.Add(player); });
+                if (potentialGoalies.Count == 0)
+                    potentialGoalies = new List<Player>(players);
 
                 Player goalie = potentialGoalies[Random.Range(0, potentialGoalies.Count)];
-                oldGoalie.SpawnNumber = goalie.SpawnNumber;
+                if (oldGoalie != null)
+                    oldGoalie.SpawnNumber = goalie.SpawnNumber;
                 goalie.SpawnNumber = 0;
                 goalie.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.GOALIE;
                 players.Remove(goalie);
@@ -515,8 +433,6 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         switch (MyState)
         {
-            case State.LOADING_SCENE:
-                break;
             case State.WARMUP:
                 break;
             case State.STARTING:
@@ -594,9 +510,6 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         switch (MyState)
         {
-            case State.LOADING_SCENE:
-                MyState = State.LOADING_SCENE;
-                break;
             case State.WARMUP:
                 MyState = State.WARMUP;
                 break;

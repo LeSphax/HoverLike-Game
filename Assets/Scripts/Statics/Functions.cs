@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Byn.Net;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
@@ -86,6 +87,11 @@ class Functions
     public static bool IsDevelopperComboPressed()
     {
         return Input.GetKey(KeyCode.UpArrow) && Input.GetKey(KeyCode.DownArrow);
+    }
+
+    public static GameObject InstantiatePlayer(ConnectionId id)
+    {
+       return MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, id);
     }
 }
 

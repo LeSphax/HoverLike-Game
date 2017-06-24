@@ -1,13 +1,13 @@
 ﻿using Byn.Net;
-using Navigation;
 using PlayerManagement;
-using SlideBall.Networking;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
+public delegate void TeamChangeHandler(PlayerInfo playerInfo, Team newTeam);
+
 [RequireComponent(typeof(AudioSource))]
-public class PlayerInfo : PlayerView
+public class PlayerInfo : MonoBehaviour
 {
 
     [SerializeField]
@@ -15,13 +15,34 @@ public class PlayerInfo : PlayerView
     [SerializeField]
     private Text latency;
 
+    private Player correspondingPlayer;
+    public Player MyPlayer
+    {
+        get
+        {
+            return correspondingPlayer;
+        }
+        set
+        {
+            correspondingPlayer = value;
+            PlayerName = MyPlayer.Nickname;
+            if (MyPlayer.Team != Team.NONE)
+                CurrentTeam = MyPlayer.Team;
+            MyPlayer.NicknameChanged += ChangeNickname;
+            MyPlayer.TeamChanged += RefreshTeam;
+        }
+    }
+
+
+    public event TeamChangeHandler TeamChanged;
+
     private Team CurrentTeam
     {
         set
         {
             Assert.IsTrue(value == Team.BLUE || value == Team.RED, "" + (int)value);
             GetComponent<Image>().color = Colors.Teams[(int)value];
-            RoomManager.Instance.PutPlayerInTeam(this, value);
+            if (TeamChanged != null) TeamChanged.Invoke(this, value);
         }
     }
 
@@ -47,7 +68,7 @@ public class PlayerInfo : PlayerView
 
     private void SetLatency(ConnectionId id, float latency)
     {
-        if (id == playerConnectionId)
+        if (id == MyPlayer.id)
         {
             Latency = latency;
         }
@@ -64,28 +85,13 @@ public class PlayerInfo : PlayerView
 
     public void KickPlayer()
     {
-        Players.Remove(Player.id);
+        Players.Remove(MyPlayer.id);
     }
 
-    public void InitView(object[] parameters)
+    private void RefreshTeam(Player player)
     {
-        playerConnectionId = (ConnectionId)parameters[0];
-        if (Player == null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        PlayerName = Player.Nickname;
-        if (Player.Team != Team.NONE)
-            CurrentTeam = Player.Team;
-        Player.gameobjectAvatar = gameObject;
-        Player.NicknameChanged += ChangeNickname;
-        Player.TeamChanged += ChangeTeam;
-    }
-
-    private void ChangeTeam(Team newTeam)
-    {
-        CurrentTeam = newTeam;
+        Assert.IsTrue(player.id == MyPlayer.id);
+        CurrentTeam = MyPlayer.Team;
     }
 
     private void ChangeNickname(string nickname)
@@ -93,14 +99,20 @@ public class PlayerInfo : PlayerView
         PlayerName = nickname;
     }
 
+    void Destroy(Player player)
+    {
+        Destroy(this);
+    }
+
     void OnDestroy()
     {
         if (MyComponents.TimeManagement != null)
             MyComponents.TimeManagement.LatencyChanged -= SetLatency;
-        if (Player != null)
+        if (correspondingPlayer != null)
         {
-            Player.TeamChanged -= ChangeTeam;
-            Player.NicknameChanged -= ChangeNickname;
+            correspondingPlayer.TeamChanged -= RefreshTeam;
+            correspondingPlayer.NicknameChanged -= ChangeNickname;
+            correspondingPlayer.Destroyed -= Destroy;
         }
     }
 }

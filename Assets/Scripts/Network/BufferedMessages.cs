@@ -25,7 +25,7 @@ namespace SlideBall.Networking
 
         internal void SendBufferedMessages(ConnectionId id, short sceneId)
         {
-            //Debug.Log("SendBuffered messages " + id + "   " + sceneId);
+            //Debug.LogWarning("SendBuffered messages " + id + "   " + sceneId);
             List<StoredMessage> messages;
             if (bufferedMessages.TryGetValue(sceneId, out messages))
             {
@@ -60,6 +60,7 @@ namespace SlideBall.Networking
             {
                 list = new List<StoredMessage>();
                 bufferedMessages.Add(message.sceneId, list);
+                Debug.Log("Store " + message.sceneId + "   " + Scenes.MainIndex);
             }
             list.Add(new StoredMessage(senderId, message));
         }
