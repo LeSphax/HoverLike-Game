@@ -58,7 +58,7 @@ var PeerPool = (function () {
     PeerPool.prototype.addServer = function (client, address) {
         if (this.mServers[address] == null) {
             this.mServers[address] = new Array();
-            this.mRoomsInfo[address] = {numberPlayers: 1,gameStarted : 0, hasPassword : 0 };
+            this.mRoomsInfo[address] = {numberPlayers: 1, gameStarted : 0, hasPassword : 0 };
         }
         this.mServers[address].push(client);
         console.log("ADD SERVER ------ " + address);
@@ -187,12 +187,15 @@ var SignalingPeer = (function () {
     };
     SignalingPeer.prototype.handleIncomingEvent = function (evt) {
         console.log("handleIncomingEvent "+ evt.Type + "    " + evt.Info);
-        var address = evt.Info;
         var newConnectionId = evt.ConnectionId;
+        var splittedInfo = evt.Info.split('@');
+        
         if (evt.Type == inet.NetEventType.NewConnection) {
+            var address = splittedInfo[0];
+            var password = splittedInfo[1];
             console.log("NewConnection "+ address);
 
-            this.tryToConnect(address, evt.ConnectionId);
+            this.tryToConnect(address, evt.ConnectionId, password);
         }
         else if (evt.Type == inet.NetEventType.ConnectionFailed) {
         }
@@ -217,7 +220,6 @@ var SignalingPeer = (function () {
             this.sendData(evt.ConnectionId, evt.MessageData, false);
         }
         else if (evt.Type == inet.NetEventType.UserCommand){
-            var splittedInfo = evt.Info.split('@');
             console.log("UserCommand " + splittedInfo[0]);
 
             if (evt.Info == "GetRooms"){
@@ -233,13 +235,9 @@ var SignalingPeer = (function () {
 			}
             else if (splittedInfo[0] == inet.NetEventMessage.AskIfAllowedToEnter) {
                 var peerConnectionId = parseInt(splittedInfo[1]);
-                if (splittedInfo[2] == inet.NetEventMessage.GameStarted) {
-                    console.log("ConnectionFailed GameStarted " + peerConnectionId);
-                    this.mWaitingForConnection[peerConnectionId].sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.GameStarted));
-                }
-                else if (splittedInfo[2] == inet.NetEventMessage.RoomFull) {
-                    console.log("ConnectionFailed RoomFull");
-                    this.mWaitingForConnection[peerConnectionId].sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, inet.NetEventMessage.RoomFull));
+                if (splittedInfo[2] != inet.NetEventMessage.AllowedToEnter) {
+                    console.log("ConnectionFailed " + splittedInfo[2]);
+                    this.mWaitingForConnection[peerConnectionId].sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, splittedInfo[2]));
                 }
                 else if (splittedInfo[2] == inet.NetEventMessage.AllowedToEnter) {
                     console.log("Successfully connected " + peerConnectionId);
@@ -276,7 +274,7 @@ var SignalingPeer = (function () {
         this.mNextIncomingConnectionId = new inet.ConnectionId(this.mNextIncomingConnectionId.id + 1);
         return result;
     };
-    SignalingPeer.prototype.tryToConnect = function (address, connectionId) {
+    SignalingPeer.prototype.tryToConnect = function (address, connectionId, password) {
         var serverConnections = this.mConnectionPool.getServerConnection(address);
         if (serverConnections == null){
             console.log("ConnectionFailed Room");
@@ -291,7 +289,7 @@ var SignalingPeer = (function () {
             serverConnections[0].mWaitingForConnection[newConnectionId.id] = this;
             console.log("AskPermission for id " + newConnectionId.id );
 
-            serverConnections[0].sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, newConnectionId, inet.NetEventMessage.AskIfAllowedToEnter));
+            serverConnections[0].sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, newConnectionId, inet.NetEventMessage.AskIfAllowedToEnter + "@" + password));
         }
     };
 
