@@ -33,7 +33,7 @@ var NetEventMessage;
     NetEventMessage[NetEventMessage["Outgoing"] = "9"] = "Outgoing";
     NetEventMessage[NetEventMessage["AskIfAllowedToEnter"] = "10"] = "AskIfAllowedToEnter";
     NetEventMessage[NetEventMessage["AllowedToEnter"] = "11"] = "AllowedToEnter";
-    NetEventMessage[NetEventMessage["SetNumberPlayers"] = "12"] = "SetNumberPlayers";
+    NetEventMessage[NetEventMessage["RefreshRoom"] = "12"] = "RefreshRoom";
     NetEventMessage[NetEventMessage["WrongPassword"] = "13"] = "WrongPassword";
 
 

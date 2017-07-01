@@ -48,8 +48,8 @@ var PeerPool = (function () {
     PeerPool.prototype.getRooms = function () {
         var rooms = "GetRooms" + SEPARATOR;
         for (var key in this.mServers) {
-			rooms += key + "|" + this.mRoomsInfo[key].numberPlayers + "|" + this.mRoomsInfo[key].gameStarted + "|" + this.mRoomsInfo[key].hasPassword + SEPARATOR;
-        }
+         rooms += key + "|" + this.mRoomsInfo[key].numberPlayers + "|" + this.mRoomsInfo[key].gameStarted + "|" + this.mRoomsInfo[key].hasPassword + SEPARATOR;
+     }
         //Remove the last @
         rooms = rooms.substring(0, rooms.length - 1);
         return rooms;
@@ -70,7 +70,7 @@ var PeerPool = (function () {
         }
         if (this.mServers[address].length == 0) {
             delete this.mServers[address];
-			delete this.mRoomsInfo[address];
+            delete this.mRoomsInfo[address];
             console.log("REMOVE SERVER -------- " + address);
         }
     };
@@ -188,7 +188,8 @@ var SignalingPeer = (function () {
     SignalingPeer.prototype.handleIncomingEvent = function (evt) {
         console.log("handleIncomingEvent "+ evt.Type + "    " + evt.Info);
         var newConnectionId = evt.ConnectionId;
-        var splittedInfo = evt.Info.split('@');
+        if(evt.Info)
+            var splittedInfo = evt.Info.split('@');
         
         if (evt.Type == inet.NetEventType.NewConnection) {
             var address = splittedInfo[0];
@@ -226,25 +227,25 @@ var SignalingPeer = (function () {
                 console.log("GetRooms "+ evt.ConnectionId);
                 this.sendToClient(new inet.NetworkEvent(inet.NetEventType.UserCommand, inet.ConnectionId.INVALID, this.mConnectionPool.getRooms()));
             }
-			else if (splittedInfo[0]== inet.NetEventMessage.SetNumberPlayers){
-                console.log("SetNumberPlayers of room "+ splittedInfo[1] + " to "+ splittedInfo[2] + evt.ConnectionId);
-				this.mConnectionPool.mRoomsInfo[splittedInfo[1]].numberPlayers = splittedInfo[2];
+            else if (splittedInfo[0]== inet.NetEventMessage.RefreshRoom){
+                console.log("RefreshRoom" + splittedInfo[1] + " to "+ splittedInfo[2] + evt.ConnectionId);
+                var splittedRoomData = splittedInfo[2].split('|');
+                this.mConnectionPool.mRoomsInfo[splittedInfo[1]].numberPlayers = splittedRoomData[0];
+                this.mConnectionPool.mRoomsInfo[splittedInfo[1]].gameStarted = splittedRoomData[1];
+                this.mConnectionPool.mRoomsInfo[splittedInfo[1]].hasPassword = splittedRoomData[2];
             }
-			else if (splittedInfo[0] == inet.NetEventMessage.GameStarted) {
-				this.mConnectionPool.mRoomsInfo[splittedInfo[1]].gameStarted = splittedInfo[2];
-			}
             else if (splittedInfo[0] == inet.NetEventMessage.AskIfAllowedToEnter) {
                 var peerConnectionId = parseInt(splittedInfo[1]);
                 if (splittedInfo[2] != inet.NetEventMessage.AllowedToEnter) {
                     console.log("ConnectionFailed " + splittedInfo[2]);
-                    this.mWaitingForConnection[peerConnectionId].sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID, splittedInfo[2]));
+                    this.mWaitingForConnection[peerConnectionId].sendToClient(new inet.NetworkEvent(inet.NetEventType.RoomJoinFailed, inet.ConnectionId.INVALID,splittedInfo[2] ));
                 }
                 else if (splittedInfo[2] == inet.NetEventMessage.AllowedToEnter) {
                     console.log("Successfully connected " + peerConnectionId);
                     this.mWaitingForConnection[peerConnectionId].connect(this, new inet.ConnectionId(peerConnectionId));
                 }
             }
-			
+
         }
     };
     SignalingPeer.prototype.internalAddIncomingPeer = function (peer,id) {
