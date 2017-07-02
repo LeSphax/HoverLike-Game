@@ -11,7 +11,20 @@ public class MatchPanel : MonoBehaviour
     public Button[] teamButtons;
 
     public static int MaxNumberPlayers = 7;
-    public static string Password = "";
+
+    public static string password = "";
+    public static string Password
+    {
+        get
+        {
+            return password;
+        }
+        set
+        {
+            password = value;
+            MyComponents.NetworkManagement.RefreshRoomData();
+        }
+    }
 
     private List<GameObject> playerInfos = new List<GameObject>();
 
@@ -41,19 +54,20 @@ public class MatchPanel : MonoBehaviour
 
     private void RefreshPlayerInfos(ConnectionId id)
     {
-        Debug.LogError("Refresh Players " + id + "    " + Players.players.Count);
         Reset();
         foreach (Player player in Players.players.Values)
         {
-            GameObject playerInfo = Instantiate(ResourcesGetter.PlayerInfoPrefab);
-            playerInfos.Add(playerInfo);
-            playerInfo.GetComponent<PlayerInfo>().TeamChanged += SetPlayerInTeamPanel;
-            playerInfo.GetComponent<PlayerInfo>().MyPlayer = player;
+            PlayerInfo playerInfo = Instantiate(ResourcesGetter.PlayerInfoPrefab).GetComponent<PlayerInfo>();
+            playerInfos.Add(playerInfo.gameObject);
+            playerInfo.TeamChanged += SetPlayerInTeamPanel;
+            playerInfo.MyPlayer = player;
         }
     }
 
     private void SetPlayerInTeamPanel(PlayerInfo playerInfo, Team team)
     {
+        if (team == Team.NONE)
+            return;
         playerInfo.transform.SetParent(teamPanels[(int)team], false);
         CheckTeamButtons();
     }

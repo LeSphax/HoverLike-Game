@@ -169,6 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   protectionSphere: {fileID: 1000012789302824}
+  attraction: {fileID: 11466236}
 --- !u!114 &11438112
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -4,6 +4,7 @@ using PlayerManagement;
 using PlayerBallControl;
 using AbilitiesManagement;
 using UnityEngine.Assertions;
+using Ball;
 
 [RequireComponent(typeof(PlayerMovementManager))]
 [RequireComponent(typeof(PlayerBallController))]
@@ -56,19 +57,44 @@ public class PlayerController : PlayerView
     public void InitView(object[] parameters)
     {
         playerConnectionId = (ConnectionId)parameters[0];
+        if (Player == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Player.controller = this;
         Player.ballController = GetComponent<PlayerBallController>();
         GetComponent<PlayerBallController>().Init(playerConnectionId);
         Players.NotifyNewPlayerInstantiated(playerConnectionId);
+
+        Player.eventNotifier.ListenToEvents(ResetPlayer, PlayerFlags.TEAM, PlayerFlags.AVATAR_SETTINGS);
+        Player.eventNotifier.ListenToEvents(SetNickname, PlayerFlags.NICKNAME);
+        Player.eventNotifier.ListenToEvents(Destroy, PlayerFlags.DESTROYED);
+
+        ResetPlayer();
     }
 
     [MyRPC]
-    public void ResetPlayer()
+    public void ResetPlayer(Player player = null)
     {
         if (Player.Team == Team.NONE || Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.NONE)
         {
             return;
         }
+        if (Player.HasBall)
+        {
+            if (MyComponents.NetworkManagement.IsServer)
+            {
+                MyComponents.BallState.PutAtStartPosition();
+            }
+            else
+            {
+                MyComponents.BallState.AttachBall(BallState.NO_PLAYER_ID);
+            }
+        }
+
+        RemoveFromAttraction();
+
         movementManager.Reset(playerConnectionId);
         ballController.Reset();
         targetManager.CancelTarget();
@@ -82,8 +108,7 @@ public class PlayerController : PlayerView
         }
         PutAtStartPosition();
 
-        gameObject.name = Player.Nickname;
-        billboard.Text = Player.Nickname;
+        SetNickname();
         billboard.SetHeight(16);
 
         CreateMesh();
@@ -96,14 +121,20 @@ public class PlayerController : PlayerView
             MyComponents.AbilitiesFactory.RecreateAbilities();
     }
 
+    private void RemoveFromAttraction()
+    {
+        if (MyComponents.NetworkManagement.IsServer && PlayerMesh != null)
+            MyComponents.BallState.attraction.RemovePlayer(PlayerMesh.actualCollider.gameObject);
+    }
+
+    private void SetNickname(Player player = null)
+    {
+        gameObject.name = Player.Nickname;
+        billboard.Text = Player.Nickname;
+    }
+
     private void ConfigureColliders()
     {
-        if (MyComponents.NetworkManagement.IsServer)
-        {
-            //GetComponent<CapsuleCollider>().radius = Player.MyAvatarSettings.catchColliderRadius;
-            //GetComponent<CapsuleCollider>().center = Vector3.forward * Player.MyAvatarSettings.catchColliderZPos;
-            //GetComponent<CapsuleCollider>().height = Player.MyAvatarSettings.catchColliderHeight;
-        }
         int layer = -1;
         if (Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
             layer = LayersGetter.players[(int)Player.Team];
@@ -143,5 +174,21 @@ public class PlayerController : PlayerView
     {
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         targetManager.CancelTarget();
+    }
+
+    private void Destroy(Player player = null)
+    {
+        RemoveFromAttraction();
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        if (Player != null)
+        {
+            Player.eventNotifier.StopListeningToEvents(ResetPlayer, PlayerFlags.TEAM, PlayerFlags.AVATAR_SETTINGS);
+            Player.eventNotifier.StopListeningToEvents(SetNickname, PlayerFlags.NICKNAME);
+            Player.eventNotifier.StopListeningToEvents(Destroy, PlayerFlags.DESTROYED);
+        }
     }
 }

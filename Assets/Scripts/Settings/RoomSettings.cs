@@ -4,74 +4,74 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using TimeSlow;
-public class RoomSettings : SlideBall.MonoBehaviour {
-public GameObject panel;
-public Dropdown numberPlayersDropdown;
-public InputField passwordInputField;
-private void Start()
+public class RoomSettings : SlideBall.MonoBehaviour
 {
-Reset();
-}
-private float ParseFloat(string value, float defaultValue)
-{
-   try { return float.Parse(value); }
-    catch (Exception)
-   {
-       Debug.LogWarning("Couldn't parse " + value);
-       return defaultValue;
+    public GameObject panel;
+    public Dropdown numberPlayersDropdown;
+    public InputField passwordInputField;
+    private void Start()
+    {
+        Reset();
     }
-}
-public int NumberPlayers
-{
-get
-{
-return MatchPanel.MaxNumberPlayers;
-}
-set
-{
-MatchPanel.MaxNumberPlayers = value;
-}
-}
-public string Password
-{
-get
-{
-return MatchPanel.Password;
-}
-set
-{
-MatchPanel.Password = value;
-}
-}
-[MyRPC]
-private void SettingsAsked()
-{
-    Save();
- }
-public void Save()
-{
-   View.RPC("SetSettings", RPCTargets.All, numberPlayersDropdown.value + 1, passwordInputField.text);
-}
-[MyRPC]
-public void SetSettings(int numberPlayers, string password)
-{
-NumberPlayers = numberPlayers;
-numberPlayersDropdown.value = NumberPlayers - 1;
-Password = password;
-passwordInputField.text = Password;
-}
-public void Show(bool show)
-{
-    if (show){ Reset();}
-    panel.SetActive(show);
-}
-private void Reset()
-{
-if (!MyComponents.NetworkManagement.IsServer)
-  View.RPC("SettingsAsked", RPCTargets.Server);
-numberPlayersDropdown.value = NumberPlayers - 1;
-passwordInputField.text = Password;
-}
+    private float ParseFloat(string value, float defaultValue)
+    {
+        try { return float.Parse(value); }
+        catch (Exception)
+        {
+            Debug.LogWarning("Couldn't parse " + value);
+            return defaultValue;
+        }
+    }
+    public int NumberPlayers
+    {
+        get
+        {
+            return MatchPanel.MaxNumberPlayers;
+        }
+        set
+        {
+            MatchPanel.MaxNumberPlayers = value;
+        }
+    }
+    public string Password
+    {
+        get
+        {
+            return MatchPanel.Password;
+        }
+        set
+        {
+            MatchPanel.Password = value;
+        }
+    }
+    [MyRPC]
+    private void SettingsAsked()
+    {
+        Save();
+    }
+    public void Save()
+    {
+        View.RPC("SetSettings", RPCTargets.All, numberPlayersDropdown.value + 1, passwordInputField.text);
+    }
+    [MyRPC]
+    public void SetSettings(int numberPlayers, string password)
+    {
+        NumberPlayers = numberPlayers;
+        numberPlayersDropdown.value = NumberPlayers - 1;
+        Password = password;
+        passwordInputField.text = Password;
+    }
+    public void Show(bool show)
+    {
+        if (show) { Reset(); }
+        panel.SetActive(show);
+    }
+    private void Reset()
+    {
+        if (!MyComponents.NetworkManagement.IsServer)
+            View.RPC("SettingsAsked", RPCTargets.Server);
+        numberPlayersDropdown.value = NumberPlayers - 1;
+        passwordInputField.text = Password;
+    }
 }
 

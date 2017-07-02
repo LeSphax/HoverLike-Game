@@ -171,12 +171,12 @@ e.prototype.LeaveRoom = function () {
     this.EnqueueOutgoing(new NetworkEvent(NetEventType.RoomClosed, ConnectionId.INVALID, null))
 };
 
-e.prototype.ConnectToRoom = function (e) {
-    console.log("ConnectToRoom " + e);
+e.prototype.ConnectToRoom = function (room, password) {
+    console.log("ConnectToRoom " + room + "  " + password);
     this.socketConnection.EnsureServerConnection();
     var t = this.NextConnectionId();
     this.mConnecting.push(t.id);
-    var n = new NetworkEvent(NetEventType.NewConnection, t, e);
+    var n = new NetworkEvent(NetEventType.NewConnection, t, room + "@" + password);
     this.EnqueueOutgoing(n);
     this.peerNetwork.AddOutgoingConnection(t);
 

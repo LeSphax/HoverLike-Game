@@ -110,6 +110,8 @@ public class ResourcesGetterGeneration
             "AudioClip","But",
             "AudioClip","JoinRoom",
             "GameObject","SettingsPanel",
+            "GameObject","FeedbackPanel",
+            "GameObject","PasswordPanel",
             "GameObject","TempAudioSource",
             "GameObject","TimeSlowTargeter",
             "GameObject","PassTargeter",
@@ -197,7 +199,7 @@ public class ResourcesGetterGeneration
         dc.Append(loadAllMethod);
 
         dc.AppendLine("}");
-        StreamWriter file = new StreamWriter(@"../../../../Assets/Scripts/Statics/ResourcesGetter.cs");
+        StreamWriter file = new StreamWriter(@"../../../../Assets/Standard Assets/Slideball/Statics/ResourcesGetter.cs");
         file.WriteLine(dc.ToString()); // "sb" is the StringBuilder
         file.Close();
     }

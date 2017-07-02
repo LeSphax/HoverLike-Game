@@ -10,7 +10,6 @@ public class WarmupManager : MonoBehaviour
 
     public void Activate(bool activate)
     {
-        Debug.Log("Activate Warmup " + activate);
         if (activate)
         {
             Players.players.Values.ForEach(player => { if (player.controller != null) InitPlayer(player.id); });
@@ -20,10 +19,8 @@ public class WarmupManager : MonoBehaviour
         {
             Players.players.Values.ForEach(player =>
             {
-                player.PlayAsGoalieChanged -= ChangeAvatar;
-                player.AvatarChanged -= ResetPlayer;
-                player.TeamChanged -= ResetPlayer;
-
+                player.eventNotifier.StopListeningToEvents(ChangeAvatar, PlayerFlags.PLAY_AS_GOALIE);
+                player.eventNotifier.StopListeningToEvents(ResetPlayer, PlayerFlags.TEAM, PlayerFlags.AVATAR_SETTINGS);
             });
             Players.NewPlayerInstantiated -= InitPlayer;
         }
@@ -38,11 +35,10 @@ public class WarmupManager : MonoBehaviour
             player.AvatarSettingsType = player.PlayAsGoalie ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
             if (player.Team == Team.NONE)
                 player.Team = GetInitialTeam();
-            player.PlayAsGoalieChanged += ChangeAvatar;
+            player.eventNotifier.ListenToEvents(ChangeAvatar, PlayerFlags.PLAY_AS_GOALIE);
         }
 
-        player.AvatarChanged += ResetPlayer;
-        player.TeamChanged += ResetPlayer;
+        player.eventNotifier.ListenToEvents(ResetPlayer, PlayerFlags.TEAM, PlayerFlags.AVATAR_SETTINGS);
 
         ResetPlayer(player);
     }
@@ -79,5 +75,10 @@ public class WarmupManager : MonoBehaviour
         else
             team = Team.RED;
         return team;
+    }
+
+    private void OnDestroy()
+    {
+        Activate(false);
     }
 }

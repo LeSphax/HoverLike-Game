@@ -294,7 +294,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 0
-  m_Text: Find a game
+  m_Text: Rooms list
 --- !u!222 &52819377
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1552,7 +1552,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   server: 2
   testURLParameters: 0
-  joinRoomImmediately: 1
+  joinRoomImmediately: 0
   startGameImmediately: 0
   editorIsServer: 1
   numberPlayersToStartGame: 4
@@ -3085,7 +3085,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 0
-  m_Text: Create a game
+  m_Text: Specific room
 --- !u!222 &550796557
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5121,8 +5121,7 @@ Prefab:
       propertyPath: server
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114000012265847228, guid: 375771a16d25b7749b6ebcbac81d9ce7,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: debug
       value: 0
       objectReference: {fileID: 0}
@@ -5136,8 +5135,7 @@ Prefab:
       propertyPath: NumberFramesLatency
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 114000012265847228, guid: 375771a16d25b7749b6ebcbac81d9ce7,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: log
       value: 0
       objectReference: {fileID: 0}
@@ -5160,6 +5158,7 @@ Prefab:
     - {fileID: 114000011479947882, guid: 375771a16d25b7749b6ebcbac81d9ce7, type: 2}
     - {fileID: 114000011473335522, guid: 375771a16d25b7749b6ebcbac81d9ce7, type: 2}
     - {fileID: 114000013209635198, guid: 375771a16d25b7749b6ebcbac81d9ce7, type: 2}
+    - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: 375771a16d25b7749b6ebcbac81d9ce7, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &922712728 stripped
@@ -6541,6 +6540,11 @@ Prefab:
         type: 2}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010160690706, guid: bc3d884a9c742c342a06acc6cacc6b55,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenFeedback
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bc3d884a9c742c342a06acc6cacc6b55, type: 2}

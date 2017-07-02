@@ -121,7 +121,7 @@ namespace PlayerManagement
                 HandlePlayerPacket(message.data, ref currentIndex);
         }
 
-        private static void HandlePlayerPacket(byte[] data, ref int currentIndex)
+        private void HandlePlayerPacket(byte[] data, ref int currentIndex)
         {
             PlayerFlags flags = (PlayerFlags)data[currentIndex];
             ConnectionId playerId = new ConnectionId(BitConverter.ToInt16(data, currentIndex + 1));
@@ -170,7 +170,7 @@ namespace PlayerManagement
             }
             if (flags.HasFlag(PlayerFlags.DESTROYED))
             {
-                Remove(player.id);
+                RemovePlayer(player.id);
             }
             if (PlayersDataReceived != null)
                 PlayersDataReceived.Invoke();
@@ -228,11 +228,10 @@ namespace PlayerManagement
 
         public static Player CreatePlayer(ConnectionId id)
         {
-            Debug.LogError("Create Player " + id);
             Player player;
             player = new Player(id);
             players.Add(id, player);
-            MyComponents.NetworkManagement.SetNumberPlayersInSignaling();
+            MyComponents.NetworkManagement.RefreshRoomData();
             if (MyComponents.NetworkManagement.IsServer)
             {
                 if (Scenes.IsCurrentScene(Scenes.MainIndex))
@@ -281,12 +280,17 @@ namespace PlayerManagement
             Reset();
         }
 
-        internal static void Remove(ConnectionId connectionId)
+        internal void RemovePlayer(ConnectionId connectionId)
         {
-            Debug.Log("Player with id " + connectionId + " has left");
             if (MyComponents.NetworkManagement.IsServer)
             {
-                players[connectionId].flagsChanged = PlayerFlags.DESTROYED;
+                Player player;
+                if (players.TryGetValue(connectionId, out player))
+                {
+                    player.flagsChanged = PlayerFlags.DESTROYED;
+                    player.Destroy();
+                    SendChanges();
+                }
             }
             else
             {
@@ -296,11 +300,13 @@ namespace PlayerManagement
                     MyComponents.ResetNetworkComponents();
                     NavigationManager.LoadScene(Scenes.Lobby);
                 }
+                else
+                {
+                    players[connectionId].Destroy();
+                }
             }
-            players[connectionId].Destroy();
-            players.Remove(connectionId);
-            MyComponents.NetworkManagement.SetNumberPlayersInSignaling();
-
+            
+           
         }
 
         protected void FixedUpdate()
@@ -308,18 +314,19 @@ namespace PlayerManagement
             SendChanges();
         }
 
+        private void LateUpdate()
+        {
+            Dictionary<ConnectionId, Player> copy = new Dictionary<ConnectionId, Player>(players);
+            copy.Values.ForEach(player => player.eventNotifier.FireEvents());
+        }
+
         public void SendChanges()
         {
             byte[] packet = new byte[0];
             foreach (Player player in new List<Player>(players.Values))
             {
-                bool destroyPlayer = player.flagsChanged.HasFlag(PlayerFlags.DESTROYED);
                 if (player.flagsChanged != PlayerFlags.NONE)
                     packet = ArrayExtensions.Concatenate(packet, UpdatePlayer(player));
-                if (destroyPlayer)
-                {
-                    players.Remove(player.id);
-                }
             }
             if (ballOwnerChanged)
             {

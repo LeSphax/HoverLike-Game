@@ -28,8 +28,9 @@ public class PlayerInfo : MonoBehaviour
             PlayerName = MyPlayer.Nickname;
             if (MyPlayer.Team != Team.NONE)
                 CurrentTeam = MyPlayer.Team;
-            MyPlayer.NicknameChanged += ChangeNickname;
-            MyPlayer.TeamChanged += RefreshTeam;
+            MyPlayer.eventNotifier.ListenToEvents(ChangeNickname, PlayerFlags.NICKNAME);
+            MyPlayer.eventNotifier.ListenToEvents(RefreshTeam, PlayerFlags.TEAM);
+            MyPlayer.eventNotifier.ListenToEvents(Destroy, PlayerFlags.DESTROYED);
         }
     }
 
@@ -85,7 +86,7 @@ public class PlayerInfo : MonoBehaviour
 
     public void KickPlayer()
     {
-        Players.Remove(MyPlayer.id);
+        MyComponents.Players.RemovePlayer(MyPlayer.id);
     }
 
     private void RefreshTeam(Player player)
@@ -94,14 +95,14 @@ public class PlayerInfo : MonoBehaviour
         CurrentTeam = MyPlayer.Team;
     }
 
-    private void ChangeNickname(string nickname)
+    private void ChangeNickname(Player player)
     {
-        PlayerName = nickname;
+        PlayerName = player.Nickname;
     }
 
     void Destroy(Player player)
     {
-        Destroy(this);
+        Destroy(gameObject);
     }
 
     void OnDestroy()
@@ -110,9 +111,9 @@ public class PlayerInfo : MonoBehaviour
             MyComponents.TimeManagement.LatencyChanged -= SetLatency;
         if (correspondingPlayer != null)
         {
-            correspondingPlayer.TeamChanged -= RefreshTeam;
-            correspondingPlayer.NicknameChanged -= ChangeNickname;
-            correspondingPlayer.Destroyed -= Destroy;
+            MyPlayer.eventNotifier.StopListeningToEvents(ChangeNickname, PlayerFlags.NICKNAME);
+            MyPlayer.eventNotifier.StopListeningToEvents(RefreshTeam, PlayerFlags.TEAM);
+            MyPlayer.eventNotifier.StopListeningToEvents(Destroy, PlayerFlags.DESTROYED);
         }
     }
 }

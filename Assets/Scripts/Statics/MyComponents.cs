@@ -22,11 +22,11 @@ public static class MyComponents
             NullifyLobby();
             NullifyRoom();
         }
-        else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
-        {
-            NullifyLobby();
-            NullifyMain();
-        }
+        //else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
+        //{
+        //    NullifyLobby();
+        //    NullifyMain();
+        //}
     }
 
     private static void NullifyLobby()

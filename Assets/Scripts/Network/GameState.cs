@@ -19,7 +19,7 @@ public class GameState : SlideBall.MonoBehaviour
             AllObjectsCreated += handler;
     }
 
-    protected void Awake()
+    protected void Start()
     {
         Reset();
     }
@@ -84,9 +84,9 @@ public class GameState : SlideBall.MonoBehaviour
     public void Reset()
     {
         started = false;
-
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages -= SetupScene;
         MyComponents.NetworkManagement.ReceivedAllBufferedMessages += SetupScene;
+
 
         AllObjectsCreated = null;
     }

@@ -7,6 +7,7 @@ public class PlayerMesh : MonoBehaviour
     public GameObject helmet;
     public GameObject skate;
     public GameObject body;
+    public Collider actualCollider;
 
     private Material[] helmetMaterials;
     private Material[] HelmetMaterials

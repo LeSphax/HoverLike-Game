@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class RoomData
 {
@@ -18,6 +16,18 @@ public class RoomData
         nbPlayers = int.Parse(split[1]);
         gameStarted = int.Parse(split[2]) == 1;
         hasPassword = int.Parse(split[3]) == 1;
+    }
+
+    public RoomData(int nbPlayers, bool gameStarted, bool hasPassword)
+    {
+        this.nbPlayers = nbPlayers;
+        this.gameStarted = gameStarted;
+        this.hasPassword = hasPassword;
+    }
+
+    public string ToNetworkEntity()
+    {
+        return nbPlayers.ToString() + ROOM_DATA_SEPARATOR_CHAR + (gameStarted ? 1 : 0).ToString() + ROOM_DATA_SEPARATOR_CHAR + (hasPassword ? 1 : 0).ToString();
     }
 
 

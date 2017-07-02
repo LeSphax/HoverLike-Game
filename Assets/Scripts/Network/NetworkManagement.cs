@@ -4,6 +4,7 @@ using PlayerManagement;
 using SlideBall.Networking;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -57,7 +58,8 @@ namespace SlideBall
         }
 
         private bool currentlyPlaying = false;
-        public bool CurrentlyPlaying {
+        public bool CurrentlyPlaying
+        {
             get
             {
                 return currentlyPlaying;
@@ -65,10 +67,10 @@ namespace SlideBall
             set
             {
                 currentlyPlaying = value;
-                SendUserCommand(NetEventMessage.GAME_STARTED, RoomName, (value ? 1 : 0).ToString());
+                RefreshRoomData();
             }
         }
-        
+
 
         [HideInInspector]
         public string RoomName = null;
@@ -172,15 +174,17 @@ namespace SlideBall
             SendUserCommand(GET_ROOMS_COMMAND);
         }
 
-        public void SetNumberPlayersInSignaling()
+        public void RefreshRoomData()
         {
-            SendUserCommand(NetEventMessage.SET_NUMBER_PLAYERS,RoomName,Players.players.Count.ToString());
+            RoomData data = new RoomData(Players.players.Count, CurrentlyPlaying, !MatchPanel.Password.Equals(""));
+            SendUserCommand(NetEventMessage.REFRESH_ROOM, RoomName, data.ToNetworkEntity());
         }
 
         public void Reset()
         {
             Debug.Log("Reset Network");
             Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
+            //ReceivedAllBufferedMessages = null;
             StateCurrent = State.IDLE;
             mConnections = new List<ConnectionId>();
             Cleanup();
@@ -302,11 +306,18 @@ namespace SlideBall
                             {
                                 MyComponents.PopUp.Show(Language.Instance.texts["Room_Full"]);
                             }
+                            else if (rawdata == NetEventMessage.WRONG_PASSWORD)
+                            {
+                                if (lastPassword.Equals(""))
+                                    PasswordPanel.InstantiatePanel(RoomName);
+                                else
+                                    MyComponents.PopUp.Show(Language.Instance.texts["Wrong_Password"]);
+                            }
                             else if (rawdata == NetEventMessage.SERVER_CONNECTION_NOT_1)
                             {
                                 MyComponents.PopUp.Show("Server Connection is not 1");
                             }
-                            
+
                         }
                         if (ConnectionFailed != null)
                             ConnectionFailed.Invoke();
@@ -336,15 +347,23 @@ namespace SlideBall
 
                         if (evt.RawData != null)
                         {
-                            string rawData = (string)evt.RawData;
-                            Debug.LogWarning("Receive User Command " + rawData);
+                            string rawData = ((string)evt.RawData);
+                            string command = rawData.Split(ROOM_SEPARATOR_CHAR)[0];
+                            Debug.LogWarning("Receive User Command " + command);
 
-                            if (rawData == NetEventMessage.ASK_IF_ALLOWED_TO_ENTER)
+                            if (command == NetEventMessage.ASK_IF_ALLOWED_TO_ENTER)
                             {
+                                Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
+                                string password = ((string)evt.RawData).Split(ROOM_SEPARATOR_CHAR)[1];
+
                                 if (Players.players.Count > MatchPanel.MaxNumberPlayers)
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.ROOM_FULL);
                                 else if (CurrentlyPlaying)
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.GAME_STARTED);
+                                else if (password != MatchPanel.Password)
+                                {
+                                    SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.WRONG_PASSWORD);
+                                }
                                 else
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.ALLOWED_TO_ENTER);
 
@@ -424,7 +443,7 @@ namespace SlideBall
                             else
                             {
                                 mConnections.Remove(evt.ConnectionId);
-                                Players.Remove(evt.ConnectionId);
+                                MyComponents.Players.RemovePlayer(evt.ConnectionId);
                                 Debug.Log("User " + evt.ConnectionId + " left the room.");
                             }
                         }
@@ -444,7 +463,7 @@ namespace SlideBall
 
         private void SendBufferedMessagesOnSceneChange(ConnectionId id)
         {
-            Players.players[id].SceneChanged += bufferedMessages.SendBufferedMessages;
+            Players.players[id].eventNotifier.ListenToEvents(bufferedMessages.SendBufferedMessages, PlayerFlags.SCENEID);
         }
 
         private void HandleIncomingEvent(ref NetworkEvent evt)
@@ -567,10 +586,13 @@ namespace SlideBall
         //    }
         //}
 
-        public void ConnectToRoom(string roomName)
+        private string lastPassword = "";
+
+        public void ConnectToRoom(string roomName, string password = "")
         {
             RoomName = roomName;
-            mNetwork.ConnectToRoom(roomName);
+            lastPassword = password;
+            mNetwork.ConnectToRoom(roomName, password);
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
             Debug.Log("Connecting to room : " + roomName + " ...");
         }
@@ -612,7 +634,9 @@ namespace SlideBall
         private void ReceivedAllBuffered()
         {
             if (ReceivedAllBufferedMessages != null)
+            {
                 ReceivedAllBufferedMessages.Invoke();
+            }
         }
 
         [MyRPC]

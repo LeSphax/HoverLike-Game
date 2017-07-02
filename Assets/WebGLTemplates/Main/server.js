@@ -17,14 +17,16 @@ app.get('/', function (req, res) {
 		socket.on('log', function (msg) {
 			console.log(ip + ": " + msg)
 		});
-		socket.on('mail',function(msg)){
+		socket.on('mail',function(msg){
+			var header = msg.split("@@")[0];
+			var content = msg.split("@@")[1];
 			// create reusable transporter object using the default SMTP transport
 			let transporter = nodemailer.createTransport({
 				host: 'smtp.gmail.com',
 				port: 587,
 				secure: false, // secure:true for port 465, secure:false for port 587
 				auth: {
-					user: 'sbkerbrat@gmail.com',
+					user: 'sphax31@gmail.com',
 					pass: 'Joar3oesiereero'
 				}
 			});
@@ -32,10 +34,10 @@ app.get('/', function (req, res) {
 			// setup email data with unicode symbols
 			let mailOptions = {
 				from: '"Slideball 👻" <slideball@feedback.com>', // sender address
-				to: 'sbkerbrat@gmail.com', // list of receivers
-				subject: 'You have some feedback', // Subject line
-				text: msg, // plain text body
-				html: msg // html body
+				to: 'sphax31@gmail.com', // list of receivers
+				subject: header, // Subject line
+				text: content, // plain text body
+				html: content // html body
 			};
 
 			// send mail with defined transport object
@@ -45,8 +47,8 @@ app.get('/', function (req, res) {
 				}
 				console.log('Mail %s sent: %s', info.messageId, info.response);
 			});
-		}
-});
+		});
+	});
 app.use("/", express.static(__dirname + '/'));
 
   http.listen(port, function () {

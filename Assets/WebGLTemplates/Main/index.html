@@ -129,6 +129,9 @@
         </script>
 
         <script type="text/javascript">
+            var signalingServerURL = "ws://slideball-signaling.herokuapp.com/";
+            if (window.location.href.indexOf("slideball-test") !== -1 || window.location.href.indexOf("slideball-dev") !== -1);
+                signalingServerURL = "ws://slideball-signaling-test.herokuapp.com/";
         	var url= "stun:stun.services.mozilla.com" ;
         	$(document).ready(function() {
         		$.get("https://service.xirsys.com/ice",

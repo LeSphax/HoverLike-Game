@@ -333,6 +333,7 @@ MonoBehaviour:
   helmet: {fileID: 1550022107460360}
   skate: {fileID: 0}
   body: {fileID: 1279240940318252}
+  actualCollider: {fileID: 136000012472259846}
   ownerIndicator: {fileID: 1000013637536558}
 --- !u!114 &114000011229673910
 MonoBehaviour:

@@ -20,6 +20,13 @@ var MyPlugin = {
         UnityIsReady();
     },
 
+	GetSignalingServerURL: function()
+    {
+	    var buffer = _malloc(lengthBytesUTF8(signalingServerURL) + 1);
+		writeStringToMemory(signalingServerURL, buffer);
+		return buffer;
+    },
+
     ShowLink: function(roomName){
         var str_roomName = Pointer_stringify(roomName);
         window.prompt("Copy to clipboard: Ctrl+C, Enter",window.location.href.split('?')[0]+"?RoomName=" + encodeURIComponent(str_roomName.trim()));

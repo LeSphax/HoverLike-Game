@@ -25,7 +25,6 @@ GameObject:
   - component: {fileID: 114000010734802682}
   - component: {fileID: 114000013987283638}
   - component: {fileID: 114000010188588954}
-  - component: {fileID: 114000012265847228}
   - component: {fileID: 114000014177680376}
   m_Layer: 0
   m_Name: NetworkScripts
@@ -83,20 +82,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RoomName: 
-  uStunServer: stun:stun.l.google.com:19302
---- !u!114 &114000012265847228
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011417641084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3189c4818ae615459ba85c0964a5d89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debug: 0
-  log: 0
 --- !u!114 &114000012868509660
 MonoBehaviour:
   m_ObjectHideFlags: 1

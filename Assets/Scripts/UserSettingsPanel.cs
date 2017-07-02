@@ -14,20 +14,9 @@ public class UserSettingsPanel : MonoBehaviour
 
     private int? currentButton;
 
-    private static GameObject settingsPanel;
-    private static GameObject SettingsPanel
-    {
-        get
-        {
-            if (settingsPanel == null)
-                settingsPanel = ResourcesGetter.SettingsPanelPrefab;
-            return settingsPanel;
-        }
-    }
-
     public static GameObject InstantiateSettingsPanel()
     {
-        GameObject panel = Instantiate(SettingsPanel);
+        GameObject panel = Instantiate(ResourcesGetter.SettingsPanelPrefab);
         return panel;
     }
 

@@ -13,7 +13,9 @@ public class AttractionBall : MonoBehaviour
     void OnTriggerEnter(Collider collider)
     {
         if (LayersGetter.IsAttacker(collider.gameObject.layer))
+        {
             playersAttracting.Add(collider.gameObject);
+        }
     }
 
     public void Reset()
@@ -25,6 +27,11 @@ public class AttractionBall : MonoBehaviour
     {
         if (LayersGetter.IsAttacker(collider.gameObject.layer))
             playersAttracting.Remove(collider.gameObject);
+    }
+
+    public void RemovePlayer(GameObject player)
+    {
+        playersAttracting.Remove(player);
     }
 
     void Update()

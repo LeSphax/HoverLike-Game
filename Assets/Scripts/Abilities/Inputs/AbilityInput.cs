@@ -76,14 +76,14 @@ public abstract class AbilityInput : MonoBehaviour
 
     protected void Awake()
     {
-        Players.MyPlayer.StateChanged += PlayerStateChanged;
+        Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STATE);
     }
 
     //Check if the ability can be activated depending on the new state of the player.
-    private void PlayerStateChanged(Player.State newState)
+    private void PlayerStateChanged(Player player)
     {
         bool previousActivation = IsActivated;
-        CurrentStateAllowActivation = newState == Player.State.PLAYING || (newState == Player.State.NO_MOVEMENT && !IsMovement());
+        CurrentStateAllowActivation = player.CurrentState == Player.State.PLAYING || (player.CurrentState == Player.State.NO_MOVEMENT && !IsMovement());
         if (previousActivation != IsActivated)
             InvokeCanBeActivatedChanged();
     }
@@ -97,13 +97,13 @@ public abstract class AbilityInput : MonoBehaviour
             keyToUse.transform.SetParent(transform, false);
             keyToUse.GetComponentInChildren<Text>().text = GetKeyForGUI();
         }
-        PlayerStateChanged(Players.MyPlayer.CurrentState);
+        PlayerStateChanged(Players.MyPlayer);
     }
 
     protected virtual void OnDestroy()
     {
         if (Players.MyPlayer != null)
-            Players.MyPlayer.StateChanged -= PlayerStateChanged;
+            Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.STATE);
     }
 
     protected virtual bool IsMovement()

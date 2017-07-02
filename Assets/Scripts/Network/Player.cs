@@ -1,9 +1,5 @@
 ﻿using Byn.Net;
 using PlayerBallControl;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -18,21 +14,15 @@ namespace PlayerManagement
             NO_MOVEMENT,
         }
 
+        public MultipleEvents eventNotifier;
+
         public delegate void PlayerChangeHandler(Player player);
         public delegate void HasBallChangeHandler(bool hasBall);
         public delegate void StateChangeHandler(State newState);
         public delegate void NicknameChangeHandler(string nickname);
         public delegate void SceneChangeHandler(ConnectionId connectionId, short scene);
 
-
-        public event PlayerChangeHandler TeamChanged;
-        public event SceneChangeHandler SceneChanged;
-        public event StateChangeHandler StateChanged;
         public event HasBallChangeHandler HasBallChanged;
-        public event NicknameChangeHandler NicknameChanged;
-        public event PlayerChangeHandler AvatarChanged;
-        public event PlayerChangeHandler PlayAsGoalieChanged;
-        public event PlayerChangeHandler Destroyed;
 
         public PlayerController controller;
         public PlayerBallController ballController;
@@ -42,26 +32,23 @@ namespace PlayerManagement
 
         internal void NotifyTeamChanged()
         {
-            if (TeamChanged != null)
-                TeamChanged.Invoke(this);
+            eventNotifier.changedAttributes.Add(PlayerFlags.TEAM);
         }
 
         internal void NotifyStateChanged()
         {
-            if (StateChanged != null)
-                StateChanged.Invoke(state);
+            eventNotifier.changedAttributes.Add(PlayerFlags.STATE);
         }
 
         internal void NotifyAvatarSettingsChanged()
         {
-            if (AvatarChanged != null)
-                AvatarChanged.Invoke(this);
+            eventNotifier.changedAttributes.Add(PlayerFlags.AVATAR_SETTINGS);
+
         }
 
         internal void NotifyNicknameChanged()
         {
-            if (NicknameChanged != null)
-                NicknameChanged.Invoke(nickname);
+            eventNotifier.changedAttributes.Add(PlayerFlags.NICKNAME);
         }
 
         internal bool IsHoldingBall()
@@ -74,9 +61,9 @@ namespace PlayerManagement
 
         internal Team team = Team.NONE;
 
-        public void ChangeTeam(Team newTeam)
+        public void ChangeTeam(Team team)
         {
-            Team = newTeam;
+            this.team = team;
             flagsChanged |= PlayerFlags.TEAM;
             NotifyTeamChanged();
         }
@@ -137,8 +124,7 @@ namespace PlayerManagement
                 sceneId = value;
                 if (id == Players.myPlayerId)
                     flagsChanged |= PlayerFlags.SCENEID;
-                if (SceneChanged != null)
-                    SceneChanged.Invoke(id, sceneId);
+                eventNotifier.changedAttributes.Add(PlayerFlags.SCENEID);
             }
         }
 
@@ -184,8 +170,7 @@ namespace PlayerManagement
                 playAsGoalie = value;
                 if (id == Players.myPlayerId)
                     flagsChanged |= PlayerFlags.PLAY_AS_GOALIE;
-                if (PlayAsGoalieChanged != null)
-                    PlayAsGoalieChanged.Invoke(this);
+                eventNotifier.changedAttributes.Add(PlayerFlags.PLAY_AS_GOALIE);
             }
         }
 
@@ -223,10 +208,7 @@ namespace PlayerManagement
 
         internal void Destroy()
         {
-            if(Destroyed != null)
-            {
-                Destroyed.Invoke(this);
-            }
+            eventNotifier.changedAttributes.Add(PlayerFlags.DESTROYED);
         }
 
         public bool IsMyPlayer { get { return id == Players.myPlayerId; } }
@@ -234,6 +216,7 @@ namespace PlayerManagement
         public Player(ConnectionId id)
         {
             this.id = id;
+            eventNotifier = new MultipleEvents(this);
         }
 
         public override string ToString()

@@ -49,5 +49,10 @@ public class TopPanel : MonoBehaviour {
         UserSettingsPanel.InstantiateSettingsPanel().transform.SetParent(transform.parent, false);
     }
 
+    public void OpenFeedback()
+    {
+        SendFeedbackPanel.InstantiateFeedbackPanel().transform.SetParent(transform.parent, false);
+    }
+
 
 }

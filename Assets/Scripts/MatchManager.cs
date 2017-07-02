@@ -227,6 +227,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         {
             Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
             Scoreboard.ResetScore();
+            suddenDeath = false;
             Players.PlayerOwningBallChanged += BallChangedOwner;
             matchCountdown.TimerFinished += MatchCountdownTimerFinished;
             entryCountdown.TimerFinished += EntryCountdownTimerFinished;
@@ -237,7 +238,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Deactivate MatchManager");
+            suddenDeath = false;
             Scoreboard.ResetScore();
             Players.PlayerOwningBallChanged -= BallChangedOwner;
             matchCountdown.TimerFinished -= MatchCountdownTimerFinished;
@@ -536,4 +537,6 @@ public class MatchManager : SlideBall.MonoBehaviour
         matchCountdown.StopWarmup();
     }
     #endregion
+
+
 }

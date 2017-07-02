@@ -15,4 +15,15 @@ public class SendFeedbackPanel : MonoBehaviour
     {
         SendFeedback(headerInput.text, messageInput.text);
     }
+
+    public static GameObject InstantiateFeedbackPanel()
+    {
+        GameObject panel = Instantiate(ResourcesGetter.FeedbackPanelPrefab);
+        return panel;
+    }
+
+    public void Close()
+    {
+        Destroy(this);
+    }
 }

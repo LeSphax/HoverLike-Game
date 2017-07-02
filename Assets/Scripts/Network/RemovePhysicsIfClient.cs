@@ -1,7 +1,4 @@
-﻿using Byn.Net;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 public class RemovePhysicsIfClient : MonoBehaviour
@@ -32,5 +29,10 @@ public class RemovePhysicsIfClient : MonoBehaviour
                 Destroy(component);
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+            MyComponents.NetworkManagement.ConnectedToRoom -= DestroyPhysics;
     }
 }

@@ -37,8 +37,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     private void Start()
     {
-        nextViewId = Settings.GetNextViewId();
-        nextClientViewId = (short)(nextViewId + INSTANCIATION_INTERVAL);
+        PartialReset();
     }
 
     public void IncrementNextViewId()
@@ -48,8 +47,8 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     public void PartialReset()
     {
-        nextClientViewId = INVALID_VIEW_ID;
-        nextViewId = INVALID_VIEW_ID;
+        nextViewId = Settings.GetNextViewId();
+        nextClientViewId = (short)(nextViewId + INSTANCIATION_INTERVAL);
     }
 
     public void ResetViews()
@@ -186,7 +185,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         else
         {
 #if UNITY_EDITOR
-            if (logCount < 30)
+            if (logCount < 5)
             {
                 Debug.LogWarning("No view was registered with this Id " + message.viewId + "\n" + PrintViews());
                 logCount++;

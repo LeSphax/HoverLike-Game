@@ -52,8 +52,8 @@ function CAPIWebRtcNetworkFlush(e) {
 function CAPIWebRtcNetworkConnectToServer(e) {
     return gCAPIWebRtcNetworkInstances[e].signalingServerConnection.ConnectToServer()
 }
-function CAPIWebRtcNetworkConnectToRoom(e, t) {
-    return gCAPIWebRtcNetworkInstances[e].signalingServerConnection.ConnectToRoom(t)
+function CAPIWebRtcNetworkConnectToRoom(e, room, password) {
+    return gCAPIWebRtcNetworkInstances[e].signalingServerConnection.ConnectToRoom(room, password)
 }
 function CAPIWebRtcNetworkCreateRoom(e, t) {
     gCAPIWebRtcNetworkInstances[e].signalingServerConnection.CreateRoom(t)

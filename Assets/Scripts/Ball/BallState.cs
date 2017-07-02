@@ -85,6 +85,7 @@ namespace Ball
 
 
         public GameObject protectionSphere;
+        public AttractionBall attraction;
 
         public BallTrajectoryStrategy trajectoryStrategy;
 

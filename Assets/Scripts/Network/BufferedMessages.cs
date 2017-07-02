@@ -1,5 +1,6 @@
 ﻿using Byn.Net;
 using Navigation;
+using PlayerManagement;
 using SlideBall.Networking;
 using System;
 using System.Collections.Generic;
@@ -23,25 +24,25 @@ namespace SlideBall.Networking
             NavigationManager.FinishedLoadingScene += SceneChanged;
         }
 
-        internal void SendBufferedMessages(ConnectionId id, short sceneId)
+        internal void SendBufferedMessages(Player player)
         {
-            //Debug.LogWarning("SendBuffered messages " + id + "   " + sceneId);
             List<StoredMessage> messages;
-            if (bufferedMessages.TryGetValue(sceneId, out messages))
+            if (bufferedMessages.TryGetValue(player.SceneId, out messages))
             {
+                Debug.LogWarning("SendBuffered the " + messages.Count + "messages");
                 foreach (StoredMessage storedMessage in messages)
                 {
-                    if (id == NetworkManagement.SERVER_CONNECTION_ID)
+                    if (player.id == NetworkManagement.SERVER_CONNECTION_ID)
                     {
                         MyComponents.NetworkViewsManagement.DistributeMessage(storedMessage.senderId, storedMessage.message);
                     }
                     else
                     {
-                        networkManagement.SendNetworkMessage(storedMessage.message, id);
+                        networkManagement.SendNetworkMessage(storedMessage.message, player.id);
                     }
                 }
             }
-            networkManagement.View.RPC("ReceivedAllBuffered", id, null);
+            networkManagement.View.RPC("ReceivedAllBuffered", player.id, null);
         }
 
         internal void TryAddBuffered(ConnectionId senderId, NetworkMessage message)
@@ -60,13 +61,13 @@ namespace SlideBall.Networking
             {
                 list = new List<StoredMessage>();
                 bufferedMessages.Add(message.sceneId, list);
-                Debug.Log("Store " + message.sceneId + "   " + Scenes.MainIndex);
             }
             list.Add(new StoredMessage(senderId, message));
         }
 
         private void SceneChanged(short previousSceneId, short currentSceneId)
         {
+            Debug.Log("Remove buffered messages for scene " + previousSceneId);
             bufferedMessages.Remove(previousSceneId);
         }
 
