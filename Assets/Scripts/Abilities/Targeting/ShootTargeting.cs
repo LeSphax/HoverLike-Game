@@ -87,7 +87,7 @@ public class ShootTargeting : AbilityTargeting
         float v0 = BallMovementView.GetShootPowerLevel(powerBar.powerValue);
         float curveLength = 0;
         if (bezier.controlPoints[1].HasValue)
-            curveLength = Functions.LengthBezier3(bezier.controlPoints.Select(point => point.Value).ToArray(), 10);
+            curveLength = BezierMaths.LengthBezier3(bezier.controlPoints.Select(point => point.Value).ToArray(), 10);
         else if (bezier.controlPoints[0].HasValue && bezier.controlPoints[2].HasValue)
             curveLength = Vector3.Distance(bezier.controlPoints[0].Value, bezier.controlPoints[2].Value);
 

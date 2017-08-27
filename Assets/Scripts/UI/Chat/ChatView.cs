@@ -44,13 +44,13 @@ public class ChatView : MonoBehaviour
         scrollRect.verticalNormalizedPosition = 0;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            PlaceText();
-        }
-    }
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Space))
+    //    {
+    //        PlaceText();
+    //    }
+    //}
 
     private void PlaceText()
     {

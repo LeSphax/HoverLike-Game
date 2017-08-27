@@ -14,9 +14,9 @@ namespace Ball
                 Vector3 finalDirection;
                 float curveProportion = speed * Time.fixedDeltaTime / curveLength;
                 if (previousCompletion > speed * Time.fixedDeltaTime / curveLength)
-                    finalDirection = (Functions.Bezier3(controlPoints, previousCompletion) - Functions.Bezier3(controlPoints, previousCompletion - curveProportion)).normalized;
+                    finalDirection = (BezierMaths.Bezier3(controlPoints, previousCompletion) - BezierMaths.Bezier3(controlPoints, previousCompletion - curveProportion)).normalized;
                 else
-                    finalDirection = (Functions.Bezier3(controlPoints, previousCompletion + curveProportion) - Functions.Bezier3(controlPoints, previousCompletion)).normalized;
+                    finalDirection = (BezierMaths.Bezier3(controlPoints, previousCompletion + curveProportion) - BezierMaths.Bezier3(controlPoints, previousCompletion)).normalized;
                 return finalDirection * speed;
             }
         }
@@ -36,7 +36,7 @@ namespace Ball
             MyComponents.BallState.TrySetKinematic();
             MyComponents.BallState.transform.SetParent(null);
 
-            this.curveLength = Functions.LengthBezier3(controlPoints, 10);
+            this.curveLength = BezierMaths.LengthBezier3(controlPoints, 10);
             this.speed = BallMovementView.GetShootPowerLevel(power);
             this.controlPoints = controlPoints;
             previousCompletion = 0;
@@ -48,7 +48,7 @@ namespace Ball
             if (newCompletion <= 1)
             {
                 Vector3 previousPosition = MyComponents.BallState.transform.position;
-                Vector3 newPosition = Functions.Bezier3(controlPoints, newCompletion);
+                Vector3 newPosition = BezierMaths.Bezier3(controlPoints, newCompletion);
                 newPosition = new Vector3(
                     newPosition.x,
                     MyComponents.BallState.transform.position.y,
@@ -65,7 +65,7 @@ namespace Ball
                 {
                     increment *= TimeSlowApplier.TimeSlowProportion;
                     newCompletion = previousCompletion + increment;
-                    newPosition = Functions.Bezier3(controlPoints, newCompletion);
+                    newPosition = BezierMaths.Bezier3(controlPoints, newCompletion);
                     newPosition = new Vector3(
                         newPosition.x,
                         MyComponents.BallState.transform.position.y,

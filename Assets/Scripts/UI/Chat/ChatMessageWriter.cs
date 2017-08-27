@@ -17,22 +17,19 @@ public class ChatMessageWriter : MonoBehaviour
 
     private void Update()
     {
-        if (SlideBallInputs.currentPart != SlideBallInputs.GUIPart.MENU)
+        if (Input.GetKeyDown(KeyCode.Tab))
+            ChangeContext.Invoke();
+        if (SlideBallInputs.AnyEnterDown())
         {
-            if (Input.GetKeyDown(KeyCode.Tab))
-                ChangeContext.Invoke();
-            if (SlideBallInputs.AnyEnterDown())
+            if (input.gameObject.activeSelf)
+                SendContent(input.text, target.SendToAll);
+            if (hideWhenNotActive)
             {
-                if (input.gameObject.activeSelf)
-                    SendContent(input.text, target.SendToAll);
-                if (hideWhenNotActive)
-                {
-                    ActivateInput(!input.gameObject.activeSelf);
-                }
-                else
-                {
-                    FocusOnInputField();
-                }
+                ActivateInput(!input.gameObject.activeSelf);
+            }
+            else
+            {
+                FocusOnInputField();
             }
         }
     }

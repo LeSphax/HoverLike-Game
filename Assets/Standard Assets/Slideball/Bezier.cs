@@ -46,7 +46,7 @@ public class Bezier : MonoBehaviour
             {
                 float t = i / (float)SEGMENT_COUNT;
                 int nodeIndex = 0;
-                Vector3 pixel = Functions.Bezier3(controlPoints[nodeIndex].Value,
+                Vector3 pixel = BezierMaths.Bezier3(controlPoints[nodeIndex].Value,
                     controlPoints[nodeIndex + 1].Value, controlPoints[nodeIndex + 2].Value, t);
                 lineRenderer.positionCount = i;
                 lineRenderer.SetPosition((i - 1), pixel);

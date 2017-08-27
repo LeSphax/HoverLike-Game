@@ -33,18 +33,4 @@ public static class SlideBallInputs
     {
         return Input.GetKeyUp(keycode) && part == currentPart;
     }
-
-    public static bool AnyShiftDown()
-    {
-        return Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
-    }
-    public static bool AnyShiftUp()
-    {
-        return Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.RightShift);
-    }
-
-    public static bool AnyShift()
-    {
-        return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-    }
 }

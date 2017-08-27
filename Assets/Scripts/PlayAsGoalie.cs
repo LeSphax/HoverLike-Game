@@ -20,9 +20,9 @@ public class PlayAsGoalie : MonoBehaviour {
         Players.MyPlayer.PlayAsGoalie = toggle.isOn;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-            toggle.isOn = !toggle.isOn;
-    }
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Space))
+    //        toggle.isOn = !toggle.isOn;
+    //}
 }
