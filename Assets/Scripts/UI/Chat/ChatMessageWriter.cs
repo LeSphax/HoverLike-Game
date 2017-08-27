@@ -3,33 +3,24 @@ using UnityEngine.UI;
 
 public class ChatMessageWriter : MonoBehaviour
 {
-    public bool hideWhenNotActive;
     public InputField input;
     public ChatTargetOfMessageLabel target;
 
-    public event EmptyEventHandler ChangeContext;
-
     private void Awake()
     {
-        if (hideWhenNotActive)
-            ActivateInput(false);
+        ActivateInput(false);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-            ChangeContext.Invoke();
         if (SlideBallInputs.AnyEnterDown())
         {
             if (input.gameObject.activeSelf)
                 SendContent(input.text, target.SendToAll);
-            if (hideWhenNotActive)
-            {
-                ActivateInput(!input.gameObject.activeSelf);
-            }
             else
             {
-                FocusOnInputField();
+                target.SetTarget(SlideBallInputs.AnyShift() ? TargetOfMessage.ALL : TargetOfMessage.TEAM);
+                ActivateInput(true);
             }
         }
     }
@@ -54,10 +45,19 @@ public class ChatMessageWriter : MonoBehaviour
 
     public void SendContent(string content, bool sendToAll)
     {
+        if (content.Length >= 4)
+        {
+            if (content.Substring(0, 4).Equals("/all") || content.Substring(0, 4).Equals("\all"))
+            {
+                sendToAll = true;
+                content = content.Substring(4);
+            }
+        }
         if (content != "")
         {
             MyComponents.ChatManager.UserWriteMessage(content, sendToAll);
-            input.text = "";
         }
+        ActivateInput(false);
+        input.text = "";
     }
 }

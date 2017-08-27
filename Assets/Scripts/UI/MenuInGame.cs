@@ -22,7 +22,7 @@ public class MenuInGame : MonoBehaviour
     public void OpenMatch()
     {
         CloseMenu();
-        matchPanel.Open(true);
+        matchPanel.Open(!matchPanel.gameObject.activeSelf);
     }
 
     public void OpenMenu()

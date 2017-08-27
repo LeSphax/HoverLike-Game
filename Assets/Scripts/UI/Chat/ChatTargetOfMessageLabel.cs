@@ -16,21 +16,18 @@ public class ChatTargetOfMessageLabel : MonoBehaviour
         }
     }
 
-    void OnEnable()
+    public void SetTarget(TargetOfMessage target)
     {
-        writer.ChangeContext += ChangeContext;
-    }
-
-    void OnDisable()
-    {
-        writer.ChangeContext -= ChangeContext;
-    }
-
-    public void ChangeContext()
-    {
-        if (text.text == AllLabel)
-            text.text = TeamLabel;
-        else if (text.text == TeamLabel)
-            text.text = AllLabel;
+        switch (target)
+        {
+            case TargetOfMessage.ALL:
+                text.text = AllLabel;
+                break;
+            case TargetOfMessage.TEAM:
+                text.text = TeamLabel;
+                break;
+            default:
+                throw new UnhandledSwitchCaseException(target);
+        }
     }
 }

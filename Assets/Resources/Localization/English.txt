@@ -31,7 +31,7 @@ Button_Cancel "Cancel"
 Button_Leave "Leave"
 Button_Ok "Ok"
 Button_Settings "Settings"
-Button_Match "Match"
+Button_Match "Match [Tab]"
 Button_Help "Help"
 Button_Leave_Game "Leave Game"
 

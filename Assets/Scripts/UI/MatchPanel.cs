@@ -35,12 +35,7 @@ public class MatchPanel : MonoBehaviour
         gameObject.SetActive(open);
         if (open)
         {
-            SlideBallInputs.currentPart = SlideBallInputs.GUIPart.MENU;
             RefreshPlayerInfos(ConnectionId.INVALID);
-        }
-        else
-        {
-            SlideBallInputs.currentPart = SlideBallInputs.GUIPart.ABILITY;
         }
     }
 
