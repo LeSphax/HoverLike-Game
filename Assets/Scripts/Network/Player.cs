@@ -18,11 +18,13 @@ namespace PlayerManagement
 
         public delegate void PlayerChangeHandler(Player player);
         public delegate void HasBallChangeHandler(bool hasBall);
+        public delegate void IsHostChangeHandler(bool hasBall);
         public delegate void StateChangeHandler(State newState);
         public delegate void NicknameChangeHandler(string nickname);
         public delegate void SceneChangeHandler(ConnectionId connectionId, short scene);
 
         public event HasBallChangeHandler HasBallChanged;
+        public event IsHostChangeHandler IsHostChanged;
 
         public PlayerController controller;
         public PlayerBallController ballController;
@@ -201,6 +203,22 @@ namespace PlayerManagement
             set
             {
                 hasBall = value;
+                if (HasBallChanged != null)
+                    HasBallChanged.Invoke(value);
+            }
+        }
+
+        internal bool isHost;
+        public bool IsHost
+        {
+            get
+            {
+                return isHost;
+            }
+            set
+            {
+                isHost = value;
+                flagsChanged |= PlayerFlags.IS_HOST;
                 if (HasBallChanged != null)
                     HasBallChanged.Invoke(value);
             }

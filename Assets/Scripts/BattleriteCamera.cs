@@ -79,6 +79,8 @@ public class BattleriteCamera : MonoBehaviour
 
     private void Awake()
     {
+        if (EditorVariables.HeadlessServer)
+            Destroy(this);
         startPosition = transform.localPosition;
         previousBasePosition = transform.localPosition;
     }

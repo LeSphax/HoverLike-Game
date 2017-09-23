@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.43749008, g: 0.48531115, b: 0.5655858, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -88,7 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigma: 1
   m_LightingDataAsset: {fileID: 112000001, guid: 32d8313639749954d8f89dfeb15f87cb,
     type: 2}
-  m_ShadowMaskMode: 0
+  m_ShadowMaskMode: 2
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -2373,7 +2373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewId: 6
+  viewId: 11
   observedComponents: []
   update: 1
 --- !u!1 &524208060
@@ -3349,7 +3349,8 @@ Prefab:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114442343123093516, guid: 69792da9d18f78f479103737294c5793, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 69792da9d18f78f479103737294c5793, type: 2}
   m_IsPrefabParent: 0
 --- !u!224 &703306978 stripped
@@ -3371,6 +3372,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c8a7def2f255cd4b9ab8353c9de9050, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &703306981 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1834574874147904, guid: 69792da9d18f78f479103737294c5793,
+    type: 2}
+  m_PrefabInternal: {fileID: 703306977}
+--- !u!114 &703306982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 703306981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc2b5b03b8634074085565eb2844fa21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &710584625
@@ -3990,7 +4007,7 @@ Prefab:
     - target: {fileID: 224642771373065686, guid: 9f6dbf6f86467d0489df572f4302be34,
         type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0.6933155
+      value: 0.70639646
       objectReference: {fileID: 0}
     - target: {fileID: 224915309792996870, guid: 9f6dbf6f86467d0489df572f4302be34,
         type: 2}
@@ -4043,7 +4060,7 @@ Prefab:
     - target: {fileID: 224642771373065686, guid: 9f6dbf6f86467d0489df572f4302be34,
         type: 2}
       propertyPath: m_AnchorMin.y
-      value: 0.3066845
+      value: 0.2936035
       objectReference: {fileID: 0}
     - target: {fileID: 114554637504663122, guid: 9f6dbf6f86467d0489df572f4302be34,
         type: 2}
@@ -6187,7 +6204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewId: 7
+  viewId: 12
   observedComponents: []
   update: 1
 --- !u!114 &1281178778
@@ -6328,7 +6345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewId: 8
+  viewId: 13
   observedComponents: []
   update: 1
 --- !u!1 &1317251637
@@ -8862,13 +8879,12 @@ RectTransform:
 --- !u!114 &1748640627
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114508184536639892, guid: 8098fbc5f6133a34181933e552f2895d,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1748640623}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51880b29223e94f46a1b3a6f362e60d1, type: 3}
+  m_Script: {fileID: 11500000, guid: fc2b5b03b8634074085565eb2844fa21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1748640628
@@ -9499,7 +9515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewId: 9
+  viewId: 14
   observedComponents: []
   update: 1
 --- !u!82 &1790611701
@@ -10737,7 +10753,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewId: 10
+  viewId: 15
   observedComponents: []
   update: 1
 --- !u!114 &2110267382

@@ -463,6 +463,7 @@ namespace SlideBall
 
         private void SendBufferedMessagesOnSceneChange(ConnectionId id)
         {
+            Debug.LogError("SendBufferedMessages");
             Players.players[id].eventNotifier.ListenToEvents(bufferedMessages.SendBufferedMessages, PlayerFlags.SCENEID);
         }
 
@@ -633,6 +634,7 @@ namespace SlideBall
         [MyRPC]
         private void ReceivedAllBuffered()
         {
+            Debug.LogError("ReceivedAllBuffered");
             if (ReceivedAllBufferedMessages != null)
             {
                 ReceivedAllBufferedMessages.Invoke();
@@ -642,11 +644,20 @@ namespace SlideBall
         [MyRPC]
         private void SetConnectionId(ConnectionId id)
         {
-            Players.CreatePlayer(id);
-            Players.myPlayerId = id;
-            Players.MyPlayer.Nickname = UserSettings.Nickname;
-            Players.MyPlayer.SceneId = Scenes.currentSceneId;
-            NavigationManager.FinishedLoadingScene += (previousSceneId, currentSceneId) => { Players.MyPlayer.SceneId = currentSceneId; };
+            SceneChangeEventHandler handler;
+            if (!EditorVariables.HeadlessServer)
+            {
+                Players.CreatePlayer(id);
+                Players.myPlayerId = id;
+                Players.MyPlayer.Nickname = UserSettings.Nickname;
+                Players.MyPlayer.SceneId = Scenes.currentSceneId;
+                handler = (previousSceneId, currentSceneId) => { Players.MyPlayer.SceneId = currentSceneId; };
+            }
+            else
+            {
+                handler = (previousSceneId, currentSceneId) => { bufferedMessages.SendBufferedMessages(currentSceneId, ConnectionId.INVALID); };
+            }
+            NavigationManager.FinishedLoadingScene += handler;
         }
 
         #endregion

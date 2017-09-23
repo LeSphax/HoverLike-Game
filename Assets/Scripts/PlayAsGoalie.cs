@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Toggle))]
-public class PlayAsGoalie : MonoBehaviour {
+public class PlayAsGoalie : MonoBehaviour
+{
 
     [HideInInspector]
     public Toggle toggle;
@@ -17,7 +18,8 @@ public class PlayAsGoalie : MonoBehaviour {
 
     public void SetActivated()
     {
-        Players.MyPlayer.PlayAsGoalie = toggle.isOn;
+        if (!EditorVariables.HeadlessServer)
+            Players.MyPlayer.PlayAsGoalie = toggle.isOn;
     }
 
     //private void Update()

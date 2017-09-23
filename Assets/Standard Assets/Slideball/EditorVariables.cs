@@ -48,6 +48,9 @@ public class EditorVariables : MonoBehaviour
         }
     }
 
+    public bool headlessServer;
+    public static bool HeadlessServer;
+
     public bool testURLParameters;
     public static bool TestURLParameters;
 
@@ -81,8 +84,8 @@ public class EditorVariables : MonoBehaviour
 
     private void Awake()
     {
-
 #if UNITY_WEBGL && !UNITY_EDITOR
+        HeadlessServer = false;
         StartGameImmediately = false;
         EditorIsServer = false;
         NumberFramesLatency = 0;
@@ -104,7 +107,26 @@ public class EditorVariables : MonoBehaviour
         PlayAsGoalieInitialValue = playAsGoalieInitialValue;
         NoCooldowns = noCooldowns;
         EditorFloat = editorFloat;
+#if !UNITY_EDITOR
+        string commandLineOptions = System.Environment.CommandLine;
+        HeadlessServer = headlessServer;
+        if (commandLineOptions.Contains("-batchmode"))
+        {
+            Debug.Log("Batch mode!");
+            HeadlessServer = true;
+            JoinRoomImmediately = true;
+            EditorIsServer = false;
+        }
+        else if (commandLineOptions.Contains("-nographics"))
+        {
+            Debug.Log("No Graphcis Mode");
+        }
+        
+#else
+        HeadlessServer = headlessServer;
 #endif
+#endif
+        Debug.LogError(HeadlessServer);
         CanScoreGoals = true;
     }
 }

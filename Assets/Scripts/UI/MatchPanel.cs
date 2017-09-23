@@ -94,6 +94,12 @@ public class MatchPanel : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        if (EditorVariables.HeadlessServer)
+            Destroy(this);
+    }
+
     private void Start()
     {
         isPlaying = false;
@@ -108,7 +114,7 @@ public class MatchPanel : MonoBehaviour
 
     void CheckStartGame()
     {
-        if (MyComponents.NetworkManagement.IsServer && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
+        if (Players.MyPlayer.IsHost && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
         {
             Invoke("StartGame", 2f);
             CancelInvoke("CheckStartGame");
@@ -117,13 +123,13 @@ public class MatchPanel : MonoBehaviour
 
     public void StartGame()
     {
-        MyComponents.GameInitialization.StartMatch(true);
+        MyComponents.GameInitialization.View.RPC("StartMatch", RPCTargets.Server, true);
     }
 
     private void SetPlayingState(bool isPlaying)
     {
         this.isPlaying = isPlaying;
-        if (MyComponents.NetworkManagement.IsServer)
+        if (Players.MyPlayer.IsHost)
             StartButton.GetComponent<Button>().interactable = !isPlaying;
         CheckTeamButtons();
         Open(!isPlaying);

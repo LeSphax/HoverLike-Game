@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PlayerManagement;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class VictoryUI : MonoBehaviour
@@ -32,7 +33,7 @@ public class VictoryUI : MonoBehaviour
         text.text = Language.Instance.texts["Won_Match"].Replace("%s", Language.Instance.texts[Teams.GetTeamNameKey(team)]);
         text.color = Colors.Teams[(int)team];
 
-        playAgainButton.gameObject.SetActive( MyComponents.NetworkManagement.IsServer);
-        clientText.gameObject.SetActive(!MyComponents.NetworkManagement.IsServer);
+        playAgainButton.gameObject.SetActive( Players.MyPlayer.isHost);
+        clientText.gameObject.SetActive(!Players.MyPlayer.isHost);
     }
 }

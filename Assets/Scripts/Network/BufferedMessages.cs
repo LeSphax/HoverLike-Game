@@ -26,23 +26,28 @@ namespace SlideBall.Networking
 
         internal void SendBufferedMessages(Player player)
         {
+            SendBufferedMessages(player.sceneId, player.id);
+        }
+
+        internal void SendBufferedMessages(short sceneId, ConnectionId connectionId)
+        {
             List<StoredMessage> messages;
-            if (bufferedMessages.TryGetValue(player.SceneId, out messages))
+            if (bufferedMessages.TryGetValue(sceneId, out messages))
             {
                 Debug.LogWarning("SendBuffered the " + messages.Count + "messages");
                 foreach (StoredMessage storedMessage in messages)
                 {
-                    if (player.id == NetworkManagement.SERVER_CONNECTION_ID)
+                    if (connectionId == NetworkManagement.SERVER_CONNECTION_ID)
                     {
                         MyComponents.NetworkViewsManagement.DistributeMessage(storedMessage.senderId, storedMessage.message);
                     }
                     else
                     {
-                        networkManagement.SendNetworkMessage(storedMessage.message, player.id);
+                        networkManagement.SendNetworkMessage(storedMessage.message, connectionId);
                     }
                 }
             }
-            networkManagement.View.RPC("ReceivedAllBuffered", player.id, null);
+            networkManagement.View.RPC("ReceivedAllBuffered", connectionId, null);
         }
 
         internal void TryAddBuffered(ConnectionId senderId, NetworkMessage message)

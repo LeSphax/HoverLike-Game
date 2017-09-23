@@ -12,7 +12,8 @@ public class WarmupManager : MonoBehaviour
     {
         if (activate)
         {
-            Players.players.Values.ForEach(player => { if (player.controller != null) InitPlayer(player.id); });
+            Debug.LogError("Activate");
+            Players.players.Values.ForEach(player => { Debug.LogError("ActivateP"); if (player.controller != null) InitPlayer(player.id); });
             Players.NewPlayerInstantiated += InitPlayer;
         }
         else
@@ -28,6 +29,7 @@ public class WarmupManager : MonoBehaviour
 
     private void InitPlayer(ConnectionId playerId)
     {
+        Debug.LogError("Init");
         Player player = Players.players[playerId];
 
         if (MyComponents.NetworkManagement.IsServer)

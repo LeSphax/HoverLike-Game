@@ -119,6 +119,8 @@ namespace PlayerManagement
             }
             while (message.data.Length > currentIndex)
                 HandlePlayerPacket(message.data, ref currentIndex);
+            if (PlayersDataReceived != null)
+                PlayersDataReceived.Invoke();
         }
 
         private void HandlePlayerPacket(byte[] data, ref int currentIndex)
@@ -160,6 +162,11 @@ namespace PlayerManagement
                 player.NotifyStateChanged();
                 currentIndex++;
             }
+            if (flags.HasFlag(PlayerFlags.IS_HOST))
+            {
+                player.isHost = BitConverter.ToBoolean(data, currentIndex);
+                currentIndex++;
+            }
             if (flags.HasFlag(PlayerFlags.NICKNAME))
             {
                 short length = BitConverter.ToInt16(data, currentIndex);
@@ -172,8 +179,6 @@ namespace PlayerManagement
             {
                 RemovePlayer(player.id);
             }
-            if (PlayersDataReceived != null)
-                PlayersDataReceived.Invoke();
         }
 
         private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
@@ -205,6 +210,10 @@ namespace PlayerManagement
             {
                 data = data.Concatenate(new byte[1] { (byte)player.CurrentState });
             }
+            if (flags.HasFlag(PlayerFlags.IS_HOST))
+            {
+                data = data.Concatenate(BitConverter.GetBytes(player.IsHost));
+            }
             if (flags.HasFlag(PlayerFlags.NICKNAME))
             {
                 data = data.Concatenate(BitConverter.GetBytes((short)(Encoding.UTF8.GetBytes(player.Nickname).Length)));
@@ -230,6 +239,8 @@ namespace PlayerManagement
         {
             Player player;
             player = new Player(id);
+            if (players.Count == 0)
+                player.IsHost = true;
             players.Add(id, player);
             MyComponents.NetworkManagement.RefreshRoomData();
             if (MyComponents.NetworkManagement.IsServer)
@@ -287,6 +298,14 @@ namespace PlayerManagement
                 Player player;
                 if (players.TryGetValue(connectionId, out player))
                 {
+                    if (player.IsHost && players.Count > 1)
+                    {
+                        List<ConnectionId> remainingPlayers = new List<ConnectionId>(players.Keys);
+
+                        remainingPlayers.Remove(connectionId);
+                        remainingPlayers.Sort();
+                        players[remainingPlayers[0]].IsHost = true;
+                    }
                     player.flagsChanged = PlayerFlags.DESTROYED;
                     player.Destroy();
                     SendChanges();
@@ -305,8 +324,8 @@ namespace PlayerManagement
                     players[connectionId].Destroy();
                 }
             }
-            
-           
+
+
         }
 
         protected void FixedUpdate()
@@ -354,7 +373,8 @@ namespace PlayerManagement
         AVATAR_SETTINGS = 1 << 4,
         STATE = 1 << 5,
         SCENEID = 1 << 6,
-        DESTROYED = 1 << 7,
-        ALL = ~(~0 << 7),//PLAY_AS_GOALIE + TEAM + NICKNAME + SPAWNINGPOINT + AVATAR_SETTINGS + STATE + SCENEID,
+        IS_HOST = 1 << 7,
+        DESTROYED = 1 << 8,
+        ALL = ~(~0 << 8),//PLAY_AS_GOALIE + TEAM + NICKNAME + SPAWNINGPOINT + AVATAR_SETTINGS + STATE + SCENEID,
     }
 }

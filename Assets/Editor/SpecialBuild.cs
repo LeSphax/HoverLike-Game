@@ -12,7 +12,7 @@ public class SpecialBuild
     private const string path = "C:/Programmation/Workspace/UnityProjects/SlideBall/Builds/PC/Slideball.exe";
     private const string path_WebGL = "C:/Programmation/Workspace/UnityProjects/SlideBall/Builds/";
 
-    private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_ROOM, Paths.SCENE_MAIN };
+    private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
 
     private static float startWaitingTime = -1;
 
@@ -131,7 +131,7 @@ public class SpecialBuild
     public static void MakeViewIds(string scene, ref short nextViewId)
     {
         ChangeScene(scene);
-        foreach (ANetworkView view in GameObject.FindObjectsOfType(typeof(ANetworkView)))
+        foreach (ANetworkView view in GameObject.FindObjectsOfTypeAll(typeof(ANetworkView)))
         {
 
             view.ViewId = nextViewId;

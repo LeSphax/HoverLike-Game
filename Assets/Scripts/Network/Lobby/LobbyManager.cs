@@ -61,7 +61,8 @@ public class LobbyManager : MonoBehaviour
     }
 
     public Text inputField;
-    private const string DEFAULT_ROOM = "Da Room";
+    private const string SERVER_ROOM = "Server Room ";
+    private static int serverRoomIndex = 0;
 
     protected void Awake()
     {
@@ -84,12 +85,22 @@ public class LobbyManager : MonoBehaviour
 #if UNITY_EDITOR
             editor = true;
 #endif
+            Debug.Log("Before Join room immediately " + EditorVariables.JoinRoomImmediately);
+
             if (EditorVariables.JoinRoomImmediately)
             {
+                Debug.Log("Join room immediately " + editor + "  " + EditorVariables.EditorIsServer);
                 if (editor == EditorVariables.EditorIsServer)
                 {
-                    MyComponents.NetworkManagement.ServerStartFailed += ConnectToDefaultRoom;
-                    MyComponents.NetworkManagement.CreateRoom(DEFAULT_ROOM);
+                    Debug.Log("Create the room");
+                    if (EditorVariables.HeadlessServer)
+                    {
+                        MyComponents.NetworkManagement.ServerStartFailed += CreateServerRoom;
+                        Debug.Log("Headless Server");
+                    }
+                    else
+                        MyComponents.NetworkManagement.ServerStartFailed += ConnectToDefaultRoom;
+                    CreateServerRoom();
                 }
                 else
                 {
@@ -99,6 +110,13 @@ public class LobbyManager : MonoBehaviour
             }
         }
     }
+
+    private static void CreateServerRoom()
+    {
+        serverRoomIndex++;
+        MyComponents.NetworkManagement.CreateRoom(SERVER_ROOM + serverRoomIndex);
+    }
+
 
     private void CreateHeaderRoom()
     {
@@ -110,7 +128,7 @@ public class LobbyManager : MonoBehaviour
     private void ConnectToDefaultRoom()
     {
         MyComponents.NetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
-        MyComponents.NetworkManagement.ConnectToRoom(DEFAULT_ROOM);
+        MyComponents.NetworkManagement.ConnectToRoom(SERVER_ROOM);
     }
 
     protected void OnEnable()
