@@ -16,13 +16,13 @@ public abstract class AbilityInput : MonoBehaviour
         }
     }
 
-    protected bool CurrentStateAllowActivation;
+    protected bool previousActivation;
 
     protected bool IsActivated
     {
         get
         {
-            return CurrentStateAllowActivation && AdditionalActivationRequirementsAreMet();
+            return CurrentStateAllowActivation(Players.MyPlayer) && AdditionalActivationRequirementsAreMet();
         }
     }
 
@@ -76,16 +76,24 @@ public abstract class AbilityInput : MonoBehaviour
 
     protected void Awake()
     {
-        Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STATE);
+        Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
     }
 
     //Check if the ability can be activated depending on the new state of the player.
-    private void PlayerStateChanged(Player player)
+    protected void PlayerStateChanged(Player player)
     {
-        bool previousActivation = IsActivated;
-        CurrentStateAllowActivation = player.CurrentState == Player.State.PLAYING || (player.CurrentState == Player.State.NO_MOVEMENT && !IsMovement());
+        if (GetType() == typeof(ShootInput))
+            Debug.Log("PlayerStateChanged " + previousActivation + "   " + IsActivated);
         if (previousActivation != IsActivated)
+        {
+            previousActivation = IsActivated;
             InvokeCanBeActivatedChanged();
+        }
+    }
+
+    protected virtual bool CurrentStateAllowActivation(Player player)
+    {
+        return player.State.Movement == MovementState.PLAYING || (player.State.Movement == MovementState.NO_MOVEMENT && !IsMovement());
     }
 
     protected virtual void Start()
@@ -103,7 +111,7 @@ public abstract class AbilityInput : MonoBehaviour
     protected virtual void OnDestroy()
     {
         if (Players.MyPlayer != null)
-            Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.STATE);
+            Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
     }
 
     protected virtual bool IsMovement()

@@ -359,7 +359,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4000014173230502}
   - component: {fileID: 33000014146278082}
-  - component: {fileID: 135000012004152544}
   - component: {fileID: 23000010777571206}
   m_Layer: 9
   m_Name: ProtectionSphere
@@ -534,15 +533,3 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
---- !u!135 &135000012004152544
-SphereCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012789302824}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}

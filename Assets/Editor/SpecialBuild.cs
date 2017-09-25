@@ -131,7 +131,7 @@ public class SpecialBuild
     public static void MakeViewIds(string scene, ref short nextViewId)
     {
         ChangeScene(scene);
-        foreach (ANetworkView view in GameObject.FindObjectsOfTypeAll(typeof(ANetworkView)))
+        foreach (ANetworkView view in Resources.FindObjectsOfTypeAll(typeof(ANetworkView)))
         {
 
             view.ViewId = nextViewId;

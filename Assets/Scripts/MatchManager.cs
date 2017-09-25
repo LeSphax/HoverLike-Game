@@ -108,12 +108,12 @@ public class MatchManager : SlideBall.MonoBehaviour
                     case State.PLAYING:
                     case State.LAST_CHANCE:
                     case State.SUDDEN_DEATH:
-                        Players.SetState(Player.State.PLAYING);
+                        Players.SetState(MovementState.PLAYING);
                         break;
                     case State.STARTING:
                     case State.ENDING_ROUND:
                     case State.VICTORY_POSE:
-                        Players.SetState(Player.State.FROZEN);
+                        Players.SetState(MovementState.FROZEN);
                         break;
                     default:
                         break;

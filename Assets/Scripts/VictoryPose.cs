@@ -49,7 +49,7 @@ public class VictoryPose : SlideBall.MonoBehaviour
             int attackersPutInPlace = 0;
             foreach (Player player in players)
             {
-                player.CurrentState = Player.State.FROZEN;
+                player.State.Movement = MovementState.FROZEN;
                 player.controller.ResetPlayer();
                 if (player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE)
                 {

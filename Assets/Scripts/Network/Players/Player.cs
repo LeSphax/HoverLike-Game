@@ -7,19 +7,12 @@ namespace PlayerManagement
 {
     public class Player
     {
-        public enum State
-        {
-            PLAYING,
-            FROZEN,
-            NO_MOVEMENT,
-        }
-
         public MultipleEvents eventNotifier;
 
         public delegate void PlayerChangeHandler(Player player);
         public delegate void HasBallChangeHandler(bool hasBall);
         public delegate void IsHostChangeHandler(bool hasBall);
-        public delegate void StateChangeHandler(State newState);
+        public delegate void StateChangeHandler(PlayerState newState);
         public delegate void NicknameChangeHandler(string nickname);
         public delegate void SceneChangeHandler(ConnectionId connectionId, short scene);
 
@@ -37,9 +30,14 @@ namespace PlayerManagement
             eventNotifier.changedAttributes.Add(PlayerFlags.TEAM);
         }
 
-        internal void NotifyStateChanged()
+        internal void NotifyMovementStateChanged()
         {
-            eventNotifier.changedAttributes.Add(PlayerFlags.STATE);
+            eventNotifier.changedAttributes.Add(PlayerFlags.MOVEMENT_STATE);
+        }
+
+        internal void NotifyStealingStateChanged()
+        {
+            eventNotifier.changedAttributes.Add(PlayerFlags.STEALING_STATE);
         }
 
         internal void NotifyAvatarSettingsChanged()
@@ -130,20 +128,7 @@ namespace PlayerManagement
             }
         }
 
-        internal State state;
-        public State CurrentState
-        {
-            get
-            {
-                return state;
-            }
-            set
-            {
-                state = value;
-                flagsChanged |= PlayerFlags.STATE;
-                NotifyStateChanged();
-            }
-        }
+        public PlayerState State;
 
         internal AvatarSettings.AvatarSettingsTypes avatarSettingsType = AvatarSettings.AvatarSettingsTypes.NONE;
         public AvatarSettings.AvatarSettingsTypes AvatarSettingsType
@@ -219,8 +204,8 @@ namespace PlayerManagement
             {
                 isHost = value;
                 flagsChanged |= PlayerFlags.IS_HOST;
-                if (HasBallChanged != null)
-                    HasBallChanged.Invoke(value);
+                if (IsHostChanged != null)
+                    IsHostChanged.Invoke(value);
             }
         }
 
@@ -235,11 +220,12 @@ namespace PlayerManagement
         {
             this.id = id;
             eventNotifier = new MultipleEvents(this);
+            State = new PlayerState(this, MovementState.FROZEN, StealingState.IDLE);
         }
 
         public override string ToString()
         {
-            return "Player " + (IsMyPlayer ? "(mine) " : "") + id + " Nickname: " + Nickname + " Team : " + Team + "   HasBall : " + hasBall + " Avatar " + AvatarSettingsType + " State " + CurrentState + " SpawningPoint " + SpawningPoint;
+            return "Player " + (IsMyPlayer ? "(mine) " : "") + id + " Nickname: " + Nickname + " Team : " + Team + "   HasBall : " + hasBall + " Avatar " + AvatarSettingsType + " State " + State + " SpawningPoint " + SpawningPoint;
         }
 
 

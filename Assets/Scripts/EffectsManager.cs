@@ -7,6 +7,7 @@ public class EffectsManager : SlideBall.MonoBehaviour
 
     public ParticleSystem BlueSmoke;
     public TrailRenderer Braking;
+    public ProtectionFX ProtectionCapsule;
 
     private PlayerController controller;
 
@@ -48,6 +49,16 @@ public class EffectsManager : SlideBall.MonoBehaviour
             ActualAbilitiesLatency.Received(typeof(StealEffect));
         controller.animator.SetTrigger("Steal");
     }
+
+    //TODO: State effects should be linked to an event notifier on Player.State
+    [MyRPC]
+    public void ShowProtection()
+    {
+        if (controller.Player.IsMyPlayer)
+            ActualAbilitiesLatency.Received(typeof(StealEffect));
+        ProtectionCapsule.ShowProtection();
+    }
+
 
     public void ShockwaveOnPlayer(bool landing)
     {

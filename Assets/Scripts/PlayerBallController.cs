@@ -17,20 +17,6 @@ namespace PlayerBallControl
 
         private ShootInput shootInput;
 
-        private bool stealing;
-        public bool Stealing
-        {
-            get
-            {
-                return stealing;
-            }
-            set
-            {
-                stealing = value;
-                TryStealing();
-            }
-        }
-
         private GameObject Ball
         {
             get
@@ -43,6 +29,7 @@ namespace PlayerBallControl
         protected void Start()
         {
             MyComponents.GameInitialization.AllObjectsCreated += StartGame;
+            Player.eventNotifier.ListenToEvents(TryStealing, PlayerFlags.STEALING_STATE);
         }
 
         public void Init(ConnectionId id)
@@ -60,15 +47,15 @@ namespace PlayerBallControl
             idsPlayerInContact = new List<ConnectionId>();
         }
 
-        private void TryStealing()
+        private void TryStealing(Player player = null)
         {
-            if (stealing)
+            if (Player.State.Stealing == StealingState.STEALING)
                 foreach (ConnectionId id in idsPlayerInContact)
                 {
-                    if (id == MyComponents.BallState.GetIdOfPlayerOwningBall())
+                    if (id == MyComponents.BallState.GetIdOfPlayerOwningBall() && Players.players[id].State.Stealing != StealingState.PROTECTED)
                     {
                         MyComponents.BallState.SetAttached(playerConnectionId);
-                        stealing = false;
+                        Player.State.Stealing = StealingState.IDLE;
                         break;
                     }
                 }
@@ -103,11 +90,12 @@ namespace PlayerBallControl
         {
             if (MyComponents.NetworkManagement.IsServer)
             {
-                if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached() && tryingToCatchBall && (!MyComponents.BallState.UnCatchable || stealing || MyComponents.BallState.PassTarget == playerConnectionId))
-                {
-                    Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
-                    MyComponents.BallState.SetAttached(playerConnectionId);
-                }
+                if (collider.gameObject.tag == Tags.CatchDetector && !MyComponents.BallState.IsAttached())
+                    if (tryingToCatchBall && (!MyComponents.BallState.UnCatchable || Player.State.Stealing == StealingState.STEALING || MyComponents.BallState.PassTarget == playerConnectionId))
+                    {
+                        Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
+                        MyComponents.BallState.SetAttached(playerConnectionId);
+                    }
             }
         }
 
@@ -118,7 +106,6 @@ namespace PlayerBallControl
 
         public void ThrowBall(Vector3 target, float power)
         {
-            Debug.Log("ThrowBall");
             MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
             SetBallSpeed(target, power);
         }

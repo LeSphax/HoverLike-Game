@@ -1,7 +1,18 @@
-﻿using UnityEngine;
+﻿using PlayerManagement;
+using UnityEngine;
 
 public class ShootInput : AbilityInputWithBall
 {
+    protected override void Start()
+    {
+        base.Start();
+        Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
+    }
+
+    protected override bool CurrentStateAllowActivation(Player player)
+    {
+        return base.CurrentStateAllowActivation(player) && Players.MyPlayer.State.Stealing != StealingState.PROTECTED;
+    }
 
     public override bool FirstActivation()
     {

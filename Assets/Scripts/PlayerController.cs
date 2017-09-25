@@ -77,8 +77,10 @@ public class PlayerController : PlayerView
     [MyRPC]
     public void ResetPlayer(Player player = null)
     {
+        Debug.Log("Reset Player " + gameObject.name);
         if (Player.Team == Team.NONE || Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.NONE)
         {
+            Debug.LogWarning("ResetPlayer : Player has no team or avatar " + Player.Team + "   " + Player.AvatarSettingsType);
             return;
         }
         if (Player.HasBall)
@@ -145,6 +147,7 @@ public class PlayerController : PlayerView
 
     private void CreateMesh()
     {
+        Debug.Log("CreateMesh " + gameObject.name + "    " + Player.MyAvatarSettings.MESH_NAME);
         GameObject meshPrefab = Resources.Load<GameObject>(Player.MyAvatarSettings.MESH_NAME);
         Mesh = Instantiate(meshPrefab);
         PlayerMesh = Mesh.GetComponent<PlayerMesh>();

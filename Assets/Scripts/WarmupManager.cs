@@ -60,7 +60,7 @@ public class WarmupManager : MonoBehaviour
             while (takenSpawningPoints.Contains(preferredSpawnNumber))
                 preferredSpawnNumber++;
             player.SpawnNumber = preferredSpawnNumber;
-            player.CurrentState = Player.State.PLAYING;
+            player.State.Movement = MovementState.PLAYING;
         }
 
         player.controller.ResetPlayer();

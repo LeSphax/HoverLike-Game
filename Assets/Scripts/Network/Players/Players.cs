@@ -62,11 +62,11 @@ namespace PlayerManagement
             }
         }
 
-        internal static void SetState(Player.State state)
+        internal static void SetState(MovementState movementState)
         {
             foreach (Player player in players.Values)
             {
-                player.CurrentState = state;
+                player.State.Movement = movementState;
             }
         }
 
@@ -125,11 +125,14 @@ namespace PlayerManagement
 
         private void HandlePlayerPacket(byte[] data, ref int currentIndex)
         {
-            PlayerFlags flags = (PlayerFlags)data[currentIndex];
-            ConnectionId playerId = new ConnectionId(BitConverter.ToInt16(data, currentIndex + 1));
-            currentIndex += 3;
+
+            short i = BitConverter.ToInt16(data, currentIndex);
+            PlayerFlags flags = (PlayerFlags)i;
+            currentIndex += 2;
+            ConnectionId playerId = new ConnectionId(BitConverter.ToInt16(data, currentIndex));
+            currentIndex += 2;
             Player player = GetOrCreatePlayer(playerId);
-            //Debug.LogError("Receive Packet " + flags + "   " + currentIndex);
+            //Debug.Log("Receive " + playerId + "    "  + flags);
             if (flags.HasFlag(PlayerFlags.TEAM))
             {
                 player.Team = (Team)data[currentIndex];
@@ -156,10 +159,16 @@ namespace PlayerManagement
                 player.PlayAsGoalie = BitConverter.ToBoolean(data, currentIndex);
                 currentIndex++;
             }
-            if (flags.HasFlag(PlayerFlags.STATE))
+            if (flags.HasFlag(PlayerFlags.MOVEMENT_STATE))
             {
-                player.state = (Player.State)data[currentIndex];
-                player.NotifyStateChanged();
+                player.State.movement = (MovementState)data[currentIndex];
+                player.NotifyMovementStateChanged();
+                currentIndex++;
+            }
+            if (flags.HasFlag(PlayerFlags.STEALING_STATE))
+            {
+                player.State.stealing = (StealingState)data[currentIndex];
+                player.NotifyStealingStateChanged();
                 currentIndex++;
             }
             if (flags.HasFlag(PlayerFlags.IS_HOST))
@@ -183,9 +192,10 @@ namespace PlayerManagement
 
         private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
         {
+            //Debug.Log("Send " + player.id.id + "    " + flags);
             byte[] id = BitConverter.GetBytes(player.id.id);
-            byte[] data = new byte[3] { (byte)flags, id[0], id[1] };
-            //Debug.LogError("Create Packet " + flags);
+            byte[] flagsBytes = BitConverter.GetBytes((short)flags);
+            byte[] data = new byte[4] { flagsBytes[0], flagsBytes[1], id[0], id[1] };
             if (flags.HasFlag(PlayerFlags.TEAM))
             {
                 data = data.Concatenate(new byte[1] { (byte)player.Team });
@@ -206,9 +216,13 @@ namespace PlayerManagement
             {
                 data = data.Concatenate(BitConverter.GetBytes(player.PlayAsGoalie));
             }
-            if (flags.HasFlag(PlayerFlags.STATE))
+            if (flags.HasFlag(PlayerFlags.MOVEMENT_STATE))
             {
-                data = data.Concatenate(new byte[1] { (byte)player.CurrentState });
+                data = data.Concatenate(new byte[1] { (byte)player.State.movement });
+            }
+            if (flags.HasFlag(PlayerFlags.STEALING_STATE))
+            {
+                data = data.Concatenate(new byte[1] { (byte)player.State.stealing });
             }
             if (flags.HasFlag(PlayerFlags.IS_HOST))
             {
@@ -219,7 +233,7 @@ namespace PlayerManagement
                 data = data.Concatenate(BitConverter.GetBytes((short)(Encoding.UTF8.GetBytes(player.Nickname).Length)));
                 data = data.Concatenate(Encoding.UTF8.GetBytes(player.Nickname));
             }
-            //Debug.LogError("CreatePacket " + flags + "   " + data.Length);
+
             return data;
         }
 
@@ -278,6 +292,7 @@ namespace PlayerManagement
 
         public void SendPlayersData(ConnectionId recipientId)
         {
+            Debug.LogWarning("Send Players data " + recipientId);
             Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
             byte[] packet = BitConverter.GetBytes(false);
             foreach (Player player in players.Values)
@@ -363,7 +378,7 @@ namespace PlayerManagement
         }
     }
     [Flags]
-    public enum PlayerFlags
+    public enum PlayerFlags : short
     {
         NONE = 0,
         PLAY_AS_GOALIE = 1 << 0,
@@ -371,10 +386,11 @@ namespace PlayerManagement
         NICKNAME = 1 << 2,
         SPAWNINGPOINT = 1 << 3,
         AVATAR_SETTINGS = 1 << 4,
-        STATE = 1 << 5,
+        MOVEMENT_STATE = 1 << 5,
         SCENEID = 1 << 6,
         IS_HOST = 1 << 7,
-        DESTROYED = 1 << 8,
-        ALL = ~(~0 << 8),//PLAY_AS_GOALIE + TEAM + NICKNAME + SPAWNINGPOINT + AVATAR_SETTINGS + STATE + SCENEID,
+        STEALING_STATE = 1 << 8,
+        DESTROYED = 1 << 9,
+        ALL = ~(~0 << 9),//PLAY_AS_GOALIE + TEAM + NICKNAME + SPAWNINGPOINT + AVATAR_SETTINGS + STATE + SCENEID,
     }
 }

@@ -128,7 +128,7 @@ public class LobbyManager : MonoBehaviour
     private void ConnectToDefaultRoom()
     {
         MyComponents.NetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
-        MyComponents.NetworkManagement.ConnectToRoom(SERVER_ROOM);
+        MyComponents.NetworkManagement.ConnectToRoom(SERVER_ROOM + 1);
     }
 
     protected void OnEnable()

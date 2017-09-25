@@ -130,16 +130,24 @@ namespace AbilitiesManagement
 
         private bool CanUseAbility()
         {
-            return controller.Player.CurrentState == Player.State.PLAYING;
+            return controller.Player.State.Movement == MovementState.PLAYING;
         }
 
         [MyRPC]
-        private void Steal(float duration)
+        private void Steal()
         {
             if (CanUseAbility())
             {
-                new StealPersistentEffect(this, duration);
-                EffectsManager.View.RPC("ShowStealing", RPCTargets.All);
+                if (controller.Player.HasBall)
+                {
+                    new ProtectionPersistentEffect(this);
+                    EffectsManager.View.RPC("ShowProtection", RPCTargets.All);
+                }
+                else
+                {
+                    new StealPersistentEffect(this);
+                    EffectsManager.View.RPC("ShowStealing", RPCTargets.All);
+                }
             }
         }
 
