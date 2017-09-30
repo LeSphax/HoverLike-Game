@@ -254,7 +254,7 @@ namespace PlayerManagement
             Player player;
             player = new Player(id);
             if (players.Count == 0)
-                player.IsHost = true;
+                player.isHost = true;
             players.Add(id, player);
             MyComponents.NetworkManagement.RefreshRoomData();
             if (MyComponents.NetworkManagement.IsServer)

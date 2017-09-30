@@ -405,8 +405,8 @@ namespace SlideBall
                             if (IsServer)
                             {
                                 MyComponents.NetworkViewsManagement.SendClientInstanciationInterval(evt.ConnectionId);
-                                View.RPC("SetConnectionId", evt.ConnectionId, evt.ConnectionId);
                                 MyComponents.Players.SendPlayersData(evt.ConnectionId);
+                                View.RPC("SetConnectionId", evt.ConnectionId, evt.ConnectionId);
                             }
                             else if (ConnectedToRoom != null)
                             {

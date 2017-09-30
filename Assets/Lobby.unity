@@ -1551,7 +1551,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   server: 2
-  headlessServer: 1
+  headlessServer: 0
   testURLParameters: 0
   joinRoomImmediately: 1
   startGameImmediately: 0
