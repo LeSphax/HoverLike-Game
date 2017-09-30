@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AttackerMovementStrategy : PlayerMovementStrategy
 {
@@ -49,9 +47,9 @@ public class AttackerMovementStrategy : PlayerMovementStrategy
         lookPos.y = 0;
         var targetRotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.fixedDeltaTime * AngularSpeed);
-        myRigidbody.AddForce(transform.forward * Acceleration, ForceMode.Acceleration);
+        //myRigidbody.AddForce(transform.forward * Acceleration, ForceMode.Acceleration);
 
-        ClampPlayerVelocity();
+        //ClampPlayerVelocity();
     }
 
     protected override void OtherMovementEffects()

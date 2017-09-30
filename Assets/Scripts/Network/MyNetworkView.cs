@@ -2,10 +2,7 @@
 using SlideBall.Networking;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 //Must be added to a gameObject to allow communication with the network. All scripts on the gameObjects will be able to call RPCs.
 //Moreover, ObservedComponent can be added via the inspector. These components will be able to send packets to their counterparts on the network every FixedUpdate.

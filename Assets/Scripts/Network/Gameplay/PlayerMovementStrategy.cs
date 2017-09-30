@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PlayerManagement;
+using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovementManager))]
 public abstract class PlayerMovementStrategy : MonoBehaviour
@@ -39,7 +40,7 @@ public abstract class PlayerMovementStrategy : MonoBehaviour
 
     public void UpdateMovement()
     {
-        if (TargetPosition != null)
+        if (TargetPosition != null && movementManager.controller.playerConnectionId != Players.MyPlayer.id)
         {
             Move();
         }

@@ -7,7 +7,7 @@ public class JumpInput : AbilityInput
     {
         get
         {
-            return 2;
+            return 1;
         }
     }
 

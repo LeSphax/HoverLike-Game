@@ -1,2 +1,2 @@
 MESH_NAME : PlayerMesh
-abilities : Move|Shoot|Dash|Brake|Jump|Pass|Steal
+abilities : Move|Shoot|Dash|Jump|Pass|Steal

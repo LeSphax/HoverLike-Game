@@ -1,7 +1,6 @@
 ﻿using Byn.Net;
 using PlayerManagement;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Wintellect.PowerCollections;
@@ -29,7 +28,7 @@ public class PlayerMovementManager : ObservedComponent
         }
     }
 
-private PlayerMovementStrategy strategy;
+    private PlayerMovementStrategy strategy;
     internal PlayerController controller;
 
     private OrderedSet<PlayerPacket> StateBuffer = new OrderedSet<PlayerPacket>();
@@ -109,7 +108,7 @@ private PlayerMovementStrategy strategy;
 
     protected override byte[] CreatePacket()
     {
-        return new PlayerPacket(transform.position, transform.rotation).Serialize();
+            return new PlayerPacket(transform.position, transform.rotation).Serialize();
     }
 
     public override bool ShouldBatchPackets()
@@ -135,7 +134,7 @@ private PlayerMovementStrategy strategy;
     {
         if (nextPacket != null)
         {
-            float completion = (CurrentlyShownBatchNb -currentPacket.batchNumber)/ (nextPacket.batchNumber - currentPacket.batchNumber);
+            float completion = (CurrentlyShownBatchNb - currentPacket.batchNumber) / (nextPacket.batchNumber - currentPacket.batchNumber);
             transform.position = Vector3.Lerp(currentPacket.position, nextPacket.position, completion);
             transform.rotation = Quaternion.Lerp(currentPacket.rotation, nextPacket.rotation, completion);
             //if (Player.IsMyPlayer)
@@ -210,4 +209,5 @@ public class PlayerPacket : IComparable
         return batchNumber - other.batchNumber;
     }
 }
+
 

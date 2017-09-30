@@ -7,7 +7,7 @@ public class PassInput : AbilityInputWithBall
     {
         get
         {
-            return 3;
+            return 2;
         }
     }
 

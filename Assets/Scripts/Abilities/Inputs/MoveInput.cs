@@ -7,10 +7,7 @@ public class MoveInput : AbilityInput
 
     public override bool FirstActivation()
     {
-        if (ContinuousMovement)
-            return Input.GetMouseButton(1);
-        else
-            return Input.GetMouseButtonDown(1);
+        return true;
 
     }
 

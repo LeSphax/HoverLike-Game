@@ -58,13 +58,48 @@ namespace AbilitiesManagement
         protected void Awake()
         {
             controller = GetComponent<PlayerController>();
+            myRigidbody = GetComponent<Rigidbody>();
         }
 
+        private Rigidbody myRigidbody;
+
         [MyRPC]
-        internal void Move(Vector2 position)
+        internal void Move(Vector3 direction, Vector3 position)
         {
             if (CanUseAbility())
-                controller.targetManager.SetTarget(position);
+            {
+                Vector3 previousRotation = controller.transform.rotation.eulerAngles;
+                transform.LookAt(position);
+                transform.rotation = Quaternion.Euler(previousRotation.x, controller.transform.rotation.eulerAngles.y, previousRotation.z);
+                if (controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
+                {
+                    GetComponent<Rigidbody>().AddForce(direction * 100, ForceMode.Acceleration);
+                    myRigidbody.velocity *= Mathf.Min(1.0f, 75 / myRigidbody.velocity.magnitude);
+                }
+                else
+                {
+                    myRigidbody.velocity = direction * 30 * (1 + 0.3f * inZone);
+                    //transform.position += direction.normalized * 0.4f * (1 + 0.3f * inZone);
+                }
+            }
+        }
+
+        int inZone;
+
+        void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.tag == Tags.GoalZone)
+            {
+                inZone = 1;
+            }
+        }
+
+        void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.tag == Tags.GoalZone)
+            {
+                inZone = 0;
+            }
         }
 
         [MyRPC]
@@ -121,7 +156,7 @@ namespace AbilitiesManagement
         [MyRPC]
         private void Brake(bool activate)
         {
-            controller.movementManager.Brake(activate);
+            //controller.movementManager.Brake(activate);
         }
 
 

@@ -7,9 +7,15 @@ namespace PlayerBallControl
         public override void ApplyOnTarget(params object[] parameters)
         {
             PlayerController controller = (PlayerController)parameters[0];
-            Vector3 position = (Vector3)parameters[1];
-            controller.abilitiesManager.View.RPC("Move", RPCTargets.Server, new Vector2(position.x,position.z));
-            Instantiate(ResourcesGetter.MoveUIAnimationPrefab, position, Quaternion.identity);
+            Vector3 direction = (Vector3)parameters[1];
+            Vector3 mousePosition = Functions.GetMouseWorldPosition();
+            mousePosition.y = 0;
+
+            Vector3 previousRotation = controller.transform.rotation.eulerAngles;
+            controller.transform.LookAt(mousePosition);
+            controller.transform.rotation = Quaternion.Euler(previousRotation.x, controller.transform.rotation.eulerAngles.y, previousRotation.z);
+
+            controller.abilitiesManager.View.RPC("Move", RPCTargets.Server, direction, mousePosition);
         }
 
     }

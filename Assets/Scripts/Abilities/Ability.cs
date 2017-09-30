@@ -226,7 +226,7 @@ public class Ability : MonoBehaviour
 
     private void OnDisable()
     {
-        NewAbilityUsed += TryCancelTargeting;
+        NewAbilityUsed -= TryCancelTargeting;
     }
 
     private void TryCancelTargeting()
@@ -237,7 +237,7 @@ public class Ability : MonoBehaviour
                 break;
             case State.TRYING_TO_ACTIVATE:
             case State.CHOOSING_TARGET:
-                CancelTargeting();
+                //CancelTargeting();
                 break;
             case State.LOADING:
                 break;

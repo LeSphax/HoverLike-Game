@@ -26,7 +26,8 @@ public class UserSettingsPanel : MonoBehaviour
     {
         for(int i= 0; i<buttons.Length; i++)
         {
-            buttons[i].onClick.AddListener(() => { ButtonPressed(i); });
+            int currentI = i;
+            buttons[currentI].onClick.AddListener(() => { ButtonPressed(currentI); });
         }
         currentButton = null;
         Reset();

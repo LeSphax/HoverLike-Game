@@ -88,12 +88,12 @@ public class UserSettings
 
     private static string GetDefaultKeys()
     {
-        string defaultKeys = "QWER AV";
+        string defaultKeys = "QEFR CV";
         Debug.Log("---------LANGUAGE " + Application.systemLanguage);
         if (Application.systemLanguage == SystemLanguage.French)
         {
             Debug.Log("Language is French !");
-            defaultKeys = "AZER QV";
+            defaultKeys = "AEFR CV";
         }
 
         return defaultKeys;

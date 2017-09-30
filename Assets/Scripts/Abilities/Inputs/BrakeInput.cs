@@ -1,5 +1,4 @@
-﻿using PlayerManagement;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BrakeInput : AbilityInput
 {
@@ -13,7 +12,7 @@ public class BrakeInput : AbilityInput
 
     public override bool FirstActivation()
     {
-        return SlideBallInputs.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
+        return false; // SlideBallInputs.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
     }
 
     public override string GetKeyForGUI()
