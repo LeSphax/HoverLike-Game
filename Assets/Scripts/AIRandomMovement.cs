@@ -41,12 +41,12 @@ namespace AbilitiesManagement
                         if (!isActivated && DevelopperCommands.activateAI)
                         {
                             abilitiesManager = controller.abilitiesManager;
-                            Move();
-                            Jump();
-                            Steal();
-                            Dash();
+                            //Move();
+                            //Jump();
+                            //Steal();
+                            //Dash();
                             Pass();
-                            Block();
+                            //Block();
                             isActivated = true;
                         }
                         if (isActivated && !DevelopperCommands.activateAI)

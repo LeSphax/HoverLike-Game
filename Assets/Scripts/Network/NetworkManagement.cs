@@ -463,7 +463,6 @@ namespace SlideBall
 
         private void SendBufferedMessagesOnSceneChange(ConnectionId id)
         {
-            Debug.LogError("SendBufferedMessages");
             Players.players[id].eventNotifier.ListenToEvents(bufferedMessages.SendBufferedMessages, PlayerFlags.SCENEID);
         }
 

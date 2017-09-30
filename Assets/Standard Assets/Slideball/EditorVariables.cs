@@ -126,7 +126,6 @@ public class EditorVariables : MonoBehaviour
         HeadlessServer = headlessServer;
 #endif
 #endif
-        Debug.LogError(HeadlessServer);
         CanScoreGoals = true;
     }
 }

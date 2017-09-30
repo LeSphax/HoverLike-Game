@@ -1553,12 +1553,12 @@ MonoBehaviour:
   server: 2
   headlessServer: 0
   testURLParameters: 0
-  joinRoomImmediately: 1
+  joinRoomImmediately: 0
   startGameImmediately: 0
-  editorIsServer: 1
+  editorIsServer: 0
   numberPlayersToStartGame: 4
-  addLatency: 0
-  numberFramesLatency: 1
+  addLatency: 1
+  numberFramesLatency: 2
   playAsGoalieInitialValue: 0
   noCooldowns: 1
   editorFloat: 100
@@ -5217,7 +5217,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewId: 8
+  viewId: 9
   observedComponents: []
   update: 1
 --- !u!222 &927280760

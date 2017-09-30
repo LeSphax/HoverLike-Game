@@ -11,6 +11,7 @@ public class Tags : MonoBehaviour
     public const string Wall = "Wall";
     public const string Player = "Player";
     public const string CatchDetector = "CatchDetector";
+    public const string ProtectionSphere = "ProtectionSphere";
     public const string Spawns = "Spawns";
     public const string Scoreboard = "Scoreboard";
     public const string MyPlayer = "MyPlayer";

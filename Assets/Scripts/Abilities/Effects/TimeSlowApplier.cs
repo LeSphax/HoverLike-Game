@@ -6,7 +6,8 @@ namespace TimeSlow
 {
     public class TimeSlowApplier : MonoBehaviour
     {
-        public static float TimeSlowProportion = 0.3f;
+        public static float PlayerSlowProportion = 0.5f;
+        public static float BallSlowProportion = 0.1f;
         internal static Dictionary<Rigidbody, RigidbodyState> ObjectsBeforeUpdate = new Dictionary<Rigidbody, RigidbodyState>();
 
         protected void Start()
@@ -18,13 +19,14 @@ namespace TimeSlow
         {
             foreach (var pair in ObjectsBeforeUpdate)
             {
+                float slowProportion = Tags.IsPlayer(pair.Key.gameObject.tag) ? PlayerSlowProportion : BallSlowProportion;
                 if (!pair.Key.isKinematic)
                 {
                     Vector3 currentPosition = pair.Key.transform.position;
-                    pair.Key.transform.position = currentPosition - ((currentPosition - pair.Value.position) * (1 - TimeSlowProportion));
+                    pair.Key.transform.position = currentPosition - ((currentPosition - pair.Value.position) * (1 - slowProportion));
 
                     Vector3 currentVelocity = pair.Key.velocity;
-                    pair.Key.velocity = currentVelocity - ((currentVelocity - pair.Value.velocity) * (1 - TimeSlowProportion));
+                    pair.Key.velocity = currentVelocity - ((currentVelocity - pair.Value.velocity) * (1 - slowProportion));
                 }
             }
             ObjectsBeforeUpdate.Clear();

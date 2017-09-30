@@ -54,6 +54,7 @@ public class Music : MonoBehaviour
 
     void ChangeMusic(int newValue)
     {
+        Debug.Log("ChangeMusic " + newValue);
         if (newValue == dropdownNoMusic)
         {
             source.clip = null;

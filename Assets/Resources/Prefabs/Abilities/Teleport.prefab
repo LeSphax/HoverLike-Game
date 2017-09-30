@@ -16,16 +16,16 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000011460338716}
-  - 222: {fileID: 222000014023820032}
-  - 114: {fileID: 114000013636159314}
-  - 114: {fileID: 114000013471338442}
-  - 114: {fileID: 114000013871539952}
-  - 114: {fileID: 114000013188109770}
-  - 114: {fileID: 114000013019763608}
-  - 114: {fileID: 114000013774054108}
+  - component: {fileID: 224000011460338716}
+  - component: {fileID: 222000014023820032}
+  - component: {fileID: 114000013636159314}
+  - component: {fileID: 114000013471338442}
+  - component: {fileID: 114000013871539952}
+  - component: {fileID: 114000013188109770}
+  - component: {fileID: 114000013019763608}
+  - component: {fileID: 114000013774054108}
   m_Layer: 0
   m_Name: Teleport
   m_TagString: Untagged
@@ -67,7 +67,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NoCooldown: 0
-  cooldownDuration: 20
+  cooldownDuration: 10
+  trace: 0
 --- !u!114 &114000013636159314
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -133,10 +134,10 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.5527344}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}

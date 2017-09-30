@@ -29,7 +29,6 @@ public class WarmupManager : MonoBehaviour
 
     private void InitPlayer(ConnectionId playerId)
     {
-        Debug.LogError("Init");
         Player player = Players.players[playerId];
 
         if (MyComponents.NetworkManagement.IsServer)

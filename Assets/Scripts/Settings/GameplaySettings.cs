@@ -105,11 +105,11 @@ public float TimeSlowProportion
 {
 get
 {
-return TimeSlowApplier.TimeSlowProportion;
+return TimeSlowApplier.PlayerSlowProportion;
 }
 set
 {
-TimeSlowApplier.TimeSlowProportion = value;
+TimeSlowApplier.PlayerSlowProportion = value;
 }
 }
 public float MoveCooldown

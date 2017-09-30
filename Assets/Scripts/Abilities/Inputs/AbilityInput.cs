@@ -82,8 +82,6 @@ public abstract class AbilityInput : MonoBehaviour
     //Check if the ability can be activated depending on the new state of the player.
     protected void PlayerStateChanged(Player player)
     {
-        if (GetType() == typeof(ShootInput))
-            Debug.Log("PlayerStateChanged " + previousActivation + "   " + IsActivated);
         if (previousActivation != IsActivated)
         {
             previousActivation = IsActivated;

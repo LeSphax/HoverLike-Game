@@ -1,8 +1,6 @@
 ﻿using Ball;
 using Byn.Net;
-using PlayerBallControl;
 using PlayerManagement;
-using System;
 using System.Collections.Generic;
 using TimeSlow;
 using UnityEngine;
@@ -14,7 +12,6 @@ namespace AbilitiesManagement
     {
         internal PlayerController controller;
 
-        public AnimationCurve passCurve;
         public AnimationCurve jumpCurve;
 
         private const float BLOCK_POWER = 250;
@@ -156,7 +153,7 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility() && controller.Player.HasBall && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
-                MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(controller.playerConnectionId, targetId, passCurve);
+                MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(controller.playerConnectionId, targetId);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }
         }

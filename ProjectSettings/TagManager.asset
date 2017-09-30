@@ -30,6 +30,8 @@ TagManager:
   - GlobalSound
   - LogText
   - BattleriteCamera
+  - GameplaySettings
+  - ProtectionSphere
   layers:
   - Default
   - TransparentFX

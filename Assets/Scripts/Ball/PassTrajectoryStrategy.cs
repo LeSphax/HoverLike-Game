@@ -9,18 +9,15 @@ namespace Ball
     {
         Vector3 passerPosition;
         Transform target;
-        const float SPEED = 70;
-        const float VERTICAL_MAXIMUM = 20;
-        AnimationCurve curve;
+        const float SPEED = 150;
 
-        public PassTrajectoryStrategy(ConnectionId passerId, ConnectionId targetId, AnimationCurve curve)
+        public PassTrajectoryStrategy(ConnectionId passerId, ConnectionId targetId)
         {
             MyComponents.BallState.DetachBall();
             MyComponents.BallState.UnCatchable = true;
             MyComponents.BallState.PassTarget = targetId;
             MyComponents.BallState.transform.SetParent(null);
 
-            this.curve = curve;
             passerPosition = Players.players[passerId].controller.transform.position;
             target = Players.players[targetId].controller.transform;
 
@@ -37,17 +34,16 @@ namespace Ball
             Vector3 newPositionOnLine = Vector3.MoveTowards(proj_ballPositionOnTrajectoryLine, target.position, SPEED * Time.fixedDeltaTime);
 
             //Proportion du mouvement horizontal effectué
-            float H_completion = Vector3.Distance(passerPosition, newPositionOnLine) / Vector3.Distance(passerPosition, target.position);
+            float HorizontalProportion = Vector3.Distance(passerPosition, newPositionOnLine) / Vector3.Distance(passerPosition, target.position);
             // A partir de la proportion du mouvement horizontal, on calcule la position verticale
-            float yPos = curve.Evaluate(H_completion) * VERTICAL_MAXIMUM + target.position.y;
+            float yPos = target.position.y * HorizontalProportion + (1 - HorizontalProportion) * passerPosition.y;
 
             Vector3 newHorizontalPosition = new Vector3(newPositionOnLine.x, 0, newPositionOnLine.z);
-            Vector3 newPositionWithoutVerticalChange = newHorizontalPosition + Vector3.up * MyComponents.BallState.transform.position.y;
             Vector3 targetPosition = newHorizontalPosition + Vector3.up * yPos;
-            //Debug.Log(trajectoryPlaneNormal + "   " + proj_ballPositionOnTrajectoryLine + "   " + proj_ballPositionOnTrajectoryPlane + "   " + newPositionOnLine + "   " + newHorizontalPosition + "   " + newPositionWithoutVerticalChange + "    " + targetPosition);
+            //Debug.Log(trajectoryPlaneNormal + "   " + proj_ballPositionOnTrajectoryLine + "   " + proj_ballPositionOnTrajectoryPlane + "   " + newPositionOnLine + "   " + newHorizontalPosition + "    " + targetPosition);
             //Debug.Log(manager.transform.position + "    " + target.position + "    " + H_completion + "     " + yPos);
 
-            MyComponents.BallState.transform.position = Vector3.MoveTowards(newPositionWithoutVerticalChange, targetPosition, SPEED * Time.fixedDeltaTime);
+            MyComponents.BallState.transform.position = Vector3.MoveTowards(MyComponents.BallState.transform.position, targetPosition, SPEED * Time.fixedDeltaTime);
         }
 
         private void EndPassIfBallCaught(bool newUncatchable)

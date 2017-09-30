@@ -63,7 +63,7 @@ namespace Ball
                 //It still takes cares of having the ball fall twice as slow though
                 if (TimeSlowApplier.ObjectsBeforeUpdate.Keys.Contains(MyComponents.BallState.Rigidbody))
                 {
-                    increment *= TimeSlowApplier.TimeSlowProportion;
+                    increment *= TimeSlowApplier.PlayerSlowProportion;
                     newCompletion = previousCompletion + increment;
                     newPosition = BezierMaths.Bezier3(controlPoints, newCompletion);
                     newPosition = new Vector3(
@@ -71,7 +71,7 @@ namespace Ball
                         MyComponents.BallState.transform.position.y,
                         newPosition.z
                         );
-                    reducedProportion *= TimeSlowApplier.TimeSlowProportion;
+                    reducedProportion *= TimeSlowApplier.PlayerSlowProportion;
                 }
                 speed *= 1 - reducedProportion;
                 previousCompletion = newCompletion;

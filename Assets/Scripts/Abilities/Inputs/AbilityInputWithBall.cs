@@ -9,6 +9,7 @@ public abstract class AbilityInputWithBall : AbilityInput
     {
         base.Start();
         Players.MyPlayer.HasBallChanged += SetHasBall;
+        Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
     }
 
     private void SetHasBall(bool hasBall)
@@ -23,6 +24,11 @@ public abstract class AbilityInputWithBall : AbilityInput
     protected override bool AdditionalActivationRequirementsAreMet()
     {
         return hasBall;
+    }
+
+    protected override bool CurrentStateAllowActivation(Player player)
+    {
+        return base.CurrentStateAllowActivation(player) && Players.MyPlayer.State.Stealing != StealingState.PROTECTED;
     }
 
     protected override void OnDestroy()

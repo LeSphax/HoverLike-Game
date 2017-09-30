@@ -16,15 +16,15 @@ GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Component:
-  - 224: {fileID: 224000012243518958}
-  - 222: {fileID: 222000012803013000}
-  - 114: {fileID: 114000010447399502}
-  - 114: {fileID: 114000011819779244}
-  - 114: {fileID: 114000010478712898}
-  - 114: {fileID: 114000010656217390}
-  - 114: {fileID: 114000010298886982}
+  - component: {fileID: 224000012243518958}
+  - component: {fileID: 222000012803013000}
+  - component: {fileID: 114000010447399502}
+  - component: {fileID: 114000011819779244}
+  - component: {fileID: 114000010478712898}
+  - component: {fileID: 114000010656217390}
+  - component: {fileID: 114000010298886982}
   m_Layer: 0
   m_Name: Pass
   m_TagString: Untagged
@@ -104,7 +104,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NoCooldown: 0
-  cooldownDuration: 12
+  cooldownDuration: 1
+  trace: 0
 --- !u!222 &222000012803013000
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -120,10 +121,10 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}

@@ -24,7 +24,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     {
         get
         {
-            return LastReceivedBatchNumber - 2;
+            return LastReceivedBatchNumber - 1;
         }
     }
 
