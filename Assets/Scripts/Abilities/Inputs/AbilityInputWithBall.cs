@@ -35,7 +35,10 @@ public abstract class AbilityInputWithBall : AbilityInput
     {
         base.OnDestroy();
         if (Players.MyPlayer != null)
+        {
             Players.MyPlayer.HasBallChanged -= SetHasBall;
+            Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
+        }
     }
 
 }

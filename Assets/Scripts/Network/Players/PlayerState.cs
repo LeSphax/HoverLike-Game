@@ -18,7 +18,7 @@
     {
         private Player player;
 
-        public MovementState movement;
+        internal MovementState movement;
         public MovementState Movement
         {
             get
@@ -32,7 +32,7 @@
                 player.NotifyMovementStateChanged();
             }
         }
-        public StealingState stealing;
+        internal StealingState stealing;
         public StealingState Stealing
         {
             get

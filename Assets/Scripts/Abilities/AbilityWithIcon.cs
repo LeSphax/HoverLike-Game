@@ -41,7 +41,7 @@ public class AbilityWithIcon : Ability
 
     protected override void UpdateUI()
     {
-        CooldownOverlay.fillAmount = currentCooldown / cooldownDuration;
+        CooldownOverlay.fillAmount = currentCooldown / CooldownDuration;
     }
 
     protected override void EnableAbility(bool enable)

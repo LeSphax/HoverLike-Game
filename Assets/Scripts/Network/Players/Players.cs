@@ -77,30 +77,33 @@ namespace PlayerManagement
             players.Clear();
         }
 
-        public void ChangePlayerOwningBall(ConnectionId previousPlayer, ConnectionId newPlayer, bool sendUpdate)
+        public void ChangePlayerOwningBall(ConnectionId previousPlayerId, ConnectionId newPlayerId, bool sendUpdate)
         {
             //Debug.LogError("PlayerOwningBallChanged " + previousPlayer + "   " + newPlayer);
             if (MyComponents.NetworkManagement.IsServer)
                 ballOwnerChanged = sendUpdate;
-            if (newPlayer != previousPlayer)
+            if (newPlayerId != previousPlayerId)
             {
-                if (previousPlayer != BallState.NO_PLAYER_ID)
+                if (previousPlayerId != BallState.NO_PLAYER_ID)
                 {
-                    players[previousPlayer].HasBall = false;
-                    players[previousPlayer].controller.animator.SetBool("Catch", false);
+                    Player previousPlayer = players[previousPlayerId];
+                    previousPlayer.HasBall = false;
+                    previousPlayer.controller.animator.SetBool("Catch", false);
+                    if (MyComponents.NetworkManagement.IsServer)
+                        previousPlayer.controller.View.RPC("SetStealOnCooldown", previousPlayerId);
                 }
-                if (newPlayer != BallState.NO_PLAYER_ID)
+                if (newPlayerId != BallState.NO_PLAYER_ID)
                 {
-                    players[newPlayer].HasBall = true;
-                    MyComponents.BallState.AttachBall(newPlayer);
-                    players[newPlayer].controller.animator.SetBool("Catch", true);
+                    players[newPlayerId].HasBall = true;
+                    MyComponents.BallState.AttachBall(newPlayerId);
+                    players[newPlayerId].controller.animator.SetBool("Catch", true);
                 }
                 else
                 {
                     MyComponents.BallState.AttachBall(BallState.NO_PLAYER_ID);
                 }
                 if (PlayerOwningBallChanged != null)
-                    PlayerOwningBallChanged.Invoke(previousPlayer, newPlayer);
+                    PlayerOwningBallChanged.Invoke(previousPlayerId, newPlayerId);
             }
         }
 

@@ -275,9 +275,10 @@ public static class MyComponents
     {
         get
         {
-            if (gameInitialization == null)
+            GameObject go;
+            if (gameInitialization == null  && (go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
             {
-                gameInitialization = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<GameState>();
+                gameInitialization = go.GetComponent<GameState>();
             }
             return gameInitialization;
         }

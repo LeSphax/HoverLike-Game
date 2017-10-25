@@ -4,7 +4,7 @@ public class StealEffect : AbilityEffect
 {
 
     public static float stealingDuration = 0.5f;
-    public static float protectionDuration = 0.5f;
+    public static float protectionDuration = 0.3f;
 
     public override void ApplyOnTarget(params object[] parameters)
     {

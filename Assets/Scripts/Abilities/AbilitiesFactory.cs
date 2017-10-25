@@ -1,17 +1,16 @@
-﻿using UnityEngine;
+﻿using PlayerManagement;
 using System.Collections.Generic;
-using PlayerManagement;
-using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class AbilitiesFactory : MonoBehaviour
 {
 
-    private List<GameObject> abilityGOs = new List<GameObject>();
+    public Dictionary<string, GameObject> abilityGOs = new Dictionary<string, GameObject>();
 
     public void RecreateAbilities()
     {
-        foreach (GameObject ability in abilityGOs)
+        foreach (GameObject ability in abilityGOs.Values)
         {
             Destroy(ability);
         }
@@ -20,7 +19,7 @@ public class AbilitiesFactory : MonoBehaviour
         {
             GameObject layout = Instantiate(ResourcesGetter.AbilityPrefab);
             layout.transform.SetParent(transform, false);
-            abilityGOs.Add(layout);
+            abilityGOs.Add(ability, layout);
             layout.name = ability;
             //
             string abilityPath = Paths.ABILITIES + ability;

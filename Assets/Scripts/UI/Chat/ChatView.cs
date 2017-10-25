@@ -69,12 +69,13 @@ public class ChatView : MonoBehaviour
     private void SetText()
     {
         //Show the last 1000 characters
-        text.text = builder.ToString(Mathf.Max(builder.Length - 1000, 0), Mathf.Min(builder.Length-1,1000));
-        Invoke("PlaceText",Time.deltaTime *2);
+        text.text = builder.ToString(Mathf.Max(builder.Length - 1000, 0), Mathf.Min(builder.Length - 1, 1000));
+        Invoke("PlaceText", Time.deltaTime * 2);
     }
 
     private void OnDisable()
     {
-        MyComponents.ChatManager.NewMessage -= AddMessage;
+        if (MyComponents.ChatManager != null)
+            MyComponents.ChatManager.NewMessage -= AddMessage;
     }
 }

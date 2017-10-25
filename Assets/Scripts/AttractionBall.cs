@@ -34,7 +34,7 @@ public class AttractionBall : MonoBehaviour
         playersAttracting.Remove(player);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (!MyComponents.BallState.IsAttached() && !MyComponents.BallState.UnCatchable && Activated)
             foreach (GameObject player in playersAttracting)

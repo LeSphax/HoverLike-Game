@@ -177,6 +177,13 @@ public class PlayerController : PlayerView
         targetManager.CancelTarget();
     }
 
+    [MyRPC]
+    public void SetStealOnCooldown()
+    {
+        Debug.Log("SetStealOnCooldown");
+        MyComponents.AbilitiesFactory.abilityGOs["Steal"].GetComponentInChildren<Ability>().SetOnCooldown();
+    }
+
     private void Destroy(Player player = null)
     {
         RemoveFromAttraction();

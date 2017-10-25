@@ -59,7 +59,8 @@ namespace Ball
 
                 float displacement = Vector3.Distance(newPosition, previousPosition) / Time.fixedDeltaTime;
                 float reducedProportion = (displacement * Time.fixedDeltaTime * MyComponents.BallState.Rigidbody.drag) / displacement;
-                //The TimeSlowApplier effect doesn't matter since we depend on the previousCompletion
+                //The TimeSlowApplier effect doesn't matter for the horizontal movement since we depend on the previousCompletion 
+                //So we do slow the ball manually instead
                 //It still takes cares of having the ball fall twice as slow though
                 if (TimeSlowApplier.ObjectsBeforeUpdate.Keys.Contains(MyComponents.BallState.Rigidbody))
                 {
@@ -81,7 +82,9 @@ namespace Ball
                     StopControlledTrajectory();
                 }
                 else
+                {
                     MyComponents.BallState.transform.position = newPosition;
+                }
             }
             else
             {
@@ -93,10 +96,10 @@ namespace Ball
         {
             Ray ray = new Ray(previousPosition, newPosition - previousPosition);
             RaycastHit hit;
-            LayerMask layerMask = (1 << Layers.Default);
+            LayerMask layerMask = (1 << Layers.Default) | (1 << Layers.GoalBoundaries);
             //GizmosDrawer.DrawRay(ray);
             //GizmosDrawer.DrawLine(previousPosition, newPosition);
-            //EditorApplication.isPaused = true;
+            //UnityEditor.EditorApplication.isPaused = true;
             if (Physics.Raycast(ray, out hit, Vector3.Distance(newPosition, previousPosition), layerMask))
             {
                 //Debug.Log(ray.origin);

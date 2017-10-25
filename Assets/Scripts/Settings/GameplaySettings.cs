@@ -116,88 +116,88 @@ public float MoveCooldown
 {
 get
 {
-return ResourcesGetter.MovePrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.MovePrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.MovePrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.MovePrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 public float DashCooldown
 {
 get
 {
-return ResourcesGetter.DashPrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.DashPrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.DashPrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.DashPrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 public float JumpCooldown
 {
 get
 {
-return ResourcesGetter.JumpPrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.JumpPrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.JumpPrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.JumpPrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 public float PassCooldown
 {
 get
 {
-return ResourcesGetter.PassPrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.PassPrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.PassPrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.PassPrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 public float StealCooldown
 {
 get
 {
-return ResourcesGetter.StealPrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.StealPrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.StealPrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.StealPrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 public float BlockCooldown
 {
 get
 {
-return ResourcesGetter.BlockPrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.BlockPrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.BlockPrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.BlockPrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 public float TimeSlowCooldown
 {
 get
 {
-return ResourcesGetter.TimeSlowPrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.TimeSlowPrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.TimeSlowPrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.TimeSlowPrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 public float TeleportCooldown
 {
 get
 {
-return ResourcesGetter.TeleportPrefab.GetComponent<Ability>().cooldownDuration;
+return ResourcesGetter.TeleportPrefab.GetComponent<Ability>().CooldownDuration;
 }
 set
 {
-ResourcesGetter.TeleportPrefab.GetComponent<Ability>().cooldownDuration = value;
+ResourcesGetter.TeleportPrefab.GetComponent<Ability>().CooldownDuration = value;
 }
 }
 [MyRPC]

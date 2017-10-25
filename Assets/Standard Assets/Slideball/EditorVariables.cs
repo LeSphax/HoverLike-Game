@@ -79,9 +79,6 @@ public class EditorVariables : MonoBehaviour
     public bool noCooldowns;
     public static bool NoCooldowns;
 
-    public float editorFloat;
-    public static float EditorFloat;
-
     private void Awake()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -106,22 +103,28 @@ public class EditorVariables : MonoBehaviour
         serverURL = server;
         PlayAsGoalieInitialValue = playAsGoalieInitialValue;
         NoCooldowns = noCooldowns;
-        EditorFloat = editorFloat;
 #if !UNITY_EDITOR
         string commandLineOptions = System.Environment.CommandLine;
-        HeadlessServer = headlessServer;
-        if (commandLineOptions.Contains("-batchmode"))
+        if (commandLineOptions.Contains("-servermode"))
         {
-            Debug.Log("Batch mode!");
+            Debug.LogError("Server mode!");
             HeadlessServer = true;
             JoinRoomImmediately = true;
             EditorIsServer = false;
+            AddLatency = false;
+            NoCooldowns = false;
+            NumberFramesLatency = 0;
+            StartGameImmediately = false;
+            TestURLParameters = false;
         }
-        else if (commandLineOptions.Contains("-nographics"))
+        else{
+            HeadlessServer = false;
+        }
+        if (commandLineOptions.Contains("-nographics"))
         {
-            Debug.Log("No Graphcis Mode");
+            Debug.Log("No Graphics Mode");
+           // AudioListener.pause = true;
         }
-        
 #else
         HeadlessServer = headlessServer;
 #endif

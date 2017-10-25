@@ -633,7 +633,6 @@ namespace SlideBall
         [MyRPC]
         private void ReceivedAllBuffered()
         {
-            Debug.LogError("ReceivedAllBuffered");
             if (ReceivedAllBufferedMessages != null)
             {
                 ReceivedAllBufferedMessages.Invoke();

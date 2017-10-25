@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class GizmosDrawer : MonoBehaviour
 {
-#if UNITY_EDTOR
+#if UNITY_EDITOR
     private static Dictionary<Vector3, Vector3> lines = new Dictionary<Vector3, Vector3>();
     private static List<Ray> rays = new List<Ray>();
 

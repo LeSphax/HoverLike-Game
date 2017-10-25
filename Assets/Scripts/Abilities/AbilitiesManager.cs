@@ -62,6 +62,7 @@ namespace AbilitiesManagement
         }
 
         private Rigidbody myRigidbody;
+        private Vector3 movementDirection;
 
         [MyRPC]
         internal void Move(Vector3 direction, Vector3 position)
@@ -71,16 +72,28 @@ namespace AbilitiesManagement
                 Vector3 previousRotation = controller.transform.rotation.eulerAngles;
                 transform.LookAt(position);
                 transform.rotation = Quaternion.Euler(previousRotation.x, controller.transform.rotation.eulerAngles.y, previousRotation.z);
-                if (controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
+                movementDirection += direction;
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if (MyComponents.NetworkManagement.IsServer)
+            {
+                if (controller.Player.State.Movement == MovementState.PLAYING)
                 {
-                    GetComponent<Rigidbody>().AddForce(direction * 100, ForceMode.Acceleration);
-                    myRigidbody.velocity *= Mathf.Min(1.0f, 75 / myRigidbody.velocity.magnitude);
+                    if (controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
+                    {
+                        myRigidbody.AddForce(movementDirection.normalized * 100, ForceMode.Acceleration);
+                        myRigidbody.velocity *= Mathf.Min(1.0f, 75 / myRigidbody.velocity.magnitude);
+                    }
+                    else
+                    {
+                        myRigidbody.velocity = movementDirection.normalized * 30 * (1 + 0.3f * inZone);
+                        //transform.position += direction.normalized * 0.4f * (1 + 0.3f * inZone);
+                    }
                 }
-                else
-                {
-                    myRigidbody.velocity = direction * 30 * (1 + 0.3f * inZone);
-                    //transform.position += direction.normalized * 0.4f * (1 + 0.3f * inZone);
-                }
+                movementDirection = Vector3.zero;
             }
         }
 

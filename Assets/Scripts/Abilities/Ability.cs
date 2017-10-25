@@ -8,15 +8,15 @@ public class Ability : MonoBehaviour
 {
 
     private static event EmptyEventHandler NewAbilityUsed;
-    private AbilityInput input;
-    private AbilityTargeting targeting;
-    private AbilityEffect[] effects;
+    private AbilityInput Input;
+    private AbilityTargeting Targeting;
+    private AbilityEffect[] Effects;
 
     public bool NoCooldown = false;
-    public float cooldownDuration = 5;
+    public float CooldownDuration = 5;
     protected float currentCooldown = 0;
 
-    public bool trace;
+    public bool Trace;
 
     private static AudioClip errorSound;
 
@@ -39,25 +39,25 @@ public class Ability : MonoBehaviour
         {
             errorSound = ResourcesGetter.SoftErrorSound;
         }
-        input = GetComponent<AbilityInput>();
-        input.CanBeActivatedChanged += EnableAbility;
-        targeting = GetComponent<AbilityTargeting>();
-        effects = GetComponents<AbilityEffect>();
+        Input = GetComponent<AbilityInput>();
+        Input.CanBeActivatedChanged += EnableAbility;
+        Targeting = GetComponent<AbilityTargeting>();
+        Effects = GetComponents<AbilityEffect>();
         if (EditorVariables.NoCooldowns)
-            cooldownDuration = Mathf.Min(cooldownDuration, 1);
+            CooldownDuration = Mathf.Min(CooldownDuration, 1);
     }
 
 
     protected virtual void OnDestroy()
     {
-        input.CanBeActivatedChanged -= EnableAbility;
+        Input.CanBeActivatedChanged -= EnableAbility;
     }
 
     // Update is called once per frame
     void Update()
     {
 #if UNITY_EDITOR
-        if (trace)
+        if (Trace)
         {
             Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
@@ -69,7 +69,7 @@ public class Ability : MonoBehaviour
         switch (state)
         {
             case State.READY:
-                if (input.FirstActivation())
+                if (Input.FirstActivation())
                 {
                     if (isEnabled)
                         CastAbility();
@@ -78,25 +78,25 @@ public class Ability : MonoBehaviour
                 }
                 break;
             case State.TRYING_TO_ACTIVATE:
-                if (input.FirstActivation() || input.ContinuousActivation())
+                if (Input.FirstActivation() || Input.ContinuousActivation())
                 {
                     if (isEnabled)
                         CastAbility();
                 }
                 break;
             case State.CHOOSING_TARGET:
-                if (input.Cancellation())
+                if (Input.Cancellation())
                 {
                     CancelTargeting();
                 }
-                if (input.SecondActivation())
+                if (Input.SecondActivation())
                 {
                     state = State.CHOOSING_TARGET;
-                    targeting.ReactivateTargeting();
+                    Targeting.ReactivateTargeting();
                 }
                 break;
             case State.APPLYING_EFFECT:
-                if (input.Cancellation())
+                if (Input.Cancellation())
                 {
                     CastCancelAbility();
                 }
@@ -109,7 +109,7 @@ public class Ability : MonoBehaviour
                     state = State.READY;
                     Update();
                 }
-                else if (input.FirstActivation())
+                else if (Input.FirstActivation())
                 {
                     PlayErrorSound();
                 }
@@ -122,12 +122,12 @@ public class Ability : MonoBehaviour
     private void CancelTargeting()
     {
         state = State.READY;
-        targeting.CancelTargeting();
+        Targeting.CancelTargeting();
     }
 
     private void PlayErrorSound()
     {
-        if (input.HasErrorSound())
+        if (Input.HasErrorSound())
             MyComponents.GlobalSound.Play(errorSound);
     }
 
@@ -142,20 +142,20 @@ public class Ability : MonoBehaviour
         if (currentCooldown == 0)
         {
             state = State.CHOOSING_TARGET;
-            targeting.ChooseTarget(CastOnTarget);
+            Targeting.ChooseTarget(CastOnTarget);
         }
     }
 
     private void CastCancelAbility()
     {
-        targeting.ChooseTarget(CastOnCancelTarget);
+        Targeting.ChooseTarget(CastOnCancelTarget);
     }
 
     private void CastOnCancelTarget(bool wasUsed, params object[] parameters)
     {
         if (wasUsed)
         {
-            foreach (AbilityEffect effect in effects)
+            foreach (AbilityEffect effect in Effects)
             {
 
                 if (effect.LongEffect)
@@ -165,8 +165,7 @@ public class Ability : MonoBehaviour
                 state = State.READY;
             else
             {
-                currentCooldown = cooldownDuration;
-                state = State.LOADING;
+                SetOnCooldown();
             }
         }
         else
@@ -179,16 +178,16 @@ public class Ability : MonoBehaviour
     {
         if (wasUsed)
         {
-            if (trace)
+            if (Trace)
                 Debug.Log("Cast On Target");
             bool hasLongEffect = false;
-            foreach (AbilityEffect effect in effects)
+            foreach (AbilityEffect effect in Effects)
             {
                 effect.ApplyOnTarget(parameters);
                 if (effect.LongEffect)
                     hasLongEffect = true;
             }
-            if (trace)
+            if (Trace)
                 Debug.Log(gameObject.name + " Long Effect " + hasLongEffect);
             if (hasLongEffect)
             {
@@ -198,8 +197,7 @@ public class Ability : MonoBehaviour
                 state = State.READY;
             else
             {
-                currentCooldown = cooldownDuration;
-                state = State.LOADING;
+                SetOnCooldown();
             }
         }
         else
@@ -208,13 +206,19 @@ public class Ability : MonoBehaviour
         }
     }
 
+    public void SetOnCooldown()
+    {
+        currentCooldown = CooldownDuration;
+        state = State.LOADING;
+    }
+
     protected virtual void EnableAbility(bool enable)
     {
         isEnabled = enable;
         if (!isEnabled)
             if (state == State.CHOOSING_TARGET)
             {
-                targeting.CancelTargeting();
+                Targeting.CancelTargeting();
                 state = State.READY;
             }
     }

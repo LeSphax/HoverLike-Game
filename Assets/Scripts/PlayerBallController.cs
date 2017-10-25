@@ -102,7 +102,7 @@ namespace PlayerBallControl
                     }
                     else if (collider.gameObject.tag == Tags.ProtectionSphere)
                     {
-                        Debug.Log("ProtectionSphere" + MyComponents.BallState.UnCatchable+ "  " + MyComponents.BallState.PassTarget + "  " + playerConnectionId);
+                        Debug.Log("ProtectionSphere" + MyComponents.BallState.UnCatchable + "  " + MyComponents.BallState.PassTarget + "  " + playerConnectionId);
                         if (MyComponents.BallState.UnCatchable && (Player.State.Stealing == StealingState.STEALING || MyComponents.BallState.PassTarget == playerConnectionId))
                         {
                             Debug.Log("ProtectionSphere OK");
@@ -140,6 +140,12 @@ namespace PlayerBallControl
         private void ReactivateAttraction()
         {
             tryingToCatchBall = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (Player != null)
+                Player.eventNotifier.StopListeningToEvents(TryStealing, PlayerFlags.STEALING_STATE);
         }
     }
 }
