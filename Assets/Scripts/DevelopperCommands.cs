@@ -91,10 +91,10 @@ public class DevelopperCommands : SlideBall.MonoBehaviour
         {
             StringBuilder builder = new StringBuilder(4096);
             builder.Append("[REPORT]" + Players.MyPlayer.Nickname);
-            builder.Append("[REPORT]Average difference : " + MyNetworkView.averageDifference + ", Number of Resets : " + MyNetworkView.nbOfResets);
+            //builder.Append("[REPORT]Average difference : " + MyNetworkView.averageDifference + ", Number of Resets : " + MyNetworkView.nbOfResets);
             builder.Append("[REPORT]" + ActualAbilitiesLatency.Print());
-            builder.Append("[REPORT]Packet loss ratio : " + ((float)ObservedComponent.NumberPacketsMissed / ObservedComponent.NumberPacketsReceived) + ", Missed : "
-                + ObservedComponent.NumberPacketsMissed + ", Received : " + ObservedComponent.NumberPacketsReceived);
+            //builder.Append("[REPORT]Packet loss ratio : " + ((float)ObservedComponent.NumberPacketsMissed / ObservedComponent.NumberPacketsReceived) + ", Missed : "
+                //+ ObservedComponent.NumberPacketsMissed + ", Received : " + ObservedComponent.NumberPacketsReceived);
             View.RPC("GetAndPrintIndividualNetworkReport", RPCTargets.All, builder.ToString());
         }
     }

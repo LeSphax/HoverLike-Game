@@ -67,9 +67,6 @@ function CAPIWebRtcNetworkDisconnectFromServer(e) {
 function CAPIWebRtcNetworkDisconnectFromPeer(e, t) {
     gCAPIWebRtcNetworkInstances[e].peerNetwork.DisconnectFromPeer(new ConnectionId(t))
 }
-function CAPIWebRtcNetworkSendData(e, t, n, i) {
-    gCAPIWebRtcNetworkInstances[e].peerNetwork.SendData(new ConnectionId(t), n, i)
-}
 function Empty(e, t, n, i) {
 }
 /*$(document).ready(function() {

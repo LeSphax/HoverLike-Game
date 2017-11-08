@@ -24,17 +24,17 @@ public static class SlideBallInputs
         return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
     }
 
-    public static bool GetKey(KeyCode keyCode, GUIPart part)
+    public static bool GetKey(string keyCode, GUIPart part)
     {
         return Input.GetKey(keyCode) && part == currentPart;
     }
 
-    public static bool GetKeyDown(KeyCode keycode,GUIPart part)
+    public static bool GetKeyDown(string keycode,GUIPart part)
     {
         return Input.GetKeyDown(keycode) && part == currentPart;
     }
 
-    public static bool GetKeyUp(KeyCode keycode, GUIPart part)
+    public static bool GetKeyUp(string keycode, GUIPart part)
     {
         return Input.GetKeyUp(keycode) && part == currentPart;
     }

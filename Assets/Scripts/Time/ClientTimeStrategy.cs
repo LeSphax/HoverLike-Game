@@ -31,7 +31,7 @@ public class ClientTimeStrategy : TimeStrategy
             otherId = id;
             InvokeNewConnection(id);
         }
-        Assert.IsTrue(id == otherId);
+        Assert.IsTrue(id == otherId, "SenderId should always be the same but it was " + otherId + " instead");
         ServerTimePacket packet = ServerTimePacket.Deserialize(data);
         latency = (Time.realtimeSinceStartup - packet.timeReceived) * 1000;
         networkTime = packet.networkTime;

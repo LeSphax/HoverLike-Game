@@ -247,7 +247,6 @@ public class MatchManager : SlideBall.MonoBehaviour
     private void EndMatch()
     {
         Debug.Log("EndMatch " + Scoreboard.GetWinningTeam());
-        //Don't play the gong sound at the same time as the "But" sound
         Team winningTeam = Scoreboard.GetWinningTeam();
         if (winningTeam == Team.NONE)
         {
@@ -483,7 +482,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         matchCountdown.TimerFinished -= MatchCountdownTimerFinished;
         entryCountdown.TimerFinished -= EntryCountdownTimerFinished;
     }
-    #endregionI
+    #endregion
 
     #region DevCommands
     [MyRPC]

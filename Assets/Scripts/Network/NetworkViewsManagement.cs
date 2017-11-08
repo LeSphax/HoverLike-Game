@@ -1,11 +1,9 @@
 ﻿using Byn.Net;
-using Navigation;
 using SlideBall.Networking;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
 
 public class NetworkViewsManagement : SlideBall.MonoBehaviour
 {
@@ -38,6 +36,14 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     private void Start()
     {
         PartialReset();
+    }
+
+    protected void Update()
+    {
+        if (MyComponents.NetworkManagement.IsServer)
+        {
+            ObservedComponent.SendBatch();
+        }
     }
 
     public void IncrementNextViewId()
@@ -162,8 +168,8 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     {
         if (message.type == MessageType.PacketBatch)
         {
-            //Debug.Log("Packet nb : "+ BitConverter.ToInt16(message.data,0));
-            ObservedComponent.LastReceivedBatchNumber = BitConverter.ToInt32(message.data, 0);
+            ObservedComponent.LastBatchTime = BitConverter.ToSingle(message.data, 0);
+            //Debug.Log("Receive 1 packet with simulation time " + ObservedComponent.LastBatchTime + "  " + ObservedComponent.SimulationTime);
             int currentIndex = 4;
             while (currentIndex < message.data.Length)
             {

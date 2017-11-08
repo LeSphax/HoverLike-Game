@@ -8,64 +8,12 @@ using UnityEngine;
 public abstract class ObservedComponent : SlideBall.MonoBehaviour
 {
 
-    public static int NumberPacketsReceived
+    public static float LastBatchTime
     {
         get;
-        private set;
+        set;
     }
 
-    public static int NumberPacketsMissed
-    {
-        get;
-        private set;
-    }
-
-    public static int TargetBatchNumber
-    {
-        get
-        {
-            return LastReceivedBatchNumber - 1;
-        }
-    }
-
-    private static int lastReceivedBatchNumber = -1;
-    public static int LastReceivedBatchNumber
-    {
-        get
-        {
-            return lastReceivedBatchNumber;
-        }
-        set
-        {
-            if (lastReceivedBatchNumber != -1)
-            {
-                int differenceWithPrevious = value - lastReceivedBatchNumber;
-                NumberPacketsReceived += differenceWithPrevious;
-                NumberPacketsMissed += differenceWithPrevious - 1;
-            }
-            lastReceivedBatchNumber = value;
-            if (CurrentlyShownBatchNb == -1)
-            {
-                currentlyShownBatchNb = TargetBatchNumber;
-            }
-        }
-    }
-
-    public static int BatchNumberToSend = 0;
-
-    public static float currentlyShownBatchNb = -1;
-    public static float CurrentlyShownBatchNb
-    {
-        get
-        {
-            return currentlyShownBatchNb;
-        }
-        set
-        {
-            if (currentlyShownBatchNb != -1)
-                currentlyShownBatchNb = value;
-        }
-    }
 
     [NonSerialized]
     public short observedId;
@@ -80,7 +28,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     {
         if (messagesBatch.Count > 0)
         {
-            byte[] data = BitConverter.GetBytes(BatchNumberToSend);
+            byte[] data = BitConverter.GetBytes(TimeSimulation.TimeInSeconds);
             for (int i = 0; i < messagesBatch.Count; i++)
             {
                 // Debug.Log(data.Length + "   " + messagesBatch[i].data.Length);
@@ -94,23 +42,24 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
 
     public virtual void PreparePacket()
     {
-        //PerformanceTest();
-
-
         if (IsSendingPackets())
         {
             shouldSendFloat += sendRate;
             // Debug.LogError(gameObject.name + "   " + shouldSendFloat + "    " + 1.0f / Time.fixedDeltaTime);
             if (sendRate == -1 || shouldSendFloat >= 1.0f / Time.deltaTime)
             {
-                shouldSendFloat -= 1.0f / Time.deltaTime;
-                MessageFlags flags;
-                if (SetFlags(out flags))
+                byte[] packet = CreatePacket();
+                if (packet != null)
                 {
-                    SendData(MessageType.ViewPacket, CreatePacket(), flags);
+                    shouldSendFloat -= 1.0f / Time.deltaTime;
+                    MessageFlags flags;
+                    if (SetFlags(out flags))
+                    {
+                        SendData(MessageType.ViewPacket, packet, flags);
+                    }
+                    else
+                        SendData(MessageType.ViewPacket, packet);
                 }
-                else
-                    SendData(MessageType.ViewPacket, CreatePacket());
             }
         }
     }
@@ -125,13 +74,17 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
             {
                 if (IsSendingPackets())
                 {
-                    MessageFlags flags;
-                    if (SetFlags(out flags))
+                    byte[] packet = CreatePacket();
+                    if (packet != null)
                     {
-                        SendData(MessageType.ViewPacket, CreatePacket(), flags);
+                        MessageFlags flags;
+                        if (SetFlags(out flags))
+                        {
+                            SendData(MessageType.ViewPacket, packet, flags);
+                        }
+                        else
+                            SendData(MessageType.ViewPacket, packet);
                     }
-                    else
-                        SendData(MessageType.ViewPacket, CreatePacket());
                 }
             }
             sp.Stop();
@@ -152,6 +105,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     public abstract void SimulationUpdate();
     public abstract bool ShouldBatchPackets();
 
+    //Returns null if no changes 
     protected abstract byte[] CreatePacket();
 
     public abstract void PacketReceived(ConnectionId id, byte[] data);
@@ -167,15 +121,17 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
     {
         if (ShouldBatchPackets())
         {
-            NetworkMessage message = new NetworkMessage(View.ViewId, observedId, type, data);
-            message.flags = flags;
+            NetworkMessage message = new NetworkMessage(View.ViewId, observedId, type, data)
+            {
+                flags = flags
+            };
             messagesBatch.Add(message);
         }
         else
             View.SendData(observedId, type, data, flags);
     }
 
-    // True is flags shouled be set, false otherwise
+    // True if flags should be set, false otherwise
     protected virtual bool SetFlags(out MessageFlags flags)
     {
         flags = MessageFlags.None;

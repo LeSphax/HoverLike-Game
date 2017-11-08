@@ -9,8 +9,8 @@ using UnityEngine.SceneManagement;
 
 public class SpecialBuild
 {
-    private const string path = "C:/Programmation/Workspace/UnityProjects/SlideBall/Builds/PC/Slideball.exe";
-    private const string path_WebGL = "C:/Programmation/Workspace/UnityProjects/SlideBall/Builds/";
+    private const string path = "C:/Users/sbker/Desktop/Workspace/UnityProjects/SlideBall/Builds/PC/Slideball.exe";
+    private const string path_WebGL = "C:/Users/sbker/Desktop/Workspace/UnityProjects/SlideBall/Builds/";
 
     private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
 

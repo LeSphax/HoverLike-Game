@@ -59,6 +59,7 @@ public class BattleriteCamera : MonoBehaviour
 
     private Vector3 startPosition;
     private Vector3 previousBasePosition;
+    private Vector3 targetPosition;
 
     public float xMinLimit;
     public float xMaxLimit;
@@ -85,15 +86,6 @@ public class BattleriteCamera : MonoBehaviour
         previousBasePosition = transform.localPosition;
     }
 
-    private void OnEnable()
-    {
-        LateFixedUpdate.evt += PositionCamera;
-    }
-    private void OnDisable()
-    {
-        LateFixedUpdate.evt -= PositionCamera;
-    }
-
     public Vector3 ClampPosition(Vector3 initialPosition)
     {
         return new Vector3(
@@ -107,21 +99,41 @@ public class BattleriteCamera : MonoBehaviour
         return transform.position.y * (Mathf.Tan(Mathf.Deg2Rad * (fov / 2 - angleOffset)) + Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 + angleOffset))) /2;
     }
 
-    public void PositionCamera()
+    Vector3 prevPos;
+    Vector3 prevMove;
+
+    private void Update()
     {
+        //Update target camera position on Update as it depends on events and the result of the previous FixedUpdate
         if (Camera.main != null && Camera.main.enabled)
         {
             Vector3 previousPosition = transform.position;
             Vector2 mouseProportion = GetMouseProportion();
-            Vector3 targetPosition = new Vector3(BasePosition.x + mouseProportion.y * YOffset, BasePosition.y, BasePosition.z - mouseProportion.x * XOffset);
+            targetPosition = new Vector3(BasePosition.x + mouseProportion.y * YOffset, BasePosition.y, BasePosition.z - mouseProportion.x * XOffset);
+        }
+        else
+        {
+            targetPosition = BasePosition;
+        }
+        //Debug.Log("Camera : " + (transform.position - prevPos).magnitude * Time.deltaTime + "    " + (transform.position - prevPos));
+        Vector3 currentMove = transform.position - prevPos;
+        if ((currentMove - prevMove).magnitude > (currentMove + prevMove).magnitude)
+        {
+            Debug.LogWarning("Camera changing direction" + currentMove);
+        }
+        prevMove = currentMove;
+        prevPos = transform.position;
+    }
 
-
+    //Position the camera on FixedUpdate to avoid jittery effect when it is out of sync with the player position updates
+    public void PositionCamera()
+    {
+        if (Camera.main != null && Camera.main.enabled)
+        {
             transform.position = transform.position + BasePosition - previousBasePosition;
-            float currentTime = TimeManagement.NetworkTimeInSeconds;
 
-            transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.fixedDeltaTime);
-            transform.position = ClampPosition(transform.position);
-            // Debug.Log("Camera base displacement: " + (basePosition - previousBasePosition) + (transform.position - previousPosition));
+            transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.deltaTime);
+           // transform.position = ClampPosition(transform.position);
 
             previousBasePosition = BasePosition;
         }

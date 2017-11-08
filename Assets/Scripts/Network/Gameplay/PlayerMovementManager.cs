@@ -35,7 +35,7 @@ public class PlayerMovementManager : ObservedComponent
     private PlayerPacket currentPacket = null;
 
 
-    private PlayerPacket nextPacket
+    private PlayerPacket NextPacket
     {
         get
         {
@@ -50,15 +50,7 @@ public class PlayerMovementManager : ObservedComponent
         }
     }
 
-    private float SimulationTime
-    {
-        get
-        {
-            return TimeManagement.NetworkTimeInSeconds - ClientDelay.Delay;
-        }
-    }
-
-    internal Vector3? targetPosition
+    internal Vector3? TargetPosition
     {
         get
         {
@@ -104,11 +96,27 @@ public class PlayerMovementManager : ObservedComponent
     {
         controller.abilitiesManager.ApplyAbilityEffects(Time.fixedDeltaTime);
         strategy.UpdateMovement();
+        if (Player.IsMyPlayer)
+        {
+            MyComponents.BattleriteCamera.PositionCamera();
+        }
     }
+
+    PlayerPacket previousPacket;
 
     protected override byte[] CreatePacket()
     {
-            return new PlayerPacket(transform.position, transform.rotation).Serialize();
+        PlayerPacket newPacket = new PlayerPacket(transform.position, transform.rotation);
+        if (previousPacket == null || previousPacket.Equals(newPacket))
+        {
+            previousPacket = newPacket;
+            return null;
+        }
+        else
+        {
+            previousPacket = newPacket;
+            return newPacket.Serialize();
+        }
     }
 
     public override bool ShouldBatchPackets()
@@ -118,8 +126,9 @@ public class PlayerMovementManager : ObservedComponent
 
     public override void SimulationUpdate()
     {
-        while (StateBuffer.Count > 0 && CurrentlyShownBatchNb > StateBuffer.GetFirst().batchNumber)
+        while (StateBuffer.Count > 0 && TimeSimulation.TimeInSeconds > StateBuffer.GetFirst().simulationTime)
         {
+            Debug.Log("Dismissing 1 packet");
             currentPacket = StateBuffer.GetFirst();
             currentPacket = StateBuffer.RemoveFirst();
         }
@@ -127,18 +136,42 @@ public class PlayerMovementManager : ObservedComponent
         if (currentPacket != null)
         {
             InterpolateMovement();
+            if (Player.IsMyPlayer)
+            {
+                MyComponents.BattleriteCamera.PositionCamera();
+            }
         }
     }
 
+    Vector3 prevPos;
+    PlayerPacket prevPacket = new PlayerPacket(Vector3.zero,Quaternion.identity);
+
     private void InterpolateMovement()
     {
-        if (nextPacket != null)
+        if (NextPacket != null)
         {
-            float completion = (CurrentlyShownBatchNb - currentPacket.batchNumber) / (nextPacket.batchNumber - currentPacket.batchNumber);
-            transform.position = Vector3.Lerp(currentPacket.position, nextPacket.position, completion);
-            transform.rotation = Quaternion.Lerp(currentPacket.rotation, nextPacket.rotation, completion);
-            //if (Player.IsMyPlayer)
-            //    Debug.Log("Deplacement " + (transform.position - previousPosition) + "    " + completion + "   " + (nextPacket.position - currentPacket.position));
+            float completion = (TimeSimulation.TimeInSeconds - currentPacket.simulationTime) / (NextPacket.simulationTime - currentPacket.simulationTime);
+            transform.position = Vector3.Lerp(currentPacket.position, NextPacket.position, completion);
+            transform.rotation = Quaternion.Lerp(currentPacket.rotation, NextPacket.rotation, completion);
+            if (Player.IsMyPlayer)
+            {
+                //Debug.Log("Player : " + (transform.position - prevPos).magnitude * Time.deltaTime + "    " + (transform.position - prevPos));
+                string nPacketValues = NextPacket != null ? NextPacket.position + ", " + NextPacket.simulationTime : null;
+                string cPacketValues = currentPacket != null ? currentPacket.position + ", " + currentPacket.simulationTime : null;
+                //Debug.Log("Player : " + cPacketValues + "   " + nPacketValues + "   "  + completion + "    " + Time.deltaTime + "   " + (transform.position - prevPos));
+
+                Debug.Log("Packets : " + cPacketValues + "   " + nPacketValues + "   " + TimeSimulation.TimeInSeconds);
+                Debug.Log("Player : " + ((NextPacket.position - currentPacket.position) * (NextPacket.simulationTime - currentPacket.simulationTime)).magnitude
+                    + "   "  + completion + "    " + Time.deltaTime + "   " + (transform.position - prevPos));
+                Debug.Log("Player2 " + ((NextPacket.position - prevPacket.position) * (NextPacket.simulationTime - prevPacket.simulationTime)).magnitude
+                    + "   " + (TimeSimulation.TimeInSeconds - prevPacket.simulationTime) / (NextPacket.simulationTime - prevPacket.simulationTime));
+                prevPacket = currentPacket;
+                prevPos = transform.position;
+                if(completion >= 1)
+                {
+                    Debug.LogError("Completion too high");
+                }
+            }
         }
         else
         {
@@ -175,7 +208,7 @@ public class PlayerPacket : IComparable
 {
     public Vector3 position;
     public Quaternion rotation;
-    public int batchNumber;
+    public float simulationTime;
 
     public PlayerPacket(Vector3 position, Quaternion rotation)
     {
@@ -183,9 +216,9 @@ public class PlayerPacket : IComparable
         this.rotation = rotation;
     }
 
-    public PlayerPacket(Vector3 position, Quaternion rotation, int batchNumber) : this(position, rotation)
+    public PlayerPacket(Vector3 position, Quaternion rotation, float simulationTime) : this(position, rotation)
     {
-        this.batchNumber = batchNumber;
+        this.simulationTime = simulationTime;
     }
 
     public byte[] Serialize()
@@ -199,14 +232,20 @@ public class PlayerPacket : IComparable
         int currentIndex = 0;
         Vector3 position = NetworkExtensions.DeserializeVector3(data, ref currentIndex);
         Quaternion rotation = NetworkExtensions.DeserializeQuaternion(data, ref currentIndex);
-        return new PlayerPacket(position, rotation, ObservedComponent.LastReceivedBatchNumber);
+        return new PlayerPacket(position, rotation, ObservedComponent.LastBatchTime);
     }
 
     public int CompareTo(object obj)
     {
         Assert.IsTrue(obj is PlayerPacket);
         PlayerPacket other = (PlayerPacket)obj;
-        return batchNumber - other.batchNumber;
+        float diff = simulationTime - other.simulationTime;
+        return diff < 0 ? -1 : 1;
+    }
+
+    public bool Equals(PlayerPacket obj)
+    {
+        return position == obj.position && rotation == obj.rotation;
     }
 }
 

@@ -62,38 +62,50 @@ namespace AbilitiesManagement
         }
 
         private Rigidbody myRigidbody;
-        private Vector3 movementDirection;
+        private Vector3 summedDirections;
+        private Vector3 lastDirection;
+        private bool moveUpdated = false;
+        private int framesWithoutMoveUpdate;
 
         [MyRPC]
         internal void Move(Vector3 direction, Vector3 position)
         {
             if (CanUseAbility())
             {
+                lastDirection = direction;
                 Vector3 previousRotation = controller.transform.rotation.eulerAngles;
                 transform.LookAt(position);
                 transform.rotation = Quaternion.Euler(previousRotation.x, controller.transform.rotation.eulerAngles.y, previousRotation.z);
-                movementDirection += direction;
+                summedDirections += direction;
+                moveUpdated = true;
             }
         }
+
+
 
         private void FixedUpdate()
         {
             if (MyComponents.NetworkManagement.IsServer)
             {
+                if (!moveUpdated)
+                {
+                    summedDirections = lastDirection;
+                }
                 if (controller.Player.State.Movement == MovementState.PLAYING)
                 {
                     if (controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
                     {
-                        myRigidbody.AddForce(movementDirection.normalized * 100, ForceMode.Acceleration);
+                        myRigidbody.AddForce(summedDirections.normalized * 100, ForceMode.Acceleration);
                         myRigidbody.velocity *= Mathf.Min(1.0f, 75 / myRigidbody.velocity.magnitude);
                     }
                     else
                     {
-                        myRigidbody.velocity = movementDirection.normalized * 30 * (1 + 0.3f * inZone);
+                        myRigidbody.velocity = summedDirections.normalized * 30 * (1 + 0.3f * inZone);
                         //transform.position += direction.normalized * 0.4f * (1 + 0.3f * inZone);
                     }
                 }
-                movementDirection = Vector3.zero;
+                moveUpdated = false;
+                summedDirections = Vector3.zero;
             }
         }
 

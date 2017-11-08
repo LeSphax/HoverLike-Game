@@ -1,8 +1,6 @@
 ﻿using Byn.Net;
-using System.Collections.Generic;
-using System;
 using SlideBall.Networking;
-using UnityEngine;
+using System.Collections.Generic;
 
 public delegate void LatencyChange(float newLatency);
 public delegate void SpecificLatencyChange(ConnectionId id, float newLatency);
@@ -16,7 +14,7 @@ public class TimeManagement : ObservedComponent
     public event ConnectionEventHandler NewLatency;
     public event SpecificLatencyChange LatencyChanged;
 
-    public static float NetworkTimeInSeconds
+    public static float SimulationTimeInSeconds
     {
         get
         {

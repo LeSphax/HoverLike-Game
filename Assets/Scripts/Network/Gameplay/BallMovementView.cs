@@ -35,14 +35,6 @@ class BallMovementView : ObservedComponent
         }
     }
 
-    private float SimulationTime
-    {
-        get
-        {
-            return TimeManagement.NetworkTimeInSeconds - ClientDelay.Delay;
-        }
-    }
-
     protected virtual void Awake()
     {
         myRigidbody = GetComponent<Rigidbody>();
@@ -68,7 +60,7 @@ class BallMovementView : ObservedComponent
 
     public override void SimulationUpdate()
     {
-        while (StateBuffer.Count > 0 && CurrentlyShownBatchNb > StateBuffer.GetFirst().batchNumber)
+        while (StateBuffer.Count > 0 && TimeSimulation.TimeInSeconds > StateBuffer.GetFirst().simulationTime)
         {
             currentPacket = StateBuffer.GetFirst();
             currentPacket = StateBuffer.RemoveFirst();
@@ -89,7 +81,7 @@ class BallMovementView : ObservedComponent
     {
         if (NextPacket != null)
         {
-            float completion = (CurrentlyShownBatchNb - currentPacket.batchNumber) / (NextPacket.batchNumber - currentPacket.batchNumber);
+            float completion = (TimeSimulation.TimeInSeconds - currentPacket.simulationTime) / (NextPacket.simulationTime - currentPacket.simulationTime);
             transform.position = Vector3.Lerp(currentPacket.position, NextPacket.position, completion);
         }
         else
@@ -98,9 +90,22 @@ class BallMovementView : ObservedComponent
         }
     }
 
+
+    BallPacket previousPacket;
+
     protected override byte[] CreatePacket()
     {
-        return new BallPacket(transform.position).Serialize();
+        BallPacket newPacket = new BallPacket(transform.position);
+        if (previousPacket == null || previousPacket.Equals(newPacket))
+        {
+            previousPacket = newPacket;
+            return null;
+        }
+        else
+        {
+            previousPacket = newPacket;
+            return newPacket.Serialize();
+        }
     }
 
     public override bool ShouldBatchPackets()
@@ -122,16 +127,16 @@ class BallMovementView : ObservedComponent
     public class BallPacket : IComparable
     {
         public Vector3 position;
-        public int batchNumber;
+        public float simulationTime;
 
         public BallPacket(Vector3 position)
         {
             this.position = position;
         }
 
-        public BallPacket(Vector3 position, int batchNumber) : this(position)
+        public BallPacket(Vector3 position, float simulationTime) : this(position)
         {
-            this.batchNumber = batchNumber;
+            this.simulationTime = simulationTime;
         }
 
         public byte[] Serialize()
@@ -143,14 +148,20 @@ class BallMovementView : ObservedComponent
         {
             int currentIndex = 0;
             Vector3 position = NetworkExtensions.DeserializeVector3(data, ref currentIndex);
-            return new BallPacket(position, ObservedComponent.LastReceivedBatchNumber);
+            return new BallPacket(position, ObservedComponent.LastBatchTime);
         }
 
         public int CompareTo(object obj)
         {
             Assert.IsTrue(obj is BallPacket);
             BallPacket other = (BallPacket)obj;
-            return batchNumber - other.batchNumber;
+            float diff = simulationTime - other.simulationTime;
+            return diff < 0 ? -1 : 1;
+        }
+
+        public bool Equals(BallPacket obj)
+        {
+            return position == obj.position;
         }
     }
 }

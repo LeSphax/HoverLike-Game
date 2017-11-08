@@ -67,5 +67,29 @@ class Functions
     {
        return MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, id);
     }
+
+    public static Vector3 GetInputDirection()
+    {
+        Vector3 direction;
+        if (UserSettings.KeyForInputCheck(0) == "a")
+        {
+            direction = new MovementInputPacket(
+                    Input.GetKey(KeyCode.Z),
+                    Input.GetKey(KeyCode.S),
+                    Input.GetKey(KeyCode.Q),
+                    Input.GetKey(KeyCode.D)
+                ).GetDirection();
+        }
+        else
+        {
+            direction = new MovementInputPacket(
+                    Input.GetKey(KeyCode.W),
+                    Input.GetKey(KeyCode.S),
+                    Input.GetKey(KeyCode.A),
+                    Input.GetKey(KeyCode.D)
+                ).GetDirection();
+        }
+        return direction;
+    }
 }
 

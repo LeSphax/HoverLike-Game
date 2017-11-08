@@ -7,7 +7,7 @@ public class MoveInput : AbilityInput
 
     public override bool FirstActivation()
     {
-        return true;
+        return true;// Functions.GetInputDirection() != Vector3.zero;
 
     }
 

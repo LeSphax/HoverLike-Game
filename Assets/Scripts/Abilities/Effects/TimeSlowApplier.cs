@@ -12,7 +12,7 @@ namespace TimeSlow
 
         protected void Start()
         {
-            LateFixedUpdate.evt += ApplySlow;
+            LateFixedUpdate.Evt += ApplySlow;
         }
 
         protected void ApplySlow()

@@ -1,7 +1,9 @@
 ﻿using PlayerManagement;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class UserSettings
 {
@@ -72,28 +74,34 @@ public class UserSettings
 
     public static string keys = null;
 
-    public static char GetKey(int number)
+    public static string KeyForInputCheck(int number)
+    {
+        InitKeysIfNecessary();
+        string result = keys.Substring(number, 1);
+        return result == " " ? "space" : result;
+    }
+
+    private static void InitKeysIfNecessary()
     {
         if (keys == null)
         {
             string defaultKeys = GetDefaultKeys();
-            keys = PlayerPrefs.GetString("Keys", defaultKeys);
+            keys = GetDefaultKeys();// PlayerPrefs.GetString("Keys", defaultKeys);
             if (keys.Length != defaultKeys.Length)
             {
                 keys = defaultKeys;
             }
         }
-        return keys[number];
     }
 
     private static string GetDefaultKeys()
     {
-        string defaultKeys = "QEFR CV";
+        string defaultKeys = "qefr cv";
         Debug.Log("---------LANGUAGE " + Application.systemLanguage);
         if (Application.systemLanguage == SystemLanguage.French)
         {
             Debug.Log("Language is French !");
-            defaultKeys = "AEFR CV";
+            defaultKeys = "aefr cv";
         }
 
         return defaultKeys;
@@ -108,20 +116,13 @@ public class UserSettings
 
     public static string GetKeyForIcon(int number)
     {
-        string value = GetKey(number).ToString();
-        if (value == " ")
-        {
-            return "SPC";
-        }
-        else
-        {
-            return value;
-        }
+        InitKeysIfNecessary();
+        return CharToDisplayKey(keys[number]);
     }
 
     public static KeyCode GetKeyCode(int number)
     {
-        string value = GetKey(number).ToString();
+        string value = KeyForInputCheck(number).ToString();
         if (value == " ")
         {
             return KeyCode.Space;
@@ -130,5 +131,16 @@ public class UserSettings
         {
             return (KeyCode)Enum.Parse(typeof(KeyCode), value);
         }
+    }
+
+    public static string CharToDisplayKey(char c)
+    {
+        return c == ' ' ? "SPC" : c.ToString().ToUpper();
+    }
+
+    public static char DisplayKeyToChar(string displayKey)
+    {
+        Assert.IsTrue(displayKey == "SPC" || displayKey.Length == 1);
+        return displayKey == "SPC" ? ' ' : displayKey[0];
     }
 }

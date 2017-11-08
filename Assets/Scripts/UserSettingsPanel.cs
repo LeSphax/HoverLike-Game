@@ -58,8 +58,7 @@ public class UserSettingsPanel : MonoBehaviour
         volumeSlider.value = UserSettings.Volume;
         for (int i = 0; i < buttons.Length; i++)
         {
-            char key = UserSettings.GetKey(i);
-            SetChar(i, key);
+            SetText(i, UserSettings.GetKeyForIcon(i));
         }
 
         nicknameField.Select();
@@ -69,24 +68,19 @@ public class UserSettingsPanel : MonoBehaviour
     public void ButtonPressed(int number)
     {
         currentButton = number;
-        SetChar(number, (char?)null);
+        SetChar(number, null);
     }
 
     private void SetChar(int number, char? c)
     {
         string text;
-        if (c == ' ')
+        if (c.HasValue)
         {
-            text = "Space";
-        }
-        else if (c == null)
-        {
-            text = " ";
+            text = UserSettings.CharToDisplayKey(c.Value);
         }
         else
         {
-            c = char.ToUpper(c.Value);
-            text = c.ToString();
+            text = " ";
         }
         SetText(number, text);
         for (int i = 0; i < buttons.Length; i++)
@@ -124,10 +118,9 @@ public class UserSettingsPanel : MonoBehaviour
             for (int i = 0; i < buttons.Length; i++)
             {
                 string text = GetText(i);
-                text = text == "Space" ? " " : text;
-                keys += text;
+                keys += UserSettings.DisplayKeyToChar(text);
             }
-            UserSettings.SetKeys(keys);
+            UserSettings.SetKeys(keys.ToLower());
             UserSettings.Volume = volumeSlider.value;
             Close();
         }

@@ -31,18 +31,19 @@ public class ServerTimeStrategy : TimeStrategy
             InvokeNewConnection(id);
         latencies[id] = packet.latency;
         management.SetLatency(id, packet.latency);
-        management.View.SendData(management.observedId, MessageType.ViewPacket, new ServerTimePacket(GetNetworkTimeInSeconds(), packet.time).Serialize(), id);
+        management.View.SendData(management.observedId, MessageType.ViewPacket, new ServerTimePacket(TimeSimulation.TimeInSeconds, packet.time).Serialize(), id);
     }
 
     internal override byte[] CreatePacket()
     {
-        Debug.LogError("This method should'nt be called ");
+        Debug.LogError("This method shouldn't be called ");
         return null;
     }
 
     internal override float GetNetworkTimeInSeconds()
     {
-        return Time.realtimeSinceStartup;
+        Debug.LogError("This shouldn't ever be called on the server");
+        return TimeSimulation.TimeInSeconds;
     }
 
     internal override bool IsSendingPackets()

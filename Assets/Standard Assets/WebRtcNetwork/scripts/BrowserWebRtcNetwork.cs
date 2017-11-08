@@ -46,7 +46,7 @@ namespace Byn.Net
         [DllImport("__Internal")]
         private static extern int UnityWebRtcNetworkConnectToServer(int lIndex);
         [DllImport("__Internal")]
-        private static extern int UnityWebRtcNetworkConnectToRoom(int lIndex, string lRoom);
+        private static extern int UnityWebRtcNetworkConnectToRoom(int lIndex, string lRoom, string lPassword);
         [DllImport("__Internal")]
         private static extern void UnityWebRtcNetworkCreateRoom(int lIndex, string lRoom);
         [DllImport("__Internal")]
@@ -278,7 +278,7 @@ namespace Byn.Net
             {
                 UnityEngine.Debug.LogWarning("Stop using connect to send signaling events");//"Can't create outgoing connections while in server mode!");
             }
-            UnityWebRtcNetworkConnectToRoom(mReference, name);
+            UnityWebRtcNetworkConnectToRoom(mReference, name, password);
         }
 
 

@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class LateFixedUpdate : MonoBehaviour
 {
 
-    public static event EmptyEventHandler evt;
+    public static event EmptyEventHandler Evt;
 
     bool fixedUpdate;
     Collider m_collider;
@@ -56,6 +56,6 @@ public class LateFixedUpdate : MonoBehaviour
         // Multiple OnTriggerStay could be called if there is another collider
         if (!fixedUpdate) return;
         fixedUpdate = false;
-        if (evt != null) evt();
+        if (Evt != null) Evt();
     }
 }

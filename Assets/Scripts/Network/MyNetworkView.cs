@@ -36,7 +36,6 @@ public class MyNetworkView : ANetworkView
         if (!init)
         {
             init = true;
-            LateFixedUpdate.evt += MyLateFixedUpdate;
         }
     }
 
@@ -45,6 +44,23 @@ public class MyNetworkView : ANetworkView
         return rpcManager.TryGetRPCName(methodId, out name);
     }
 
+
+    //It is pointless to send the state several times per frame (See how FixedUpdate works). So we send it only once per frame after all the FixedUpdates are done.
+    //This is called first in the update execution order
+    private void Update()
+    {
+        if (update)
+            foreach (ObservedComponent component in observedComponents)
+            {
+                component.PreparePacket();
+                if(!isMine)
+                {
+                    component.SimulationUpdate();
+                }
+            }
+    }
+
+    //We need to update the simulation on the server at a fixed rate
     void FixedUpdate()
     {
         if (update)
@@ -54,47 +70,7 @@ public class MyNetworkView : ANetworkView
                 {
                     component.OwnerUpdate();
                 }
-                else
-                {
-                    component.SimulationUpdate();
-                }
-                component.PreparePacket();
             }
-    }
-
-    public static float averageDifference = 0;
-    private static int nbDifferencesMeasured = 0;
-    public static int nbOfResets = 0;
-
-    static void MyLateFixedUpdate()
-    {
-        if (MyComponents.NetworkManagement.IsServer)
-        {
-            ObservedComponent.SendBatch();
-            ObservedComponent.BatchNumberToSend++;
-        }
-        else
-        {
-            ObservedComponent.CurrentlyShownBatchNb++;
-            if ((ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb) != 0)
-            {
-                if (nbDifferencesMeasured < 10000)
-                    nbDifferencesMeasured++;
-                averageDifference = averageDifference + ((ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb) - averageDifference) / nbDifferencesMeasured;
-            }
-            if (ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb > 5)
-            {
-                nbOfResets++;
-                ObservedComponent.CurrentlyShownBatchNb = ObservedComponent.TargetBatchNumber;
-            }
-            else
-            {
-                ObservedComponent.CurrentlyShownBatchNb = Mathf.Lerp(ObservedComponent.CurrentlyShownBatchNb, ObservedComponent.TargetBatchNumber, Time.fixedDeltaTime * 3);
-            }
-        }
-        //Debug.Log(ObservedComponent.CurrentlyShownBatchNb
-        //    + "     " + ObservedComponent.LastReceivedBatchNumber +
-        //    "    " + (ObservedComponent.LastReceivedBatchNumber - ObservedComponent.CurrentlyShownBatchNb));
     }
 
     public override void ReceiveNetworkMessage(ConnectionId id, NetworkMessage message)

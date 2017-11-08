@@ -7,7 +7,7 @@ public class TargetManager : MonoBehaviour
         get
         {
             if (controller.movementManager != null)
-                return controller.movementManager.targetPosition;
+                return controller.movementManager.TargetPosition;
             return null;
         }
         set
@@ -16,11 +16,11 @@ public class TargetManager : MonoBehaviour
             {
                 if (value == null)
                 {
-                    controller.movementManager.targetPosition = null;
+                    controller.movementManager.TargetPosition = null;
                 }
                 else
                 {
-                    controller.movementManager.targetPosition = new Vector3(value.Value.x, 0, value.Value.y);
+                    controller.movementManager.TargetPosition = new Vector3(value.Value.x, 0, value.Value.y);
                 }
             }
         }

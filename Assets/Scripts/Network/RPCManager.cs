@@ -267,6 +267,7 @@ public class RPCManager : SlideBall.MonoBehaviour
     {
         public Component component;
         public MethodInfo methodInfo;
+        
 
         public RPCHandler(Component component, MethodInfo methodInfo) : this()
         {

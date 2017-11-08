@@ -41,15 +41,12 @@ namespace SlideBall
                 {
                     case State.IDLE:
                         bufferedMessages = null;
-                        ObservedComponent.CurrentlyShownBatchNb = -1;
                         break;
                     case State.CONNECTED:
                         bufferedMessages = null;
-                        ObservedComponent.CurrentlyShownBatchNb = -1;
                         break;
                     case State.SERVER:
                         bufferedMessages = new BufferedMessages(this);
-                        ObservedComponent.BatchNumberToSend = 0;
                         break;
                     default:
                         break;
@@ -208,7 +205,7 @@ namespace SlideBall
             }
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             //check if the network was created
             if (mNetwork != null)
@@ -362,6 +359,8 @@ namespace SlideBall
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.GAME_STARTED);
                                 else if (password != MatchPanel.Password)
                                 {
+                                    Debug.Log(password);
+                                    Debug.Log(MatchPanel.Password);
                                     SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.WRONG_PASSWORD);
                                 }
                                 else
@@ -594,7 +593,7 @@ namespace SlideBall
             lastPassword = password;
             mNetwork.ConnectToRoom(roomName, password);
             MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
-            Debug.Log("Connecting to room : " + roomName + " ...");
+            Debug.Log("Connecting to room : " + roomName + " using password $" + password + "$");
         }
 
         private void EnsureLength(string roomName)
