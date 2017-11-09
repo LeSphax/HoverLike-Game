@@ -25,7 +25,6 @@ class TimeSimulation : MonoBehaviour
 
     void FixedUpdate()
     {
-        Debug.Log("FixedUpdate");
         if (MyComponents.NetworkManagement.IsServer)
         {
             TimeInSeconds += UnityEngine.Time.fixedDeltaTime;

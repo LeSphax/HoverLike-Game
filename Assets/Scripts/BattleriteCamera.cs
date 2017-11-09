@@ -117,10 +117,10 @@ public class BattleriteCamera : MonoBehaviour
         }
         //Debug.Log("Camera : " + (transform.position - prevPos).magnitude * Time.deltaTime + "    " + (transform.position - prevPos));
         Vector3 currentMove = transform.position - prevPos;
-        if ((currentMove - prevMove).magnitude > (currentMove + prevMove).magnitude)
-        {
-            Debug.LogWarning("Camera changing direction" + currentMove);
-        }
+        //if ((currentMove - prevMove).magnitude > (currentMove + prevMove).magnitude)
+        //{
+        //    Debug.LogWarning("Camera changing direction" + currentMove);
+        //}
         prevMove = currentMove;
         prevPos = transform.position;
     }
@@ -133,7 +133,7 @@ public class BattleriteCamera : MonoBehaviour
             transform.position = transform.position + BasePosition - previousBasePosition;
 
             transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.deltaTime);
-           // transform.position = ClampPosition(transform.position);
+            transform.position = ClampPosition(transform.position);
 
             previousBasePosition = BasePosition;
         }

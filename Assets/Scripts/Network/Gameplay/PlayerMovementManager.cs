@@ -128,7 +128,6 @@ public class PlayerMovementManager : ObservedComponent
     {
         while (StateBuffer.Count > 0 && TimeSimulation.TimeInSeconds > StateBuffer.GetFirst().simulationTime)
         {
-            Debug.Log("Dismissing 1 packet");
             currentPacket = StateBuffer.GetFirst();
             currentPacket = StateBuffer.RemoveFirst();
         }
@@ -160,16 +159,11 @@ public class PlayerMovementManager : ObservedComponent
                 string cPacketValues = currentPacket != null ? currentPacket.position + ", " + currentPacket.simulationTime : null;
                 //Debug.Log("Player : " + cPacketValues + "   " + nPacketValues + "   "  + completion + "    " + Time.deltaTime + "   " + (transform.position - prevPos));
 
-                Debug.Log("Packets : " + cPacketValues + "   " + nPacketValues + "   " + TimeSimulation.TimeInSeconds);
-                Debug.Log("Player : " + ((NextPacket.position - currentPacket.position) * (NextPacket.simulationTime - currentPacket.simulationTime)).magnitude
-                    + "   "  + completion + "    " + Time.deltaTime + "   " + (transform.position - prevPos));
-                Debug.Log("Player2 " + ((NextPacket.position - prevPacket.position) * (NextPacket.simulationTime - prevPacket.simulationTime)).magnitude
-                    + "   " + (TimeSimulation.TimeInSeconds - prevPacket.simulationTime) / (NextPacket.simulationTime - prevPacket.simulationTime));
                 prevPacket = currentPacket;
                 prevPos = transform.position;
                 if(completion >= 1)
                 {
-                    Debug.LogError("Completion too high");
+                    Debug.LogWarning("Completion too high");
                 }
             }
         }
