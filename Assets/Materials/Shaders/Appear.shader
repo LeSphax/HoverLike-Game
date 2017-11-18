@@ -10,22 +10,22 @@
 		LOD 200
 
 		CGPROGRAM
-#pragma surface surf NoLighting alpha
-
+		#pragma surface surf NoLighting alpha
+			
 			struct Input {
 				float y;
 				float size;
 				float4 color : Color;
 				float3 worldPos;
+				float3 viewDir;
 			};
-
-			
+						
 			half4 LightingNoLighting(SurfaceOutput s, fixed3 lightDir, fixed atten) { 
-			half4 c;
-           c.rgb = s.Albedo;
-           c.a = s.Alpha;
-           return c;
-		   }
+			   half4 c;
+			   c.rgb = s.Albedo;
+			   c.a = s.Alpha;
+			   return c;
+			}
 
 			float4 _Color;
 			float _Y;
@@ -35,10 +35,13 @@
 				IN.color = _Color;
 				IN.y = _Y;
 				IN.size = _Size;
-				o.Albedo = IN.color* IN.worldPos.y/(IN.size/2);
+				o.Albedo = IN.color.rgb;
 
 				//Show if worldPos.y < y
-				o.Alpha = step(IN.worldPos.y,IN.y)* IN.color.w;
+				half rim = saturate(dot(normalize(IN.viewDir), o.Normal));
+				o.Alpha = IN.color.w *(1- rim*rim*rim);
+				o.Alpha = step(IN.worldPos.y,IN.y) * max(0.2,o.Alpha);
+
 			}
 
 		ENDCG

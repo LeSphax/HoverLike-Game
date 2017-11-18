@@ -4,8 +4,8 @@
 	Properties{
 		_Color("Color", Color) = (1,0,0,0)
 		_Thickness("Thickness", Range(0.0,0.5)) = 0.05
-		_Radius("Radius", Range(0.0, 0.5)) = 0.4
-		_Dropoff("Dropoff", Range(0.01, 4)) = 0.1
+		_Radius("Radius", Float) = 0.4
+		_Dropoff("Dropoff", Float) = 0.1
 		_Scale("Scale", Float) = 0.1
 	}
 		SubShader{
