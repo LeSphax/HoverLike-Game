@@ -28,6 +28,7 @@ public class BlockExplosion : MonoBehaviour
     private void VisualEffects(Transform target)
     {
         transform.SetParent(target, false);
+        transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(gameObject, 10f, BLOCK_DIAMETER, 0.4f);
         animation.FinishedAnimating += DestroySphere;
         animation.StartAnimating();
