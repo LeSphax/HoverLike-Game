@@ -133,7 +133,7 @@ public class BattleriteCamera : MonoBehaviour
             transform.position = transform.position + BasePosition - previousBasePosition;
 
             transform.position = Vector3.Lerp(transform.position, targetPosition, speed * Time.deltaTime);
-            transform.position = ClampPosition(transform.position);
+            //transform.position = ClampPosition(transform.position);
 
             previousBasePosition = BasePosition;
         }
