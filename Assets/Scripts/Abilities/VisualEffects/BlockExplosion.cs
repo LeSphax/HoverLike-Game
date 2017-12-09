@@ -1,14 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Byn.Net;
 using PlayerManagement;
-using Byn.Net;
-using AbilitiesManagement;
-using CustomAnimations;
+using UnityEngine;
 
 public class BlockExplosion : MonoBehaviour
 {
     public const float BLOCK_DIAMETER = 35;
-    public float power = 100.0f;
 
     private ConnectionId targetId;
     private Transform target;
@@ -29,21 +25,10 @@ public class BlockExplosion : MonoBehaviour
     {
         transform.SetParent(target, false);
         transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-        ScaleAnimation animation = ScaleAnimation.CreateScaleAnimation(gameObject, 10f, BLOCK_DIAMETER, 0.4f);
-        animation.FinishedAnimating += DestroySphere;
-        animation.StartAnimating();
-
-        GetComponentsFadeAnimation fadeAnimation = GetComponentsFadeAnimation.CreateGetComponentsFadeAnimation(gameObject, 0.2f);
-        fadeAnimation.FinishedAnimating += Disappear;
-        fadeAnimation.StartAnimating();
+        Invoke("DestoySphere", 1); 
     }
 
-    private void Disappear(MyAnimation sender)
-    {
-        sender.StartReverseAnimating();
-    }
-
-    private void DestroySphere(MyAnimation sender)
+    private void DestroySphere()
     {
         Destroy(gameObject);
     }
