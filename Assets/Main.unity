@@ -57,7 +57,7 @@ LightmapSettings:
     serializedVersion: 9
     m_Resolution: 0.2
     m_BakeResolution: 2
-    m_TextureWidth: 1024
+    m_TextureWidth: 256
     m_TextureHeight: 1024
     m_AO: 0
     m_AOMaxDistance: 1
@@ -72,10 +72,10 @@ LightmapSettings:
     m_FinalGatherRayCount: 1024
     m_ReflectionCompression: 2
     m_MixedBakeMode: 1
-    m_BakeBackend: 0
+    m_BakeBackend: 1
     m_PVRSampling: 1
     m_PVRDirectSampleCount: 32
-    m_PVRSampleCount: 500
+    m_PVRSampleCount: 100
     m_PVRBounces: 2
     m_PVRFiltering: 0
     m_PVRFilteringMode: 1
@@ -1272,7 +1272,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3609,7 +3609,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4012,7 +4012,7 @@ Prefab:
     - target: {fileID: 224915309792996870, guid: 9f6dbf6f86467d0489df572f4302be34,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 250.52051
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224915309792996870, guid: 9f6dbf6f86467d0489df572f4302be34,
         type: 2}
@@ -5884,7 +5884,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5910,7 +5910,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1105863069}
-  m_Mesh: {fileID: 4300000, guid: d47793c925b7d93428feb1629331f17f, type: 2}
+  m_Mesh: {fileID: 4300000, guid: f11262fde911e0f4ea869406f0cc39e1, type: 3}
 --- !u!1 &1106225056
 GameObject:
   m_ObjectHideFlags: 0
@@ -7269,7 +7269,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7295,7 +7295,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1534031095}
-  m_Mesh: {fileID: 4300000, guid: d47793c925b7d93428feb1629331f17f, type: 2}
+  m_Mesh: {fileID: 4300000, guid: f11262fde911e0f4ea869406f0cc39e1, type: 3}
 --- !u!224 &1585373051 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 224791020870813888, guid: 9f6dbf6f86467d0489df572f4302be34,
@@ -7685,6 +7685,27 @@ Prefab:
       propertyPath: m_RootOrder
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2350064, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f3a7c6545077858418d02c8ab711e4be, type: 2}
+    - target: {fileID: 23000012920709540, guid: 82fa38fda2f0fa541ae5f5d03daac17f,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f3a7c6545077858418d02c8ab711e4be, type: 2}
+    - target: {fileID: 2391410, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f3a7c6545077858418d02c8ab711e4be, type: 2}
+    - target: {fileID: 2352260, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f3a7c6545077858418d02c8ab711e4be, type: 2}
+    - target: {fileID: 2395618, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f3a7c6545077858418d02c8ab711e4be, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
   m_IsPrefabParent: 0
@@ -7894,7 +7915,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8549,7 +8570,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8575,7 +8596,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1742370742}
-  m_Mesh: {fileID: 4300000, guid: d47793c925b7d93428feb1629331f17f, type: 2}
+  m_Mesh: {fileID: 4300000, guid: f11262fde911e0f4ea869406f0cc39e1, type: 3}
 --- !u!1 &1744835311
 GameObject:
   m_ObjectHideFlags: 0
@@ -10079,7 +10100,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10162,6 +10183,27 @@ Prefab:
       propertyPath: m_Name
       value: Goal Team 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2391410, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83d418e904037a140ac95706619146c9, type: 2}
+    - target: {fileID: 2350064, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83d418e904037a140ac95706619146c9, type: 2}
+    - target: {fileID: 2352260, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83d418e904037a140ac95706619146c9, type: 2}
+    - target: {fileID: 23000012920709540, guid: 82fa38fda2f0fa541ae5f5d03daac17f,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83d418e904037a140ac95706619146c9, type: 2}
+    - target: {fileID: 2395618, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83d418e904037a140ac95706619146c9, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 82fa38fda2f0fa541ae5f5d03daac17f, type: 2}
   m_IsPrefabParent: 0
@@ -10972,7 +11014,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 1924540edafe9b24686bcd14327c497c, type: 2}
+  - {fileID: 2100000, guid: fd173854a9bc6214ea25dd5076506cce, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10998,7 +11040,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2130154195}
-  m_Mesh: {fileID: 4300000, guid: d47793c925b7d93428feb1629331f17f, type: 2}
+  m_Mesh: {fileID: 4300000, guid: f11262fde911e0f4ea869406f0cc39e1, type: 3}
 --- !u!1 &2136390322
 GameObject:
   m_ObjectHideFlags: 0
