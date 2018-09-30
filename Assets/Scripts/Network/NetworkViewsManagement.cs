@@ -154,7 +154,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
     private static void InitializeNewObject(object[] initialisationParameters, GameObject go)
     {
         if (initialisationParameters != null && initialisationParameters.Length > 0)
-            go.SendMessage("InitView", initialisationParameters);
+            go.SendMessage("InitView", initialisationParameters, SendMessageOptions.DontRequireReceiver);
     }
 
     int logCount = 0;

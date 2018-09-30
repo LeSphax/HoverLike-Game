@@ -46,7 +46,6 @@ public class EffectsManager : SlideBall.MonoBehaviour
 
         col.color = grad;
 
-        BlueSmoke.colorOverLifetime =  new ParticleSystem.ColorOverLifetimeModule()
         BlueSmoke.Play();
         PlayClipAtPoint(ResourcesGetter.BoostSound, controller.transform.position, 0.2f);
     }

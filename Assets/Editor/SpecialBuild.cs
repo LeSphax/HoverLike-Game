@@ -3,13 +3,14 @@ using SlideBall;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SpecialBuild
 {
-    private const string path = "C:/Users/sbker/Desktop/Workspace/UnityProjects/SlideBall/Builds/PC/Slideball.exe";
+    private const string path = "C:/Users/sbker/Desktop/Workspace/UnityProjects/hover/Builds/PC/Slideball.exe";
     private const string path_WebGL = "C:/Users/sbker/Desktop/Workspace/UnityProjects/SlideBall/Builds/";
 
     private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
@@ -75,16 +76,22 @@ public class SpecialBuild
         // Get filename.
         //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
 
-        string x = BuildPipeline.BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development);
-        if (x.Contains("cancelled") || x.Contains("error"))
+        return BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development);
+
+    }
+
+    private static bool BuildPlayer(string[] levels, string locationPathName, BuildTarget target, BuildOptions options)
+    {
+        BuildReport buildReport = BuildPipeline.BuildPlayer(levels, locationPathName, target, options);
+        if (buildReport.summary.result == BuildResult.Cancelled || buildReport.summary.result == BuildResult.Failed)
         {
-            Debug.LogError(x);
-            ChangeScene(Paths.SCENE_LOBBY);
+            Debug.LogError(buildReport.summary);
             return false;
         }
-        Debug.Log(x);
+        Debug.Log("Build Finished in " + buildReport.summary.totalTime + " s");
+        Debug.Log("Total size: " + buildReport.summary.totalSize);
+        Debug.Log("File Location: " + buildReport.summary.outputPath);
         return true;
-
     }
 
     private static void PrepareBuild()
@@ -101,9 +108,7 @@ public class SpecialBuild
         ChangeScene(Paths.SCENE_LOBBY);
         BeforeBuildWebGl();
 
-        //((NicknamePanel)UnityEngine.Object.FindObjectOfType(typeof(NicknamePanel))).autoNickName = false;
-        string x = BuildPipeline.BuildPlayer(levels, path_WebGL, BuildTarget.WebGL, BuildOptions.None);
-        Debug.Log(x);
+        BuildPlayer(levels, path_WebGL, BuildTarget.WebGL, BuildOptions.None);
     }
 
     public static void BeforeBuildWebGl()
