@@ -22,7 +22,7 @@ public class BrakeInput : AbilityInput
 
     public override bool Cancellation()
     {
-        return Input.GetKeyUp(UserSettings.KeyForInputCheck(INPUT_NUMBER));
+        return MyComponents.InputManager.GetKeyUp(UserSettings.GetKeyCode(INPUT_NUMBER));
     }
 
     protected override bool IsMovement()

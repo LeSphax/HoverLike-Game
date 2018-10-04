@@ -50,6 +50,7 @@ public static class MyComponents
         victoryUI = null;
         chatManager = null;
         battleriteCamera = null;
+        inputManager = null;
     }
 
     private static NetworkManagement networkManagement;
@@ -57,13 +58,7 @@ public static class MyComponents
     {
         get
         {
-            if (networkManagement == null)
-            {
-                GameObject go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts);
-                if (go != null)
-                    networkManagement = go.GetComponent<NetworkManagement>();
-            }
-            return networkManagement;
+            return GetTaggedComponent(ref networkManagement, Tags.NetworkScripts, Scenes.Any);
         }
     }
 
@@ -72,13 +67,7 @@ public static class MyComponents
     {
         get
         {
-            if (gameplaySettings == null)
-            {
-                GameObject go = GameObject.FindGameObjectWithTag(Tags.GameplaySettings);
-                if (go != null)
-                    gameplaySettings = go.GetComponent<GameplaySettings>();
-            }
-            return gameplaySettings;
+            return GetTaggedComponent(ref gameplaySettings, Tags.GameplaySettings, Scenes.Any);
         }
     }
 
@@ -87,13 +76,7 @@ public static class MyComponents
     {
         get
         {
-            if (popUp == null)
-            {
-                GameObject go;
-                if ((go = GameObject.FindGameObjectWithTag(Tags.PopUp)) != null)
-                    popUp = go.GetComponentInChildren<PopUp>();
-            }
-            return popUp;
+            return GetTaggedComponent(ref popUp, Tags.PopUp, Scenes.Any);
         }
     }
 
@@ -102,11 +85,7 @@ public static class MyComponents
     {
         get
         {
-            if (victoryPose == null)
-            {
-                victoryPose = GetTaggedComponent<VictoryPose>(Tags.VictoryPose);
-            }
-            return victoryPose;
+            return GetTaggedComponent(ref victoryPose, Tags.VictoryPose, Scenes.MainIndex);
         }
     }
 
@@ -115,11 +94,7 @@ public static class MyComponents
     {
         get
         {
-            if (victoryUI == null)
-            {
-                victoryUI = GetTaggedComponent<VictoryUI>(Tags.VictoryUI);
-            }
-            return victoryUI;
+            return GetTaggedComponent(ref victoryUI, Tags.VictoryUI, Scenes.MainIndex);
         }
     }
 
@@ -128,13 +103,7 @@ public static class MyComponents
     {
         get
         {
-            if (playersSynchronisation == null)
-            {
-                GameObject go;
-                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
-                    playersSynchronisation = go.GetComponent<PlayersSynchronisation>();
-            }
-            return playersSynchronisation;
+            return GetTaggedComponent(ref playersSynchronisation, Tags.NetworkScripts, Scenes.Any);
         }
     }
 
@@ -143,12 +112,7 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
-            if (abilitiesFactory == null)
-            {
-                abilitiesFactory = GameObject.FindGameObjectWithTag(Tags.Abilities).GetComponent<AbilitiesFactory>();
-            }
-            return abilitiesFactory;
+            return GetTaggedComponent(ref abilitiesFactory, Tags.Abilities, Scenes.MainIndex);
         }
     }
 
@@ -157,14 +121,7 @@ public static class MyComponents
     {
         get
         {
-            //Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
-            if (ballState == null)
-            {
-                GameObject ball = GameObject.FindGameObjectWithTag(Tags.Ball);
-                if (ball != null)
-                    ballState = ball.GetComponent<BallState>();
-            }
-            return ballState;
+            return GetTaggedComponent(ref ballState, Tags.Ball, Scenes.MainIndex);
         }
     }
 
@@ -173,14 +130,7 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
-            if (matchManager == null)
-            {
-                GameObject go = GameObject.FindGameObjectWithTag(Tags.Room);
-                if (go != null)
-                    matchManager = go.GetComponent<MatchManager>();
-            }
-            return matchManager;
+            return GetTaggedComponent(ref matchManager, Tags.Room, Scenes.MainIndex);
         }
     }
 
@@ -189,14 +139,7 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
-            if (warmupManager == null)
-            {
-                GameObject go = GameObject.FindGameObjectWithTag(Tags.Room);
-                if (go != null)
-                    warmupManager = go.GetComponent<WarmupManager>();
-            }
-            return warmupManager;
+            return GetTaggedComponent(ref warmupManager, Tags.Room, Scenes.MainIndex);
         }
     }
 
@@ -205,11 +148,7 @@ public static class MyComponents
     {
         get
         {
-            if (players == null)
-            {
-                players = GameObject.FindGameObjectWithTag(Tags.NetworkScripts).GetComponent<Players>();
-            }
-            return players;
+            return GetTaggedComponent(ref players, Tags.NetworkScripts, Scenes.Any);
         }
     }
 
@@ -218,13 +157,7 @@ public static class MyComponents
     {
         get
         {
-            if (timeManagement == null)
-            {
-                GameObject go;
-                if ((go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
-                    timeManagement = go.GetComponent<TimeManagement>();
-            }
-            return timeManagement;
+            return GetTaggedComponent(ref timeManagement, Tags.NetworkScripts, Scenes.Any);
         }
     }
 
@@ -233,12 +166,7 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.LobbyIndex));
-            if (lobbyManager == null)
-            {
-                lobbyManager = GameObject.FindGameObjectWithTag(Tags.LobbyManager).GetComponent<LobbyManager>();
-            }
-            return lobbyManager;
+            return GetTaggedComponent(ref lobbyManager, Tags.LobbyManager, Scenes.LobbyIndex);
         }
     }
 
@@ -261,12 +189,7 @@ public static class MyComponents
     {
         get
         {
-            GameObject go;
-            if (networkViewsManagement == null && (go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
-            {
-                networkViewsManagement = go.GetComponent<NetworkViewsManagement>();
-            }
-            return networkViewsManagement;
+            return GetTaggedComponent(ref networkViewsManagement, Tags.NetworkScripts, Scenes.Any);
         }
     }
 
@@ -275,12 +198,8 @@ public static class MyComponents
     {
         get
         {
-            GameObject go;
-            if (gameInitialization == null  && (go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts)) != null)
-            {
-                gameInitialization = go.GetComponent<GameState>();
-            }
-            return gameInitialization;
+            return GetTaggedComponent(ref gameInitialization, Tags.NetworkScripts, Scenes.Any);
+
         }
     }
 
@@ -289,13 +208,7 @@ public static class MyComponents
     {
         get
         {
-            if (chatManager == null)
-            {
-                GameObject go = GameObject.FindGameObjectWithTag(Tags.NetworkScripts);
-                if (go != null)
-                    chatManager = go.GetComponent<ChatManager>();
-            }
-            return chatManager;
+            return GetTaggedComponent(ref chatManager, Tags.NetworkScripts, Scenes.Any);
         }
     }
 
@@ -304,12 +217,7 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
-            if (spawns == null)
-            {
-                spawns = GameObject.FindGameObjectWithTag(Tags.Spawns).GetComponent<Spawns>();
-            }
-            return spawns;
+            return GetTaggedComponent(ref spawns, Tags.Spawns, Scenes.MainIndex);
         }
     }
 
@@ -318,13 +226,7 @@ public static class MyComponents
     {
         get
         {
-            if (globalSound == null)
-            {
-                GameObject go = GameObject.FindGameObjectWithTag(Tags.GlobalSound);
-                if (go != null)
-                    globalSound = go.GetComponent<GlobalSound>();
-            }
-            return globalSound;
+            return GetTaggedComponent(ref globalSound, Tags.GlobalSound, Scenes.Any);
         }
     }
 
@@ -333,14 +235,16 @@ public static class MyComponents
     {
         get
         {
-            Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
-            if (battleriteCamera == null)
-            {
-                GameObject go = GameObject.FindGameObjectWithTag(Tags.BattleriteCamera);
-                if (go != null)
-                    battleriteCamera = go.GetComponent<BattleriteCamera>();
-            }
-            return battleriteCamera;
+            return GetTaggedComponent(ref battleriteCamera, Tags.BattleriteCamera, Scenes.MainIndex);
+        }
+    }
+
+    private static InputManager inputManager;
+    public static InputManager InputManager
+    {
+        get
+        {
+            return GetTaggedComponent(ref inputManager, Tags.Room, Scenes.MainIndex);
         }
     }
 
@@ -352,6 +256,21 @@ public static class MyComponents
     public static Rigidbody MyPlayerRigidbody()
     {
         return GetTaggedComponent<Rigidbody>(Tags.MyPlayer);
+    }
+
+    private static Type GetTaggedComponent<Type>(ref Type cache, string tag, int sceneIndex)
+    {
+        if (sceneIndex != Scenes.Any)
+        {
+            Assert.IsTrue(Scenes.IsCurrentScene(sceneIndex));
+        }
+        if (cache == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag(tag);
+            if (go != null)
+                cache = go.GetComponent<Type>();
+        }
+        return cache;
     }
 
     private static Type GetTaggedComponent<Type>(string tag)

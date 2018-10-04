@@ -7,6 +7,7 @@ public class Scenes
     public const string Room = "Room";
     public const string Main = "Main";
 
+    public const short Any = -1;
     public const short LobbyIndex = 0;
     public const short MainIndex = 1;
 

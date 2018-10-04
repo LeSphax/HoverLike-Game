@@ -16,7 +16,7 @@ public class MouseInputs : MonoBehaviour {
     void Update()
     {
 
-        if (Input.GetMouseButtonDown(0))
+        if (MyComponents.InputManager.GetMouseButtonDown(0))
         {
             bezier.Activated=true;
             if (endPoint != null)
@@ -32,7 +32,7 @@ public class MouseInputs : MonoBehaviour {
             controlPoint.transform.position = Functions.GetMouseWorldPosition();
             bezier.controlPoints[2] = endPoint.transform.position;
         }
-        if (Input.GetMouseButton(0))
+        if (MyComponents.InputManager.GetMouseButton(0))
         {
             controlPoint.transform.position = Functions.GetMouseWorldPosition();
             bezier.controlPoints[1] = controlPoint.transform.position;
