@@ -8,6 +8,7 @@ public class MenuInGame : MonoBehaviour
     public GameObject background;
     public MatchPanel matchPanel;
     GUIPart previousPart;
+    private NetworkManagement mNetworkManagement;
 
     private void Start()
     {
@@ -52,12 +53,13 @@ public class MenuInGame : MonoBehaviour
 
     private void OnEnable()
     {
-        MyComponents.NetworkManagement.RoomClosed += LeaveRoom;
+        mNetworkManagement = (NetworkManagement)MyComponents.NetworkManagement;
+        mNetworkManagement.RoomClosed += LeaveRoom;
     }
 
     private void OnDisable()
     {
-        MyComponents.NetworkManagement.RoomClosed -= LeaveRoom;
+        mNetworkManagement.RoomClosed -= LeaveRoom;
 
     }
 }

@@ -133,6 +133,21 @@ public class SpecialBuild
         Settings.SaveSettings(Settings.NETWORK_SETTINGS, NetworkSettings);
     }
 
+    [MenuItem("MyTools/MakeViewIdsCurrentScene %;")]
+    public static void MakeViewIdsCurrentScene()
+    {
+        Debug.Log("MakeViewIDS");
+        short nextViewId = NetworkViewsManagement.INVALID_VIEW_ID + 1;
+        MakeViewIds(EditorSceneManager.GetActiveScene().path, ref nextViewId);
+
+        var NetworkSettings = Settings.GetSettings(Settings.NETWORK_SETTINGS);
+        if (!NetworkSettings.ContainsKey(Settings.NEXT_VIEW_ID))
+            NetworkSettings.Add(Settings.NEXT_VIEW_ID, "" + nextViewId);
+        else
+            NetworkSettings[Settings.NEXT_VIEW_ID] = "" + nextViewId;
+        Settings.SaveSettings(Settings.NETWORK_SETTINGS, NetworkSettings);
+    }
+
     public static void MakeViewIds(string scene, ref short nextViewId)
     {
         ChangeScene(scene);

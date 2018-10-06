@@ -7,6 +7,8 @@ public delegate void SpecificLatencyChange(ConnectionId id, float newLatency);
 
 public class TimeManagement : ObservedComponent
 {
+    private NetworkManagement mNetworkManagement;
+
     private static TimeStrategy strategy;
 
     public Dictionary<ConnectionId, LatencyChange> latencyListeners = new Dictionary<ConnectionId, LatencyChange>();
@@ -38,6 +40,7 @@ public class TimeManagement : ObservedComponent
     protected void Awake()
     {
         Reset();
+        mNetworkManagement = (NetworkManagement)MyComponents.NetworkManagement;
     }
 
     private void InvokeNewLatency(ConnectionId id)
@@ -116,14 +119,14 @@ public class TimeManagement : ObservedComponent
 
     private void OnEnable()
     {
-        MyComponents.NetworkManagement.ConnectedToRoom += CreateClientStrategy;
-        MyComponents.NetworkManagement.RoomCreated += CreateServerStrategy;
+        mNetworkManagement.ConnectedToRoom += CreateClientStrategy;
+        mNetworkManagement.RoomCreated += CreateServerStrategy;
     }
 
     private void OnDisable()
     {
-        MyComponents.NetworkManagement.ConnectedToRoom -= CreateClientStrategy;
-        MyComponents.NetworkManagement.RoomCreated -= CreateServerStrategy;
+        mNetworkManagement.ConnectedToRoom -= CreateClientStrategy;
+        mNetworkManagement.RoomCreated -= CreateServerStrategy;
     }
 
     private void CreateServerStrategy()

@@ -10,7 +10,7 @@ public class RemovePhysicsIfClient : MonoBehaviour
         if (MyComponents.NetworkManagement.IsConnected && !MyComponents.NetworkManagement.IsServer)
             DestroyPhysics();
         else if (!MyComponents.NetworkManagement.IsConnected)
-            MyComponents.NetworkManagement.ConnectedToRoom += DestroyPhysics;
+            ((NetworkManagement)MyComponents.NetworkManagement).ConnectedToRoom += DestroyPhysics;
     }
 
     void DestroyPhysics()
@@ -33,6 +33,6 @@ public class RemovePhysicsIfClient : MonoBehaviour
 
     private void OnDestroy()
     {
-            MyComponents.NetworkManagement.ConnectedToRoom -= DestroyPhysics;
+        ((NetworkManagement)MyComponents.NetworkManagement).ConnectedToRoom -= DestroyPhysics;
     }
 }

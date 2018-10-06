@@ -1,4 +1,5 @@
-﻿using UnityEngine.SceneManagement;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum GUIPart
 {
@@ -17,6 +18,7 @@ public class Scenes
     public const short Any = -1;
     public const short LobbyIndex = 0;
     public const short MainIndex = 1;
+    public const short LocalGameIndex = 2;
 
     public static GUIPart CurrentSceneDefaultGUIPart()
     {
@@ -34,7 +36,12 @@ public class Scenes
 
     public static bool IsCurrentScene(int sceneBuildIndex)
     {
-        return SceneManager.GetActiveScene().buildIndex == sceneBuildIndex;
+        int activeScene = SceneManager.GetActiveScene().buildIndex;
+        if(activeScene == LocalGameIndex)
+        {
+            activeScene = MainIndex;
+        }
+        return activeScene == sceneBuildIndex;
     }
 
     public static short currentSceneId

@@ -28,7 +28,7 @@ namespace PlayerBallControl
 
         protected void Start()
         {
-            MyComponents.GameInitialization.AllObjectsCreated += StartGame;
+            MyComponents.GameInit.AllObjectsCreated += StartGame;
             Player.eventNotifier.ListenToEvents(TryStealing, PlayerFlags.STEALING_STATE);
         }
 

@@ -1,5 +1,4 @@
-﻿using Navigation;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +8,7 @@ public class LobbyManager : MonoBehaviour
     public GameObject MainPanel;
     public TopPanel topPanel;
     public RoomListPanel RoomListPanel;
+    private NetworkManagement mNetworkManagement;
 
     private string HeaderRoomName;
 
@@ -69,6 +69,7 @@ public class LobbyManager : MonoBehaviour
         MyState = State.IDLE;
         topPanel.RoomName = "";
         AudioListener.volume = UserSettings.Volume;
+        mNetworkManagement = (NetworkManagement) MyComponents.NetworkManagement;
     }
 
     private void Start()
@@ -76,8 +77,8 @@ public class LobbyManager : MonoBehaviour
         if (RequestParameters.HasKey("RoomName"))
         {
             HeaderRoomName = RequestParameters.GetAndRemoveValue("RoomName");
-            MyComponents.NetworkManagement.ConnectToRoom(HeaderRoomName);
-            MyComponents.NetworkManagement.ConnectionFailed += CreateHeaderRoom;
+            mNetworkManagement.ConnectToRoom(HeaderRoomName);
+            mNetworkManagement.ConnectionFailed += CreateHeaderRoom;
         }
         else
         {
@@ -95,75 +96,75 @@ public class LobbyManager : MonoBehaviour
                     Debug.Log("Create the room");
                     if (EditorVariables.HeadlessServer)
                     {
-                        MyComponents.NetworkManagement.ServerStartFailed += CreateServerRoom;
+                        mNetworkManagement.ServerStartFailed += CreateServerRoom;
                         Debug.Log("Headless Server");
                     }
                     else
-                        MyComponents.NetworkManagement.ServerStartFailed += ConnectToDefaultRoom;
+                        mNetworkManagement.ServerStartFailed += ConnectToDefaultRoom;
                     CreateServerRoom();
                 }
                 else
                 {
-                    MyComponents.NetworkManagement.ConnectionFailed += ConnectToDefaultRoom;
+                    mNetworkManagement.ConnectionFailed += ConnectToDefaultRoom;
                     ConnectToDefaultRoom();
                 }
             }
         }
     }
 
-    private static void CreateServerRoom()
+    private void CreateServerRoom()
     {
         serverRoomIndex++;
-        MyComponents.NetworkManagement.CreateRoom(SERVER_ROOM + serverRoomIndex);
+        mNetworkManagement.CreateRoom(SERVER_ROOM + serverRoomIndex);
     }
 
 
     private void CreateHeaderRoom()
     {
         Debug.Log("CreateHeaderRoom " + HeaderRoomName);
-        MyComponents.NetworkManagement.ConnectionFailed -= CreateHeaderRoom;
-        MyComponents.NetworkManagement.CreateRoom(HeaderRoomName);
+        mNetworkManagement.ConnectionFailed -= CreateHeaderRoom;
+        mNetworkManagement.CreateRoom(HeaderRoomName);
     }
 
     private void ConnectToDefaultRoom()
     {
-        MyComponents.NetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
-        MyComponents.NetworkManagement.ConnectToRoom(SERVER_ROOM + 1);
+        mNetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
+        mNetworkManagement.ConnectToRoom(SERVER_ROOM + 1);
     }
 
     protected void OnEnable()
     {
-        MyComponents.NetworkManagement.RoomCreated += InitGame;
-        MyComponents.NetworkManagement.ConnectedToRoom += InitGame;
+        mNetworkManagement.RoomCreated += InitGame;
+        mNetworkManagement.ConnectedToRoom += InitGame;
 
         topPanel.BackPressed += GoBack;
     }
 
     protected void OnDisable()
     {
-        if (MyComponents.NetworkManagement != null)
+        if (mNetworkManagement != null)
         {
-            MyComponents.NetworkManagement.ConnectionFailed -= ConnectToDefaultRoom;
-            MyComponents.NetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
-            MyComponents.NetworkManagement.RoomCreated -= InitGame;
-            MyComponents.NetworkManagement.ConnectedToRoom -= InitGame;
+            mNetworkManagement.ConnectionFailed -= ConnectToDefaultRoom;
+            mNetworkManagement.ServerStartFailed -= ConnectToDefaultRoom;
+            mNetworkManagement.RoomCreated -= InitGame;
+            mNetworkManagement.ConnectedToRoom -= InitGame;
             topPanel.BackPressed -= GoBack;
         }
     }
 
     private void InitGame()
     {
-        MyComponents.GameInitialization.InitGame();
+        MyComponents.GameState.InitGame();
     }
 
     public void CreateGame()
     {
-        MyComponents.NetworkManagement.CreateRoom(inputField.text);
+        mNetworkManagement.CreateRoom(inputField.text);
     }
 
     public void JoinGame()
     {
-        MyComponents.NetworkManagement.ConnectToRoom(inputField.text);
+        mNetworkManagement.ConnectToRoom(inputField.text);
     }
 
     public void RefreshServers()
@@ -176,7 +177,7 @@ public class LobbyManager : MonoBehaviour
 
     public void ListServers()
     {
-        MyComponents.NetworkManagement.GetRooms();
+        mNetworkManagement.GetRooms();
         MyComponents.PopUp.Show(Language.Instance.texts["Connecting"]);
     }
 

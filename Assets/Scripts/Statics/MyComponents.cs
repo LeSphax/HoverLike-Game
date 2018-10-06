@@ -51,8 +51,8 @@ public static class MyComponents
         inputManager = null;
     }
 
-    private static NetworkManagement networkManagement;
-    public static NetworkManagement NetworkManagement
+    private static ANetworkManagement networkManagement;
+    public static ANetworkManagement NetworkManagement
     {
         get
         {
@@ -191,12 +191,22 @@ public static class MyComponents
         }
     }
 
-    private static GameState gameInitialization;
-    public static GameState GameInitialization
+    private static GameState gameState;
+    public static GameState GameState
     {
         get
         {
-            return GetTaggedComponent(ref gameInitialization, Tags.NetworkScripts, Scenes.Any);
+            return GetTaggedComponent(ref gameState, Tags.NetworkScripts, Scenes.Any);
+
+        }
+    }
+
+    private static IGameInit gameInit;
+    public static IGameInit GameInit
+    {
+        get
+        {
+            return GetTaggedComponent(ref gameInit, Tags.NetworkScripts, Scenes.Any);
 
         }
     }
@@ -292,7 +302,7 @@ public static class MyComponents
 
     public static void ResetGameComponents()
     {
-        GameInitialization.Reset();
+        GameState.Reset();
         PlayersSynchronisation.Reset();
     }
 }

@@ -103,7 +103,7 @@ public class MatchPanel : MonoBehaviour
     private void Start()
     {
         isPlaying = false;
-        MyComponents.GameInitialization.MatchStartOrEnd += SetPlayingState;
+        MyComponents.GameState.MatchStartOrEnd += SetPlayingState;
 
         if (EditorVariables.StartGameImmediately)
         {
@@ -123,7 +123,7 @@ public class MatchPanel : MonoBehaviour
 
     public void StartGame()
     {
-        MyComponents.GameInitialization.View.RPC("StartMatch", RPCTargets.Server, true);
+        MyComponents.GameState.View.RPC("StartMatch", RPCTargets.Server, true);
     }
 
     private void SetPlayingState(bool isPlaying)
@@ -147,7 +147,7 @@ public class MatchPanel : MonoBehaviour
 
     private void OnDestroy()
     {
-        MyComponents.GameInitialization.MatchStartOrEnd -= SetPlayingState;
+        MyComponents.GameState.MatchStartOrEnd -= SetPlayingState;
     }
 
 }

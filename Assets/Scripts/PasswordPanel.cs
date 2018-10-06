@@ -9,7 +9,7 @@ public class PasswordPanel : MonoBehaviour
 
     public void PasswordEntered()
     {
-        MyComponents.NetworkManagement.ConnectToRoom(roomName,input.text);
+        ((NetworkManagement)MyComponents.NetworkManagement).ConnectToRoom(roomName,input.text);
         Debug.Log(input.text);
     }
 

@@ -8,7 +8,7 @@ public class LinkPanel : MonoBehaviour
 
     public void ShowLinkToRoom()
     {
-        ShowLink(MyComponents.NetworkManagement.RoomName);
+        ShowLink(((NetworkManagement)MyComponents.NetworkManagement).RoomName);
     }
 
 

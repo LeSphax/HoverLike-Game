@@ -19,7 +19,7 @@ public class ServerInfoPanel : MonoBehaviour
             PasswordPanel.InstantiatePanel(data.name);
         }
         else
-            MyComponents.NetworkManagement.ConnectToRoom(roomNameLabel.text);
+            ((NetworkManagement) MyComponents.NetworkManagement).ConnectToRoom(roomNameLabel.text);
     }
 
     public void SetRoomData(RoomData data)

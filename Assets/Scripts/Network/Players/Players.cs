@@ -254,6 +254,7 @@ namespace PlayerManagement
 
         public static Player CreatePlayer(ConnectionId id)
         {
+            Debug.Log("Create player");
             Player player;
             player = new Player(id);
             if (players.Count == 0)

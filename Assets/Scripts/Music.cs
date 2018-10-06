@@ -27,7 +27,7 @@ public class Music : MonoBehaviour
         dropdown.AddOptions(options);
         dropdown.onValueChanged.AddListener(ChangeMusic);
 
-        MyComponents.GameInitialization.MatchStartOrEnd += StartMusic;
+        MyComponents.GameState.MatchStartOrEnd += StartMusic;
     }
 
     private void StartMusic(bool started)

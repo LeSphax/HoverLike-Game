@@ -4,7 +4,7 @@ using UnityEngine;
 
 public delegate void MatchChange(bool started);
 
-public class GameState : SlideBall.MonoBehaviour
+public class GameState : SlideBall.MonoBehaviour, IGameInit
 {
     bool started;
 

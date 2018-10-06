@@ -91,7 +91,7 @@ namespace Ball
 
         void Awake()
         {
-            MyComponents.GameInitialization.AddGameStartedListener(StartGame);
+            MyComponents.GameInit.AddGameStartedListener(StartGame);
         }
 
         void Start()
