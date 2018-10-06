@@ -1,22 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+
+    private void Update()
+    {
+        keysPressed.Clear();
+    }
+    List<KeyCode> keysPressed = new List<KeyCode>();
+
+    public void SetKey(KeyCode key)
+    {
+        keysPressed.Add(key);
+    }
+
+
     public bool GetKeyDown(KeyCode key)
+    {
+        return Input.GetKeyDown(key);
+    }
+
+    public bool GetKeyDown(string key)
     {
         return Input.GetKeyDown(key);
     }
 
     public bool GetKey(KeyCode key)
     {
-        return Input.GetKey(key);
+        return Input.GetKey(key) || keysPressed.Contains(key);
+    }
+
+    public bool GetKey(string key)
+    {
+        KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), key);
+        return GetKey(keyCode);
     }
 
     public bool GetKeyUp(KeyCode key)
+    {
+        return Input.GetKeyUp(key);
+    }
+
+    public bool GetKeyUp(string key)
     {
         return Input.GetKeyUp(key);
     }

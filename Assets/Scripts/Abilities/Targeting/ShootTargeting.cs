@@ -40,7 +40,7 @@ public class ShootTargeting : AbilityTargeting
         IsActivated = true;
         ShowArmingAnimation(true);
         curving = false;
-        if (SlideBallInputs.GetKey(UserSettings.KeyForInputCheck(6), SlideBallInputs.GUIPart.ABILITY))
+        if (SlideBallInputs.GetKey(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
         {
             curving = true;
             bezier.controlPoints[0] = Players.MyPlayer.controller.transform.position;
@@ -64,12 +64,12 @@ public class ShootTargeting : AbilityTargeting
             //Debug.Log(curveLength);
             //Debug.Log(proportion);
 
-            if (SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(6), SlideBallInputs.GUIPart.ABILITY))
+            if (SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
             {
                 curving = true;
                 bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
             }
-            else if (SlideBallInputs.GetKeyUp(UserSettings.KeyForInputCheck(6), SlideBallInputs.GUIPart.ABILITY))
+            else if (SlideBallInputs.GetKeyUp(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
             {
                 curving = false;
             }

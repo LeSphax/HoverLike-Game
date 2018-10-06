@@ -6,20 +6,17 @@ using UnityEditor.SceneManagement;
 public class StartFromLobby : MonoBehaviour
 {
 
-    // class doesn't matter, add to anything in the Editor folder
-    // for any beginners reading, this is c#
-
-    [MenuItem("MyTools/Play-Stop, But From Prelaunch Scene %y")]
+    [MenuItem("MyTools/Move to lobby %l")]
     public static void PlayFromPrelaunchScene()
     {
-        if (EditorApplication.isPlaying == true)
-        {
-            EditorApplication.isPlaying = false;
-            return;
-        }
-
         EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
         EditorSceneManager.OpenScene(Paths.SCENE_LOBBY);
-        EditorApplication.isPlaying = true;
+    }
+
+    [MenuItem("MyTools/Move to main %m")]
+    public static void MoveToMain()
+    {
+        EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+        EditorSceneManager.OpenScene(Paths.SCENE_MAIN);
     }
 }

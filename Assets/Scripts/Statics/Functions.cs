@@ -65,31 +65,18 @@ class Functions
 
     public static GameObject InstantiatePlayer(ConnectionId id)
     {
-       return MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, id);
+        return MyComponents.NetworkViewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, id);
     }
 
     public static Vector3 GetInputDirection()
     {
-        Vector3 direction;
-        if (UserSettings.KeyForInputCheck(0) == "a")
-        {
-            direction = new MovementInputPacket(
-                    Input.GetKey(KeyCode.Z),
-                    Input.GetKey(KeyCode.S),
-                    Input.GetKey(KeyCode.Q),
-                    Input.GetKey(KeyCode.D)
+        KeyCode[] movementKeys = UserSettings.MovementKeys;
+        return new MovementInputPacket(
+                    MyComponents.InputManager.GetKey(movementKeys[0]),
+                    MyComponents.InputManager.GetKey(movementKeys[1]),
+                    MyComponents.InputManager.GetKey(movementKeys[2]),
+                    MyComponents.InputManager.GetKey(movementKeys[3])
                 ).GetDirection();
-        }
-        else
-        {
-            direction = new MovementInputPacket(
-                    Input.GetKey(KeyCode.W),
-                    Input.GetKey(KeyCode.S),
-                    Input.GetKey(KeyCode.A),
-                    Input.GetKey(KeyCode.D)
-                ).GetDirection();
-        }
-        return direction;
     }
 }
 

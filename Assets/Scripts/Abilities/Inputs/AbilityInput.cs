@@ -47,13 +47,13 @@ public abstract class AbilityInput : MonoBehaviour
 
     public virtual bool FirstActivation()
     {
-        return SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
+        return SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
     }
 
     public virtual bool ContinuousActivation()
     {
         if (INPUT_NUMBER != -1)
-            return SlideBallInputs.GetKey(UserSettings.KeyForInputCheck(INPUT_NUMBER), SlideBallInputs.GUIPart.ABILITY);
+            return SlideBallInputs.GetKey(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
         return false;
     }
 

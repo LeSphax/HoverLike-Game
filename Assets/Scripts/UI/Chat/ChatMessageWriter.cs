@@ -36,7 +36,7 @@ public class ChatMessageWriter : MonoBehaviour
         input.gameObject.SetActive(active);
         if (input.gameObject.activeSelf)
         {
-            SlideBallInputs.currentPart = SlideBallInputs.GUIPart.CHAT;
+            SlideBallInputs.currentPart = GUIPart.CHAT;
             FocusOnInputField();
         }
         else

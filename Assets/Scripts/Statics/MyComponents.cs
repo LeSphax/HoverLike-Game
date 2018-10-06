@@ -1,11 +1,9 @@
-﻿using System;
-using SlideBall;
+﻿using Ball;
 using Navigation;
 using PlayerManagement;
+using SlideBall;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
-using Ball;
 
 public static class MyComponents
 {

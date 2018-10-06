@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class RemoveFocusFromAbilities : MonoBehaviour, ISelectHandler, IDeselectHandler
 {
-    SlideBallInputs.GUIPart previousPart;
+    GUIPart previousPart;
 
     public void OnDeselect(BaseEventData eventData)
     {
@@ -13,6 +13,6 @@ public class RemoveFocusFromAbilities : MonoBehaviour, ISelectHandler, IDeselect
     public void OnSelect(BaseEventData eventData)
     {
         previousPart = SlideBallInputs.currentPart;
-        SlideBallInputs.currentPart = SlideBallInputs.GUIPart.CHAT;
+        SlideBallInputs.currentPart = GUIPart.CHAT;
     }
 }

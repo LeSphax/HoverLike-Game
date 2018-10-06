@@ -1,5 +1,12 @@
 ﻿using UnityEngine.SceneManagement;
 
+public enum GUIPart
+{
+    ABILITY,
+    CHAT,
+    MENU,
+}
+
 public class Scenes
 {
 
@@ -11,16 +18,16 @@ public class Scenes
     public const short LobbyIndex = 0;
     public const short MainIndex = 1;
 
-    public static SlideBallInputs.GUIPart CurrentSceneDefaultGUIPart()
+    public static GUIPart CurrentSceneDefaultGUIPart()
     {
         switch (SceneManager.GetActiveScene().buildIndex)
         {
             case LobbyIndex:
-                return SlideBallInputs.GUIPart.CHAT;
+                return GUIPart.CHAT;
             case MainIndex:
-                return SlideBallInputs.GUIPart.ABILITY;
+                return GUIPart.ABILITY;
             default:
-                return SlideBallInputs.GUIPart.ABILITY;
+                return GUIPart.ABILITY;
         }
     }
 

@@ -7,7 +7,7 @@ public class MenuInGame : MonoBehaviour
 
     public GameObject background;
     public MatchPanel matchPanel;
-    SlideBallInputs.GUIPart previousPart;
+    GUIPart previousPart;
 
     private void Start()
     {
@@ -29,7 +29,7 @@ public class MenuInGame : MonoBehaviour
     {
         background.SetActive(true);
         previousPart = SlideBallInputs.currentPart;
-        SlideBallInputs.currentPart = SlideBallInputs.GUIPart.MENU;
+        SlideBallInputs.currentPart = GUIPart.MENU;
     }
 
     public void CloseMenu()

@@ -10,7 +10,7 @@ public class UserSettingsPanel : MonoBehaviour
     public Text nicknamePlaceholder;
     public Slider volumeSlider;
 
-    private SlideBallInputs.GUIPart previousGUIPart;
+    private GUIPart previousGUIPart;
 
     private int? currentButton;
 
@@ -52,7 +52,7 @@ public class UserSettingsPanel : MonoBehaviour
     private void Reset()
     {
         previousGUIPart = SlideBallInputs.currentPart;
-        SlideBallInputs.currentPart = SlideBallInputs.GUIPart.MENU;
+        SlideBallInputs.currentPart = GUIPart.MENU;
         nicknamePlaceholder.text = Random_Name_Generator.GetRandomName();
         nicknameField.text = UserSettings.Nickname;
         volumeSlider.value = UserSettings.Volume;

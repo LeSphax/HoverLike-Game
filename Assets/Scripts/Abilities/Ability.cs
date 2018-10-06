@@ -62,7 +62,7 @@ public class Ability : MonoBehaviour
             Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
 #endif
-        if (SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(5), SlideBallInputs.GUIPart.ABILITY))
+        if (SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(5), GUIPart.ABILITY))
         {
             TryCancelTargeting();
         }

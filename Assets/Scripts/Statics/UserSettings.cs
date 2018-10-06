@@ -1,12 +1,35 @@
 ﻿using PlayerManagement;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 public class UserSettings
 {
+    public static KeyCode[] MovementKeys
+    {
+        get
+        {
+            if (KeyForInputCheck(0) == "a")
+            {
+                return new KeyCode[] {
+                        KeyCode.Z,
+                        KeyCode.S,
+                        KeyCode.Q,
+                        KeyCode.D
+                };
+            }
+            else
+            {
+                return new KeyCode[] {
+                        KeyCode.W,
+                        KeyCode.S,
+                        KeyCode.A,
+                        KeyCode.D
+                };
+            }
+        }
+    }
+
     private static bool? seenTutorial = null;
     public static bool SeenTutorial
     {
