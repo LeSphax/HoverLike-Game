@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PasswordPanel : MonoBehaviour
+public class PasswordPanel : SlideBall.MonoBehaviour
 {
     public InputField input;
 
@@ -13,10 +13,10 @@ public class PasswordPanel : MonoBehaviour
         Debug.Log(input.text);
     }
 
-    public static void InstantiatePanel(string roomName)
+    public static void InstantiatePanel(string roomName, Transform popupTransform)
     {
         PasswordPanel pass = Instantiate(ResourcesGetter.PasswordPanelPrefab).GetComponent<PasswordPanel>();
-        pass.transform.SetParent(MyComponents.PopUp.transform,false);
+        pass.transform.SetParent(popupTransform,false);
         pass.roomName = roomName;
     }
 

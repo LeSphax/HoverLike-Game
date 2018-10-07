@@ -7,7 +7,7 @@ namespace Ball
 {
     public delegate void UncatchableChangeHandler(bool uncatchable);
 
-    public class BallState : SlideBall.MonoBehaviour
+    public class BallState : SlideBall.NetworkMonoBehaviour
     {
         private Rigidbody mRigidbody;
         public Rigidbody Rigidbody
@@ -65,7 +65,7 @@ namespace Ball
 
         internal void TrySetKinematic()
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 if (uncatchable || IsAttached())
                     Rigidbody.isKinematic = true;
@@ -89,27 +89,23 @@ namespace Ball
 
         public BallTrajectoryStrategy trajectoryStrategy;
 
-        void Awake()
-        {
-            MyComponents.GameInit.AddGameStartedListener(StartGame);
-        }
-
         void Start()
         {
-            trajectoryStrategy = new FreeTrajectoryStrategy();
+            MyComponents.GameInit.AddGameStartedListener(StartGame);
+            trajectoryStrategy = new FreeTrajectoryStrategy(MyComponents.BallState);
             MakeBallUncatchable(UnCatchable);
             TrySetKinematic();
         }
 
         private void FixedUpdate()
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
                 trajectoryStrategy.MoveBall();
         }
 
         public void StartGame()
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 IdPlayerOwningBall = NO_PLAYER_ID;
             }
@@ -142,7 +138,7 @@ namespace Ball
 
         public PlayerController GetAttachedPlayer()
         {
-            foreach (Player player in Players.players.Values)
+            foreach (Player player in MyComponents.Players.players.Values)
             {
                 if (player.id == GetIdOfPlayerOwningBall())
                     return player.controller;
@@ -156,20 +152,20 @@ namespace Ball
             bool attach = playerId != NO_PLAYER_ID;
             if (attach)
             {
-                trajectoryStrategy = new AttachedTrajectoryStrategy();
+                trajectoryStrategy = new AttachedTrajectoryStrategy(MyComponents.BallState);
             }
-            else if (!MyComponents.NetworkManagement.IsServer)
+            else if (!NetworkingState.IsServer)
             {
-                trajectoryStrategy = new FreeTrajectoryStrategy();
+                trajectoryStrategy = new FreeTrajectoryStrategy(MyComponents.BallState);
             }
         }
 
         [MyRPC]
         internal void PutAtStartPosition()
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
-                trajectoryStrategy = new FreeTrajectoryStrategy();
+                trajectoryStrategy = new FreeTrajectoryStrategy(MyComponents.BallState);
                 View.RPC("PutAtStartPosition", RPCTargets.Others);
             }
             PutBallAtPosition(MyComponents.Spawns.BallSpawn);
@@ -178,7 +174,7 @@ namespace Ball
         public void PutBallAtPosition(Vector3 position)
         {
             gameObject.transform.position = position;
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 Rigidbody.velocity = Vector3.zero;
                 gameObject.GetComponentInChildren<AttractionBall>().Reset();
@@ -194,8 +190,13 @@ namespace Ball
                     //Debug.Log(collision.collider.name);
                     //EditorApplication.isPaused = true;
                     Rigidbody.velocity = trajectoryStrategy.CurrentVelocity;
-                    trajectoryStrategy = new FreeTrajectoryStrategy();
+                    trajectoryStrategy = new FreeTrajectoryStrategy(MyComponents.BallState);
                 }
+        }
+
+        public void SetWorldAsParent()
+        {
+            transform.SetParent(MyComponents.transform);
         }
     }
 

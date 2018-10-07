@@ -12,7 +12,7 @@ public class BrakeInput : AbilityInput
 
     public override bool FirstActivation()
     {
-        return false; // SlideBallInputs.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), GUIPart.ABILITY);
+        return false; // MyComponents.InputManager.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), GUIPart.ABILITY);
     }
 
     public override string GetKeyForGUI()

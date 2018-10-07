@@ -65,7 +65,7 @@ public class PlayerController : PlayerView
         Player.controller = this;
         Player.ballController = GetComponent<PlayerBallController>();
         GetComponent<PlayerBallController>().Init(playerConnectionId);
-        Players.NotifyNewPlayerInstantiated(playerConnectionId);
+        MyComponents.Players.NotifyNewPlayerInstantiated(playerConnectionId);
 
         Player.eventNotifier.ListenToEvents(ResetPlayer, PlayerFlags.TEAM, PlayerFlags.AVATAR_SETTINGS);
         Player.eventNotifier.ListenToEvents(SetNickname, PlayerFlags.NICKNAME);
@@ -84,7 +84,7 @@ public class PlayerController : PlayerView
         }
         if (Player.HasBall)
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 MyComponents.BallState.PutAtStartPosition();
             }
@@ -95,7 +95,6 @@ public class PlayerController : PlayerView
         }
 
         RemoveFromAttraction();
-
         movementManager.Reset(playerConnectionId);
         ballController.Reset();
         targetManager.CancelTarget();
@@ -124,7 +123,7 @@ public class PlayerController : PlayerView
 
     private void RemoveFromAttraction()
     {
-        if (MyComponents.NetworkManagement.IsServer && PlayerMesh != null)
+        if (NetworkingState.IsServer && PlayerMesh != null)
             MyComponents.BallState.attraction.RemovePlayer(PlayerMesh.actualCollider.gameObject);
     }
 
@@ -166,8 +165,9 @@ public class PlayerController : PlayerView
     public void PutAtStartPosition()
     {
         transform.position = Player.SpawningPoint;
-        transform.LookAt(Vector3.zero);
-        if (MyComponents.NetworkManagement.IsServer)
+        transform.LookAt(transform.parent.localPosition);
+        transform.localRotation = Quaternion.Euler(0, transform.localRotation.y, 0);
+        if (NetworkingState.IsServer)
             StopMoving();
     }
 
@@ -181,13 +181,16 @@ public class PlayerController : PlayerView
     public void SetStealOnCooldown()
     {
         Debug.Log("SetStealOnCooldown");
-        MyComponents.AbilitiesFactory.abilityGOs["Steal"].GetComponentInChildren<Ability>().SetOnCooldown();
+        GameObject go;
+        if (MyComponents.AbilitiesFactory.abilityGOs.TryGetValue("Steal", out go))
+            go.GetComponentInChildren<Ability>().SetOnCooldown();
     }
 
     private void Destroy(Player player = null)
     {
         RemoveFromAttraction();
         Destroy(gameObject);
+        Player.UpdatePlayersDataOnDestroy(player.id, MyComponents);
     }
 
     private void OnDestroy()

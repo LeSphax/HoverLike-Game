@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
 
-public class RemovePhysicsIfClient : MonoBehaviour
+public class RemovePhysicsIfClient : SlideBall.MonoBehaviour
 {
     public bool DestroyFullObject;
 
-    void Awake()
+    void Start()
     {
-        if (MyComponents.NetworkManagement.IsConnected && !MyComponents.NetworkManagement.IsServer)
+        if (MyComponents.NetworkManagement.IsConnected && !NetworkingState.IsServer)
             DestroyPhysics();
         else if (!MyComponents.NetworkManagement.IsConnected)
             ((NetworkManagement)MyComponents.NetworkManagement).ConnectedToRoom += DestroyPhysics;
@@ -15,7 +15,7 @@ public class RemovePhysicsIfClient : MonoBehaviour
 
     void DestroyPhysics()
     {
-        Assert.IsTrue(!MyComponents.NetworkManagement.IsServer);
+        Assert.IsTrue(!NetworkingState.IsServer);
         if (DestroyFullObject)
             Destroy(gameObject);
         else
@@ -33,6 +33,13 @@ public class RemovePhysicsIfClient : MonoBehaviour
 
     private void OnDestroy()
     {
-        ((NetworkManagement)MyComponents.NetworkManagement).ConnectedToRoom -= DestroyPhysics;
+        try
+        {
+            ((NetworkManagement)MyComponents.NetworkManagement).ConnectedToRoom -= DestroyPhysics;
+        }
+        catch
+        {
+            //Nothing
+        }
     }
 }

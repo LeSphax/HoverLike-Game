@@ -3,17 +3,17 @@
     public class FreeTrajectoryStrategy : BallTrajectoryStrategy
     {
 
-        public FreeTrajectoryStrategy()
+        public FreeTrajectoryStrategy(BallState ballState) : base(ballState)
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 AttractionBall.Activated = true;
-                MyComponents.BallState.UnCatchable = false;
-                MyComponents.BallState.DetachBall();
-                MyComponents.BallState.TrySetKinematic();
+                BallState.UnCatchable = false;
+                BallState.DetachBall();
+                BallState.TrySetKinematic();
             }
-            //MyComponents.BallState.protectionSphere.SetActive(false);
-            MyComponents.BallState.transform.SetParent(null);
+            //BallState.protectionSphere.SetActive(false);
+            BallState.SetWorldAsParent();
         }
 
         public override void MoveBall()

@@ -53,9 +53,10 @@ namespace PlayerManagement
 
         internal bool IsHoldingBall()
         {
-            return MyComponents.BallState.GetIdOfPlayerOwningBall() == id;
+            return myComponents.BallState.GetIdOfPlayerOwningBall() == id;
         }
 
+        public MyComponents myComponents;
         public ConnectionId id;
         public bool isReady = false;
 
@@ -77,7 +78,7 @@ namespace PlayerManagement
             set
             {
                 team = value;
-                if (MyComponents.NetworkManagement.IsServer)
+                if (NetworkingState.IsServer)
                     flagsChanged |= PlayerFlags.TEAM;
                 NotifyTeamChanged();
             }
@@ -92,7 +93,7 @@ namespace PlayerManagement
             set
             {
                 nickname = value;
-                if (id == Players.myPlayerId)
+                if (id == myComponents.Players.myPlayerId)
                     flagsChanged |= PlayerFlags.NICKNAME;
                 NotifyNicknameChanged();
             }
@@ -122,7 +123,7 @@ namespace PlayerManagement
             set
             {
                 sceneId = value;
-                if (id == Players.myPlayerId)
+                if (id == myComponents.Players.myPlayerId)
                     flagsChanged |= PlayerFlags.SCENEID;
                 eventNotifier.changedAttributes.Add(PlayerFlags.SCENEID);
             }
@@ -155,7 +156,7 @@ namespace PlayerManagement
             set
             {
                 playAsGoalie = value;
-                if (id == Players.myPlayerId)
+                if (id == myComponents.Players.myPlayerId)
                     flagsChanged |= PlayerFlags.PLAY_AS_GOALIE;
                 eventNotifier.changedAttributes.Add(PlayerFlags.PLAY_AS_GOALIE);
             }
@@ -174,7 +175,7 @@ namespace PlayerManagement
         {
             get
             {
-                return MyComponents.Spawns.GetSpawn(Team, SpawnNumber);
+                return myComponents.Spawns.GetSpawn(Team, SpawnNumber);
             }
         }
 
@@ -214,10 +215,11 @@ namespace PlayerManagement
             eventNotifier.changedAttributes.Add(PlayerFlags.DESTROYED);
         }
 
-        public bool IsMyPlayer { get { return id == Players.myPlayerId; } }
+        public bool IsMyPlayer { get { return id == myComponents.Players.myPlayerId; } }
 
-        public Player(ConnectionId id)
+        public Player(ConnectionId id, MyComponents myComponents)
         {
+            this.myComponents = myComponents;
             this.id = id;
             eventNotifier = new MultipleEvents(this);
             State = new PlayerState(this, MovementState.FROZEN, StealingState.IDLE);
@@ -228,6 +230,12 @@ namespace PlayerManagement
             return "Player " + (IsMyPlayer ? "(mine) " : "") + id + " Nickname: " + Nickname + " Team : " + Team + "   HasBall : " + hasBall + " Avatar " + AvatarSettingsType + " State " + State + " SpawningPoint " + SpawningPoint;
         }
 
+        public static void UpdatePlayersDataOnDestroy(ConnectionId id, MyComponents myComponents)
+        {
+            Debug.LogWarning("Remove player" + id);
+            myComponents.Players.players.Remove(id);
+            myComponents.NetworkManagement.RefreshRoomData();
+        }
 
     }
 }

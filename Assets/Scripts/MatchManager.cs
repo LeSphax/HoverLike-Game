@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class MatchManager : SlideBall.MonoBehaviour
+public class MatchManager : SlideBall.NetworkMonoBehaviour
 {
     [SerializeField]
     private MatchCountdown matchCountdown;
@@ -43,7 +43,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         {
             State previousState = state;
             state = value;
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 View.RPC("SetState", RPCTargets.Others, value);
                 switch (MyState)
@@ -90,7 +90,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                         }
                         else
                         {
-                            lastChanceTeam = Players.players[MyComponents.BallState.GetIdOfPlayerOwningBall()].Team;
+                            lastChanceTeam = MyComponents.Players.players[MyComponents.BallState.GetIdOfPlayerOwningBall()].Team;
                         }
                         break;
                     case State.SUDDEN_DEATH:
@@ -108,12 +108,12 @@ public class MatchManager : SlideBall.MonoBehaviour
                     case State.PLAYING:
                     case State.LAST_CHANCE:
                     case State.SUDDEN_DEATH:
-                        Players.SetState(MovementState.PLAYING);
+                        MyComponents.Players.SetState(MovementState.PLAYING);
                         break;
                     case State.STARTING:
                     case State.ENDING_ROUND:
                     case State.VICTORY_POSE:
-                        Players.SetState(MovementState.FROZEN);
+                        MyComponents.Players.SetState(MovementState.FROZEN);
                         break;
                     default:
                         break;
@@ -222,10 +222,10 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         if (activate)
         {
-            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
+            Assert.IsTrue(NetworkingState.IsServer);
             Scoreboard.ResetScore();
             suddenDeath = false;
-            Players.PlayerOwningBallChanged += BallChangedOwner;
+            MyComponents.Players.PlayerOwningBallChanged += BallChangedOwner;
             matchCountdown.TimerFinished += MatchCountdownTimerFinished;
             entryCountdown.TimerFinished += EntryCountdownTimerFinished;
             entryCountdown.PlayMatchEndSound();
@@ -237,7 +237,7 @@ public class MatchManager : SlideBall.MonoBehaviour
         {
             suddenDeath = false;
             Scoreboard.ResetScore();
-            Players.PlayerOwningBallChanged -= BallChangedOwner;
+            MyComponents.Players.PlayerOwningBallChanged -= BallChangedOwner;
             matchCountdown.TimerFinished -= MatchCountdownTimerFinished;
             entryCountdown.TimerFinished -= EntryCountdownTimerFinished;
             MyState = State.WARMUP;
@@ -313,7 +313,7 @@ public class MatchManager : SlideBall.MonoBehaviour
     {
         foreach (Team team in new Team[2] { Team.BLUE, Team.RED })
         {
-            List<Player> players = Players.GetPlayersInTeam(team);
+            List<Player> players = MyComponents.Players.GetPlayersInTeam(team);
             if (players.Count == 1)
             {
                 players[0].SpawnNumber = players[0].PlayAsGoalie ? (short)0 : (short)1;
@@ -348,7 +348,7 @@ public class MatchManager : SlideBall.MonoBehaviour
                 }
                 players.Map(player =>
                 {
-                    int attackersNumber = Players.GetPlayersInTeam(player.Team).Count - 1;
+                    int attackersNumber = MyComponents.Players.GetPlayersInTeam(player.Team).Count - 1;
                     player.SpawnNumber = (short)(((player.SpawnNumber) % attackersNumber) + 1);
                     player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
                 });
@@ -361,8 +361,8 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void AllowAttackersToEnterGoalsWhenAlone()
     {
-        Physics.IgnoreLayerCollision(LayersGetter.ATTACKER_0, LayersGetter.GOAL_0, Players.GetPlayersInTeam(Team.BLUE).Count == 1);
-        Physics.IgnoreLayerCollision(LayersGetter.ATTACKER_1, LayersGetter.GOAL_1, Players.GetPlayersInTeam(Team.RED).Count == 1);
+        Physics.IgnoreLayerCollision(LayersGetter.ATTACKER_0, LayersGetter.GOAL_0, MyComponents.Players.GetPlayersInTeam(Team.BLUE).Count == 1);
+        Physics.IgnoreLayerCollision(LayersGetter.ATTACKER_1, LayersGetter.GOAL_1, MyComponents.Players.GetPlayersInTeam(Team.RED).Count == 1);
     }
 
     private void SendInvokeStartRound()
@@ -463,9 +463,9 @@ public class MatchManager : SlideBall.MonoBehaviour
                 MyState = suddenDeath ? State.SUDDEN_DEATH : State.PLAYING;
                 break;
             case State.LAST_CHANCE:
-                if (newPlayer != BallState.NO_PLAYER_ID && Players.players[newPlayer].Team != lastChanceTeam)
+                if (newPlayer != BallState.NO_PLAYER_ID && MyComponents.Players.players[newPlayer].Team != lastChanceTeam)
                 {
-                    Debug.Log("BallChangedOwner " + lastChanceTeam + "    " + Players.players[newPlayer].Team);
+                    Debug.Log("BallChangedOwner " + lastChanceTeam + "    " + MyComponents.Players.players[newPlayer].Team);
                     MyState = State.ENDING_ROUND;
                 }
                 break;
@@ -478,7 +478,7 @@ public class MatchManager : SlideBall.MonoBehaviour
 
     private void OnDestroy()
     {
-        Players.PlayerOwningBallChanged -= BallChangedOwner;
+        MyComponents.Players.PlayerOwningBallChanged -= BallChangedOwner;
         matchCountdown.TimerFinished -= MatchCountdownTimerFinished;
         entryCountdown.TimerFinished -= EntryCountdownTimerFinished;
     }

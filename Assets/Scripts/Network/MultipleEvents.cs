@@ -40,11 +40,5 @@ public class MultipleEvents
         });
 
         listenersToNotify.ForEach(listener => listener.Invoke(producer));
-        if (copy.Contains(PlayerFlags.DESTROYED))
-        {
-            Debug.LogWarning("Remove player" + producer.id);
-            Players.players.Remove(producer.id);
-            MyComponents.NetworkManagement.RefreshRoomData();
-        }
     }
 }

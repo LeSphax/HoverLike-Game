@@ -16,7 +16,10 @@ public class PlayerMovementManager : ObservedComponent
         get
         {
             Assert.IsTrue(playerConnectionId != null);
-            return PlayerView.GetMyPlayer(playerConnectionId.Value);
+            Player player;
+            if (!MyComponents.Players.players.TryGetValue(playerConnectionId.Value, out player))
+                return null;
+            return player;
         }
     }
 
@@ -142,8 +145,8 @@ public class PlayerMovementManager : ObservedComponent
         }
     }
 
-    Vector3 prevPos;
-    PlayerPacket prevPacket = new PlayerPacket(Vector3.zero,Quaternion.identity);
+    //Vector3 prevPos;
+    //PlayerPacket prevPacket = new PlayerPacket(Vector3.zero,Quaternion.identity);
 
     private void InterpolateMovement()
     {
@@ -155,12 +158,12 @@ public class PlayerMovementManager : ObservedComponent
             if (Player.IsMyPlayer)
             {
                 //Debug.Log("Player : " + (transform.position - prevPos).magnitude * Time.deltaTime + "    " + (transform.position - prevPos));
-                string nPacketValues = NextPacket != null ? NextPacket.position + ", " + NextPacket.simulationTime : null;
-                string cPacketValues = currentPacket != null ? currentPacket.position + ", " + currentPacket.simulationTime : null;
+                //string nPacketValues = NextPacket != null ? NextPacket.position + ", " + NextPacket.simulationTime : null;
+                //string cPacketValues = currentPacket != null ? currentPacket.position + ", " + currentPacket.simulationTime : null;
                 //Debug.Log("Player : " + cPacketValues + "   " + nPacketValues + "   "  + completion + "    " + Time.deltaTime + "   " + (transform.position - prevPos));
 
-                prevPacket = currentPacket;
-                prevPos = transform.position;
+                //prevPacket = currentPacket;
+                //prevPos = transform.position;
                 if(completion >= 1)
                 {
                     Debug.LogWarning("Completion too high");
@@ -182,7 +185,7 @@ public class PlayerMovementManager : ObservedComponent
 
     protected override bool IsSendingPackets()
     {
-        return MyComponents.NetworkManagement.IsServer;
+        return NetworkingState.IsServer;
     }
 
     public void Brake(bool activate)

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-public class Scoreboard : SlideBall.MonoBehaviour
+public class Scoreboard : SlideBall.NetworkMonoBehaviour
 {
 
     private static int[] scores;
@@ -48,7 +48,7 @@ public class Scoreboard : SlideBall.MonoBehaviour
 
     public static bool IncrementTeamScore(int teamNumber)
     {
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
             if (Time.realtimeSinceStartup - timeLastGoal > 1)
             {

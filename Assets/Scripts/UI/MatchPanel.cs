@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MatchPanel : MonoBehaviour
+public class MatchPanel : SlideBall.MonoBehaviour
 {
     public Transform[] teamPanels;
     public GameObject StartButton;
@@ -22,7 +22,6 @@ public class MatchPanel : MonoBehaviour
         set
         {
             password = value;
-            MyComponents.NetworkManagement.RefreshRoomData();
         }
     }
 
@@ -50,7 +49,7 @@ public class MatchPanel : MonoBehaviour
     private void RefreshPlayerInfos(ConnectionId id)
     {
         Reset();
-        foreach (Player player in Players.players.Values)
+        foreach (Player player in MyComponents.Players.players.Values)
         {
             PlayerInfo playerInfo = Instantiate(ResourcesGetter.PlayerInfoPrefab).GetComponent<PlayerInfo>();
             playerInfos.Add(playerInfo.gameObject);
@@ -71,7 +70,7 @@ public class MatchPanel : MonoBehaviour
     {
         if (!isPlaying)
         {
-            if (Players.GetPlayersInTeam(Team.BLUE).Count < 4)
+            if ( MyComponents.Players.GetPlayersInTeam(Team.BLUE).Count < 4)
             {
                 teamButtons[0].interactable = true;
             }
@@ -79,7 +78,7 @@ public class MatchPanel : MonoBehaviour
             {
                 teamButtons[0].interactable = false;
             }
-            if (Players.GetPlayersInTeam(Team.RED).Count < 4)
+            if ( MyComponents.Players.GetPlayersInTeam(Team.RED).Count < 4)
             {
                 teamButtons[1].interactable = true;
             }
@@ -109,12 +108,12 @@ public class MatchPanel : MonoBehaviour
         {
             InvokeRepeating("CheckStartGame", 0f, 0.2f);
         }
-        Players.NewPlayerCreated += RefreshPlayerInfos;
+        MyComponents.Players.NewPlayerCreated += RefreshPlayerInfos;
     }
 
     void CheckStartGame()
     {
-        if (Players.MyPlayer.IsHost && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
+        if ( MyComponents.Players.MyPlayer.IsHost && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
         {
             Invoke("StartGame", 2f);
             CancelInvoke("CheckStartGame");
@@ -129,7 +128,7 @@ public class MatchPanel : MonoBehaviour
     private void SetPlayingState(bool isPlaying)
     {
         this.isPlaying = isPlaying;
-        if (Players.MyPlayer.IsHost)
+        if ( MyComponents.Players.MyPlayer.IsHost)
             StartButton.GetComponent<Button>().interactable = !isPlaying;
         CheckTeamButtons();
         Open(!isPlaying);
@@ -142,7 +141,7 @@ public class MatchPanel : MonoBehaviour
 
     public void ChangeTeam(int teamNumber)
     {
-        Players.MyPlayer.ChangeTeam((Team)teamNumber);
+        MyComponents.Players.MyPlayer.ChangeTeam((Team)teamNumber);
     }
 
     private void OnDestroy()

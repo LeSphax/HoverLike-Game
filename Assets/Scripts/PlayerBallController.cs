@@ -52,7 +52,7 @@ namespace PlayerBallControl
             if (Player.State.Stealing == StealingState.STEALING)
                 foreach (ConnectionId id in idsPlayerInContact)
                 {
-                    if (id == MyComponents.BallState.GetIdOfPlayerOwningBall() && Players.players[id].State.Stealing != StealingState.PROTECTED)
+                    if (id == MyComponents.BallState.GetIdOfPlayerOwningBall() && MyComponents.Players.players[id].State.Stealing != StealingState.PROTECTED)
                     {
                         MyComponents.BallState.SetAttached(playerConnectionId);
                         Player.State.Stealing = StealingState.IDLE;
@@ -63,7 +63,7 @@ namespace PlayerBallControl
 
         void OnCollisionEnter(Collision collision)
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
@@ -76,7 +76,7 @@ namespace PlayerBallControl
 
         void OnCollisionExit(Collision collision)
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
@@ -88,7 +88,7 @@ namespace PlayerBallControl
 
         void OnTriggerStay(Collider collider)
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 if (!MyComponents.BallState.IsAttached())
                 {
@@ -117,12 +117,12 @@ namespace PlayerBallControl
         public void ThrowBallCurve(Vector3[] controlPoints, float power)
         {
             PrepareForThrowing();
-            MyComponents.BallState.trajectoryStrategy = new ThrowTrajectoryStrategy(controlPoints, power);
+            MyComponents.BallState.trajectoryStrategy = new ThrowTrajectoryStrategy(MyComponents.BallState, controlPoints, power);
         }
 
         public void ThrowBall(Vector3 target, float power)
         {
-            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy(MyComponents.BallState);
             PrepareForThrowing();
             SetBallSpeed(target, power);
         }

@@ -1,15 +1,15 @@
 ﻿using PlayerManagement;
 using UnityEngine;
 
-public class HideIfNotHost : MonoBehaviour
+public class HideIfNotHost : SlideBall.MonoBehaviour
 {
 
     void Start()
     {
         if (!EditorVariables.HeadlessServer)
         {
-            Players.MyPlayer.IsHostChanged += HostChanged;
-            HostChanged(Players.MyPlayer.IsHost);
+           MyComponents.Players.MyPlayer.IsHostChanged += HostChanged;
+            HostChanged(MyComponents.Players.MyPlayer.IsHost);
         }
     }
 

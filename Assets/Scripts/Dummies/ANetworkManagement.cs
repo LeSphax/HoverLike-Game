@@ -1,10 +1,9 @@
 ﻿using Byn.Net;
 using SlideBall.Networking;
 
-public abstract class ANetworkManagement : SlideBall.MonoBehaviour
+public abstract class ANetworkManagement : SlideBall.NetworkMonoBehaviour
 {
 
-    public abstract bool IsServer { get; }
     public abstract bool CurrentlyPlaying { get; set; }
     public abstract bool IsConnected { get; }
     public abstract void RefreshRoomData();

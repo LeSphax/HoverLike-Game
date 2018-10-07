@@ -4,7 +4,6 @@ using Byn.Net;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Assertions;
-using PlayerBallControl;
 using SlideBall.Networking;
 using Ball;
 using Navigation;
@@ -34,14 +33,14 @@ namespace PlayerManagement
         }
 
         //The server is the only one having access to this dictionnary
-        public static Dictionary<ConnectionId, Player> players = new Dictionary<ConnectionId, Player>();
+        public Dictionary<ConnectionId, Player> players = new Dictionary<ConnectionId, Player>();
 
-        public static event ConnectionEventHandler NewPlayerCreated;
-        public static event ConnectionEventHandler NewPlayerInstantiated;
-        public static event OwnerChangeHandler PlayerOwningBallChanged;
-        public static event EmptyEventHandler PlayersDataReceived;
+        public event ConnectionEventHandler NewPlayerCreated;
+        public event ConnectionEventHandler NewPlayerInstantiated;
+        public event OwnerChangeHandler PlayerOwningBallChanged;
+        public event EmptyEventHandler PlayersDataReceived;
 
-        public static void NotifyNewPlayerInstantiated(ConnectionId playerId)
+        public void NotifyNewPlayerInstantiated(ConnectionId playerId)
         {
             if (NewPlayerInstantiated != null)
             {
@@ -50,8 +49,8 @@ namespace PlayerManagement
         }
 
         //This variable only exists on client, on the server it is contained in the dictionary 'players'
-        public static ConnectionId myPlayerId;
-        public static Player MyPlayer
+        public ConnectionId myPlayerId;
+        public Player MyPlayer
         {
             get
             {
@@ -62,7 +61,7 @@ namespace PlayerManagement
             }
         }
 
-        internal static void SetState(MovementState movementState)
+        internal void SetState(MovementState movementState)
         {
             foreach (Player player in players.Values)
             {
@@ -70,7 +69,7 @@ namespace PlayerManagement
             }
         }
 
-        public static void Reset()
+        public void Reset()
         {
             myPlayerId = INVALID_PLAYER_ID;
             NewPlayerCreated = null;
@@ -80,7 +79,7 @@ namespace PlayerManagement
         public void ChangePlayerOwningBall(ConnectionId previousPlayerId, ConnectionId newPlayerId, bool sendUpdate)
         {
             //Debug.LogError("PlayerOwningBallChanged " + previousPlayer + "   " + newPlayer);
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
                 ballOwnerChanged = sendUpdate;
             if (newPlayerId != previousPlayerId)
             {
@@ -89,7 +88,7 @@ namespace PlayerManagement
                     Player previousPlayer = players[previousPlayerId];
                     previousPlayer.HasBall = false;
                     previousPlayer.controller.animator.SetBool("Catch", false);
-                    if (MyComponents.NetworkManagement.IsServer)
+                    if (NetworkingState.IsServer)
                         previousPlayer.controller.View.RPC("SetStealOnCooldown", previousPlayerId);
                 }
                 if (newPlayerId != BallState.NO_PLAYER_ID)
@@ -115,7 +114,7 @@ namespace PlayerManagement
             currentIndex++;
             if (hasBallOwnerChanged)
             {
-                Assert.IsTrue(!MyComponents.NetworkManagement.IsServer);
+                Assert.IsTrue(!NetworkingState.IsServer);
                 if (MyComponents.BallState != null)
                     MyComponents.BallState.SetAttached(new ConnectionId(BitConverter.ToInt16(message.data, currentIndex)), false);
                 currentIndex += 2;
@@ -193,7 +192,7 @@ namespace PlayerManagement
             }
         }
 
-        private static byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
+        private byte[] CreatePlayerPacket(Player player, PlayerFlags flags)
         {
             //Debug.Log("Send " + player.id.id + "    " + flags);
             byte[] id = BitConverter.GetBytes(player.id.id);
@@ -240,7 +239,7 @@ namespace PlayerManagement
             return data;
         }
 
-        private static Player GetOrCreatePlayer(ConnectionId id)
+        private Player GetOrCreatePlayer(ConnectionId id)
         {
             Player player;
             if (!players.TryGetValue(id, out player))
@@ -252,20 +251,20 @@ namespace PlayerManagement
             return player;
         }
 
-        public static Player CreatePlayer(ConnectionId id)
+        public Player CreatePlayer(ConnectionId id)
         {
-            Debug.Log("Create player");
             Player player;
-            player = new Player(id);
+            player = new Player(id, MyComponents);
             if (players.Count == 0)
                 player.isHost = true;
             players.Add(id, player);
             MyComponents.NetworkManagement.RefreshRoomData();
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 if (Scenes.IsCurrentScene(Scenes.MainIndex))
                 {
-                    player.gameobjectAvatar = Functions.InstantiatePlayer(id);
+                    player.gameobjectAvatar = GameState.InstantiatePlayer(MyComponents.NetworkViewsManagement, id);
+                    Debug.Log("Instantiate player");
                 }
             }
 
@@ -281,7 +280,7 @@ namespace PlayerManagement
             return data;
         }
 
-        public static List<Player> GetPlayersInTeam(Team team)
+        public List<Player> GetPlayersInTeam(Team team)
         {
             List<Player> result = new List<Player>();
             foreach (var player in players.Values)
@@ -297,7 +296,7 @@ namespace PlayerManagement
         public void SendPlayersData(ConnectionId recipientId)
         {
             Debug.LogWarning("Send Players data " + recipientId);
-            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
+            Assert.IsTrue(NetworkingState.IsServer);
             byte[] packet = BitConverter.GetBytes(false);
             foreach (Player player in players.Values)
                 packet = ArrayExtensions.Concatenate(packet, CreatePlayerPacket(player, PlayerFlags.ALL));
@@ -312,7 +311,7 @@ namespace PlayerManagement
 
         internal void RemovePlayer(ConnectionId connectionId)
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 Player player;
                 if (players.TryGetValue(connectionId, out player))

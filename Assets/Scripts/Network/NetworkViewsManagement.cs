@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class NetworkViewsManagement : SlideBall.MonoBehaviour
+public class NetworkViewsManagement : SlideBall.NetworkMonoBehaviour
 {
     private Dictionary<short, ANetworkView> networkViews = new Dictionary<short, ANetworkView>();
 
@@ -20,13 +20,13 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         {
             if (nextViewId == INVALID_VIEW_ID)
             {
-                //if (MyComponents.NetworkManagement.IsServer)
+                //if (NetworkingState.IsServer)
                 //{
-                    
+
                 //}
                 //else
                 //{
-                    Debug.LogError("Call to nextViewId before it was set");
+                Debug.LogError("Call to nextViewId before it was set");
                 //}
             }
             return nextViewId;
@@ -40,9 +40,9 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
 
     protected void Update()
     {
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
-            ObservedComponent.SendBatch();
+            ObservedComponent.SendBatch(MyComponents.NetworkManagement, this);
         }
     }
 
@@ -82,11 +82,6 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
         this.nextViewId = nextViewId;
     }
 
-    public GameObject Instantiate(string path)
-    {
-        return Instantiate(path, Vector3.zero, Quaternion.identity);
-    }
-
     public void InstantiateOnServer(string path, Vector3 position, Quaternion rotation, params object[] initialisationParameters)
     {
         InstantiationMessage content = new InstantiationMessage(path, position, rotation, initialisationParameters);
@@ -105,7 +100,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
             return null;
         }
 
-        GameObject go = (GameObject)GameObject.Instantiate(prefabGo, position, rotation);
+        GameObject go = Instantiate(prefabGo, position, rotation, MyComponents.transform);
         MyNetworkView newView = go.GetComponent<MyNetworkView>();
         InstantiationMessage content;
         if (newView != null)
@@ -175,7 +170,7 @@ public class NetworkViewsManagement : SlideBall.MonoBehaviour
             {
                 int dataLength = BitConverter.ToInt16(message.data, currentIndex);
                 currentIndex += 2;
-                DistributeMessage(connectionId,NetworkMessage.Deserialize(message.data, ref currentIndex, dataLength));
+                DistributeMessage(connectionId, NetworkMessage.Deserialize(message.data, ref currentIndex, dataLength));
             }
         }
         else if (networkViews.ContainsKey(message.viewId) && (Scenes.IsCurrentScene(message.sceneId) || !message.isSceneDependant()))

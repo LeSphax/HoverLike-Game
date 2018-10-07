@@ -4,7 +4,7 @@ using Byn.Net;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class LatencyGUI : MonoBehaviour
+public class LatencyGUI : SlideBall.MonoBehaviour
 {
 
     private float currentYPosition = 0;

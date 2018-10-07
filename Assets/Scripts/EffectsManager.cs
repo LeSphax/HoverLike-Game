@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
-public class EffectsManager : SlideBall.MonoBehaviour
+public class EffectsManager : SlideBall.NetworkMonoBehaviour
 {
 
     public ParticleSystem BlueSmoke;

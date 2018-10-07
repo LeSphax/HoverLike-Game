@@ -3,7 +3,7 @@ using SlideBall.Networking;
 using System;
 using UnityEngine;
 
-public abstract class ANetworkView : MonoBehaviour
+public abstract class ANetworkView : SlideBall.MonoBehaviour
 {
     [SerializeField]
     private short viewId;

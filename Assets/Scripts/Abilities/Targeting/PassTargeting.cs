@@ -63,7 +63,7 @@ public class PassTargeting : AbilityTargeting
         {
             GameObject go = hit.gameObject;
             PlayerController controller = GetParentPlayerController(go.transform);
-            if (controller != null && controller.playerConnectionId != Players.myPlayerId && controller.Player.Team == Players.MyPlayer.Team)
+            if (controller != null && controller.playerConnectionId !=MyComponents.Players.myPlayerId && controller.Player.Team ==MyComponents.Players.MyPlayer.Team)
             {
                 float distance = Vector3.Distance(targeter.transform.position, controller.transform.position);
 

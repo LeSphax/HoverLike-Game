@@ -9,8 +9,6 @@ public class AgentSB : Agent
     [HideInInspector]
     public int agentId;
 
-    private bool hitBall = false;
-
     private void Awake()
     {
         brain = FindObjectOfType<Brain>();
@@ -39,7 +37,7 @@ public class AgentSB : Agent
                 MyComponents.InputManager.SetKey(movementKeys[i]);
         }
 
-        if (Players.MyPlayer.HasBall)
+        if (MyComponents.Players.MyPlayer.HasBall)
         {
             SetReward(1f);
             Done();
@@ -59,9 +57,8 @@ public class AgentSB : Agent
 
     public override void AgentReset()
     {
-        hitBall = false;
         transform.localPosition = new Vector3(Random.Range(-10, 10), transform.localPosition.y, Random.Range(-10, 10));
-        MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+        MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy(MyComponents.BallState);
         Vector3? ballPosition = null;
         while(ballPosition == null || Vector3.Distance(transform.localPosition, ballPosition.Value) < 5)
         {

@@ -13,14 +13,16 @@ namespace SlideBall.Networking
     public class BufferedMessages
     {
         private NetworkManagement networkManagement;
+        private NetworkViewsManagement viewsManagement;
 
         private Dictionary<int, List<StoredMessage>> bufferedMessages = new Dictionary<int, List<StoredMessage>>();
 
 
-        public BufferedMessages(NetworkManagement networkManagement)
+        public BufferedMessages(NetworkManagement networkManagement, NetworkViewsManagement viewsManagement)
         {
-            Assert.IsTrue(networkManagement.IsServer);
+            Assert.IsTrue(NetworkingState.IsServer);
             this.networkManagement = networkManagement;
+            this.viewsManagement = viewsManagement;
             NavigationManager.FinishedLoadingScene += SceneChanged;
         }
 
@@ -39,7 +41,7 @@ namespace SlideBall.Networking
                 {
                     if (connectionId == NetworkManagement.SERVER_CONNECTION_ID)
                     {
-                        MyComponents.NetworkViewsManagement.DistributeMessage(storedMessage.senderId, storedMessage.message);
+                        viewsManagement.DistributeMessage(storedMessage.senderId, storedMessage.message);
                     }
                     else
                     {

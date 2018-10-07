@@ -40,7 +40,7 @@ public static class RPCTargetsMethods
             case RPCTargets.OthersBuffered:
                 return false;
             case RPCTargets.Server:
-                return MyComponents.NetworkManagement.IsServer;
+                return NetworkingState.IsServer;
             default:
                 throw new UnhandledSwitchCaseException(target);
         }
@@ -48,7 +48,7 @@ public static class RPCTargetsMethods
 
     public static bool IsSentToNetwork(this RPCTargets target)
     {
-        if (target == RPCTargets.Server && MyComponents.NetworkManagement.IsServer)
+        if (target == RPCTargets.Server && NetworkingState.IsServer)
             return false;
         return true;
     }

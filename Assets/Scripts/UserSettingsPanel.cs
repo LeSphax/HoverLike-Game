@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class UserSettingsPanel : MonoBehaviour
+public class UserSettingsPanel : SlideBall.MonoBehaviour
 {
 
     public Button[] buttons;
@@ -51,8 +51,8 @@ public class UserSettingsPanel : MonoBehaviour
 
     private void Reset()
     {
-        previousGUIPart = SlideBallInputs.currentPart;
-        SlideBallInputs.currentPart = GUIPart.MENU;
+        previousGUIPart = MyComponents.InputManager.currentPart;
+        MyComponents.InputManager.currentPart = GUIPart.MENU;
         nicknamePlaceholder.text = Random_Name_Generator.GetRandomName();
         nicknameField.text = UserSettings.Nickname;
         volumeSlider.value = UserSettings.Volume;
@@ -106,14 +106,20 @@ public class UserSettingsPanel : MonoBehaviour
     {
         if (ValidConfiguration())
         {
+            string nickname;
             if (nicknameField.text == "")
             {
-                UserSettings.Nickname = nicknamePlaceholder.text;
+                nickname = nicknamePlaceholder.text;
             }
             else
             {
-                UserSettings.Nickname = nicknameField.text;
+                nickname = nicknameField.text;
             }
+
+            UserSettings.Nickname = nicknameField.text;
+            if (MyComponents.Players.MyPlayer != null)
+                MyComponents.Players.MyPlayer.Nickname = nickname;
+
             string keys = "";
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -150,7 +156,7 @@ public class UserSettingsPanel : MonoBehaviour
 
     public void Close()
     {
-        SlideBallInputs.currentPart = previousGUIPart;
+        MyComponents.InputManager.currentPart = previousGUIPart;
         Destroy(gameObject);
     }
 }

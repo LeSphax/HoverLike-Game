@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ServerInfoPanel : MonoBehaviour
+public class ServerInfoPanel : SlideBall.MonoBehaviour
 {
 
     public Text roomNameLabel;
@@ -16,7 +16,7 @@ public class ServerInfoPanel : MonoBehaviour
     {
         if (data.hasPassword)
         {
-            PasswordPanel.InstantiatePanel(data.name);
+            PasswordPanel.InstantiatePanel(data.name, MyComponents.PopUp.transform);
         }
         else
             ((NetworkManagement) MyComponents.NetworkManagement).ConnectToRoom(roomNameLabel.text);

@@ -1,8 +1,7 @@
 ﻿using Byn.Net;
-using PlayerManagement;
 using UnityEngine;
 
-public class BlockExplosion : MonoBehaviour
+public class BlockExplosion : SlideBall.MonoBehaviour
 {
     public const float BLOCK_DIAMETER = 35;
 
@@ -18,7 +17,7 @@ public class BlockExplosion : MonoBehaviour
     public void InitView(object[] parameters)
     {
         targetId = (ConnectionId)parameters[0];
-        target = Players.players[targetId].controller.transform;
+        target =MyComponents.Players.players[targetId].controller.transform;
     }
 
     private void VisualEffects(Transform target)

@@ -1,7 +1,7 @@
 ﻿using PlayerManagement;
 using UnityEngine;
 
-public class BallThrower : MonoBehaviour
+public class BallThrower : SlideBall.MonoBehaviour
 {
     public GameObject goal;
     public float timeToWaitBeforeThrow = 0f;

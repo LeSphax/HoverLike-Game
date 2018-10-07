@@ -112,13 +112,13 @@ public class MyNetworkView : ANetworkView
 
     public void RPC(string methodName, RPCTargets targets, params object[] parameters)
     {
-        //Assert.IsFalse(targets.IsInvokedInPlace() && !MyComponents.NetworkManagement.isServer && !methodName.Contains("Manual"),methodName + "    "+ targets);
+        //Assert.IsFalse(targets.IsInvokedInPlace() && !NetworkingState.IsServer && !methodName.Contains("Manual"),methodName + "    "+ targets);
         rpcManager.RPC(methodName, targets, parameters);
     }
 
     public void RPC(string methodName, MessageFlags additionalFlags, RPCTargets targets, params object[] parameters)
     {
-        //Assert.IsFalse(targets.IsInvokedInPlace() && !MyComponents.NetworkManagement.isServer, methodName + "    " + targets);
+        //Assert.IsFalse(targets.IsInvokedInPlace() && !NetworkingState.IsServer, methodName + "    " + targets);
         rpcManager.RPC(methodName, additionalFlags, targets, parameters);
     }
 }

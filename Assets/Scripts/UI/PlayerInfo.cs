@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public delegate void TeamChangeHandler(PlayerInfo playerInfo, Team newTeam);
 
 [RequireComponent(typeof(AudioSource))]
-public class PlayerInfo : MonoBehaviour
+public class PlayerInfo : SlideBall.MonoBehaviour
 {
 
     [SerializeField]
@@ -78,7 +78,7 @@ public class PlayerInfo : MonoBehaviour
     void Start()
     {
         Latency = 0;
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
             MyComponents.TimeManagement.LatencyChanged += SetLatency;
         }
@@ -103,6 +103,7 @@ public class PlayerInfo : MonoBehaviour
     void Destroy(Player player)
     {
         Destroy(gameObject);
+        Player.UpdatePlayersDataOnDestroy(player.id, MyComponents);
     }
 
     void OnDestroy()

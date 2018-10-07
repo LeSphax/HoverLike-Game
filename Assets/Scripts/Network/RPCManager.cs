@@ -7,7 +7,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class RPCManager : SlideBall.MonoBehaviour
+public class RPCManager : SlideBall.NetworkMonoBehaviour
 {
     public const string SenderIdParameterName = "RPCSenderId";
     private Dictionary<short, RPCHandler> idsToRPC = new Dictionary<short, RPCHandler>();

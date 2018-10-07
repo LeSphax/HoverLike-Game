@@ -5,7 +5,7 @@ using UnityEngine;
 
 public delegate void NewMessageHandler(string message);
 
-public class ChatManager : SlideBall.MonoBehaviour
+public class ChatManager : SlideBall.NetworkMonoBehaviour
 {
     private List<ChatMessage> messageHistory = new List<ChatMessage>();
 
@@ -18,7 +18,7 @@ public class ChatManager : SlideBall.MonoBehaviour
             targets = RPCTargets.All;
         else
             targets = RPCTargets.Team;
-        View.RPC("ReceiveMessage", targets, content, Players.myPlayerId, sendToAll);
+        View.RPC("ReceiveMessage", targets, content,MyComponents.Players.myPlayerId, sendToAll);
     }
 
     [MyRPC]
@@ -28,7 +28,7 @@ public class ChatManager : SlideBall.MonoBehaviour
         messageHistory.Add(newMessage);
         if (NewMessage != null)
         {
-            NewMessage.Invoke(newMessage.ToString());
+            NewMessage.Invoke(newMessage.ToString(MyComponents.Players.players));
         }
     }
 
@@ -45,14 +45,14 @@ public class ChatManager : SlideBall.MonoBehaviour
             this.sentToAll = sentToAll;
         }
 
-        public override string ToString()
+        public string ToString(Dictionary<ConnectionId, Player> players)
         {
             string result;
             if (sentToAll)
                 result = "[ALL] ";
             else
                 result = "[TEAM] ";
-            return result + Players.players[sender].nickname + " : " + content + "\n";
+            return result + players[sender].nickname + " : " + content + "\n";
         }
     }
 }

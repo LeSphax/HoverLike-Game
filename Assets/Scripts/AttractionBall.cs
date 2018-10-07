@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class AttractionBall : MonoBehaviour
+public class AttractionBall : SlideBall.MonoBehaviour
 {
 
     public float power = 2f;

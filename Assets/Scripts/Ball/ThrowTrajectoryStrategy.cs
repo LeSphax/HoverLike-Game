@@ -27,14 +27,14 @@ namespace Ball
         public static float ShootPowerLevel = 250;
         float speed;
 
-        public ThrowTrajectoryStrategy(Vector3[] controlPoints, float power)
+        public ThrowTrajectoryStrategy(BallState ballState, Vector3[] controlPoints, float power) : base(ballState)
         {
-            Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
-            MyComponents.BallState.DetachBall();
-            MyComponents.BallState.UnCatchable = false;
+            Assert.IsTrue(NetworkingState.IsServer);
+            BallState.DetachBall();
+            BallState.UnCatchable = false;
             AttractionBall.Activated = false;
-            MyComponents.BallState.TrySetKinematic();
-            MyComponents.BallState.transform.SetParent(null);
+            BallState.TrySetKinematic();
+            BallState.SetWorldAsParent();
 
             this.curveLength = BezierMaths.LengthBezier3(controlPoints, 10);
             this.speed = BallMovementView.GetShootPowerLevel(power);
@@ -47,29 +47,29 @@ namespace Ball
             float newCompletion = previousCompletion + increment;
             if (newCompletion <= 1)
             {
-                Vector3 previousPosition = MyComponents.BallState.transform.position;
+                Vector3 previousPosition = BallState.transform.position;
                 Vector3 newPosition = BezierMaths.Bezier3(controlPoints, newCompletion);
                 newPosition = new Vector3(
                     newPosition.x,
-                    MyComponents.BallState.transform.position.y,
+                    BallState.transform.position.y,
                     newPosition.z
                     );
 
 
 
                 float displacement = Vector3.Distance(newPosition, previousPosition) / Time.fixedDeltaTime;
-                float reducedProportion = (displacement * Time.fixedDeltaTime * MyComponents.BallState.Rigidbody.drag) / displacement;
+                float reducedProportion = (displacement * Time.fixedDeltaTime * BallState.Rigidbody.drag) / displacement;
                 //The TimeSlowApplier effect doesn't matter for the horizontal movement since we depend on the previousCompletion 
                 //So we do slow the ball manually instead
                 //It still takes cares of having the ball fall twice as slow though
-                if (TimeSlowApplier.ObjectsBeforeUpdate.Keys.Contains(MyComponents.BallState.Rigidbody))
+                if (TimeSlowApplier.ObjectsBeforeUpdate.Keys.Contains(BallState.Rigidbody))
                 {
                     increment *= TimeSlowApplier.PlayerSlowProportion;
                     newCompletion = previousCompletion + increment;
                     newPosition = BezierMaths.Bezier3(controlPoints, newCompletion);
                     newPosition = new Vector3(
                         newPosition.x,
-                        MyComponents.BallState.transform.position.y,
+                        BallState.transform.position.y,
                         newPosition.z
                         );
                     reducedProportion *= TimeSlowApplier.PlayerSlowProportion;
@@ -83,7 +83,7 @@ namespace Ball
                 }
                 else
                 {
-                    MyComponents.BallState.transform.position = newPosition;
+                    BallState.transform.position = newPosition;
                 }
             }
             else
@@ -116,8 +116,8 @@ namespace Ball
 
         private void StopControlledTrajectory()
         {
-            MyComponents.BallState.Rigidbody.velocity = new Vector3(CurrentVelocity.x, MyComponents.BallState.Rigidbody.velocity.y, CurrentVelocity.z);
-            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+            BallState.Rigidbody.velocity = new Vector3(CurrentVelocity.x, BallState.Rigidbody.velocity.y, CurrentVelocity.z);
+            BallState.trajectoryStrategy = new FreeTrajectoryStrategy(BallState);
             //EditorApplication.isPaused = true;
 
         }

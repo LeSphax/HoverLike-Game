@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyManager : MonoBehaviour
+public class LobbyManager : SlideBall.MonoBehaviour
 {
 
     public GameObject MainPanel;

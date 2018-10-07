@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Music : MonoBehaviour
+public class Music : SlideBall.MonoBehaviour
 {
 
     public AudioSource source;

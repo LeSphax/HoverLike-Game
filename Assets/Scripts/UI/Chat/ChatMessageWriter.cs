@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ChatMessageWriter : MonoBehaviour
+public class ChatMessageWriter : SlideBall.MonoBehaviour
 {
     public InputField input;
     public ChatTargetOfMessageLabel target;
@@ -13,13 +13,13 @@ public class ChatMessageWriter : MonoBehaviour
 
     private void Update()
     {
-        if (SlideBallInputs.AnyEnterDown())
+        if (InputManager.AnyEnterDown())
         {
             if (input.gameObject.activeSelf)
                 SendContent(input.text, target.SendToAll);
             else
             {
-                target.SetTarget(SlideBallInputs.AnyShift() ? TargetOfMessage.ALL : TargetOfMessage.TEAM);
+                target.SetTarget(InputManager.AnyShift() ? TargetOfMessage.ALL : TargetOfMessage.TEAM);
                 ActivateInput(true);
             }
         }
@@ -36,11 +36,11 @@ public class ChatMessageWriter : MonoBehaviour
         input.gameObject.SetActive(active);
         if (input.gameObject.activeSelf)
         {
-            SlideBallInputs.currentPart = GUIPart.CHAT;
+            MyComponents.InputManager.currentPart = GUIPart.CHAT;
             FocusOnInputField();
         }
         else
-            SlideBallInputs.currentPart = Scenes.CurrentSceneDefaultGUIPart();
+            MyComponents.InputManager.currentPart = Scenes.CurrentSceneDefaultGUIPart();
     }
 
     public void SendContent(string content, bool sendToAll)

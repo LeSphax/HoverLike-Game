@@ -1,23 +1,25 @@
-﻿using Byn.Net;
+﻿using Ball;
+using Byn.Net;
 using PlayerManagement;
 using UnityEngine;
 
-public class ArenaManager : MonoBehaviour, IGameInit
+public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
 {
     public event EmptyEventHandler AllObjectsCreated;
 
     void Start()
     {
         Debug.Log("ArenaManager: CreatePlayer");
-        Players.NewPlayerInstantiated += InitPlayer;
+        MyComponents.Players.NewPlayerInstantiated += InitPlayer;
 
-        MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
+        GameObject ball = MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
         ConnectionId id = ConnectionId.INVALID;
-        Players.CreatePlayer(id);
-        Players.myPlayerId = id;
-        Players.MyPlayer.Nickname = UserSettings.Nickname;
-        Players.MyPlayer.SceneId = Scenes.currentSceneId;
+        Player p = MyComponents.Players.CreatePlayer(id);
+        MyComponents.Players.myPlayerId = id;
+        MyComponents.Players.MyPlayer.Nickname = UserSettings.Nickname;
+        MyComponents.Players.MyPlayer.SceneId = Scenes.currentSceneId;
+
 
         if (AllObjectsCreated != null)
             AllObjectsCreated.Invoke();
@@ -25,7 +27,7 @@ public class ArenaManager : MonoBehaviour, IGameInit
 
     private void InitPlayer(ConnectionId playerId)
     {
-        Player player = Players.players[playerId];
+        Player player = MyComponents.Players.players[playerId];
 
         player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
         player.Team = Team.BLUE;

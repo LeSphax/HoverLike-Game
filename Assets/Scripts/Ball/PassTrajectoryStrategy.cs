@@ -1,5 +1,6 @@
 ﻿using Byn.Net;
 using PlayerManagement;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -11,24 +12,24 @@ namespace Ball
         Transform target;
         const float SPEED = 150;
 
-        public PassTrajectoryStrategy(ConnectionId passerId, ConnectionId targetId)
+        public PassTrajectoryStrategy(BallState ballState, Dictionary<ConnectionId, Player> players, ConnectionId passerId, ConnectionId targetId) : base(ballState)
         {
-            MyComponents.BallState.DetachBall();
-            MyComponents.BallState.UnCatchable = true;
-            MyComponents.BallState.PassTarget = targetId;
-            MyComponents.BallState.transform.SetParent(null);
+            BallState.DetachBall();
+            BallState.UnCatchable = true;
+            BallState.PassTarget = targetId;
+            BallState.SetWorldAsParent();
 
-            passerPosition = Players.players[passerId].controller.transform.position;
-            target = Players.players[targetId].controller.transform;
+            passerPosition = players[passerId].controller.transform.position;
+            target = players[targetId].controller.transform;
 
-            MyComponents.BallState.UncatchableChanged += EndPassIfBallCaught;
+            BallState.UncatchableChanged += EndPassIfBallCaught;
         }
 
         public override void MoveBall()
         {
             //On ramène la position de la balle sur la droite entre les deux joueurs qui se font la passe.
             Vector3 trajectoryPlaneNormal = Vector3.Normalize(Vector3.Cross(target.position - passerPosition, Vector3.up));
-            Vector3 proj_ballPositionOnTrajectoryPlane = MyComponents.BallState.transform.position - Vector3.Dot(MyComponents.BallState.transform.position - target.position, trajectoryPlaneNormal) * trajectoryPlaneNormal;
+            Vector3 proj_ballPositionOnTrajectoryPlane = BallState.transform.position - Vector3.Dot(BallState.transform.position - target.position, trajectoryPlaneNormal) * trajectoryPlaneNormal;
             Vector3 proj_ballPositionOnTrajectoryLine = new Vector3(proj_ballPositionOnTrajectoryPlane.x, passerPosition.y, proj_ballPositionOnTrajectoryPlane.z);
 
             Vector3 newPositionOnLine = Vector3.MoveTowards(proj_ballPositionOnTrajectoryLine, target.position, SPEED * Time.fixedDeltaTime);
@@ -43,7 +44,7 @@ namespace Ball
             //Debug.Log(trajectoryPlaneNormal + "   " + proj_ballPositionOnTrajectoryLine + "   " + proj_ballPositionOnTrajectoryPlane + "   " + newPositionOnLine + "   " + newHorizontalPosition + "    " + targetPosition);
             //Debug.Log(manager.transform.position + "    " + target.position + "    " + H_completion + "     " + yPos);
 
-            MyComponents.BallState.transform.position = Vector3.MoveTowards(MyComponents.BallState.transform.position, targetPosition, SPEED * Time.fixedDeltaTime);
+            BallState.transform.position = Vector3.MoveTowards(BallState.transform.position, targetPosition, SPEED * Time.fixedDeltaTime);
         }
 
         private void EndPassIfBallCaught(bool newUncatchable)
@@ -51,8 +52,8 @@ namespace Ball
             Assert.IsFalse(newUncatchable);
             if (newUncatchable == false)
             {
-                MyComponents.BallState.UncatchableChanged -= EndPassIfBallCaught;
-                MyComponents.BallState.PassTarget = Players.INVALID_PLAYER_ID;
+                BallState.UncatchableChanged -= EndPassIfBallCaught;
+                BallState.PassTarget = Players.INVALID_PLAYER_ID;
             }
         }
     }

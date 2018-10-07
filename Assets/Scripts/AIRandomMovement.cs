@@ -7,7 +7,7 @@ using UnityEngine;
 namespace AbilitiesManagement
 {
     [RequireComponent(typeof(PlayerController))]
-    public class AIRandomMovement : MonoBehaviour
+    public class AIRandomMovement : SlideBall.MonoBehaviour
     {
         private float MoveDelay = 2f;
         private float JumpDelay = 10f;
@@ -35,7 +35,7 @@ namespace AbilitiesManagement
             if (controller.Player != null)
                 if (controller.Player.IsMyPlayer)
                 {
-                    if (activateOnServer || !MyComponents.NetworkManagement.IsServer)
+                    if (activateOnServer || !NetworkingState.IsServer)
                     {
                         //Debug.LogError("Self "+isActivated + "    " + DevelopperCommands.activateAI);
                         if (!isActivated && DevelopperCommands.activateAI)
@@ -179,7 +179,7 @@ namespace AbilitiesManagement
 
         private void Pass()
         {
-            List<Player> friends = Players.GetPlayersInTeam(controller.Player.Team);
+            List<Player> friends = MyComponents.Players.GetPlayersInTeam(controller.Player.Team);
             friends.Remove(controller.Player);
             if (friends.Count > 0)
             {

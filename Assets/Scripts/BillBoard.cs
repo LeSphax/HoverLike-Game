@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 
-public class BillBoard : MonoBehaviour
+public class BillBoard : SlideBall.MonoBehaviour
 {
     private Camera m_Camera;
 

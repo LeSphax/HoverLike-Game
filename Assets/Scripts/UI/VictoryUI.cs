@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class VictoryUI : MonoBehaviour
+public class VictoryUI : SlideBall.MonoBehaviour
 {
     public GameObject panel;
     public Text text;
@@ -33,7 +33,7 @@ public class VictoryUI : MonoBehaviour
         text.text = Language.Instance.texts["Won_Match"].Replace("%s", Language.Instance.texts[Teams.GetTeamNameKey(team)]);
         text.color = Colors.Teams[(int)team];
 
-        playAgainButton.gameObject.SetActive( Players.MyPlayer.isHost);
-        clientText.gameObject.SetActive(!Players.MyPlayer.isHost);
+        playAgainButton.gameObject.SetActive( MyComponents.Players.MyPlayer.isHost);
+        clientText.gameObject.SetActive(!MyComponents.Players.MyPlayer.isHost);
     }
 }

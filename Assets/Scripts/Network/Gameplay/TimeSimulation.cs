@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-class TimeSimulation : MonoBehaviour
+class TimeSimulation : SlideBall.MonoBehaviour
 {
 
     private static float timeInSeconds = 1;
@@ -8,7 +8,7 @@ class TimeSimulation : MonoBehaviour
     {
         get
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 return timeInSeconds;
             }
@@ -25,7 +25,7 @@ class TimeSimulation : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
             TimeInSeconds += UnityEngine.Time.fixedDeltaTime;
         }

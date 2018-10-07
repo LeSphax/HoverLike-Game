@@ -7,7 +7,7 @@ public class TeleportEffect : AbilityEffect
 
     public override void ApplyOnTarget(params object[] parameters)
     {
-        Players.MyPlayer.controller.View.RPC("Teleport", RPCTargets.Server);
+        MyComponents.Players.MyPlayer.controller.View.RPC("Teleport", RPCTargets.Server);
     }
 }
 

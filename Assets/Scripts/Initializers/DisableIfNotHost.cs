@@ -3,14 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Selectable))]
-public class DisableIfNotHost : MonoBehaviour
+public class DisableIfNotHost : SlideBall.MonoBehaviour
 {
     void Start()
     {
         if (!EditorVariables.HeadlessServer)
         {
-            Players.MyPlayer.IsHostChanged += HostChanged;
-            HostChanged(Players.MyPlayer.IsHost);
+           MyComponents.Players.MyPlayer.IsHostChanged += HostChanged;
+            HostChanged(MyComponents.Players.MyPlayer.IsHost);
         }
     }
 

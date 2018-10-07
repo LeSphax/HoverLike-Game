@@ -1,8 +1,7 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PowerBar : MonoBehaviour
+public class PowerBar : SlideBall.MonoBehaviour
 {
 
     public float powerValue;

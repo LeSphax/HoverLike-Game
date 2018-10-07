@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Runtime.InteropServices;
 
-public class LinkPanel : MonoBehaviour
+public class LinkPanel : SlideBall.MonoBehaviour
 {
     [DllImport("__Internal")]
     private static extern string ShowLink(string roomName);

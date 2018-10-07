@@ -4,7 +4,7 @@
 [RequireComponent(typeof(AbilityTargeting))]
 [RequireComponent(typeof(AbilityInput))]
 //Manages the state of the ability and its cooldown. Links the input, targeting and effects components of the ability.
-public class Ability : MonoBehaviour
+public class Ability : SlideBall.MonoBehaviour
 {
 
     private static event EmptyEventHandler NewAbilityUsed;
@@ -62,7 +62,7 @@ public class Ability : MonoBehaviour
             Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
 #endif
-        if (SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(5), GUIPart.ABILITY))
+        if (MyComponents.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(5), GUIPart.ABILITY))
         {
             TryCancelTargeting();
         }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MyNetworkView))]
-public abstract class ObservedComponent : SlideBall.MonoBehaviour
+public abstract class ObservedComponent : SlideBall.NetworkMonoBehaviour
 {
 
     public static float LastBatchTime
@@ -24,7 +24,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
 
     private float shouldSendFloat;
 
-    public static void SendBatch()
+    public static void SendBatch(ANetworkManagement networkManagement, NetworkViewsManagement networkViewsManagement)
     {
         if (messagesBatch.Count > 0)
         {
@@ -35,7 +35,7 @@ public abstract class ObservedComponent : SlideBall.MonoBehaviour
                 byte[] serializedMessage = ArrayExtensions.Concatenate(BitConverter.GetBytes((short)messagesBatch[i].data.Length), messagesBatch[i].Serialize());
                 data = ArrayExtensions.Concatenate(data, serializedMessage);
             }
-            MyComponents.NetworkManagement.SendNetworkMessage(new NetworkMessage(MyComponents.NetworkViewsManagement.View.ViewId, MessageType.PacketBatch, data));
+            networkManagement.SendNetworkMessage(new NetworkMessage(networkViewsManagement.View.ViewId, MessageType.PacketBatch, data));
             messagesBatch.Clear();
         }
     }

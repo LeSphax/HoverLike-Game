@@ -3,12 +3,12 @@ using Byn.Net;
 using PlayerManagement;
 using UnityEngine;
 
-public class PlayerSpawner : SlideBall.MonoBehaviour
+public class PlayerSpawner : SlideBall.NetworkMonoBehaviour
 {
     [MyRPC]
     public void DesactivatePlayers()
     {
-        Players.players.Values.Map(player =>
+       MyComponents.Players.players.Values.Map(player =>
         {
             if (player.controller != null)
                 player.controller.gameObject.SetActive(false);
@@ -18,7 +18,7 @@ public class PlayerSpawner : SlideBall.MonoBehaviour
     [MyRPC]
     public void ResetPlayers()
     {
-        Players.players.Values.Map(player =>
+       MyComponents.Players.players.Values.Map(player =>
         {
             if (player.controller != null)
                 player.controller.ResetPlayer();
@@ -28,7 +28,7 @@ public class PlayerSpawner : SlideBall.MonoBehaviour
     [MyRPC]
     public void ReactivatePlayers()
     {
-        Players.players.Values.Map(player =>
+       MyComponents.Players.players.Values.Map(player =>
         {
             if (player.controller != null)
                 player.controller.gameObject.SetActive(true);

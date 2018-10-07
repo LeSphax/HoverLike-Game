@@ -10,6 +10,11 @@ using UnityEngine.Assertions;
 public delegate void NetworkEventHandler(byte[] data, ConnectionId id);
 public delegate void ConnectionEventHandler(ConnectionId id);
 
+public static class NetworkingState
+{
+    public static bool IsServer { get; set; }
+}
+
 public class NetworkManagement : ANetworkManagement
 {
     public static ConnectionId SERVER_CONNECTION_ID = new ConnectionId(-1);
@@ -38,12 +43,15 @@ public class NetworkManagement : ANetworkManagement
             {
                 case State.IDLE:
                     bufferedMessages = null;
+                    NetworkingState.IsServer = false;
                     break;
                 case State.CONNECTED:
                     bufferedMessages = null;
+                    NetworkingState.IsServer = false;
                     break;
                 case State.SERVER:
-                    bufferedMessages = new BufferedMessages(this);
+                    NetworkingState.IsServer = true;
+                    bufferedMessages = new BufferedMessages(this, MyComponents.NetworkViewsManagement);
                     break;
                 default:
                     break;
@@ -79,7 +87,7 @@ public class NetworkManagement : ANetworkManagement
     /// <summary>
     /// True if the user opened an own room allowing incoming connections
     /// </summary>
-    public override bool IsServer
+    private bool IsServer
     {
         get
         {
@@ -159,7 +167,7 @@ public class NetworkManagement : ANetworkManagement
                 content += "@" + args[i];
             }
         Debug.Log("Send User Command " + content);
-        mNetwork.SendSignalingEvent(Players.myPlayerId, content, NetEventType.UserCommand);
+        mNetwork.SendSignalingEvent( MyComponents.Players.myPlayerId, content, NetEventType.UserCommand);
     }
 
     public void GetRooms()
@@ -169,14 +177,14 @@ public class NetworkManagement : ANetworkManagement
 
     public override void RefreshRoomData()
     {
-        RoomData data = new RoomData(Players.players.Count, CurrentlyPlaying, !MatchPanel.Password.Equals(""));
+        RoomData data = new RoomData( MyComponents.Players.players.Count, CurrentlyPlaying, !MatchPanel.Password.Equals(""));
         SendUserCommand(NetEventMessage.REFRESH_ROOM, RoomName, data.ToNetworkEntity());
     }
 
     public override void Reset()
     {
         Debug.Log("Reset Network");
-        Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
+        MyComponents.Players.NewPlayerCreated -= SendBufferedMessagesOnSceneChange;
         //ReceivedAllBufferedMessages = null;
         StateCurrent = State.IDLE;
         mConnections = new List<ConnectionId>();
@@ -240,7 +248,7 @@ public class NetworkManagement : ANetworkManagement
                         if (StateCurrent == State.IDLE)
                         {
                             StateCurrent = State.SERVER;
-                            Players.NewPlayerCreated += SendBufferedMessagesOnSceneChange;
+                            MyComponents.Players.NewPlayerCreated += SendBufferedMessagesOnSceneChange;
                             SetConnectionId(ConnectionId.INVALID);
                             RoomCreated.Invoke();
                         }
@@ -302,7 +310,7 @@ public class NetworkManagement : ANetworkManagement
                         else if (rawdata == NetEventMessage.WRONG_PASSWORD)
                         {
                             if (lastPassword.Equals(""))
-                                PasswordPanel.InstantiatePanel(RoomName);
+                                PasswordPanel.InstantiatePanel(RoomName, MyComponents.PopUp.transform);
                             else
                                 MyComponents.PopUp.Show(Language.Instance.texts["Wrong_Password"]);
                         }
@@ -349,7 +357,7 @@ public class NetworkManagement : ANetworkManagement
                             Assert.IsTrue(Scenes.IsCurrentScene(Scenes.MainIndex));
                             string password = ((string)evt.RawData).Split(ROOM_SEPARATOR_CHAR)[1];
 
-                            if (Players.players.Count > MatchPanel.MaxNumberPlayers)
+                            if ( MyComponents.Players.players.Count > MatchPanel.MaxNumberPlayers)
                                 SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.ROOM_FULL);
                             else if (CurrentlyPlaying)
                                 SendUserCommand(NetEventMessage.ASK_IF_ALLOWED_TO_ENTER.ToString(), evt.ConnectionId.id.ToString(), NetEventMessage.GAME_STARTED);
@@ -458,7 +466,7 @@ public class NetworkManagement : ANetworkManagement
 
     private void SendBufferedMessagesOnSceneChange(ConnectionId id)
     {
-        Players.players[id].eventNotifier.ListenToEvents(bufferedMessages.SendBufferedMessages, PlayerFlags.SCENEID);
+        MyComponents.Players.players[id].eventNotifier.ListenToEvents(bufferedMessages.SendBufferedMessages, PlayerFlags.SCENEID);
     }
 
     private void HandleIncomingEvent(ref NetworkEvent evt)
@@ -480,8 +488,8 @@ public class NetworkManagement : ANetworkManagement
             if (message.isSentToTeam())
             {
                 receivers = new List<ConnectionId>();
-                List<Player> teamMates = Players.GetPlayersInTeam(Players.players[senderId].Team);
-                teamMates.Map(player => { if (player.id != Players.myPlayerId && player.id != senderId) receivers.Add(player.id); });
+                List<Player> teamMates = MyComponents.Players.GetPlayersInTeam( MyComponents.Players.players[senderId].Team);
+                teamMates.Map(player => { if (player.id != MyComponents.Players.myPlayerId && player.id != senderId) receivers.Add(player.id); });
             }
             else
             {
@@ -493,7 +501,7 @@ public class NetworkManagement : ANetworkManagement
         if (IsServer)
             bufferedMessages.TryAddBuffered(senderId, message);
 
-        if (!IsServer || !message.isSentToTeam() || Players.players[senderId].Team == Players.MyPlayer.Team)
+        if (!IsServer || !message.isSentToTeam() || MyComponents.Players.players[senderId].Team == MyComponents.Players.MyPlayer.Team)
             MyComponents.NetworkViewsManagement.DistributeMessage(senderId, message);
 
         //This line of code is causing random crashes. 
@@ -533,8 +541,8 @@ public class NetworkManagement : ANetworkManagement
         if (message.isSentToTeam() && IsServer)
         {
             List<ConnectionId> connectionIds = new List<ConnectionId>();
-            List<Player> teamMates = Players.GetPlayersInTeam(Players.MyPlayer.Team);
-            teamMates.Map(player => { if (player.id != Players.myPlayerId) connectionIds.Add(player.id); });
+            List<Player> teamMates = MyComponents.Players.GetPlayersInTeam( MyComponents.Players.MyPlayer.Team);
+            teamMates.Map(player => { if (player.id != MyComponents.Players.myPlayerId) connectionIds.Add(player.id); });
             SendNetworkMessage(message, connectionIds.ToArray());
         }
         else
@@ -625,11 +633,11 @@ public class NetworkManagement : ANetworkManagement
         SceneChangeEventHandler handler;
         if (!EditorVariables.HeadlessServer)
         {
-            Players.CreatePlayer(id);
-            Players.myPlayerId = id;
-            Players.MyPlayer.Nickname = UserSettings.Nickname;
-            Players.MyPlayer.SceneId = Scenes.currentSceneId;
-            handler = (previousSceneId, currentSceneId) => { Players.MyPlayer.SceneId = currentSceneId; };
+            MyComponents.Players.CreatePlayer(id);
+            MyComponents.Players.myPlayerId = id;
+            MyComponents.Players.MyPlayer.Nickname = UserSettings.Nickname;
+            MyComponents.Players.MyPlayer.SceneId = Scenes.currentSceneId;
+            handler = (previousSceneId, currentSceneId) => { MyComponents.Players.MyPlayer.SceneId = currentSceneId; };
         }
         else
         {

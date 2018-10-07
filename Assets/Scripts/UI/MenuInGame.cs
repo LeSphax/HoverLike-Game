@@ -1,7 +1,7 @@
 ﻿using Navigation;
 using UnityEngine;
 
-public class MenuInGame : MonoBehaviour
+public class MenuInGame : SlideBall.MonoBehaviour
 {
 
 
@@ -29,14 +29,14 @@ public class MenuInGame : MonoBehaviour
     public void OpenMenu()
     {
         background.SetActive(true);
-        previousPart = SlideBallInputs.currentPart;
-        SlideBallInputs.currentPart = GUIPart.MENU;
+        previousPart = MyComponents.InputManager.currentPart;
+        MyComponents.InputManager.currentPart = GUIPart.MENU;
     }
 
     public void CloseMenu()
     {
         background.SetActive(false);
-        SlideBallInputs.currentPart = previousPart;
+        MyComponents.InputManager.currentPart = previousPart;
     }
 
     public void LeaveRoom()

@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-public class ExitRoom : MonoBehaviour {
+﻿public class ExitRoom : SlideBall.MonoBehaviour {
 
 	public void Exit()
     {

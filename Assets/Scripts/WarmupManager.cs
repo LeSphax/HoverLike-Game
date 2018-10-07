@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class WarmupManager : MonoBehaviour
+public class WarmupManager : SlideBall.MonoBehaviour
 {
 
 
@@ -12,25 +12,25 @@ public class WarmupManager : MonoBehaviour
     {
         if (activate)
         {
-            Players.players.Values.ForEach(player => { if (player.controller != null) InitPlayer(player.id); });
-            Players.NewPlayerInstantiated += InitPlayer;
+            MyComponents.Players.players.Values.ForEach(player => { if (player.controller != null) InitPlayer(player.id); });
+            MyComponents.Players.NewPlayerInstantiated += InitPlayer;
         }
         else
         {
-            Players.players.Values.ForEach(player =>
+            MyComponents.Players.players.Values.ForEach(player =>
             {
                 player.eventNotifier.StopListeningToEvents(ChangeAvatar, PlayerFlags.PLAY_AS_GOALIE);
                 player.eventNotifier.StopListeningToEvents(ResetPlayer, PlayerFlags.TEAM, PlayerFlags.AVATAR_SETTINGS);
             });
-            Players.NewPlayerInstantiated -= InitPlayer;
+            MyComponents.Players.NewPlayerInstantiated -= InitPlayer;
         }
     }
 
     private void InitPlayer(ConnectionId playerId)
     {
-        Player player = Players.players[playerId];
+        Player player = MyComponents.Players.players[playerId];
 
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
             player.AvatarSettingsType = player.PlayAsGoalie ? AvatarSettings.AvatarSettingsTypes.GOALIE : AvatarSettings.AvatarSettingsTypes.ATTACKER;
             if (player.Team == Team.NONE)
@@ -50,10 +50,10 @@ public class WarmupManager : MonoBehaviour
 
     private void ResetPlayer(Player player)
     {
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
             player.SpawnNumber = -1;
-            var takenSpawningPoints = Players.GetPlayersInTeam(player.Team).Select(p => p.SpawnNumber);
+            var takenSpawningPoints = MyComponents.Players.GetPlayersInTeam(player.Team).Select(p => p.SpawnNumber);
             short preferredSpawnNumber = player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.GOALIE ? (short)0 : (short)1;
             while (takenSpawningPoints.Contains(preferredSpawnNumber))
                 preferredSpawnNumber++;
@@ -66,11 +66,11 @@ public class WarmupManager : MonoBehaviour
 
     }
 
-    private static Team GetInitialTeam()
+    private Team GetInitialTeam()
     {
-        Assert.IsTrue(MyComponents.NetworkManagement.IsServer);
+        Assert.IsTrue(NetworkingState.IsServer);
         Team team;
-        if (Players.GetPlayersInTeam(Team.BLUE).Count <= Players.GetPlayersInTeam(Team.RED).Count)
+        if  (MyComponents.Players.GetPlayersInTeam(Team.BLUE).Count <= MyComponents.Players.GetPlayersInTeam(Team.RED).Count)
             team = Team.BLUE;
         else
             team = Team.RED;

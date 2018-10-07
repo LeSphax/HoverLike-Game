@@ -5,7 +5,7 @@ namespace Navigation
 {
     public delegate void SceneChangeEventHandler(short previousSceneId, short newSceneId);
 
-    public class NavigationManager : MonoBehaviour
+    public class NavigationManager : SlideBall.MonoBehaviour
     {
         public static short previousSceneIndex;
         public static SceneLoader loader;
@@ -29,7 +29,7 @@ namespace Navigation
             loader.StartLoading(scene, fading, waitToShowNextLevel);
         }
 
-        private static void FinishedLoading()
+        private void FinishedLoading()
         {
             if (FinishedLoadingScene != null)
             {

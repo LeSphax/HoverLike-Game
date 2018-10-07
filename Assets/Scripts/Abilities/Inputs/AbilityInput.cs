@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public delegate void ActivationHandler(bool activated);
 
 //Manage when an ability can be activated (We are actually during a round, the player has the ball if it is necessary for the ability)
-public abstract class AbilityInput : MonoBehaviour
+public abstract class AbilityInput : SlideBall.MonoBehaviour
 {
     protected virtual int INPUT_NUMBER
     {
@@ -22,7 +22,7 @@ public abstract class AbilityInput : MonoBehaviour
     {
         get
         {
-            return CurrentStateAllowActivation(Players.MyPlayer) && AdditionalActivationRequirementsAreMet();
+            return CurrentStateAllowActivation(MyComponents.Players.MyPlayer) && AdditionalActivationRequirementsAreMet();
         }
     }
 
@@ -47,13 +47,13 @@ public abstract class AbilityInput : MonoBehaviour
 
     public virtual bool FirstActivation()
     {
-        return SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
+        return MyComponents.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
     }
 
     public virtual bool ContinuousActivation()
     {
         if (INPUT_NUMBER != -1)
-            return SlideBallInputs.GetKey(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
+            return MyComponents.InputManager.GetKey(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
         return false;
     }
 
@@ -74,11 +74,6 @@ public abstract class AbilityInput : MonoBehaviour
         return "";
     }
 
-    protected void Awake()
-    {
-        Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
-    }
-
     //Check if the ability can be activated depending on the new state of the player.
     protected void PlayerStateChanged(Player player)
     {
@@ -96,6 +91,7 @@ public abstract class AbilityInput : MonoBehaviour
 
     protected virtual void Start()
     {
+        MyComponents.Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
         //If the ability has an icon, add a small GUI rectangle with the letter corresponding to the key.
         if (HasIcon())
         {
@@ -103,13 +99,13 @@ public abstract class AbilityInput : MonoBehaviour
             keyToUse.transform.SetParent(transform, false);
             keyToUse.GetComponentInChildren<Text>().text = GetKeyForGUI();
         }
-        PlayerStateChanged(Players.MyPlayer);
+        PlayerStateChanged(MyComponents.Players.MyPlayer);
     }
 
     protected virtual void OnDestroy()
     {
-        if (Players.MyPlayer != null)
-            Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
+        if (MyComponents.Players.MyPlayer != null)
+            MyComponents.Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
     }
 
     protected virtual bool IsMovement()

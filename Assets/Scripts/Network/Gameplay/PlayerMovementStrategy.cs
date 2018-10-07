@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovementManager))]
-public abstract class PlayerMovementStrategy : MonoBehaviour
+public abstract class PlayerMovementStrategy : SlideBall.MonoBehaviour
 {
     public abstract float MaxPlayerVelocity
     {
@@ -40,7 +40,7 @@ public abstract class PlayerMovementStrategy : MonoBehaviour
 
     public void UpdateMovement()
     {
-        if (TargetPosition != null && movementManager.controller.playerConnectionId != Players.MyPlayer.id)
+        if (TargetPosition != null && movementManager.controller.playerConnectionId != MyComponents.Players.MyPlayer.id)
         {
             Move();
         }

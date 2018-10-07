@@ -40,10 +40,10 @@ public class ShootTargeting : AbilityTargeting
         IsActivated = true;
         ShowArmingAnimation(true);
         curving = false;
-        if (SlideBallInputs.GetKey(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
+        if (MyComponents.InputManager.GetKey(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
         {
             curving = true;
-            bezier.controlPoints[0] = Players.MyPlayer.controller.transform.position;
+            bezier.controlPoints[0] =MyComponents.Players.MyPlayer.controller.transform.position;
             bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
         }
         ShowPowerOnCurve();
@@ -52,8 +52,8 @@ public class ShootTargeting : AbilityTargeting
     //Instant for self to hide latency
     private void ShowArmingAnimation(bool isArming)
     {
-        Players.MyPlayer.controller.abilitiesManager.View.RPC("Arm", RPCTargets.Server, isArming);
-        Players.MyPlayer.controller.abilitiesManager.EffectsManager.ShowArmAnimation(isArming);
+        MyComponents.Players.MyPlayer.controller.abilitiesManager.View.RPC("Arm", RPCTargets.Server, isArming);
+        MyComponents.Players.MyPlayer.controller.abilitiesManager.EffectsManager.ShowArmAnimation(isArming);
     }
 
     private void Update()
@@ -64,16 +64,16 @@ public class ShootTargeting : AbilityTargeting
             //Debug.Log(curveLength);
             //Debug.Log(proportion);
 
-            if (SlideBallInputs.GetKeyDown(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
+            if (MyComponents.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
             {
                 curving = true;
                 bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
             }
-            else if (SlideBallInputs.GetKeyUp(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
+            else if (MyComponents.InputManager.GetKeyUp(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
             {
                 curving = false;
             }
-            bezier.controlPoints[0] = Players.MyPlayer.controller.transform.position;
+            bezier.controlPoints[0] = MyComponents.Players.MyPlayer.controller.transform.position;
             bezier.controlPoints[1] = Functions.GetMouseWorldPosition();
             if (!curving)
                 bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
@@ -127,6 +127,6 @@ public class ShootTargeting : AbilityTargeting
     private void Activate()
     {
         Vector3[] controlPoints = bezier.controlPoints.Select(point => point.Value).ToArray();
-        callback.Invoke(true, Players.MyPlayer.controller, controlPoints);
+        callback.Invoke(true, MyComponents.Players.MyPlayer.controller, controlPoints);
     }
 }

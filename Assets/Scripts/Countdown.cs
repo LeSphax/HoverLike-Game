@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class Countdown : SlideBall.MonoBehaviour
+public class Countdown : SlideBall.NetworkMonoBehaviour
 {
     [SerializeField]
     protected Text text;

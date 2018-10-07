@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MouseInputs : MonoBehaviour {
+public class MouseInputs : SlideBall.MonoBehaviour {
 
     public GameObject pointPrefab;
     public Bezier bezier;

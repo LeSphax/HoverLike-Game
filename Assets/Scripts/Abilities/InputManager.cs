@@ -5,10 +5,40 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
 
+    public GUIPart currentPart;
+
+    public const string RETURN = "Return";
+
+    public static bool AnyEnterDown()
+    {
+        return Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return);
+    }
+
+    public static bool AnyShift()
+    {
+        return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+    }
+
+    public bool GetKey(string keyCode, GUIPart part)
+    {
+        return GetKey(keyCode) && part == currentPart;
+    }
+
+    public bool GetKeyDown(string keycode, GUIPart part)
+    {
+        return GetKeyDown(keycode) && part == currentPart;
+    }
+
+    public bool GetKeyUp(string keycode, GUIPart part)
+    {
+        return GetKeyUp(keycode) && part == currentPart;
+    }
+
     private void Update()
     {
         keysPressed.Clear();
     }
+
     List<KeyCode> keysPressed = new List<KeyCode>();
 
     public void SetKey(KeyCode key)
@@ -62,4 +92,16 @@ public class InputManager : MonoBehaviour
     {
         return Input.GetMouseButtonUp(button);
     }
+
+    public Vector3 GetInputDirection()
+    {
+        KeyCode[] movementKeys = UserSettings.MovementKeys;
+        return new MovementInputPacket(
+                    GetKey(movementKeys[0]),
+                    GetKey(movementKeys[1]),
+                    GetKey(movementKeys[2]),
+                    GetKey(movementKeys[3])
+                ).GetDirection();
+    }
+
 }

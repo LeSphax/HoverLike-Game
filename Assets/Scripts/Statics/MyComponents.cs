@@ -1,14 +1,13 @@
 ﻿using Ball;
 using Navigation;
 using PlayerManagement;
-using SlideBall;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public static class MyComponents
+public class MyComponents : MonoBehaviour
 {
 
-    public static void NullifyComponents()
+    public void NullifyComponents()
     {
         if (Scenes.IsCurrentScene(Scenes.LobbyIndex))
         {
@@ -20,24 +19,19 @@ public static class MyComponents
             NullifyLobby();
             NullifyRoom();
         }
-        //else if (Scenes.IsCurrentScene(Scenes.RoomIndex))
-        //{
-        //    NullifyLobby();
-        //    NullifyMain();
-        //}
     }
 
-    private static void NullifyLobby()
+    private void NullifyLobby()
     {
         lobbyManager = null;
     }
 
-    private static void NullifyRoom()
+    private void NullifyRoom()
     {
         chatManager = null;
     }
 
-    private static void NullifyMain()
+    private void NullifyMain()
     {
         matchManager = null;
         warmupManager = null;
@@ -51,8 +45,8 @@ public static class MyComponents
         inputManager = null;
     }
 
-    private static ANetworkManagement networkManagement;
-    public static ANetworkManagement NetworkManagement
+    private ANetworkManagement networkManagement;
+    public ANetworkManagement NetworkManagement
     {
         get
         {
@@ -60,8 +54,8 @@ public static class MyComponents
         }
     }
 
-    private static GameplaySettings gameplaySettings;
-    public static GameplaySettings GameplaySettings
+    private GameplaySettings gameplaySettings;
+    public GameplaySettings GameplaySettings
     {
         get
         {
@@ -69,8 +63,8 @@ public static class MyComponents
         }
     }
 
-    private static PopUp popUp;
-    public static PopUp PopUp
+    private PopUp popUp;
+    public PopUp PopUp
     {
         get
         {
@@ -78,8 +72,8 @@ public static class MyComponents
         }
     }
 
-    private static VictoryPose victoryPose;
-    public static VictoryPose VictoryPose
+    private VictoryPose victoryPose;
+    public VictoryPose VictoryPose
     {
         get
         {
@@ -87,8 +81,8 @@ public static class MyComponents
         }
     }
 
-    private static VictoryUI victoryUI;
-    public static VictoryUI VictoryUI
+    private VictoryUI victoryUI;
+    public VictoryUI VictoryUI
     {
         get
         {
@@ -96,8 +90,8 @@ public static class MyComponents
         }
     }
 
-    private static PlayersSynchronisation playersSynchronisation;
-    public static PlayersSynchronisation PlayersSynchronisation
+    private PlayersSynchronisation playersSynchronisation;
+    public PlayersSynchronisation PlayersSynchronisation
     {
         get
         {
@@ -105,8 +99,8 @@ public static class MyComponents
         }
     }
 
-    private static AbilitiesFactory abilitiesFactory;
-    public static AbilitiesFactory AbilitiesFactory
+    private AbilitiesFactory abilitiesFactory;
+    public AbilitiesFactory AbilitiesFactory
     {
         get
         {
@@ -114,8 +108,8 @@ public static class MyComponents
         }
     }
 
-    private static BallState ballState;
-    public static BallState BallState
+    private BallState ballState;
+    public BallState BallState
     {
         get
         {
@@ -123,8 +117,8 @@ public static class MyComponents
         }
     }
 
-    private static MatchManager matchManager;
-    public static MatchManager MatchManager
+    private MatchManager matchManager;
+    public MatchManager MatchManager
     {
         get
         {
@@ -132,8 +126,8 @@ public static class MyComponents
         }
     }
 
-    private static WarmupManager warmupManager;
-    public static WarmupManager WarmupManager
+    private WarmupManager warmupManager;
+    public WarmupManager WarmupManager
     {
         get
         {
@@ -141,8 +135,8 @@ public static class MyComponents
         }
     }
 
-    private static Players players;
-    public static Players Players
+    private Players players;
+    public Players Players
     {
         get
         {
@@ -150,8 +144,8 @@ public static class MyComponents
         }
     }
 
-    private static TimeManagement timeManagement;
-    public static TimeManagement TimeManagement
+    private TimeManagement timeManagement;
+    public TimeManagement TimeManagement
     {
         get
         {
@@ -159,8 +153,8 @@ public static class MyComponents
         }
     }
 
-    private static LobbyManager lobbyManager;
-    public static LobbyManager LobbyManager
+    private LobbyManager lobbyManager;
+    public LobbyManager LobbyManager
     {
         get
         {
@@ -168,22 +162,8 @@ public static class MyComponents
         }
     }
 
-    //private static RoomManager roomManager;
-    //public static RoomManager RoomManager
-    //{
-    //    get
-    //    {
-    //        Assert.IsTrue(Scenes.IsCurrentScene(Scenes.RoomIndex));
-    //        if (roomManager == null)
-    //        {
-    //            roomManager = GameObject.FindGameObjectWithTag(Tags.Room).GetComponent<RoomManager>();
-    //        }
-    //        return roomManager;
-    //    }
-    //}
-
-    private static NetworkViewsManagement networkViewsManagement;
-    public static NetworkViewsManagement NetworkViewsManagement
+    private NetworkViewsManagement networkViewsManagement;
+    public NetworkViewsManagement NetworkViewsManagement
     {
         get
         {
@@ -191,8 +171,8 @@ public static class MyComponents
         }
     }
 
-    private static GameState gameState;
-    public static GameState GameState
+    private GameState gameState;
+    public GameState GameState
     {
         get
         {
@@ -201,8 +181,8 @@ public static class MyComponents
         }
     }
 
-    private static IGameInit gameInit;
-    public static IGameInit GameInit
+    private IGameInit gameInit;
+    public IGameInit GameInit
     {
         get
         {
@@ -211,8 +191,8 @@ public static class MyComponents
         }
     }
 
-    private static ChatManager chatManager;
-    public static ChatManager ChatManager
+    private ChatManager chatManager;
+    public ChatManager ChatManager
     {
         get
         {
@@ -220,8 +200,8 @@ public static class MyComponents
         }
     }
 
-    private static Spawns spawns;
-    public static Spawns Spawns
+    private Spawns spawns;
+    public Spawns Spawns
     {
         get
         {
@@ -229,8 +209,8 @@ public static class MyComponents
         }
     }
 
-    private static GlobalSound globalSound;
-    public static GlobalSound GlobalSound
+    private GlobalSound globalSound;
+    public GlobalSound GlobalSound
     {
         get
         {
@@ -238,8 +218,8 @@ public static class MyComponents
         }
     }
 
-    private static BattleriteCamera battleriteCamera;
-    public static BattleriteCamera BattleriteCamera
+    private BattleriteCamera battleriteCamera;
+    public BattleriteCamera BattleriteCamera
     {
         get
         {
@@ -247,8 +227,8 @@ public static class MyComponents
         }
     }
 
-    private static InputManager inputManager;
-    public static InputManager InputManager
+    private InputManager inputManager;
+    public InputManager InputManager
     {
         get
         {
@@ -256,40 +236,29 @@ public static class MyComponents
         }
     }
 
-    public static GameObject UI()
+    public GameObject UI()
     {
-        return GameObject.FindGameObjectWithTag(Tags.UI);
+        return transform.FindGameObjectWithTag(Tags.UI);
     }
 
-    public static Rigidbody MyPlayerRigidbody()
-    {
-        return GetTaggedComponent<Rigidbody>(Tags.MyPlayer);
-    }
-
-    private static Type GetTaggedComponent<Type>(ref Type cache, string tag, int sceneIndex)
+    private Type GetTaggedComponent<Type>(ref Type cache, string tag, int sceneIndex)
     {
         if (sceneIndex != Scenes.Any)
         {
             Assert.IsTrue(Scenes.IsCurrentScene(sceneIndex));
         }
+
         if (cache == null)
         {
-            GameObject go = GameObject.FindGameObjectWithTag(tag);
+            GameObject go = transform.FindGameObjectWithTag(tag);
             if (go != null)
                 cache = go.GetComponent<Type>();
         }
         return cache;
     }
 
-    private static Type GetTaggedComponent<Type>(string tag)
-    {
-        GameObject go = GameObject.FindGameObjectWithTag(tag);
-        if (go != null)
-            return go.GetComponent<Type>();
-        return default(Type);
-    }
 
-    public static void ResetNetworkComponents()
+    public void ResetNetworkComponents()
     {
         Debug.Log("Reset Network Components");
         NavigationManager.Reset();
@@ -300,7 +269,7 @@ public static class MyComponents
         TimeManagement.Reset();
     }
 
-    public static void ResetGameComponents()
+    public void ResetGameComponents()
     {
         GameState.Reset();
         PlayersSynchronisation.Reset();

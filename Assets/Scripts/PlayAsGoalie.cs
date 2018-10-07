@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Toggle))]
-public class PlayAsGoalie : MonoBehaviour
+public class PlayAsGoalie : SlideBall.MonoBehaviour
 {
 
     [HideInInspector]
@@ -19,7 +19,7 @@ public class PlayAsGoalie : MonoBehaviour
     public void SetActivated()
     {
         if (!EditorVariables.HeadlessServer)
-            Players.MyPlayer.PlayAsGoalie = toggle.isOn;
+           MyComponents.Players.MyPlayer.PlayAsGoalie = toggle.isOn;
     }
 
     //private void Update()

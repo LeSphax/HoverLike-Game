@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AbilitiesFactory : MonoBehaviour
+public class AbilitiesFactory : SlideBall.MonoBehaviour
 {
 
     public Dictionary<string, GameObject> abilityGOs = new Dictionary<string, GameObject>();
@@ -15,7 +15,7 @@ public class AbilitiesFactory : MonoBehaviour
             Destroy(ability);
         }
         abilityGOs.Clear();
-        foreach (string ability in Players.MyPlayer.MyAvatarSettings.abilities)
+        foreach (string ability in MyComponents.Players.MyPlayer.MyAvatarSettings.abilities)
         {
             GameObject layout = Instantiate(ResourcesGetter.AbilityPrefab);
             layout.transform.SetParent(transform, false);

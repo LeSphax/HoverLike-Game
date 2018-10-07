@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class DummyNetworkManagement : ANetworkManagement
 {
-    public override bool IsServer
+
+    private void Awake()
     {
-        get
-        {
-            return true;
-        }
+        NetworkingState.IsServer = true;
     }
 
     public override bool CurrentlyPlaying

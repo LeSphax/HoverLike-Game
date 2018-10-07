@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TimeSlow;
-public class GameplaySettings : SlideBall.MonoBehaviour {
+public class GameplaySettings : SlideBall.NetworkMonoBehaviour {
 public GameObject panel;
 public Toggle continuouMovementToggle;
 public InputField attackerAccelerationInputField;
@@ -250,7 +250,7 @@ public void Show(bool show)
 }
 private void Reset()
 {
-if (!MyComponents.NetworkManagement.IsServer)
+if (!NetworkingState.IsServer)
   View.RPC("SettingsAsked", RPCTargets.Server);
 continuouMovementToggle.isOn = ContinuouMovement;
 attackerAccelerationInputField.text = AttackerAcceleration+"";

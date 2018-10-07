@@ -1,10 +1,12 @@
-﻿using Navigation;
+﻿using Ball;
+using Byn.Net;
+using Navigation;
 using PlayerManagement;
 using UnityEngine;
 
 public delegate void MatchChange(bool started);
 
-public class GameState : SlideBall.MonoBehaviour, IGameInit
+public class GameState : SlideBall.NetworkMonoBehaviour, IGameInit
 {
     bool started;
 
@@ -30,7 +32,7 @@ public class GameState : SlideBall.MonoBehaviour, IGameInit
         {
             MyComponents.WarmupManager.Activate(true);
 
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 InstantiateNewObjects();
                 MyComponents.MatchManager.Activate(false);
@@ -44,7 +46,7 @@ public class GameState : SlideBall.MonoBehaviour, IGameInit
     [MyRPC]
     public void StartMatch(bool start)
     {
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
             View.RPC("StartMatch", RPCTargets.Others, start);
             MyComponents.MatchManager.Activate(start);
@@ -59,26 +61,31 @@ public class GameState : SlideBall.MonoBehaviour, IGameInit
 
     private void InstantiateNewObjects()
     {
-        MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
+        GameObject ball = MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
-        foreach (var player in Players.players.Values)
+        foreach (var player in MyComponents.Players.players.Values)
         {
-            player.gameobjectAvatar = Functions.InstantiatePlayer(player.id);
+            InstantiatePlayer(MyComponents.NetworkViewsManagement, player.id);
         }
+    }
+
+    public static GameObject InstantiatePlayer(NetworkViewsManagement viewsManagement, ConnectionId id)
+    {
+        return viewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, id);
     }
 
     public void InitGame()
     {
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
             LoadRoom();
         else
-            Players.PlayersDataReceived += LoadRoom;
+            MyComponents.Players.PlayersDataReceived += LoadRoom;
     }
 
-    private static void LoadRoom()
+    private void LoadRoom()
     {
         NavigationManager.LoadScene(Scenes.Main, false, false);
-        Players.PlayersDataReceived -= LoadRoom;
+        MyComponents.Players.PlayersDataReceived -= LoadRoom;
     }
 
     public void Reset()

@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(ScrollRect))]
 [RequireComponent(typeof(AudioSource))]
-public class ChatView : MonoBehaviour
+public class ChatView : SlideBall.MonoBehaviour
 {
 
     private ScrollRect scrollRect;

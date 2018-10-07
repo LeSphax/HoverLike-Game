@@ -54,7 +54,7 @@
 
 //    void CheckStartGame()
 //    {
-//        if (MyComponents.NetworkManagement.IsServer && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
+//        if (NetworkingState.IsServer && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
 //        {
 //            Invoke("StartGame", 2f);
 //            CancelInvoke("CheckStartGame");
@@ -73,13 +73,13 @@
 
 //    public void ChangeTeam(int teamNumber)
 //    {
-//        Players.MyPlayer.Team = (Team)teamNumber;
+//        MyComponents.Players.MyPlayer.Team = (Team)teamNumber;
 //    }
 
 //    public void CreateMyPlayerInfo()
 //    {
-//        if (Players.MyPlayer.gameobjectAvatar == null)
-//            Players.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Vector3.zero, Quaternion.identity, Players.MyPlayer.id);
+//        if ( MyComponents.Players.MyPlayer.gameobjectAvatar == null)
+//             MyComponents.Players.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Vector3.zero, Quaternion.identity, MyComponents.Players.MyPlayer.id);
 //    }
 
 //    public void Reset()

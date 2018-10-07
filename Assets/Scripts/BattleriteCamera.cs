@@ -2,7 +2,7 @@
 using UnityEngine;
 
 //Put on the camera
-public class BattleriteCamera : MonoBehaviour
+public class BattleriteCamera : SlideBall.MonoBehaviour
 {
     public float YOffset
     {
@@ -71,8 +71,8 @@ public class BattleriteCamera : MonoBehaviour
     {
         get
         {
-            if (Players.MyPlayer != null && Players.MyPlayer.controller != null)
-                return startPosition + Vector3.forward * Players.MyPlayer.controller.transform.position.z + Vector3.right * Players.MyPlayer.controller.transform.position.x + offset;
+            if (MyComponents.Players.MyPlayer != null && MyComponents.Players.MyPlayer.controller != null)
+                return startPosition + Vector3.forward * MyComponents.Players.MyPlayer.controller.transform.position.z + Vector3.right * MyComponents.Players.MyPlayer.controller.transform.position.x + offset;
             else
                 return transform.localPosition;
         }
@@ -99,9 +99,6 @@ public class BattleriteCamera : MonoBehaviour
         return transform.position.y * (Mathf.Tan(Mathf.Deg2Rad * (fov / 2 - angleOffset)) + Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 + angleOffset))) /2;
     }
 
-    Vector3 prevPos;
-    Vector3 prevMove;
-
     private void Update()
     {
         //Update target camera position on Update as it depends on events and the result of the previous FixedUpdate
@@ -115,14 +112,6 @@ public class BattleriteCamera : MonoBehaviour
         {
             targetPosition = BasePosition;
         }
-        //Debug.Log("Camera : " + (transform.position - prevPos).magnitude * Time.deltaTime + "    " + (transform.position - prevPos));
-        Vector3 currentMove = transform.position - prevPos;
-        //if ((currentMove - prevMove).magnitude > (currentMove + prevMove).magnitude)
-        //{
-        //    Debug.LogWarning("Camera changing direction" + currentMove);
-        //}
-        prevMove = currentMove;
-        prevPos = transform.position;
     }
 
     //Position the camera on FixedUpdate to avoid jittery effect when it is out of sync with the player position updates

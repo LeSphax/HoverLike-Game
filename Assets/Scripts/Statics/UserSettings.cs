@@ -69,8 +69,6 @@ public class UserSettings
             nickname = value;
             PlayerPrefs.SetString("Nickname", nickname);
             PlayerPrefs.Save();
-            if (Players.MyPlayer != null)
-                Players.MyPlayer.Nickname = nickname;
         }
     }
 

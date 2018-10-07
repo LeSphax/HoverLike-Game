@@ -8,7 +8,7 @@ using UnityEngine;
 namespace AbilitiesManagement
 {
     [RequireComponent(typeof(EffectsManager))]
-    public class AbilitiesManager : SlideBall.MonoBehaviour
+    public class AbilitiesManager : SlideBall.NetworkMonoBehaviour
     {
         internal PlayerController controller;
 
@@ -85,7 +85,7 @@ namespace AbilitiesManagement
 
         private void FixedUpdate()
         {
-            if (MyComponents.NetworkManagement.IsServer)
+            if (NetworkingState.IsServer)
             {
                 if (!moveUpdated)
                 {
@@ -213,7 +213,7 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility() && controller.Player.HasBall && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
-                MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(controller.playerConnectionId, targetId);
+                MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(MyComponents.BallState, MyComponents.Players.players, controller.playerConnectionId, targetId);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }
         }
@@ -248,7 +248,7 @@ namespace AbilitiesManagement
                         }
                         if (MyComponents.BallState.trajectoryStrategy.GetType() == typeof(ThrowTrajectoryStrategy))
                         {
-                            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy();
+                            MyComponents.BallState.trajectoryStrategy = new FreeTrajectoryStrategy(MyComponents.BallState);
                         }
                     }
                 }

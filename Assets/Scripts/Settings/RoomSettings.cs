@@ -4,7 +4,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-public class RoomSettings : SlideBall.MonoBehaviour
+public class RoomSettings : SlideBall.NetworkMonoBehaviour
 {
     public GameObject panel;
     public Dropdown numberPlayersDropdown;
@@ -42,6 +42,7 @@ public class RoomSettings : SlideBall.MonoBehaviour
         set
         {
             MatchPanel.Password = value;
+            MyComponents.NetworkManagement.RefreshRoomData();
         }
     }
     [MyRPC]
@@ -68,7 +69,7 @@ public class RoomSettings : SlideBall.MonoBehaviour
     }
     private void Reset()
     {
-        if (!MyComponents.NetworkManagement.IsServer)
+        if (!NetworkingState.IsServer)
             View.RPC("SettingsAsked", RPCTargets.Server);
         numberPlayersDropdown.value = NumberPlayers - 1;
         passwordInputField.text = Password;

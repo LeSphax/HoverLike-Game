@@ -4,7 +4,7 @@ using PlayerManagement;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
 
-public class VictoryPose : SlideBall.MonoBehaviour
+public class VictoryPose : SlideBall.NetworkMonoBehaviour
 {
     public Camera mainCamera;
     public GameObject victoryCamera;
@@ -43,9 +43,9 @@ public class VictoryPose : SlideBall.MonoBehaviour
         MyComponents.VictoryUI.SetVictoryText(team);
 
 
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
-            List<Player> players = Players.GetPlayersInTeam(team);
+            List<Player> players = MyComponents.Players.GetPlayersInTeam(team);
             int attackersPutInPlace = 0;
             foreach (Player player in players)
             {
@@ -87,7 +87,7 @@ public class VictoryPose : SlideBall.MonoBehaviour
     [MyRPC]
     public void StopVictoryPose()
     {
-        if (MyComponents.NetworkManagement.IsServer)
+        if (NetworkingState.IsServer)
         {
             View.RPC("StopVictoryPose", RPCTargets.Others);
         }

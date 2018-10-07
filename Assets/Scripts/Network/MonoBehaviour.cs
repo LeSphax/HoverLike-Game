@@ -1,11 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SlideBall
 {
-    [RequireComponent(typeof(MyNetworkView))]
+
     public class MonoBehaviour : UnityEngine.MonoBehaviour
+    {
+        private MyComponents components;
+        public MyComponents MyComponents
+        {
+            get
+            {
+                if (components == null)
+                {
+                    components = GetComponentInParent<MyComponents>();
+                }
+                return components;
+            }
+        }
+
+    }
+
+    [RequireComponent(typeof(MyNetworkView))]
+    public class NetworkMonoBehaviour : MonoBehaviour
     {
         private MyNetworkView view;
         public MyNetworkView View
@@ -21,4 +37,6 @@ namespace SlideBall
         }
 
     }
+
+
 }

@@ -121,7 +121,7 @@ class BallMovementView : ObservedComponent
 
     protected override bool IsSendingPackets()
     {
-        return MyComponents.NetworkManagement.IsServer;
+        return NetworkingState.IsServer;
     }
 
     public class BallPacket : IComparable

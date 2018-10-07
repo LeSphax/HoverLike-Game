@@ -2,7 +2,7 @@
 using PlayerManagement;
 using UnityEngine;
 
-public class PlayerView : SlideBall.MonoBehaviour
+public class PlayerView : SlideBall.NetworkMonoBehaviour
 {
     public ConnectionId playerConnectionId = Players.INVALID_PLAYER_ID;
 
@@ -14,10 +14,10 @@ public class PlayerView : SlideBall.MonoBehaviour
         }
     }
 
-    public static Player GetMyPlayer(ConnectionId connectionId)
+    public Player GetMyPlayer(ConnectionId connectionId)
     {
         Player player;
-        if (!Players.players.TryGetValue(connectionId, out player))
+        if (!MyComponents.Players.players.TryGetValue(connectionId, out player))
             return null;
         return player;
     }

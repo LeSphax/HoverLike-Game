@@ -192,7 +192,7 @@ namespace MLAgents
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
              "docs/Learning-Environment-Design-Agents.md")]
     [System.Serializable]
-    public abstract class Agent : MonoBehaviour
+    public abstract class Agent : SlideBall.MonoBehaviour
     {
         /// <summary>
         /// The Brain attached to this agent. A brain can be attached either

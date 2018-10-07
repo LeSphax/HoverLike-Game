@@ -10,7 +10,7 @@ class ActualAbilitiesLatency
 
     public static void Received(params Type[] types)
     {
-        if (!MyComponents.NetworkManagement.IsServer)
+        if (!NetworkingState.IsServer)
         {
             foreach (Type type in types)
             {
