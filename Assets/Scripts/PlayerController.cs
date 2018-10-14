@@ -180,7 +180,6 @@ public class PlayerController : PlayerView
     [MyRPC]
     public void SetStealOnCooldown()
     {
-        Debug.Log("SetStealOnCooldown");
         GameObject go;
         if (MyComponents.AbilitiesFactory.abilityGOs.TryGetValue("Steal", out go))
             go.GetComponentInChildren<Ability>().SetOnCooldown();

@@ -19,4 +19,11 @@ public class StartFromLobby : MonoBehaviour
         EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
         EditorSceneManager.OpenScene(Paths.SCENE_MAIN);
     }
+
+    [MenuItem("MyTools/Move to ML %,")]
+    public static void MoveToML()
+    {
+        EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+        EditorSceneManager.OpenScene(Paths.SCENE_ML);
+    }
 }

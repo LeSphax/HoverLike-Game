@@ -5,7 +5,7 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
 
-    public GUIPart currentPart;
+    public static GUIPart currentPart;
 
     public const string RETURN = "Return";
 

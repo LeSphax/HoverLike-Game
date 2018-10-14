@@ -7,12 +7,12 @@ public class RemoveFocusFromAbilities : SlideBall.MonoBehaviour, ISelectHandler,
 
     public void OnDeselect(BaseEventData eventData)
     {
-        MyComponents.InputManager.currentPart = previousPart;
+        InputManager.currentPart = previousPart;
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-        previousPart = MyComponents.InputManager.currentPart;
-        MyComponents.InputManager.currentPart = GUIPart.CHAT;
+        previousPart = InputManager.currentPart;
+        InputManager.currentPart = GUIPart.CHAT;
     }
 }

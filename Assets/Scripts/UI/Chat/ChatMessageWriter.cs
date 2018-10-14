@@ -36,11 +36,11 @@ public class ChatMessageWriter : SlideBall.MonoBehaviour
         input.gameObject.SetActive(active);
         if (input.gameObject.activeSelf)
         {
-            MyComponents.InputManager.currentPart = GUIPart.CHAT;
+            InputManager.currentPart = GUIPart.CHAT;
             FocusOnInputField();
         }
         else
-            MyComponents.InputManager.currentPart = Scenes.CurrentSceneDefaultGUIPart();
+            InputManager.currentPart = Scenes.CurrentSceneDefaultGUIPart();
     }
 
     public void SendContent(string content, bool sendToAll)

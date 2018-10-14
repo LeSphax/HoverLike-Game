@@ -12,6 +12,10 @@ public class SpecialBuild
 {
     private const string path = "C:/Users/sbker/Desktop/Workspace/UnityProjects/hover/Builds/PC/Slideball.exe";
     private const string path_WebGL = "C:/Users/sbker/Desktop/Workspace/UnityProjects/SlideBall/Builds/";
+    private const string path_ML_1 = "C:/Users/Sebas/Desktop/Workspace/UnityProjects/ml-agents/Builds/slideBall/1/slideball1.exe";
+    private const string path_ML_2 = "C:/Users/Sebas/Desktop/Workspace/UnityProjects/ml-agents/Builds/slideBall/2/slideball2.exe";
+    private const string path_ML_3 = "C:/Users/Sebas/Desktop/Workspace/UnityProjects/ml-agents/Builds/slideBall/3/slideball3.exe";
+
 
     private static string[] levels = new string[] { Paths.SCENE_LOBBY, Paths.SCENE_MAIN };
 
@@ -73,9 +77,6 @@ public class SpecialBuild
         }
         numberOfGamesToLaunch = editorVariables.numberPlayersToStartGame - 1;
 
-        // Get filename.
-        //string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
-
         return BuildPlayer(levels, path, BuildTarget.StandaloneWindows64, BuildOptions.Development);
 
     }
@@ -106,13 +107,35 @@ public class SpecialBuild
     {
         PrepareBuild();
         ChangeScene(Paths.SCENE_LOBBY);
-        BeforeBuildWebGl();
 
         BuildPlayer(levels, path_WebGL, BuildTarget.WebGL, BuildOptions.None);
     }
 
-    public static void BeforeBuildWebGl()
+    [MenuItem("MyTools/Build ML #_1")]
+    public static void BuildML1()
     {
+        BuildML(path_ML_1);
+    }
+
+    [MenuItem("MyTools/Build ML #_2")]
+    public static void BuildML2()
+    {
+        BuildML(path_ML_2);
+    }
+
+    [MenuItem("MyTools/Build ML #_3")]
+    public static void BuildML3()
+    {
+        BuildML(path_ML_3);
+    }
+
+    private static void BuildML(string path)
+    {
+        PrepareBuild();
+        ChangeScene(Paths.SCENE_ML);
+        MakeViewIdsCurrentScene();
+
+        BuildPlayer(new[] { Paths.SCENE_ML }, path, BuildTarget.StandaloneWindows64, BuildOptions.None);
     }
 
     [MenuItem("MyTools/MakeViewIds %e")]
@@ -136,9 +159,9 @@ public class SpecialBuild
     [MenuItem("MyTools/MakeViewIdsCurrentScene %;")]
     public static void MakeViewIdsCurrentScene()
     {
-        Debug.Log("MakeViewIDS");
+        Debug.Log("MakeViewIDS Current Scene");
         short nextViewId = NetworkViewsManagement.INVALID_VIEW_ID + 1;
-        MakeViewIds(EditorSceneManager.GetActiveScene().path, ref nextViewId);
+        MakeViewIds(SceneManager.GetActiveScene().path, ref nextViewId);
 
         var NetworkSettings = Settings.GetSettings(Settings.NETWORK_SETTINGS);
         if (!NetworkSettings.ContainsKey(Settings.NEXT_VIEW_ID))
@@ -190,10 +213,10 @@ public class SpecialBuild
         {
             try
             {
-                EditorSceneManager.SaveOpenScenes();// SaveScene();// SaveCurrentModifiedScenesIfUserWantsTo();
+                EditorSceneManager.SaveOpenScenes();
                 EditorSceneManager.OpenScene(sceneName);
             }
-            catch(InvalidOperationException)
+            catch (InvalidOperationException)
             {
                 if (!tried)
                 {

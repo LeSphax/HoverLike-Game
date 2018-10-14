@@ -40,41 +40,41 @@ public class DummyNetworkManagement : ANetworkManagement
 
     public override void RefreshRoomData()
     {
-        Debug.Log("Dummy Refresh Room Data");
+        //Debug.Log("Dummy Refresh Room Data");
     }
 
     public override void Reset()
     {
-        Debug.Log("Dummy Reset");
+        //Debug.Log("Dummy Reset");
     }
 
     public override void SendData(short viewId, MessageType type, byte[] data)
     {
-        Debug.Log("Dummy SendData");
+        //Debug.Log("Dummy SendData");
     }
 
     public override void SendData(short viewId, MessageType type, byte[] data, ConnectionId id)
     {
-        Debug.Log("Dummy SendData");
+        //Debug.Log("Dummy SendData");
     }
 
     public override void SendData(short viewId, short subId, MessageType type, byte[] data)
     {
-        Debug.Log("Dummy SendData");
+        //Debug.Log("Dummy SendData");
     }
 
     public override void SendData(short viewId, short subId, MessageType type, byte[] data, ConnectionId id)
     {
-        Debug.Log("Dummy SendData");
+        //Debug.Log("Dummy SendData");
     }
 
     public override void SendNetworkMessage(NetworkMessage message)
     {
-        Debug.Log("Dummy SendNetworkMessage");
+        //Debug.Log("Dummy SendNetworkMessage");
     }
 
     public override void SendNetworkMessage(NetworkMessage message, params ConnectionId[] connectionIds)
     {
-        Debug.Log("Dummy SendNetworkMessage");
+        //Debug.Log("Dummy SendNetworkMessage");
     }
 }

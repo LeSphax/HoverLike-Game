@@ -51,8 +51,8 @@ public class UserSettingsPanel : SlideBall.MonoBehaviour
 
     private void Reset()
     {
-        previousGUIPart = MyComponents.InputManager.currentPart;
-        MyComponents.InputManager.currentPart = GUIPart.MENU;
+        previousGUIPart = InputManager.currentPart;
+        InputManager.currentPart = GUIPart.MENU;
         nicknamePlaceholder.text = Random_Name_Generator.GetRandomName();
         nicknameField.text = UserSettings.Nickname;
         volumeSlider.value = UserSettings.Volume;
@@ -156,7 +156,7 @@ public class UserSettingsPanel : SlideBall.MonoBehaviour
 
     public void Close()
     {
-        MyComponents.InputManager.currentPart = previousGUIPart;
+        InputManager.currentPart = previousGUIPart;
         Destroy(gameObject);
     }
 }

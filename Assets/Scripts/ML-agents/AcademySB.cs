@@ -1,8 +1,14 @@
 ﻿using MLAgents;
+using UnityEngine;
 
 public class AcademySB : Academy
 {
-    public event EmptyEventHandler AcademyResetEvent;
+    public static event EmptyEventHandler AcademyResetEvent;
+
+    public static float maxX;
+    public static float maxZ;
+    public static float maxDistance;
+    public static bool goals;
 
     public override void InitializeAcademy()
     {
@@ -26,6 +32,10 @@ public class AcademySB : Academy
     {
         if (AcademyResetEvent != null)
             AcademyResetEvent.Invoke();
+        maxX = resetParameters["maxX"];
+        maxZ = resetParameters["maxZ"];
+        goals = resetParameters["goals"] == 1;
+        maxDistance = Mathf.Sqrt(Mathf.Pow(maxX*2, 2) + Mathf.Pow(maxZ * 2, 2)) + 5;
     }
 
     public override void AcademyStep()

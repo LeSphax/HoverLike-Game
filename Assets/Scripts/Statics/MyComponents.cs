@@ -4,9 +4,9 @@ using PlayerManagement;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+[RequireComponent(typeof(KeepMyComponents))]
 public class MyComponents : MonoBehaviour
 {
-
     public void NullifyComponents()
     {
         if (Scenes.IsCurrentScene(Scenes.LobbyIndex))

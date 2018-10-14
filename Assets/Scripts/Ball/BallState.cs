@@ -173,7 +173,7 @@ namespace Ball
 
         public void PutBallAtPosition(Vector3 position)
         {
-            gameObject.transform.position = position;
+            gameObject.transform.localPosition = position;
             if (NetworkingState.IsServer)
             {
                 Rigidbody.velocity = Vector3.zero;

@@ -29,14 +29,14 @@ public class MenuInGame : SlideBall.MonoBehaviour
     public void OpenMenu()
     {
         background.SetActive(true);
-        previousPart = MyComponents.InputManager.currentPart;
-        MyComponents.InputManager.currentPart = GUIPart.MENU;
+        previousPart = InputManager.currentPart;
+        InputManager.currentPart = GUIPart.MENU;
     }
 
     public void CloseMenu()
     {
         background.SetActive(false);
-        MyComponents.InputManager.currentPart = previousPart;
+        InputManager.currentPart = previousPart;
     }
 
     public void LeaveRoom()
