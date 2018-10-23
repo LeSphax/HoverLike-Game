@@ -1026,6 +1026,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4522871452811046}
+  - component: {fileID: 114469436676200690}
   m_Layer: 0
   m_Name: Room
   m_TagString: Untagged
@@ -3733,6 +3734,21 @@ MonoBehaviour:
   viewId: 2
   observedComponents: []
   update: 1
+--- !u!114 &114469436676200690
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1921940471162898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c520e24b75339594097bcc0bedc12e2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  top: {fileID: 1822681014287600}
+  bottom: {fileID: 1533185427495590}
+  right: {fileID: 1584027771518434}
+  left: {fileID: 1393326560782550}
 --- !u!114 &114490812903850472
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -43,8 +43,8 @@ public class ShootTargeting : AbilityTargeting
         if (MyComponents.InputManager.GetKey(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
         {
             curving = true;
-            bezier.controlPoints[0] =MyComponents.Players.MyPlayer.controller.transform.position;
-            bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
+            bezier.controlPoints[0] = MyComponents.Players.MyPlayer.controller.transform.localPosition;
+            bezier.controlPoints[2] = MyComponents.InputManager.GetMouseLocalPosition();
         }
         ShowPowerOnCurve();
     }
@@ -67,16 +67,16 @@ public class ShootTargeting : AbilityTargeting
             if (MyComponents.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
             {
                 curving = true;
-                bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
+                bezier.controlPoints[2] = MyComponents.InputManager.GetMouseLocalPosition();
             }
             else if (MyComponents.InputManager.GetKeyUp(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
             {
                 curving = false;
             }
-            bezier.controlPoints[0] = MyComponents.Players.MyPlayer.controller.transform.position;
-            bezier.controlPoints[1] = Functions.GetMouseWorldPosition();
+            bezier.controlPoints[0] = MyComponents.Players.MyPlayer.controller.transform.localPosition;
+            bezier.controlPoints[1] = MyComponents.InputManager.GetMouseLocalPosition();
             if (!curving)
-                bezier.controlPoints[2] = Functions.GetMouseWorldPosition();
+                bezier.controlPoints[2] = MyComponents.InputManager.GetMouseLocalPosition();
 
             ShowPowerOnCurve();
         }

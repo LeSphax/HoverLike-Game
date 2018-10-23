@@ -264,7 +264,6 @@ namespace PlayerManagement
                 if (Scenes.IsCurrentScene(Scenes.MainIndex))
                 {
                     player.gameobjectAvatar = GameState.InstantiatePlayer(MyComponents.NetworkViewsManagement, id);
-                    Debug.Log("Instantiate player");
                 }
             }
 

@@ -11,6 +11,8 @@ using Ball;
 [RequireComponent(typeof(AbilitiesManager))]
 public class PlayerController : PlayerView
 {
+    public event EmptyEventHandler Reset;
+
     private GameObject Mesh;
 
     public BillBoard billboard;
@@ -119,6 +121,9 @@ public class PlayerController : PlayerView
 
         if (Player.IsMyPlayer)
             MyComponents.AbilitiesFactory.RecreateAbilities();
+
+        if (Reset != null)
+            Reset.Invoke();
     }
 
     private void RemoveFromAttraction()
@@ -163,7 +168,7 @@ public class PlayerController : PlayerView
     }
 
     public void PutAtStartPosition()
-    {
+    { 
         transform.position = Player.SpawningPoint;
         transform.LookAt(transform.parent.localPosition);
         transform.localRotation = Quaternion.Euler(0, transform.localRotation.y, 0);

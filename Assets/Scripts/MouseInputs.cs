@@ -27,14 +27,14 @@ public class MouseInputs : SlideBall.MonoBehaviour {
                 Destroy(controlPoint);
             }
             endPoint = Instantiate(pointPrefab);
-            endPoint.transform.position = Functions.GetMouseWorldPosition();
+            endPoint.transform.position = MyComponents.InputManager.GetMouseLocalPosition();
             controlPoint = Instantiate(pointPrefab);
-            controlPoint.transform.position = Functions.GetMouseWorldPosition();
+            controlPoint.transform.position = MyComponents.InputManager.GetMouseLocalPosition();
             bezier.controlPoints[2] = endPoint.transform.position;
         }
         if (MyComponents.InputManager.GetMouseButton(0))
         {
-            controlPoint.transform.position = Functions.GetMouseWorldPosition();
+            controlPoint.transform.position = MyComponents.InputManager.GetMouseLocalPosition();
             bezier.controlPoints[1] = controlPoint.transform.position;
 
         }

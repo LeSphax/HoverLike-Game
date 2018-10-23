@@ -49,7 +49,7 @@ public class PassTargeting : AbilityTargeting
 
     private void UpdateTargeterPosition()
     {
-        targeter.transform.position = Functions.GetMouseWorldPosition() + Vector3.up * 0.2f;
+        targeter.transform.localPosition = MyComponents.InputManager.GetMouseLocalPosition() + Vector3.up * 0.2f;
     }
 
     private ConnectionId GetPlayerAtTargetPosition()

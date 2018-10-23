@@ -39,6 +39,18 @@ class Functions
                     (Random.Range(min.z, max.z)));
     }
 
+    public static Vector3 GetPointOnEllipse(float angleInRadians, float xAxisLength, float zAxisLength)
+    {
+        float a = xAxisLength;
+        float b = zAxisLength;
+
+        float distanceFromCenter = (a * b) / Mathf.Sqrt(Mathf.Pow(a, 2) * Mathf.Pow(Mathf.Sin(angleInRadians), 2) + Mathf.Pow(b, 2) * Mathf.Pow(Mathf.Cos(angleInRadians), 2));
+        float x = distanceFromCenter * Mathf.Cos(angleInRadians);
+        float z = distanceFromCenter * Mathf.Sin(angleInRadians);
+
+        return new Vector3(x, 0, z);
+    }
+
     public static void SetLayer(Transform transform, int layer)
     {
         if (transform.gameObject.tag != Tags.Ball)

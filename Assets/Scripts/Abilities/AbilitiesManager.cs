@@ -10,6 +10,8 @@ namespace AbilitiesManagement
     [RequireComponent(typeof(EffectsManager))]
     public class AbilitiesManager : SlideBall.NetworkMonoBehaviour
     {
+        public event PlayerHasShotEventHandler PlayerHasShot;
+
         internal PlayerController controller;
 
         public AnimationCurve jumpCurve;
@@ -153,6 +155,8 @@ namespace AbilitiesManagement
             {
                 controller.ballController.ThrowBall(target, power);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
+                if (PlayerHasShot != null)
+                    PlayerHasShot.Invoke(power);
             }
         }
 

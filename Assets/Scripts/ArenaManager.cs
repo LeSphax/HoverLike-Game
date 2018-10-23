@@ -9,7 +9,6 @@ public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
 
     void Start()
     {
-        Debug.Log("ArenaManager: CreatePlayer");
         MyComponents.Players.NewPlayerInstantiated += InitPlayer;
 
         GameObject ball = MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);

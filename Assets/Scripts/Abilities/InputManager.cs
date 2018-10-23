@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputManager : MonoBehaviour
+public class InputManager : SlideBall.MonoBehaviour
 {
+    List<KeyCode> keysPressed = new List<KeyCode>();
+    readonly List<int> mouseButtonsDown = new List<int>();
+    readonly List<int> mouseButtonsUp = new List<int>();
+    Vector3? mouseWorldPosition = null;
 
     public static GUIPart currentPart;
 
@@ -37,9 +41,9 @@ public class InputManager : MonoBehaviour
     private void Update()
     {
         keysPressed.Clear();
+        mouseButtonsDown.Clear();
+        mouseButtonsUp.Clear();
     }
-
-    List<KeyCode> keysPressed = new List<KeyCode>();
 
     public void SetKey(KeyCode key)
     {
@@ -64,7 +68,7 @@ public class InputManager : MonoBehaviour
 
     public bool GetKey(string key)
     {
-        KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), key);
+        KeyCode keyCode = (KeyCode)Enum.Parse(typeof(KeyCode), key.ToUpper());
         return GetKey(keyCode);
     }
 
@@ -78,9 +82,14 @@ public class InputManager : MonoBehaviour
         return Input.GetKeyUp(key);
     }
 
+    public void SetMouseButtonDown(int button)
+    {
+        mouseButtonsDown.Add(button);
+    }
+
     public bool GetMouseButtonDown(int button)
     {
-        return Input.GetMouseButtonDown(button);
+        return mouseButtonsDown.Contains(button) ||  Input.GetMouseButtonDown(button);
     }
 
     public bool GetMouseButton(int button)
@@ -88,9 +97,14 @@ public class InputManager : MonoBehaviour
         return Input.GetMouseButton(button);
     }
 
+    public void SetMouseButtonUp(int button)
+    {
+        mouseButtonsUp.Add(button);
+    }
+
     public bool GetMouseButtonUp(int button)
     {
-        return Input.GetMouseButtonUp(button);
+        return mouseButtonsUp.Contains(button) || Input.GetMouseButtonUp(button);
     }
 
     public Vector3 GetInputDirection()
@@ -102,6 +116,20 @@ public class InputManager : MonoBehaviour
                     GetKey(movementKeys[2]),
                     GetKey(movementKeys[3])
                 ).GetDirection();
+    }
+
+    public void SetMouseLocalPosition(Vector3 mouseLocalPosition)
+    {
+        this.mouseWorldPosition = mouseLocalPosition;
+    }
+
+    public Vector3 GetMouseLocalPosition()
+    {
+        if (mouseWorldPosition != null)
+        {
+            return mouseWorldPosition.Value;
+        }
+        return MyComponents.transform.InverseTransformPoint(Functions.GetMouseWorldPosition());
     }
 
 }

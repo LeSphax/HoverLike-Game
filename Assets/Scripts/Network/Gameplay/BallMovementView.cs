@@ -42,10 +42,9 @@ class BallMovementView : ObservedComponent
 
     public void Throw(Vector3 target, float power)
     {
-        Vector3 direction = new Vector3(target.x - transform.position.x, 0, target.z - transform.position.z);
+        Vector3 direction = new Vector3(target.x - transform.localPosition.x, 0, target.z - transform.localPosition.z);
         direction.Normalize();
         myRigidbody.velocity = direction * GetShootPowerLevel(power);
-        transform.position = transform.position;
     }
 
     public static float GetShootPowerLevel(float power)

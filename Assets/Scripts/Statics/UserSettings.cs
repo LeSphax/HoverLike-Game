@@ -60,7 +60,6 @@ public class UserSettings
             {
                 nickname = PlayerPrefs.GetString("Nickname", "");
             }
-            Debug.Log("Nickname is " + nickname);
             return nickname;
         }
         set

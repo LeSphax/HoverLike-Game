@@ -42,14 +42,17 @@ public class Bezier : MonoBehaviour
     void DrawCurve()
     {
         if (activated && controlPoints.Where(point => point == null).Count() == 0)
+        {
             for (int i = 1; i <= SEGMENT_COUNT; i++)
             {
                 float t = i / (float)SEGMENT_COUNT;
                 int nodeIndex = 0;
                 Vector3 pixel = BezierMaths.Bezier3(controlPoints[nodeIndex].Value,
                     controlPoints[nodeIndex + 1].Value, controlPoints[nodeIndex + 2].Value, t);
+                pixel = transform.TransformPoint(pixel);
                 lineRenderer.positionCount = i;
                 lineRenderer.SetPosition((i - 1), pixel);
             }
+        }
     }
 }
