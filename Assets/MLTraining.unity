@@ -162,6 +162,8 @@ MonoBehaviour:
       value: 60
     - key: mode
       value: 2
+    - key: rewardLook
+      value: 0
 --- !u!4 &15415640
 Transform:
   m_ObjectHideFlags: 0
@@ -412,7 +414,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   brainParameters:
-    vectorObservationSize: 18
+    vectorObservationSize: 19
     numStackedVectorObservations: 1
     vectorActionSize: 08000000
     cameraResolutions: []

@@ -1044,7 +1044,7 @@ GameObject:
   - component: {fileID: 4416876279258324}
   - component: {fileID: 65899023177893426}
   - component: {fileID: 114230555203053400}
-  m_Layer: 2
+  m_Layer: 19
   m_Name: Goal Team 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1061,7 +1061,7 @@ GameObject:
   - component: {fileID: 4598565465657738}
   - component: {fileID: 65164955163900690}
   - component: {fileID: 114087743027764496}
-  m_Layer: 2
+  m_Layer: 19
   m_Name: Goal Team 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}

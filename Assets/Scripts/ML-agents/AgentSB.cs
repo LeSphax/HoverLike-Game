@@ -51,10 +51,10 @@ public class AgentSB : Agent
 
     private void AcademyReset()
     {
-        if (AcademySB.mode == AcademySB.Mode.SHOOT_GOALS)
-        {
-            agentParameters.maxStep = 500;
-        }
+        //if (AcademySB.mode == AcademySB.Mode.SHOOT_GOALS)
+        //{
+        //    agentParameters.maxStep = 500;
+        //}
     }
 
     public override void CollectObservations()
@@ -72,6 +72,7 @@ public class AgentSB : Agent
         AddVectorObs(MyComponents.Players.MyPlayer.HasBall);
         AddVectorObs(mPowerBar.IsFilling());
         AddVectorObs(mPowerBar.powerValue);
+        AddVectorObs(AcademySB.episodeCompletion);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -90,9 +91,10 @@ public class AgentSB : Agent
                 MyComponents.InputManager.SetKey(movementKeys[i]);
         }
 
-        if (AcademySB.mode != AcademySB.Mode.PICK_UP) {
+        if (AcademySB.mode != AcademySB.Mode.PICK_UP)
+        {
             if (vectorAction[4] >= threshold)
-            MyComponents.InputManager.SetMouseButtonDown(0);
+                MyComponents.InputManager.SetMouseButtonDown(0);
             if (vectorAction[5] >= threshold)
                 MyComponents.InputManager.SetMouseButtonUp(0);
         }
@@ -112,6 +114,15 @@ public class AgentSB : Agent
             default:
                 Debug.LogError("Mode doesn't exist " + AcademySB.mode);
                 break;
+        }
+
+        if (AcademySB.rewardLook)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, transform.forward, out hit, Mathf.Infinity, 1 << Layers.Goal, QueryTriggerInteraction.Collide))
+            {
+                AddReward(0.002f);
+            }
         }
 
         if (agentId == 0 && Time.timeScale < 5f)
@@ -173,7 +184,7 @@ public class AgentSB : Agent
         if (goalScoredAgainstTeam != Team.NONE)
         {
             SetReward(goalScoredAgainstTeam != mPlayerController.Player.Team ? 1 : 0);
-            Done();
+            AgentReset();
         }
         else
         {
