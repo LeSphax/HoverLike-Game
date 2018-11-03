@@ -16,7 +16,7 @@ public class MouseInputs : SlideBall.MonoBehaviour {
     void Update()
     {
 
-        if (MyComponents.InputManager.GetMouseButtonDown(0))
+        if (MyComponents.MyPlayer.InputManager.GetMouseButtonDown(0))
         {
             bezier.Activated=true;
             if (endPoint != null)
@@ -27,14 +27,14 @@ public class MouseInputs : SlideBall.MonoBehaviour {
                 Destroy(controlPoint);
             }
             endPoint = Instantiate(pointPrefab);
-            endPoint.transform.position = MyComponents.InputManager.GetMouseLocalPosition();
+            endPoint.transform.position = MyComponents.MyPlayer.InputManager.GetMouseLocalPosition();
             controlPoint = Instantiate(pointPrefab);
-            controlPoint.transform.position = MyComponents.InputManager.GetMouseLocalPosition();
+            controlPoint.transform.position = MyComponents.MyPlayer.InputManager.GetMouseLocalPosition();
             bezier.controlPoints[2] = endPoint.transform.position;
         }
-        if (MyComponents.InputManager.GetMouseButton(0))
+        if (MyComponents.MyPlayer.InputManager.GetMouseButton(0))
         {
-            controlPoint.transform.position = MyComponents.InputManager.GetMouseLocalPosition();
+            controlPoint.transform.position = MyComponents.MyPlayer.InputManager.GetMouseLocalPosition();
             bezier.controlPoints[1] = controlPoint.transform.position;
 
         }

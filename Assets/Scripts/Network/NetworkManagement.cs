@@ -501,7 +501,7 @@ public class NetworkManagement : ANetworkManagement
         if (IsServer)
             bufferedMessages.TryAddBuffered(senderId, message);
 
-        if (!IsServer || !message.isSentToTeam() || MyComponents.Players.players[senderId].Team == MyComponents.Players.MyPlayer.Team)
+        if (!IsServer || !message.isSentToTeam() || MyComponents.Players.players[senderId].Team == MyComponents.MyPlayer.Team)
             MyComponents.NetworkViewsManagement.DistributeMessage(senderId, message);
 
         //This line of code is causing random crashes. 
@@ -541,7 +541,7 @@ public class NetworkManagement : ANetworkManagement
         if (message.isSentToTeam() && IsServer)
         {
             List<ConnectionId> connectionIds = new List<ConnectionId>();
-            List<Player> teamMates = MyComponents.Players.GetPlayersInTeam( MyComponents.Players.MyPlayer.Team);
+            List<Player> teamMates = MyComponents.Players.GetPlayersInTeam( MyComponents.MyPlayer.Team);
             teamMates.Map(player => { if (player.id != MyComponents.Players.myPlayerId) connectionIds.Add(player.id); });
             SendNetworkMessage(message, connectionIds.ToArray());
         }
@@ -635,9 +635,9 @@ public class NetworkManagement : ANetworkManagement
         {
             MyComponents.Players.CreatePlayer(id);
             MyComponents.Players.myPlayerId = id;
-            MyComponents.Players.MyPlayer.Nickname = UserSettings.Nickname;
-            MyComponents.Players.MyPlayer.SceneId = Scenes.currentSceneId;
-            handler = (previousSceneId, currentSceneId) => { MyComponents.Players.MyPlayer.SceneId = currentSceneId; };
+            MyComponents.MyPlayer.Nickname = UserSettings.Nickname;
+            MyComponents.MyPlayer.SceneId = Scenes.currentSceneId;
+            handler = (previousSceneId, currentSceneId) => { MyComponents.MyPlayer.SceneId = currentSceneId; };
         }
         else
         {

@@ -42,7 +42,6 @@ public class MyComponents : MonoBehaviour
         victoryUI = null;
         chatManager = null;
         battleriteCamera = null;
-        inputManager = null;
     }
 
     private ANetworkManagement networkManagement;
@@ -144,6 +143,14 @@ public class MyComponents : MonoBehaviour
         }
     }
 
+    public Player MyPlayer
+    {
+        get
+        {
+            return Players.MyPlayer;
+        }
+    }
+
     private TimeManagement timeManagement;
     public TimeManagement TimeManagement
     {
@@ -224,15 +231,6 @@ public class MyComponents : MonoBehaviour
         get
         {
             return GetTaggedComponent(ref battleriteCamera, Tags.BattleriteCamera, Scenes.MainIndex);
-        }
-    }
-
-    private InputManager inputManager;
-    public InputManager InputManager
-    {
-        get
-        {
-            return GetTaggedComponent(ref inputManager, Tags.Room, Scenes.MainIndex);
         }
     }
 

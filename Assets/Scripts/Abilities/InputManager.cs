@@ -7,7 +7,7 @@ public class InputManager : SlideBall.MonoBehaviour
     List<KeyCode> keysPressed = new List<KeyCode>();
     readonly List<int> mouseButtonsDown = new List<int>();
     readonly List<int> mouseButtonsUp = new List<int>();
-    Vector3? mouseWorldPosition = null;
+    Vector3? mouseLocalPosition = null;
 
     public static GUIPart currentPart;
 
@@ -120,14 +120,15 @@ public class InputManager : SlideBall.MonoBehaviour
 
     public void SetMouseLocalPosition(Vector3 mouseLocalPosition)
     {
-        this.mouseWorldPosition = mouseLocalPosition;
+        this.mouseLocalPosition = mouseLocalPosition;
     }
 
     public Vector3 GetMouseLocalPosition()
     {
-        if (mouseWorldPosition != null)
+        if (mouseLocalPosition != null)
         {
-            return mouseWorldPosition.Value;
+            //Debug.Log(mouseLocalPosition.Value);
+            return mouseLocalPosition.Value;
         }
         return MyComponents.transform.InverseTransformPoint(Functions.GetMouseWorldPosition());
     }

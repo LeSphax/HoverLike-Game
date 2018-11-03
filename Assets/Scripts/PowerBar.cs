@@ -59,6 +59,8 @@ public class PowerBar : SlideBall.MonoBehaviour
             case State.HIDDEN:
                 break;
             case State.FILLING:
+                Debug.Log(Time.fixedDeltaTime);
+                Debug.Log(TIME_TO_FILL);
                 powerValue = Mathf.Min(1.0f, powerValue + 1/TIME_TO_FILL * Time.fixedDeltaTime);
                 slider.value = powerValue;
                 break;

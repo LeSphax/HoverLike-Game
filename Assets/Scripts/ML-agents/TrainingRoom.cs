@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class TrainingRoom : SlideBall.MonoBehaviour {
+public class TrainingRoom : SlideBall.MonoBehaviour
+{
 
     public GameObject top;
     public GameObject bottom;
@@ -32,14 +33,19 @@ public class TrainingRoom : SlideBall.MonoBehaviour {
         right.transform.localPosition = new Vector3(xPos, 1f, 0f);
         left.transform.localPosition = new Vector3(-xPos, 1f, 0f);
 
-
         if (AcademySB.HasGoals)
         {
-            mGoals[0].transform.localPosition = new Vector3(0f, 0f, -AcademySB.maxZ);
-            mGoals[1].transform.localPosition = new Vector3(0f, 0f, AcademySB.maxZ);
+            float angle = Random.Range(-Mathf.PI, Mathf.PI);
+            if (AcademySB.randomGoals)
+                mGoals[0].transform.localPosition = Functions.GetPointOnEllipse(angle, AcademySB.maxX, AcademySB.maxZ);
+            else
+                mGoals[0].transform.localPosition = new Vector3(0f, 0f, -AcademySB.maxZ);
+            mGoals[1].transform.localPosition = -mGoals[0].transform.localPosition;
 
             foreach (Goal goal in mGoals)
             {
+                goal.transform.LookAt(transform.position);
+                goal.SetSize(AcademySB.goalSize);
                 goal.gameObject.SetActive(true);
             }
         }

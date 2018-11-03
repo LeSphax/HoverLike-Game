@@ -49,7 +49,7 @@ public class PassTargeting : AbilityTargeting
 
     private void UpdateTargeterPosition()
     {
-        targeter.transform.localPosition = MyComponents.InputManager.GetMouseLocalPosition() + Vector3.up * 0.2f;
+        targeter.transform.localPosition = MyComponents.MyPlayer.InputManager.GetMouseLocalPosition() + Vector3.up * 0.2f;
     }
 
     private ConnectionId GetPlayerAtTargetPosition()
@@ -63,7 +63,7 @@ public class PassTargeting : AbilityTargeting
         {
             GameObject go = hit.gameObject;
             PlayerController controller = GetParentPlayerController(go.transform);
-            if (controller != null && controller.playerConnectionId !=MyComponents.Players.myPlayerId && controller.Player.Team ==MyComponents.Players.MyPlayer.Team)
+            if (controller != null && controller.playerConnectionId != MyComponents.Players.myPlayerId && controller.Player.Team == MyComponents.MyPlayer.Team)
             {
                 float distance = Vector3.Distance(targeter.transform.position, controller.transform.position);
 

@@ -40,7 +40,7 @@ public abstract class PlayerMovementStrategy : SlideBall.MonoBehaviour
 
     public void UpdateMovement()
     {
-        if (TargetPosition != null && movementManager.controller.playerConnectionId != MyComponents.Players.MyPlayer.id)
+        if (TargetPosition != null && movementManager.controller.playerConnectionId != MyComponents.MyPlayer.id)
         {
             Move();
         }

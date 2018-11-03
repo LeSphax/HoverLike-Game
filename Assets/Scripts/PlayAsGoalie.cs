@@ -19,7 +19,7 @@ public class PlayAsGoalie : SlideBall.MonoBehaviour
     public void SetActivated()
     {
         if (!EditorVariables.HeadlessServer)
-           MyComponents.Players.MyPlayer.PlayAsGoalie = toggle.isOn;
+           MyComponents.MyPlayer.PlayAsGoalie = toggle.isOn;
     }
 
     //private void Update()

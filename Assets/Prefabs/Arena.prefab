@@ -54,7 +54,7 @@ GameObject:
   - component: {fileID: 4947667005597332}
   - component: {fileID: 33365861722788134}
   - component: {fileID: 23390517373766996}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -118,7 +118,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4084709344892558}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Corner (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 4222789108919904}
   - component: {fileID: 33457981171594202}
   - component: {fileID: 23659274386437612}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: 4497636611083028}
   - component: {fileID: 33150705140225086}
   - component: {fileID: 23856286114411578}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -250,7 +250,6 @@ GameObject:
   - component: {fileID: 114151631608697054}
   - component: {fileID: 114355257526911664}
   - component: {fileID: 114129327138158752}
-  - component: {fileID: 114392593146903136}
   m_Layer: 0
   m_Name: Room
   m_TagString: Room
@@ -331,7 +330,7 @@ GameObject:
   - component: {fileID: 4918866315487018}
   - component: {fileID: 33727271084107166}
   - component: {fileID: 64163401978919400}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder (1)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -455,7 +454,7 @@ GameObject:
   - component: {fileID: 33318326045278820}
   - component: {fileID: 65153533593206380}
   - component: {fileID: 23226822414558952}
-  m_Layer: 2
+  m_Layer: 20
   m_Name: LeftWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -472,7 +471,7 @@ GameObject:
   - component: {fileID: 4528643219277918}
   - component: {fileID: 33139633272538830}
   - component: {fileID: 64920845133133628}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder (3)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -521,7 +520,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4754617742928328}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -589,7 +588,7 @@ GameObject:
   - component: {fileID: 33235395438424628}
   - component: {fileID: 65705032066979342}
   - component: {fileID: 23237049259233240}
-  m_Layer: 2
+  m_Layer: 20
   m_Name: BottomWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -604,7 +603,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4946029753871756}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Corner (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -640,7 +639,7 @@ GameObject:
   - component: {fileID: 33086852867106870}
   - component: {fileID: 65835797445468066}
   - component: {fileID: 23786972380714104}
-  m_Layer: 2
+  m_Layer: 20
   m_Name: RightWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -840,7 +839,7 @@ GameObject:
   - component: {fileID: 4706529590713804}
   - component: {fileID: 33716873015546320}
   - component: {fileID: 64011685094919792}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder (2)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -875,7 +874,7 @@ GameObject:
   - component: {fileID: 33719395634137456}
   - component: {fileID: 65513154615692692}
   - component: {fileID: 23717723186608932}
-  m_Layer: 2
+  m_Layer: 20
   m_Name: TopWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -892,7 +891,7 @@ GameObject:
   - component: {fileID: 4941084128235966}
   - component: {fileID: 33166861566525358}
   - component: {fileID: 64499755856405578}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder (1)
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -957,7 +956,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4996053645347624}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Corner (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1111,7 +1110,7 @@ GameObject:
   - component: {fileID: 4983986383646168}
   - component: {fileID: 33345373518620864}
   - component: {fileID: 23107438493250942}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Cylinder
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -3466,6 +3465,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamNumber: 0
+  back: {fileID: 1539205687505942}
+  top: {fileID: 1070147477400114}
+  left: {fileID: 1767150504699368}
+  right: {fileID: 1025002744243162}
+  playersBlocker: {fileID: 65706534556851874}
+  goalDetector: {fileID: 65164955163900690}
 --- !u!114 &114129327138158752
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3576,6 +3581,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamNumber: 1
+  back: {fileID: 1918270570281212}
+  top: {fileID: 1647930799233334}
+  left: {fileID: 1074084490082772}
+  right: {fileID: 1766357717944864}
+  playersBlocker: {fileID: 65121067972898884}
+  goalDetector: {fileID: 65899023177893426}
 --- !u!114 &114270276039289758
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3674,17 +3685,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c27e048f46359d545a8b78b1d3cf12d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114392593146903136
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1157508312590092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b827145656b0104a95f466aa71f2414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114405403904153754

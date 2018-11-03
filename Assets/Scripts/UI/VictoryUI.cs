@@ -33,7 +33,7 @@ public class VictoryUI : SlideBall.MonoBehaviour
         text.text = Language.Instance.texts["Won_Match"].Replace("%s", Language.Instance.texts[Teams.GetTeamNameKey(team)]);
         text.color = Colors.Teams[(int)team];
 
-        playAgainButton.gameObject.SetActive( MyComponents.Players.MyPlayer.isHost);
-        clientText.gameObject.SetActive(!MyComponents.Players.MyPlayer.isHost);
+        playAgainButton.gameObject.SetActive( MyComponents.MyPlayer.isHost);
+        clientText.gameObject.SetActive(!MyComponents.MyPlayer.isHost);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MLAgents;
+using System.Text;
 using UnityEngine;
 
 public class AcademySB : Academy
@@ -34,7 +35,8 @@ public class AcademySB : Academy
     public static float maxX;
     public static float maxZ;
     public static float maxDistance;
-    public static bool rewardLook;
+    public static bool randomGoals;
+    public static float goalSize;
 
     public override void InitializeAcademy()
     {
@@ -62,13 +64,21 @@ public class AcademySB : Academy
         maxX = resetParameters["maxX"];
         maxZ = resetParameters["maxZ"];
         mode = (Mode)resetParameters["mode"];
-        rewardLook = resetParameters["rewardLook"] == 1;
-        maxDistance = Mathf.Sqrt(Mathf.Pow(maxX * 2, 2) + Mathf.Pow(maxZ * 2, 2)) + 5;
+        randomGoals = resetParameters["randomGoals"] == 1;
+        goalSize = resetParameters["goalSize"];
+
+        StringBuilder builder = new StringBuilder();
+        builder.AppendLine("Academy reset " + mode);
+        builder.AppendLine("maxX " + maxX);
+        builder.AppendLine("maxZ " + maxZ);
+        builder.AppendLine("randomGoals " + randomGoals);
+        builder.AppendLine("goalSize " + goalSize);
+        Debug.Log(builder.ToString());
     }
 
     public override void AcademyStep()
     {
-
+        //Debug.Log("AcademyStep " + GetTotalStepCount());
 
     }
 }

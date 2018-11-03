@@ -8,8 +8,8 @@ public abstract class AbilityInputWithBall : AbilityInput
     protected override void Start()
     {
         base.Start();
-        MyComponents.Players.MyPlayer.HasBallChanged += SetHasBall;
-        MyComponents.Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
+        MyComponents.MyPlayer.HasBallChanged += SetHasBall;
+        MyComponents.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
     }
 
     private void SetHasBall(bool hasBall)
@@ -28,16 +28,16 @@ public abstract class AbilityInputWithBall : AbilityInput
 
     protected override bool CurrentStateAllowActivation(Player player)
     {
-        return base.CurrentStateAllowActivation(player) && MyComponents.Players.MyPlayer.State.Stealing != StealingState.PROTECTED;
+        return base.CurrentStateAllowActivation(player) && MyComponents.MyPlayer.State.Stealing != StealingState.PROTECTED;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        if (MyComponents.Players.MyPlayer != null)
+        if (MyComponents.MyPlayer != null)
         {
-            MyComponents.Players.MyPlayer.HasBallChanged -= SetHasBall;
-            MyComponents.Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
+            MyComponents.MyPlayer.HasBallChanged -= SetHasBall;
+            MyComponents.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
         }
     }
 

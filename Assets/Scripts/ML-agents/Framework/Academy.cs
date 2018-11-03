@@ -479,6 +479,17 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Returns the step counter (within the whole training session).
+        /// </summary>
+        /// <returns>
+        /// Step count.
+        /// </returns>
+        public int GetTotalStepCount()
+        {
+            return GetEpisodeCount() * maxSteps + GetStepCount();
+        }
+
+        /// <summary>
         /// Sets the done flag to true.
         /// </summary>
         public void Done()

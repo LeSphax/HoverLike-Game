@@ -113,7 +113,7 @@ public class MatchPanel : SlideBall.MonoBehaviour
 
     void CheckStartGame()
     {
-        if ( MyComponents.Players.MyPlayer.IsHost && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
+        if ( MyComponents.MyPlayer.IsHost && (MyComponents.NetworkManagement.GetNumberPlayers() == EditorVariables.NumberPlayersToStartGame || EditorVariables.NumberPlayersToStartGame == 1))
         {
             Invoke("StartGame", 2f);
             CancelInvoke("CheckStartGame");
@@ -128,7 +128,7 @@ public class MatchPanel : SlideBall.MonoBehaviour
     private void SetPlayingState(bool isPlaying)
     {
         this.isPlaying = isPlaying;
-        if ( MyComponents.Players.MyPlayer.IsHost)
+        if ( MyComponents.MyPlayer.IsHost)
             StartButton.GetComponent<Button>().interactable = !isPlaying;
         CheckTeamButtons();
         Open(!isPlaying);
@@ -141,7 +141,7 @@ public class MatchPanel : SlideBall.MonoBehaviour
 
     public void ChangeTeam(int teamNumber)
     {
-        MyComponents.Players.MyPlayer.ChangeTeam((Team)teamNumber);
+        MyComponents.MyPlayer.ChangeTeam((Team)teamNumber);
     }
 
     private void OnDestroy()

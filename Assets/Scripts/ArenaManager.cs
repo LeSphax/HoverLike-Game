@@ -11,13 +11,20 @@ public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
     {
         MyComponents.Players.NewPlayerInstantiated += InitPlayer;
 
-        GameObject ball = MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
+        MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
         ConnectionId id = ConnectionId.INVALID;
-        Player p = MyComponents.Players.CreatePlayer(id);
+        MyComponents.Players.CreatePlayer(id);
         MyComponents.Players.myPlayerId = id;
-        MyComponents.Players.MyPlayer.Nickname = UserSettings.Nickname;
-        MyComponents.Players.MyPlayer.SceneId = Scenes.currentSceneId;
+        MyComponents.MyPlayer.Nickname = "Alice";
+        MyComponents.MyPlayer.SceneId = Scenes.currentSceneId;
+
+        
+        //id = new ConnectionId(1);
+        //MyComponents.Players.CreatePlayer(id);
+        //MyComponents.Players.players[id].Nickname = "Bob";
+        //MyComponents.Players.players[id].SceneId = Scenes.currentSceneId;
+        //MyComponents.Players.players[id].Team = Team.RED;
 
 
         if (AllObjectsCreated != null)

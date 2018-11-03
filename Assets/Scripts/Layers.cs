@@ -7,5 +7,7 @@
     public const int Goal1 = 13;
     public const int GoalBoundaries = 18;
     public const int Goal = 19;
+    public const int Walls = 20;
+    public const int BallAttractor = 21;
 
 }

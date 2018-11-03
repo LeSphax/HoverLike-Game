@@ -18,6 +18,8 @@ public class PlayerController : PlayerView
     public BillBoard billboard;
 
     [HideInInspector]
+    public InputManager inputManager;
+    [HideInInspector]
     public TargetManager targetManager;
     [HideInInspector]
     public PlayerMovementManager movementManager;
@@ -50,10 +52,11 @@ public class PlayerController : PlayerView
 
     void Awake()
     {
+        inputManager = GetComponent<InputManager>();
+        targetManager = GetComponent<TargetManager>();
         movementManager = GetComponent<PlayerMovementManager>();
         abilitiesManager = GetComponent<AbilitiesManager>();
         ballController = GetComponent<PlayerBallController>();
-        targetManager = GetComponent<TargetManager>();
     }
 
     public void InitView(object[] parameters)

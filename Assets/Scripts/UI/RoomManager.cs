@@ -73,13 +73,13 @@
 
 //    public void ChangeTeam(int teamNumber)
 //    {
-//        MyComponents.Players.MyPlayer.Team = (Team)teamNumber;
+//        MyComponents.MyPlayer.Team = (Team)teamNumber;
 //    }
 
 //    public void CreateMyPlayerInfo()
 //    {
-//        if ( MyComponents.Players.MyPlayer.gameobjectAvatar == null)
-//             MyComponents.Players.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Vector3.zero, Quaternion.identity, MyComponents.Players.MyPlayer.id);
+//        if ( MyComponents.MyPlayer.gameobjectAvatar == null)
+//             MyComponents.MyPlayer.gameobjectAvatar = MyComponents.NetworkViewsManagement.Instantiate(Paths.PLAYER_INFO, Vector3.zero, Quaternion.identity, MyComponents.MyPlayer.id);
 //    }
 
 //    public void Reset()

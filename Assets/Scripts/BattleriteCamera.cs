@@ -71,8 +71,8 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     {
         get
         {
-            if (MyComponents.Players.MyPlayer != null && MyComponents.Players.MyPlayer.controller != null)
-                return startPosition + Vector3.forward * MyComponents.Players.MyPlayer.controller.transform.position.z + Vector3.right * MyComponents.Players.MyPlayer.controller.transform.position.x + offset;
+            if (MyComponents.MyPlayer != null && MyComponents.MyPlayer.controller != null)
+                return startPosition + Vector3.forward * MyComponents.MyPlayer.controller.transform.position.z + Vector3.right * MyComponents.MyPlayer.controller.transform.position.x + offset;
             else
                 return transform.localPosition;
         }

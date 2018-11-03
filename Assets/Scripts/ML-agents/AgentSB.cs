@@ -1,6 +1,8 @@
 ﻿using Ball;
 using MLAgents;
 using PlayerManagement;
+using System;
+using System.Text;
 using UnityEngine;
 
 public class AgentSB : Agent
@@ -14,8 +16,6 @@ public class AgentSB : Agent
     private PowerBar mPowerBar;
     private readonly Goal[] mGoals = new Goal[2];
 
-    private Vector3 centerOfField;
-
     private void Awake()
     {
         brain = FindObjectOfType<Brain>();
@@ -28,7 +28,6 @@ public class AgentSB : Agent
             mGoals[goal.teamNumber] = goal;
             goal.GoalScored += GoalScored;
         }
-        centerOfField = MyComponents.transform.TransformPoint(Vector3.zero);
     }
 
     public void Start()
@@ -57,48 +56,106 @@ public class AgentSB : Agent
         //}
     }
 
+    private int RaycastAtAngle(float angle, out float distance)
+    {
+        Vector3 direction = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, direction, out hit, Mathf.Infinity, 1 << Layers.GoalBoundaries | 1 << Layers.Walls, QueryTriggerInteraction.Ignore))
+        {
+            distance = hit.distance;
+            if (hit.collider.gameObject.layer == Layers.Walls)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            Debug.LogError("Should always hit something");
+            distance = 0;
+            return 0;
+        }
+    }
+
     public override void CollectObservations()
     {
-        AddVectorObs(new Vector2(transform.localPosition.x, transform.localPosition.z) / positionNormalization);
-        AddVectorObs(transform.localRotation.eulerAngles.y / 360);
+        Vector2 playerPosition = new Vector2(transform.localPosition.x, transform.localPosition.z) / positionNormalization;
+
+        AddVectorObs(playerPosition);
+        AddVectorObs(new Vector2(Mathf.Cos(transform.localRotation.eulerAngles.y), Mathf.Sin(transform.localRotation.eulerAngles.y)));
         AddVectorObs(new Vector2(mRigidbody.velocity.x, mRigidbody.velocity.z) / positionNormalization);
-        AddVectorObs(new Vector2(MyComponents.BallState.transform.localPosition.x, MyComponents.BallState.transform.localPosition.z) / positionNormalization);
+
+        Vector2 ballPosition = new Vector2(MyComponents.BallState.transform.localPosition.x, MyComponents.BallState.transform.localPosition.z) / positionNormalization;
+        AddVectorObs(ballPosition - playerPosition);
         AddVectorObs(new Vector2(MyComponents.BallState.Rigidbody.velocity.x, MyComponents.BallState.Rigidbody.velocity.x) / positionNormalization);
         foreach (Goal goal in mGoals)
         {
-            AddVectorObs(new Vector2(goal.transform.localPosition.x, goal.transform.localPosition.z) / positionNormalization);
-            AddVectorObs(goal.transform.localRotation.eulerAngles.y / 360);
+            Vector2 goalPosition = new Vector2(goal.transform.localPosition.x, goal.transform.localPosition.z) / positionNormalization;
+            AddVectorObs(goalPosition - playerPosition);
+            AddVectorObs(new Vector2(Mathf.Cos(goal.transform.localRotation.eulerAngles.y), Mathf.Sin(goal.transform.localRotation.eulerAngles.y)));
         }
-        AddVectorObs(MyComponents.Players.MyPlayer.HasBall);
+        AddVectorObs(MyComponents.MyPlayer.HasBall);
         AddVectorObs(mPowerBar.IsFilling());
         AddVectorObs(mPowerBar.powerValue);
         AddVectorObs(AcademySB.episodeCompletion);
+        int numberOfRaycasts = 16;
+        for (int i = 0; i < numberOfRaycasts; i++)
+        {
+            float angle = (Mathf.PI * 2 / numberOfRaycasts) * i;
+            float distance;
+            int type = RaycastAtAngle(angle, out distance);
+            AddVectorObs(type);
+            AddVectorObs(distance / positionNormalization);
+        }
+    }
+
+    private StringBuilder LogStuff()
+    {
+        StringBuilder builder = new StringBuilder();
+        if (AcademySB.mode == AcademySB.Mode.PICK_UP)
+            builder.AppendLine("HasBall " + MyComponents.MyPlayer.HasBall);
+        if (AcademySB.mode == AcademySB.Mode.SHOOT)
+            builder.AppendLine("PlayerHasShot " + playerHasShot);
+        if (AcademySB.mode == AcademySB.Mode.SHOOT_GOALS)
+            builder.AppendLine("Goal scored against team " + goalScoredAgainstTeam);
+        return builder;
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        StringBuilder builder = null;
+        if (agentId == 0)
+        {
+            builder = LogStuff();
+        }
         // Actions
         // 4 Movement keys
         // 1 Load key
         // 1 Shoot key
-        // x and z target positions of shot
+        // cos and sin of player rotation
+        // distance of target
         float threshold = 0.5f;
 
         KeyCode[] movementKeys = UserSettings.MovementKeys;
         for (int i = 0; i <= 3; i++)
         {
             if (vectorAction[i] >= threshold)
-                MyComponents.InputManager.SetKey(movementKeys[i]);
+                mPlayerController.inputManager.SetKey(movementKeys[i]);
         }
 
         if (AcademySB.mode != AcademySB.Mode.PICK_UP)
         {
             if (vectorAction[4] >= threshold)
-                MyComponents.InputManager.SetMouseButtonDown(0);
+                mPlayerController.inputManager.SetMouseButtonDown(0);
             if (vectorAction[5] >= threshold)
-                MyComponents.InputManager.SetMouseButtonUp(0);
+                mPlayerController.inputManager.SetMouseButtonUp(0);
         }
-        MyComponents.InputManager.SetMouseLocalPosition(new Vector3(vectorAction[6], 0, vectorAction[7]) * positionNormalization);
+        float distance = vectorAction[8] * positionNormalization;
+        mPlayerController.inputManager.SetMouseLocalPosition(new Vector3(transform.localPosition.x, 0, transform.localPosition.z) + new Vector3(vectorAction[6], 0, vectorAction[7]) * distance);
 
         switch (AcademySB.mode)
         {
@@ -116,39 +173,25 @@ public class AgentSB : Agent
                 break;
         }
 
-        if (AcademySB.rewardLook)
-        {
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, transform.forward, out hit, Mathf.Infinity, 1 << Layers.Goal, QueryTriggerInteraction.Collide))
-            {
-                AddReward(0.002f);
-            }
-        }
-
-        if (agentId == 0 && Time.timeScale < 5f)
-        {
-            Monitor.SetActive(true);
-            Monitor.Log("Reward", GetReward());
-            Monitor.Log("CumulativeReward", GetCumulativeReward());
-        }
-#if UNITY_EDITOR
         if (agentId == 0)
         {
-            Debug.Log(GetReward());
+            builder.AppendLine("Reward " + GetReward());
+            if (Time.timeScale < 5f)
+            {
+                Monitor.SetActive(true);
+                Monitor.Log("Reward", GetReward());
+                Monitor.Log("CumulativeReward", GetCumulativeReward());
+            }
+            //Debug.Log(builder.ToString());
         }
-#endif
     }
 
     private void RewardBallCatches()
     {
-        if (MyComponents.Players.MyPlayer.HasBall)
+        if (MyComponents.MyPlayer.HasBall)
         {
             SetReward(1f);
             AgentReset();
-        }
-        else
-        {
-            SetReward(-0.001f);
         }
     }
 
@@ -166,10 +209,6 @@ public class AgentSB : Agent
             SetReward(playerHasShot);
             AgentReset();
         }
-        else
-        {
-            SetReward(-0.001f);
-        }
     }
 
     private Team goalScoredAgainstTeam;
@@ -183,12 +222,8 @@ public class AgentSB : Agent
     {
         if (goalScoredAgainstTeam != Team.NONE)
         {
-            SetReward(goalScoredAgainstTeam != mPlayerController.Player.Team ? 1 : 0);
+            SetReward(goalScoredAgainstTeam != mPlayerController.Player.Team ? 1 : 1);
             AgentReset();
-        }
-        else
-        {
-            SetReward(-0.001f);
         }
     }
 
@@ -210,7 +245,7 @@ public class AgentSB : Agent
 
             while (playerPosition == null || AcademySB.HasGoals && (distanceFromGoals[0] < 30 || distanceFromGoals[1] < 30))
             {
-                playerPosition = new Vector3(Random.Range(-maxX, maxX), transform.localPosition.y, Random.Range(-maxZ, maxZ));
+                playerPosition = new Vector3(UnityEngine.Random.Range(-maxX, maxX), transform.localPosition.y, UnityEngine.Random.Range(-maxZ, maxZ));
                 distanceFromGoals = new float[] { Vector3.Distance(mGoals[0].transform.localPosition, playerPosition.Value), Vector3.Distance(mGoals[1].transform.localPosition, playerPosition.Value) };
             }
             transform.localPosition = playerPosition.Value;
@@ -222,9 +257,11 @@ public class AgentSB : Agent
         Vector3? ballPosition = null;
         float distanceFromPlayer = 0;
 
-        while (ballPosition == null || distanceFromPlayer < 7 || (AcademySB.HasGoals && (distanceFromGoals[0] < 30 || distanceFromGoals[1] < 30)))
+        while (ballPosition == null || distanceFromPlayer < 7)
         {
-            ballPosition = new Vector3(Random.Range(-maxX, maxX), MyComponents.BallState.transform.localPosition.y, Random.Range(-maxZ, maxZ));
+            float ballMaxX = AcademySB.HasGoals ? maxX - 30 : maxX;
+            float ballMaxZ = AcademySB.HasGoals ? maxZ - 30 : maxZ;
+            ballPosition = new Vector3(UnityEngine.Random.Range(-ballMaxX, ballMaxX), MyComponents.BallState.transform.localPosition.y, UnityEngine.Random.Range(-ballMaxZ, ballMaxZ));
             distanceFromGoals = new float[] { Vector3.Distance(mGoals[0].transform.localPosition, ballPosition.Value), Vector3.Distance(mGoals[1].transform.localPosition, ballPosition.Value) };
             distanceFromPlayer = Vector3.Distance(transform.localPosition, ballPosition.Value);
         }

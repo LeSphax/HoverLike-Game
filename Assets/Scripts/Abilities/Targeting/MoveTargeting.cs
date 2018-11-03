@@ -5,10 +5,10 @@ public class MoveTargeting : AbilityTargeting
 {
     public override void ChooseTarget(CastOnTarget callback)
     {
-        if  (MyComponents.Players.MyPlayer != null)
+        if  (MyComponents.MyPlayer != null)
         {
             
-            callback.Invoke(true, MyComponents.Players.MyPlayer.controller, MyComponents.InputManager.GetInputDirection());
+            callback.Invoke(true, MyComponents.MyPlayer.controller, MyComponents.MyPlayer.InputManager.GetInputDirection());
         }
     }
 }

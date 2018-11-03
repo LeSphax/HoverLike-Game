@@ -61,7 +61,7 @@ public class GameState : SlideBall.NetworkMonoBehaviour, IGameInit
 
     private void InstantiateNewObjects()
     {
-        GameObject ball = MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
+        MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
         foreach (var player in MyComponents.Players.players.Values)
         {

@@ -5,7 +5,7 @@ public class DashTargeting : AbilityTargeting
 {
     public override void ChooseTarget(CastOnTarget callback)
     {
-        Vector3 position = MyComponents.InputManager.GetMouseLocalPosition();
-        callback.Invoke(true, MyComponents.Players.MyPlayer.controller, position);
+        Vector3 position = MyComponents.MyPlayer.InputManager.GetMouseLocalPosition();
+        callback.Invoke(true, MyComponents.MyPlayer.controller, position);
     }
 }

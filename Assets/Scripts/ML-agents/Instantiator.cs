@@ -42,8 +42,6 @@ public class Instantiator : MonoBehaviour
         arenas.ForEach(gym => Destroy(gym));
         arenas.Clear();
 
-        GameObject brain = GameObject.FindGameObjectWithTag("GameController");
-
         for (int i = 1; i <= nbX; i++)
         {
             for (int j = 1; j <= nbY; j++)

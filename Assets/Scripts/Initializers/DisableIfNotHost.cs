@@ -9,8 +9,8 @@ public class DisableIfNotHost : SlideBall.MonoBehaviour
     {
         if (!EditorVariables.HeadlessServer)
         {
-           MyComponents.Players.MyPlayer.IsHostChanged += HostChanged;
-            HostChanged(MyComponents.Players.MyPlayer.IsHost);
+           MyComponents.MyPlayer.IsHostChanged += HostChanged;
+            HostChanged(MyComponents.MyPlayer.IsHost);
         }
     }
 

@@ -9,13 +9,13 @@ public class FrozenEffect : AbilityEffect
 
     public override void ApplyOnTarget(params object[] parameters)
     {
-        MyComponents.Players.MyPlayer.State.Movement = MovementState.FROZEN;
+        MyComponents.MyPlayer.State.Movement = MovementState.FROZEN;
         Invoke("StopFreezing", duration);
     }
 
     private void StopFreezing()
     {
-        if (MyComponents.Players.MyPlayer.State.Movement == MovementState.FROZEN)
-            MyComponents.Players.MyPlayer.State.Movement = MovementState.PLAYING;
+        if (MyComponents.MyPlayer.State.Movement == MovementState.FROZEN)
+            MyComponents.MyPlayer.State.Movement = MovementState.PLAYING;
     }
 }

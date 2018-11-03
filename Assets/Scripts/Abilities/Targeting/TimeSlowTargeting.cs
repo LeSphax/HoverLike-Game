@@ -42,6 +42,6 @@ public class TimeSlowTargeting : AbilityTargeting
 
     private void UpdateTargeterPosition()
     {
-        targeter.transform.localPosition = MyComponents.InputManager.GetMouseLocalPosition() + Vector3.up * 0.2f;
+        targeter.transform.localPosition = MyComponents.MyPlayer.InputManager.GetMouseLocalPosition() + Vector3.up * 0.2f;
     }
 }

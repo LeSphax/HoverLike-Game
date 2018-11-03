@@ -19,6 +19,13 @@ namespace PlayerManagement
         public event HasBallChangeHandler HasBallChanged;
         public event IsHostChangeHandler IsHostChanged;
 
+        public InputManager InputManager
+        {
+            get
+            {
+                return controller.inputManager;
+            }
+        }
         public PlayerController controller;
         public PlayerBallController ballController;
         public GameObject gameobjectAvatar;

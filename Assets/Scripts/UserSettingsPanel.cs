@@ -117,8 +117,8 @@ public class UserSettingsPanel : SlideBall.MonoBehaviour
             }
 
             UserSettings.Nickname = nicknameField.text;
-            if (MyComponents.Players.MyPlayer != null)
-                MyComponents.Players.MyPlayer.Nickname = nickname;
+            if (MyComponents.MyPlayer != null)
+                MyComponents.MyPlayer.Nickname = nickname;
 
             string keys = "";
             for (int i = 0; i < buttons.Length; i++)

@@ -22,7 +22,7 @@ public abstract class AbilityInput : SlideBall.MonoBehaviour
     {
         get
         {
-            return CurrentStateAllowActivation(MyComponents.Players.MyPlayer) && AdditionalActivationRequirementsAreMet();
+            return CurrentStateAllowActivation(MyComponents.MyPlayer) && AdditionalActivationRequirementsAreMet();
         }
     }
 
@@ -47,13 +47,13 @@ public abstract class AbilityInput : SlideBall.MonoBehaviour
 
     public virtual bool FirstActivation()
     {
-        return MyComponents.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
+        return MyComponents.MyPlayer.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
     }
 
     public virtual bool ContinuousActivation()
     {
         if (INPUT_NUMBER != -1)
-            return MyComponents.InputManager.GetKey(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
+            return MyComponents.MyPlayer.InputManager.GetKey(UserSettings.KeyForInputCheck(INPUT_NUMBER), GUIPart.ABILITY);
         return false;
     }
 
@@ -91,7 +91,7 @@ public abstract class AbilityInput : SlideBall.MonoBehaviour
 
     protected virtual void Start()
     {
-        MyComponents.Players.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
+        MyComponents.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
         //If the ability has an icon, add a small GUI rectangle with the letter corresponding to the key.
         if (HasIcon())
         {
@@ -99,13 +99,13 @@ public abstract class AbilityInput : SlideBall.MonoBehaviour
             keyToUse.transform.SetParent(transform, false);
             keyToUse.GetComponentInChildren<Text>().text = GetKeyForGUI();
         }
-        PlayerStateChanged(MyComponents.Players.MyPlayer);
+        PlayerStateChanged(MyComponents.MyPlayer);
     }
 
     protected virtual void OnDestroy()
     {
-        if (MyComponents.Players.MyPlayer != null)
-            MyComponents.Players.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
+        if (MyComponents.MyPlayer != null)
+            MyComponents.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.MOVEMENT_STATE);
     }
 
     protected virtual bool IsMovement()

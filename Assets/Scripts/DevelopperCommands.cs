@@ -90,7 +90,7 @@ public class DevelopperCommands : SlideBall.NetworkMonoBehaviour
         if (!NetworkingState.IsServer)
         {
             StringBuilder builder = new StringBuilder(4096);
-            builder.Append("[REPORT]" + MyComponents.Players.MyPlayer.Nickname);
+            builder.Append("[REPORT]" + MyComponents.MyPlayer.Nickname);
             //builder.Append("[REPORT]Average difference : " + MyNetworkView.averageDifference + ", Number of Resets : " + MyNetworkView.nbOfResets);
             builder.Append("[REPORT]" + ActualAbilitiesLatency.Print());
             //builder.Append("[REPORT]Packet loss ratio : " + ((float)ObservedComponent.NumberPacketsMissed / ObservedComponent.NumberPacketsReceived) + ", Missed : "

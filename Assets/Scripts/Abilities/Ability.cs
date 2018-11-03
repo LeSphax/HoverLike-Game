@@ -62,7 +62,7 @@ public class Ability : SlideBall.MonoBehaviour
             Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
 #endif
-        if (MyComponents.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(5), GUIPart.ABILITY))
+        if (MyComponents.MyPlayer.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(5), GUIPart.ABILITY))
         {
             TryCancelTargeting();
         }

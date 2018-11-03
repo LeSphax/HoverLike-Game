@@ -20,9 +20,11 @@ public class DecisionSB : SlideBall.MonoBehaviour, MLAgents.Decision
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            var mousePosition = Functions.GetMouseWorldPosition();
-            actions[6] = mousePosition.x / 100;
-            actions[7] = mousePosition.z / 100;
+            Vector2 goalPosition = new Vector2(vectorObs[10], vectorObs[11]);
+            float angle = Mathf.Atan2(goalPosition[1], goalPosition[0]);
+            actions[6] = Mathf.Cos(angle);
+            actions[7] = Mathf.Sin(angle);
+            actions[8] = goalPosition.magnitude;
         }
         if (!Input.GetMouseButtonDown(0))
         {
