@@ -114,6 +114,19 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &10260338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
+  m_Name: (Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  brain: {fileID: 1372329868}
 --- !u!1 &15415638
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +174,7 @@ MonoBehaviour:
     - key: maxZ
       value: 60
     - key: mode
-      value: 2
+      value: 1
     - key: randomGoals
       value: 1
     - key: goalSize
@@ -178,7 +191,7 @@ Transform:
   m_Children:
   - {fileID: 1372329867}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &63531211
 GameObject:
@@ -190,8 +203,6 @@ GameObject:
   - component: {fileID: 63531214}
   - component: {fileID: 63531213}
   - component: {fileID: 63531212}
-  - component: {fileID: 63531216}
-  - component: {fileID: 63531215}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -259,111 +270,46 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 37.9, y: 90, z: 0}
---- !u!114 &63531215
+--- !u!114 &88930500
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 63531211}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc0690de18e645043924d89803d3ef95, type: 3}
-  m_Name: 
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)
   m_EditorClassIdentifier: 
-  IntervalInAcademySteps: 10000
-  DurationInAcademySteps: 1000
-  saveFolder: 
---- !u!114 &63531216
-MonoBehaviour:
+  brain: {fileID: 1372329868}
+--- !u!1 &633141137
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 63531211}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 199311a1781af854fb1334c3c195468a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_outputDir:
-    m_root: 0
-    m_leaf: C:/Users/sbker/Documents/ML-agents
-    m_readOnly: 0
-  m_resolution: 0
-  m_resolutionPercent: 100
-  m_resolutionWidth: 1920
-  m_framerateMode: 1
-  m_targetFramerate: 30
-  m_fixDeltaTime: 0
-  m_waitDeltaTime: 1
-  m_captureEveryNthFrame: 1
-  m_captureControl: 0
-  m_startFrame: 0
-  m_endFrame: 100
-  m_startTime: 0
-  m_endTime: 10
-  m_recordOnStart: 0
-  m_encoderConfigs:
-    format: 3
-    pngEncoderSettings:
-      pixelFormat: 0
-      maxTasks: 2
-      width: 0
-      height: 0
-      channels: 0
-    exrEncoderSettings:
-      pixelFormat: 0
-      compression: 3
-      maxTasks: 2
-      width: 0
-      height: 0
-      channels: 0
-    gifEncoderSettings:
-      width: 0
-      height: 0
-      numColors: 256
-      keyframeInterval: 30
-      maxTasks: 8
-    webmEncoderSettings:
-      video:
-        v: 1
-      videoEncoder: 0
-      videoWidth: 0
-      videoHeight: 0
-      videoTargetFramerate: 60
-      videoBitrateMode: 1
-      videoTargetBitrate: 1024000
-      videoMaxTasks: 4
-      audio:
-        v: 1
-      audioEncoder: 0
-      audioSampleRate: 48000
-      audioNumChannels: 2
-      audioBitrateMode: 1
-      audioTargetBitrate: 128000
-      audioMaxTasks: 4
-    mp4EncoderSettings:
-      video:
-        v: 1
-      videoWidth: 0
-      videoHeight: 0
-      videoTargetFramerate: 30
-      videoBitrateMode: 1
-      videoTargetBitrate: 1024000
-      videoFlags: 62
-      videoMaxTasks: 4
-      audio:
-        v: 1
-      audioSampleRate: 48000
-      audioNumChannels: 2
-      audioBitrateMode: 1
-      audioTargetBitrate: 128000
-      audioFlags: 6
-      audioMaxTasks: 4
-  m_captureTarget: 0
-  m_targetRT: {fileID: 0}
-  m_captureVideo: 1
-  m_captureAudio: 1
-  m_shCopy: {fileID: 4800000, guid: 2283fb92223c7914c9096670e29202c8, type: 3}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 633141138}
+  m_Layer: 0
+  m_Name: RenderTexture
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &633141138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 633141137}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &888730270
 GameObject:
   m_ObjectHideFlags: 0
@@ -455,7 +401,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -526,8 +472,183 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1238495274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1238495279}
+  - component: {fileID: 1238495278}
+  - component: {fileID: 1238495276}
+  - component: {fileID: 1238495275}
+  m_Layer: 0
+  m_Name: Video Camera
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1238495275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1238495274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc0690de18e645043924d89803d3ef95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IntervalInAcademySteps: 10000
+  DurationInAcademySteps: 1000
+--- !u!114 &1238495276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1238495274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 199311a1781af854fb1334c3c195468a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_outputDir:
+    m_root: 0
+    m_leaf: C:/Users/sbker/Documents/ML-agents
+    m_readOnly: 0
+  m_resolution: 0
+  m_resolutionPercent: 100
+  m_resolutionWidth: 1920
+  m_framerateMode: 1
+  m_targetFramerate: 30
+  m_fixDeltaTime: 0
+  m_waitDeltaTime: 1
+  m_captureEveryNthFrame: 1
+  m_captureControl: 0
+  m_startFrame: 0
+  m_endFrame: 100
+  m_startTime: 0
+  m_endTime: 10
+  m_recordOnStart: 0
+  m_encoderConfigs:
+    format: 3
+    pngEncoderSettings:
+      pixelFormat: 0
+      maxTasks: 2
+      width: 0
+      height: 0
+      channels: 0
+    exrEncoderSettings:
+      pixelFormat: 0
+      compression: 3
+      maxTasks: 2
+      width: 0
+      height: 0
+      channels: 0
+    gifEncoderSettings:
+      width: 0
+      height: 0
+      numColors: 256
+      keyframeInterval: 30
+      maxTasks: 8
+    webmEncoderSettings:
+      video:
+        v: 1
+      videoEncoder: 0
+      videoWidth: 0
+      videoHeight: 0
+      videoTargetFramerate: 60
+      videoBitrateMode: 1
+      videoTargetBitrate: 1024000
+      videoMaxTasks: 4
+      audio:
+        v: 1
+      audioEncoder: 0
+      audioSampleRate: 48000
+      audioNumChannels: 2
+      audioBitrateMode: 1
+      audioTargetBitrate: 128000
+      audioMaxTasks: 4
+    mp4EncoderSettings:
+      video:
+        v: 1
+      videoWidth: 0
+      videoHeight: 0
+      videoTargetFramerate: 30
+      videoBitrateMode: 1
+      videoTargetBitrate: 1024000
+      videoFlags: 62
+      videoMaxTasks: 4
+      audio:
+        v: 1
+      audioSampleRate: 48000
+      audioNumChannels: 2
+      audioBitrateMode: 1
+      audioTargetBitrate: 128000
+      audioFlags: 6
+      audioMaxTasks: 4
+  m_captureTarget: 1
+  m_targetRT: {fileID: 8400000, guid: abd26a3513c2e7a458fd74f021e33c7a, type: 2}
+  m_captureVideo: 1
+  m_captureAudio: 1
+  m_shCopy: {fileID: 4800000, guid: 2283fb92223c7914c9096670e29202c8, type: 3}
+--- !u!20 &1238495278
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1238495274}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_FocalLength: 50
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 8400000, guid: abd26a3513c2e7a458fd74f021e33c7a, type: 2}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &1238495279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1238495274}
+  m_LocalRotation: {x: 0.22962789, y: 0.66878325, z: -0.22962789, w: 0.66878325}
+  m_LocalPosition: {x: 80, y: 300, z: 767.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 37.9, y: 90, z: 0}
 --- !u!1 &1372329866
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,8 +657,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1372329867}
-  - component: {fileID: 1372329868}
   - component: {fileID: 1372329869}
+  - component: {fileID: 1372329868}
   m_Layer: 0
   m_Name: Brain
   m_TagString: Untagged
@@ -566,7 +687,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1372329866}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d39a84b5eeb5d84d931959e13a4bc6a, type: 3}
+  m_Script: {fileID: 11500000, guid: c676a8ddf5a5f4f64b35e9ed5028679d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   brainParameters:
@@ -574,11 +695,24 @@ MonoBehaviour:
     numStackedVectorObservations: 1
     vectorActionSize: 09000000
     cameraResolutions: []
-    vectorActionDescriptions: []
+    vectorActionDescriptions:
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
     vectorActionSpaceType: 1
   brainType: 1
-  CoreBrains: []
-  instanceID: 0
+  CoreBrains:
+  - {fileID: 1866649996}
+  - {fileID: 10260338}
+  - {fileID: 88930500}
+  - {fileID: 1990924774}
+  instanceID: 10400
 --- !u!114 &1372329869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -617,7 +751,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1394144047
 MonoBehaviour:
@@ -637,3 +771,42 @@ MonoBehaviour:
   onlyOne: 0
   arenaPrefab: {fileID: 1324592679276244, guid: 887ab629658f85346bbb752ce9a65aa4,
     type: 2}
+--- !u!114 &1866649996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  keyContinuousPlayerActions: []
+  axisContinuousPlayerActions: []
+  discretePlayerActions: []
+  brain: {fileID: 1372329868}
+--- !u!114 &1990924774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  graphModel: {fileID: 0}
+  graphScope: 
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
+  brain: {fileID: 0}

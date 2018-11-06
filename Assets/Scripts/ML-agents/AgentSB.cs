@@ -15,6 +15,7 @@ public class AgentSB : Agent
     private Rigidbody mRigidbody;
     private PowerBar mPowerBar;
     private readonly Goal[] mGoals = new Goal[2];
+    private bool ballCaughtOnce = false;
 
     private void Awake()
     {
@@ -160,13 +161,15 @@ public class AgentSB : Agent
         switch (AcademySB.mode)
         {
             case AcademySB.Mode.PICK_UP:
-                RewardBallCatches();
+                RewardBallCatches(1f);
                 break;
             case AcademySB.Mode.SHOOT:
                 RewardShots();
+                RewardBallCatches(0.1f, false);
                 break;
             case AcademySB.Mode.SHOOT_GOALS:
                 RewardGoals();
+                RewardBallCatches(0.1f, false);
                 break;
             default:
                 Debug.LogError("Mode doesn't exist " + AcademySB.mode);
@@ -182,16 +185,27 @@ public class AgentSB : Agent
                 Monitor.Log("Reward", GetReward());
                 Monitor.Log("CumulativeReward", GetCumulativeReward());
             }
-            //Debug.Log(builder.ToString());
+            Debug.Log(builder.ToString());
         }
     }
 
-    private void RewardBallCatches()
+    private void RewardBallCatches(float amount, bool reset = true)
     {
-        if (MyComponents.MyPlayer.HasBall)
+        if (MyComponents.MyPlayer.HasBall && !ballCaughtOnce)
         {
-            SetReward(1f);
-            AgentReset();
+            AddReward(amount);
+            if (reset)
+            {
+                Done();
+            }
+            else
+            {
+                ballCaughtOnce = true;
+            }
+        }
+        else
+        {
+            AddReward(-0.001f);
         }
     }
 
@@ -207,7 +221,7 @@ public class AgentSB : Agent
         if (playerHasShot > 0f)
         {
             SetReward(playerHasShot);
-            AgentReset();
+            Done();
         }
     }
 
@@ -222,8 +236,8 @@ public class AgentSB : Agent
     {
         if (goalScoredAgainstTeam != Team.NONE)
         {
-            SetReward(goalScoredAgainstTeam != mPlayerController.Player.Team ? 1 : 1);
-            AgentReset();
+            SetReward(goalScoredAgainstTeam != mPlayerController.Player.Team ? 1 : 0);
+            Done();
         }
     }
 
@@ -231,6 +245,7 @@ public class AgentSB : Agent
 
     public override void AgentReset()
     {
+        ballCaughtOnce = false;
         playerHasShot = -1;
         goalScoredAgainstTeam = Team.NONE;
 

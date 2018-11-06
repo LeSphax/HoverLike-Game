@@ -19,7 +19,7 @@ public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
         MyComponents.MyPlayer.Nickname = "Alice";
         MyComponents.MyPlayer.SceneId = Scenes.currentSceneId;
 
-        
+
         //id = new ConnectionId(1);
         //MyComponents.Players.CreatePlayer(id);
         //MyComponents.Players.players[id].Nickname = "Bob";

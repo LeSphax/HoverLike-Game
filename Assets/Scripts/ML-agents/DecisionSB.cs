@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using MLAgents;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DecisionSB : SlideBall.MonoBehaviour, MLAgents.Decision
 {
 
-    BrainSB brain;
+    Brain brain;
     void Awake()
     {
-        brain = GetComponent<BrainSB>();
+        brain = GetComponent<Brain>();
     }
 
 
