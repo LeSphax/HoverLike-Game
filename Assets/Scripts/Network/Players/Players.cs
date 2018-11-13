@@ -49,18 +49,17 @@ namespace PlayerManagement
         }
 
         //This variable only exists on client, on the server it is contained in the dictionary 'players'
-        public ConnectionId myPlayerId;
-        public Player MyPlayer
-        {
-            get
-            {
-                Player player;
-                if (players.TryGetValue(myPlayerId, out player))
-                    return player;
-                return null;
+        private ConnectionId myPlayerId;
+        public ConnectionId MyPlayerId {
+            get{
+                return myPlayerId;
+            }
+            set{
+                myPlayerId = value;
+                players.TryGetValue(MyPlayerId, out MyPlayer);
             }
         }
-
+        public Player MyPlayer = null;
         internal void SetState(MovementState movementState)
         {
             foreach (Player player in players.Values)
@@ -71,7 +70,7 @@ namespace PlayerManagement
 
         public void Reset()
         {
-            myPlayerId = INVALID_PLAYER_ID;
+            MyPlayerId = INVALID_PLAYER_ID;
             NewPlayerCreated = null;
             players.Clear();
         }

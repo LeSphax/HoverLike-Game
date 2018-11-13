@@ -28,7 +28,7 @@ public class DashPersistentEffect : PersistentEffect
     public DashPersistentEffect(AbilitiesManager manager, Vector3 position, float endSpeed) : base(manager)
     {
         this.endSpeed = endSpeed;
-        myRigidbody = manager.GetComponent<Rigidbody>();
+        myRigidbody = manager.controller.mRigidbody;
         
         //
         manager.controller.targetManager.CancelTarget();

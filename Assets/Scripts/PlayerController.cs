@@ -27,6 +27,8 @@ public class PlayerController : PlayerView
     public PlayerBallController ballController;
     [HideInInspector]
     public AbilitiesManager abilitiesManager;
+    public AbilitiesFactory abilitiesFactory;
+    public Rigidbody mRigidbody;
     private PlayerMesh playerMesh;
     public PlayerMesh PlayerMesh
     {
@@ -57,11 +59,12 @@ public class PlayerController : PlayerView
         movementManager = GetComponent<PlayerMovementManager>();
         abilitiesManager = GetComponent<AbilitiesManager>();
         ballController = GetComponent<PlayerBallController>();
+        mRigidbody = GetComponent<Rigidbody>();
     }
 
     public void InitView(object[] parameters)
     {
-        playerConnectionId = (ConnectionId)parameters[0];
+        PlayerConnectionId = (ConnectionId)parameters[0];
         if (Player == null)
         {
             Destroy(gameObject);
@@ -69,14 +72,12 @@ public class PlayerController : PlayerView
         }
         Player.controller = this;
         Player.ballController = GetComponent<PlayerBallController>();
-        GetComponent<PlayerBallController>().Init(playerConnectionId);
-        MyComponents.Players.NotifyNewPlayerInstantiated(playerConnectionId);
+        GetComponent<PlayerBallController>().Init(PlayerConnectionId);
+        MyComponents.Players.NotifyNewPlayerInstantiated(PlayerConnectionId);
 
         Player.eventNotifier.ListenToEvents(ResetPlayer, PlayerFlags.TEAM, PlayerFlags.AVATAR_SETTINGS);
         Player.eventNotifier.ListenToEvents(SetNickname, PlayerFlags.NICKNAME);
         Player.eventNotifier.ListenToEvents(Destroy, PlayerFlags.DESTROYED);
-
-        ResetPlayer();
     }
 
     [MyRPC]
@@ -100,7 +101,7 @@ public class PlayerController : PlayerView
         }
 
         RemoveFromAttraction();
-        movementManager.Reset(playerConnectionId);
+        movementManager.Reset(PlayerConnectionId);
         ballController.Reset();
         targetManager.CancelTarget();
         if (Mesh != null)
@@ -120,13 +121,25 @@ public class PlayerController : PlayerView
 
         ConfigureColliders();
 
-        abilitiesManager.ResetAllEffects();
+        CreateAbilities();
 
-        if (Player.IsMyPlayer)
-            MyComponents.AbilitiesFactory.RecreateAbilities();
+        abilitiesManager.ResetAllEffects();
 
         if (Reset != null)
             Reset.Invoke();
+    }
+
+    private void CreateAbilities()
+    {
+        if (abilitiesFactory == null)
+        {
+            GameObject abilitiesPrefab = Resources.Load<GameObject>(Paths.ABILITIES_GAMEOBJECT);
+            GameObject abilities = GameObject.Instantiate(abilitiesPrefab, MyComponents.UI().transform);
+            abilities.name = Player.Nickname + "Abilities";
+            abilitiesFactory = abilities.GetComponent<AbilitiesFactory>();
+            abilitiesFactory.PlayerId = Player.id;
+        }
+        abilitiesFactory.RecreateAbilities();
     }
 
     private void RemoveFromAttraction()
@@ -171,7 +184,7 @@ public class PlayerController : PlayerView
     }
 
     public void PutAtStartPosition()
-    { 
+    {
         transform.position = Player.SpawningPoint;
         transform.LookAt(transform.parent.localPosition);
         transform.localRotation = Quaternion.Euler(0, transform.localRotation.y, 0);
@@ -181,7 +194,7 @@ public class PlayerController : PlayerView
 
     public void StopMoving()
     {
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        mRigidbody.velocity = Vector3.zero;
         targetManager.CancelTarget();
     }
 

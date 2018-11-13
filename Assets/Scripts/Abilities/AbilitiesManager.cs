@@ -60,7 +60,7 @@ namespace AbilitiesManagement
         protected void Awake()
         {
             controller = GetComponent<PlayerController>();
-            myRigidbody = GetComponent<Rigidbody>();
+            myRigidbody = controller.mRigidbody;
         }
 
         private Rigidbody myRigidbody;
@@ -217,7 +217,7 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility() && controller.Player.HasBall && controller.Player.AvatarSettingsType == AvatarSettings.AvatarSettingsTypes.ATTACKER)
             {
-                MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(MyComponents.BallState, MyComponents.Players.players, controller.playerConnectionId, targetId);
+                MyComponents.BallState.trajectoryStrategy = new PassTrajectoryStrategy(MyComponents.BallState, MyComponents.Players.players, controller.PlayerConnectionId, targetId);
                 EffectsManager.View.RPC("ThrowBall", RPCTargets.All);
             }
         }
@@ -256,7 +256,7 @@ namespace AbilitiesManagement
                         }
                     }
                 }
-                MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", Vector3.zero, Quaternion.identity, controller.playerConnectionId);
+                MyComponents.NetworkViewsManagement.Instantiate("Effects/BlockExplosion", Vector3.zero, Quaternion.identity, controller.PlayerConnectionId);
             }
         }
 

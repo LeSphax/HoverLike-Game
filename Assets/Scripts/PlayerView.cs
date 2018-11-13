@@ -4,21 +4,16 @@ using UnityEngine;
 
 public class PlayerView : SlideBall.NetworkMonoBehaviour
 {
-    public ConnectionId playerConnectionId = Players.INVALID_PLAYER_ID;
-
-    public Player Player
-    {
-        get
-        {
-            return GetMyPlayer(playerConnectionId);
+    private ConnectionId playerConnectionId = Players.INVALID_PLAYER_ID;
+    public ConnectionId PlayerConnectionId{
+        get{
+            return playerConnectionId;
+        }
+        set{
+            playerConnectionId = value;
+            MyComponents.Players.players.TryGetValue(playerConnectionId, out Player);
         }
     }
 
-    public Player GetMyPlayer(ConnectionId connectionId)
-    {
-        Player player;
-        if (!MyComponents.Players.players.TryGetValue(connectionId, out player))
-            return null;
-        return player;
-    }
+    public Player Player;
 }

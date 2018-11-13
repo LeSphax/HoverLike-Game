@@ -8,6 +8,6 @@ public class PassEffect : AbilityEffect
         base.ApplyOnTarget(parameters);
         ConnectionId targetId = (ConnectionId)parameters[0];
         if (targetId != Players.INVALID_PLAYER_ID)
-            MyComponents.MyPlayer.controller.View.RPC("Pass", RPCTargets.Server, targetId);
+            MyComponents.Players.players[PlayerId].controller.View.RPC("Pass", RPCTargets.Server, targetId);
     }
 }

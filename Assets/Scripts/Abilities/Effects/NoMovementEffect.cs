@@ -6,13 +6,13 @@ public class NoMovementEffect : AbilityEffect
 
     public override void ApplyOnTarget(params object[] parameters)
     {
-        MyComponents.MyPlayer.State.Movement = MovementState.NO_MOVEMENT;
+        MyComponents.Players.players[PlayerId].State.Movement = MovementState.NO_MOVEMENT;
         Invoke("StopFreezing", duration);
     }
 
     private void StopFreezing()
     {
-        if  (MyComponents.MyPlayer.State.Movement == MovementState.NO_MOVEMENT)
-            MyComponents.MyPlayer.State.Movement = MovementState.PLAYING;
+        if  (MyComponents.Players.players[PlayerId].State.Movement == MovementState.NO_MOVEMENT)
+            MyComponents.Players.players[PlayerId].State.Movement = MovementState.PLAYING;
     }
 }

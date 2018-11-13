@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Byn.Net;
+using UnityEngine;
 
 [RequireComponent(typeof(AbilityEffect))]
 [RequireComponent(typeof(AbilityTargeting))]
@@ -7,10 +8,28 @@
 public class Ability : SlideBall.MonoBehaviour
 {
 
-    private static event EmptyEventHandler NewAbilityUsed;
     private AbilityInput Input;
     private AbilityTargeting Targeting;
     private AbilityEffect[] Effects;
+    [HideInInspector]
+    private ConnectionId playerId = ConnectionId.INVALID;
+    public ConnectionId PlayerId
+    {
+        get
+        {
+            return playerId;
+        }
+        set
+        {
+            playerId = value;
+            Input.PlayerId = value;
+            Targeting.PlayerId = value;
+            foreach (AbilityEffect effect in Effects)
+            {
+                effect.PlayerId = value;
+            }
+        }
+    }
 
     public bool NoCooldown = false;
     public float CooldownDuration = 5;
@@ -62,7 +81,7 @@ public class Ability : SlideBall.MonoBehaviour
             Debug.LogWarning(state + "   " + isEnabled + "    " + currentCooldown);
         }
 #endif
-        if (MyComponents.MyPlayer.InputManager.GetKeyDown(UserSettings.KeyForInputCheck(5), GUIPart.ABILITY))
+        if (MyComponents.Players.players[PlayerId].InputManager.GetKeyDown(UserSettings.KeyForInputCheck(5), GUIPart.ABILITY))
         {
             TryCancelTargeting();
         }
@@ -135,10 +154,6 @@ public class Ability : SlideBall.MonoBehaviour
 
     private void CastAbility()
     {
-        if (NewAbilityUsed != null)
-        {
-            NewAbilityUsed.Invoke();
-        }
         if (currentCooldown == 0)
         {
             state = State.CHOOSING_TARGET;
@@ -221,16 +236,6 @@ public class Ability : SlideBall.MonoBehaviour
                 Targeting.CancelTargeting();
                 state = State.READY;
             }
-    }
-
-    private void OnEnable()
-    {
-        NewAbilityUsed += TryCancelTargeting;
-    }
-
-    private void OnDisable()
-    {
-        NewAbilityUsed -= TryCancelTargeting;
     }
 
     private void TryCancelTargeting()

@@ -37,6 +37,7 @@ public class AcademySB : Academy
     public static float maxDistance;
     public static bool randomGoals;
     public static float goalSize;
+    public static bool TwoPlayers;
 
     public override void InitializeAcademy()
     {
@@ -59,13 +60,12 @@ public class AcademySB : Academy
 
     public override void AcademyReset()
     {
-        if (AcademyResetEvent != null)
-            AcademyResetEvent.Invoke();
         maxX = resetParameters["maxX"];
         maxZ = resetParameters["maxZ"];
         mode = (Mode)resetParameters["mode"];
         randomGoals = resetParameters["randomGoals"] == 1;
         goalSize = resetParameters["goalSize"];
+        TwoPlayers = resetParameters["twoPlayers"] == 1;
 
         StringBuilder builder = new StringBuilder();
         builder.AppendLine("Academy reset " + mode);
@@ -73,7 +73,10 @@ public class AcademySB : Academy
         builder.AppendLine("maxZ " + maxZ);
         builder.AppendLine("randomGoals " + randomGoals);
         builder.AppendLine("goalSize " + goalSize);
+        builder.AppendLine("TwoPlayers " + TwoPlayers);
         Debug.Log(builder.ToString());
+        if (AcademyResetEvent != null)
+            AcademyResetEvent.Invoke();
     }
 
     public override void AcademyStep()

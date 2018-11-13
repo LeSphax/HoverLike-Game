@@ -12,6 +12,8 @@
     public const string NETWORK_SCRIPTS = PREFAB_PATH + "NetworkScripts";
 
     public const string ABILITIES = PREFAB_PATH + "Abilities/";
+    public const string ABILITIES_GAMEOBJECT = PREFAB_PATH + "Abilities";
+
     public const string ABILITY_DISABLED = ABILITIES + "Disabled";
     public const string ABILITY_COOLDOWN = ABILITIES + "Cooldown";
 

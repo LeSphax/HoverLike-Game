@@ -33,7 +33,7 @@ public abstract class ANetworkView : SlideBall.MonoBehaviour
 
     void OnDestroy()
     {
-        if (MyComponents.NetworkViewsManagement != null && registered)
+        if (MyComponents != null && MyComponents.NetworkViewsManagement != null && registered)
             MyComponents.NetworkViewsManagement.UnregisterView(this);
     }
 }

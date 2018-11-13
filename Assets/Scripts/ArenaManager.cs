@@ -13,30 +13,31 @@ public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
 
         MyComponents.NetworkViewsManagement.Instantiate("Ball", MyComponents.Spawns.BallSpawn, Quaternion.identity);
 
-        ConnectionId id = ConnectionId.INVALID;
-        MyComponents.Players.CreatePlayer(id);
-        MyComponents.Players.myPlayerId = id;
-        MyComponents.MyPlayer.Nickname = "Alice";
-        MyComponents.MyPlayer.SceneId = Scenes.currentSceneId;
-
-
-        //id = new ConnectionId(1);
-        //MyComponents.Players.CreatePlayer(id);
-        //MyComponents.Players.players[id].Nickname = "Bob";
-        //MyComponents.Players.players[id].SceneId = Scenes.currentSceneId;
-        //MyComponents.Players.players[id].Team = Team.RED;
-
+        CreatePlayer(ConnectionId.INVALID, "Alice", Team.BLUE, true);
+        CreatePlayer(new ConnectionId(1), "Bob", Team.RED);
 
         if (AllObjectsCreated != null)
             AllObjectsCreated.Invoke();
+    }
+
+    private void CreatePlayer(ConnectionId id, string nickname, Team team, bool isMyPlayer = false)
+    {
+        MyComponents.Players.CreatePlayer(id);
+        if (isMyPlayer)
+            MyComponents.Players.MyPlayerId = id;
+
+        Player player = MyComponents.Players.players[id];
+        player.Nickname = nickname;
+        player.SceneId = Scenes.currentSceneId;
+        player.team = team;
+        player.controller.ResetPlayer();
     }
 
     private void InitPlayer(ConnectionId playerId)
     {
         Player player = MyComponents.Players.players[playerId];
 
-        player.AvatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
-        player.Team = Team.BLUE;
+        player.avatarSettingsType = AvatarSettings.AvatarSettingsTypes.ATTACKER;
         player.State.Movement = MovementState.PLAYING;
     }
 

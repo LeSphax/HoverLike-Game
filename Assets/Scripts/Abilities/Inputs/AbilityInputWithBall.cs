@@ -8,8 +8,8 @@ public abstract class AbilityInputWithBall : AbilityInput
     protected override void Start()
     {
         base.Start();
-        MyComponents.MyPlayer.HasBallChanged += SetHasBall;
-        MyComponents.MyPlayer.eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
+        MyComponents.Players.players[PlayerId].HasBallChanged += SetHasBall;
+        MyComponents.Players.players[PlayerId].eventNotifier.ListenToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
     }
 
     private void SetHasBall(bool hasBall)
@@ -28,16 +28,16 @@ public abstract class AbilityInputWithBall : AbilityInput
 
     protected override bool CurrentStateAllowActivation(Player player)
     {
-        return base.CurrentStateAllowActivation(player) && MyComponents.MyPlayer.State.Stealing != StealingState.PROTECTED;
+        return base.CurrentStateAllowActivation(player) && MyComponents.Players.players[PlayerId].State.Stealing != StealingState.PROTECTED;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        if (MyComponents.MyPlayer != null)
+        if (MyComponents.Players.players[PlayerId] != null)
         {
-            MyComponents.MyPlayer.HasBallChanged -= SetHasBall;
-            MyComponents.MyPlayer.eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
+            MyComponents.Players.players[PlayerId].HasBallChanged -= SetHasBall;
+            MyComponents.Players.players[PlayerId].eventNotifier.StopListeningToEvents(PlayerStateChanged, PlayerFlags.STEALING_STATE);
         }
     }
 

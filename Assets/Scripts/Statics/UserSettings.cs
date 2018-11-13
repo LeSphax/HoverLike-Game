@@ -92,24 +92,42 @@ public class UserSettings
         }
     }
 
-    public static string keys = null;
+    private static string keys = null;
+    private static string Keys
+    {
+        get
+        {
+            return keys;
+        }
+        set
+        {
+            keys = value;
+            KeysArray = new string[keys.Length];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                KeysArray[i] = keys[i] == ' ' ? "space" : keys[i].ToString();
+            }
+        }
+    }
+    private static string[] KeysArray = null;
 
     public static string KeyForInputCheck(int number)
     {
         InitKeysIfNecessary();
-        string result = keys.Substring(number, 1);
-        return result == " " ? "space" : result;
+        return KeysArray[number];
     }
 
     private static void InitKeysIfNecessary()
     {
-        if (keys == null)
+        if (Keys == null)
         {
             string defaultKeys = GetDefaultKeys();
-            keys = GetDefaultKeys();// PlayerPrefs.GetString("Keys", defaultKeys);
-            if (keys.Length != defaultKeys.Length)
+            string savedKeys = GetDefaultKeys();// PlayerPrefs.GetString("Keys", defaultKeys);
+            if (savedKeys.Length != defaultKeys.Length)
             {
-                keys = defaultKeys;
+                Keys = defaultKeys;
+            } else{
+                Keys = savedKeys;
             }
         }
     }
@@ -117,7 +135,6 @@ public class UserSettings
     private static string GetDefaultKeys()
     {
         string defaultKeys = "qefr cv";
-        Debug.Log("---------LANGUAGE " + Application.systemLanguage);
         if (Application.systemLanguage == SystemLanguage.French)
         {
             Debug.Log("Language is French !");
@@ -129,15 +146,15 @@ public class UserSettings
 
     public static void SetKeys(string newKeys)
     {
-        keys = newKeys;
-        PlayerPrefs.SetString("Keys", keys);
+        Keys = newKeys;
+        PlayerPrefs.SetString("Keys", Keys);
         PlayerPrefs.Save();
     }
 
     public static string GetKeyForIcon(int number)
     {
         InitKeysIfNecessary();
-        return CharToDisplayKey(keys[number]);
+        return CharToDisplayKey(Keys[number]);
     }
 
     public static KeyCode GetKeyCode(int number)

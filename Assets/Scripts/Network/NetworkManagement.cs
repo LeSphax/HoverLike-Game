@@ -167,7 +167,7 @@ public class NetworkManagement : ANetworkManagement
                 content += "@" + args[i];
             }
         Debug.Log("Send User Command " + content);
-        mNetwork.SendSignalingEvent( MyComponents.Players.myPlayerId, content, NetEventType.UserCommand);
+        mNetwork.SendSignalingEvent( MyComponents.Players.MyPlayerId, content, NetEventType.UserCommand);
     }
 
     public void GetRooms()
@@ -489,7 +489,7 @@ public class NetworkManagement : ANetworkManagement
             {
                 receivers = new List<ConnectionId>();
                 List<Player> teamMates = MyComponents.Players.GetPlayersInTeam( MyComponents.Players.players[senderId].Team);
-                teamMates.Map(player => { if (player.id != MyComponents.Players.myPlayerId && player.id != senderId) receivers.Add(player.id); });
+                teamMates.Map(player => { if (player.id != MyComponents.Players.MyPlayerId && player.id != senderId) receivers.Add(player.id); });
             }
             else
             {
@@ -542,7 +542,7 @@ public class NetworkManagement : ANetworkManagement
         {
             List<ConnectionId> connectionIds = new List<ConnectionId>();
             List<Player> teamMates = MyComponents.Players.GetPlayersInTeam( MyComponents.MyPlayer.Team);
-            teamMates.Map(player => { if (player.id != MyComponents.Players.myPlayerId) connectionIds.Add(player.id); });
+            teamMates.Map(player => { if (player.id != MyComponents.Players.MyPlayerId) connectionIds.Add(player.id); });
             SendNetworkMessage(message, connectionIds.ToArray());
         }
         else
@@ -634,7 +634,7 @@ public class NetworkManagement : ANetworkManagement
         if (!EditorVariables.HeadlessServer)
         {
             MyComponents.Players.CreatePlayer(id);
-            MyComponents.Players.myPlayerId = id;
+            MyComponents.Players.MyPlayerId = id;
             MyComponents.MyPlayer.Nickname = UserSettings.Nickname;
             MyComponents.MyPlayer.SceneId = Scenes.currentSceneId;
             handler = (previousSceneId, currentSceneId) => { MyComponents.MyPlayer.SceneId = currentSceneId; };

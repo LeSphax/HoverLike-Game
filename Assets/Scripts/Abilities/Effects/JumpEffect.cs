@@ -24,14 +24,14 @@ namespace AbilitiesManagement
             duration = 1.25f;
             this.jumpCurve = jumpCurve;
             lowestPoint = manager.controller.Player.SpawningPoint.y;
-            manager.controller.GetComponent<Rigidbody>().useGravity = false;
+            manager.controller.mRigidbody.useGravity = false;
             manager.EffectsManager.ShockwaveOnPlayer(false);
 
         }
 
         public override void StopEffect()
         {
-            manager.controller.GetComponent<Rigidbody>().useGravity = true;
+            manager.controller.mRigidbody.useGravity = true;
             manager.EffectsManager.ShockwaveOnPlayer(true);
         }
 

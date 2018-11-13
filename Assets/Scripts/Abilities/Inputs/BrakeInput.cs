@@ -12,7 +12,7 @@ public class BrakeInput : AbilityInput
 
     public override bool FirstActivation()
     {
-        return false; // MyComponents.MyPlayer.InputManager.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), GUIPart.ABILITY);
+        return false; // MyComponents.Players.players[playerId].InputManager.GetKey(UserSettings.GetKeyCode(INPUT_NUMBER), GUIPart.ABILITY);
     }
 
     public override string GetKeyForGUI()
@@ -22,7 +22,7 @@ public class BrakeInput : AbilityInput
 
     public override bool Cancellation()
     {
-        return MyComponents.MyPlayer.InputManager.GetKeyUp(UserSettings.GetKeyCode(INPUT_NUMBER));
+        return MyComponents.Players.players[PlayerId].InputManager.GetKeyUp(UserSettings.GetKeyCode(INPUT_NUMBER));
     }
 
     protected override bool IsMovement()

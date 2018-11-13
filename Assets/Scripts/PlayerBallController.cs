@@ -34,7 +34,7 @@ namespace PlayerBallControl
 
         public void Init(ConnectionId id)
         {
-            playerConnectionId = id;
+            PlayerConnectionId = id;
         }
 
         private void StartGame()
@@ -54,7 +54,7 @@ namespace PlayerBallControl
                 {
                     if (id == MyComponents.BallState.GetIdOfPlayerOwningBall() && MyComponents.Players.players[id].State.Stealing != StealingState.PROTECTED)
                     {
-                        MyComponents.BallState.SetAttached(playerConnectionId);
+                        MyComponents.BallState.SetAttached(PlayerConnectionId);
                         Player.State.Stealing = StealingState.IDLE;
                         break;
                     }
@@ -68,7 +68,7 @@ namespace PlayerBallControl
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
                     //Debug.Log(this + " OnCollisionEnter " + collision.gameObject.name);
-                    idsPlayerInContact.Add(collision.gameObject.GetComponent<PlayerController>().playerConnectionId);
+                    idsPlayerInContact.Add(collision.gameObject.GetComponent<PlayerController>().PlayerConnectionId);
                     TryStealing();
                 }
             }
@@ -81,7 +81,7 @@ namespace PlayerBallControl
                 if (Tags.IsPlayer(collision.gameObject.tag))
                 {
                     //Debug.Log(this + " OnCollisionExit " + collision.gameObject.name);
-                    idsPlayerInContact.Remove(collision.gameObject.GetComponent<PlayerController>().playerConnectionId);
+                    idsPlayerInContact.Remove(collision.gameObject.GetComponent<PlayerController>().PlayerConnectionId);
                 }
             }
         }
@@ -96,18 +96,18 @@ namespace PlayerBallControl
                     {
                         if (tryingToCatchBall && !MyComponents.BallState.UnCatchable)
                         {
-                            Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
-                            MyComponents.BallState.SetAttached(playerConnectionId);
+                            Assert.IsTrue(PlayerConnectionId != BallState.NO_PLAYER_ID);
+                            MyComponents.BallState.SetAttached(PlayerConnectionId);
                         }
                     }
                     else if (collider.gameObject.tag == Tags.ProtectionSphere)
                     {
-                        Debug.Log("ProtectionSphere" + MyComponents.BallState.UnCatchable + "  " + MyComponents.BallState.PassTarget + "  " + playerConnectionId);
-                        if (MyComponents.BallState.UnCatchable && (Player.State.Stealing == StealingState.STEALING || MyComponents.BallState.PassTarget == playerConnectionId))
+                        Debug.Log("ProtectionSphere" + MyComponents.BallState.UnCatchable + "  " + MyComponents.BallState.PassTarget + "  " + PlayerConnectionId);
+                        if (MyComponents.BallState.UnCatchable && (Player.State.Stealing == StealingState.STEALING || MyComponents.BallState.PassTarget == PlayerConnectionId))
                         {
                             Debug.Log("ProtectionSphere OK");
-                            Assert.IsTrue(playerConnectionId != BallState.NO_PLAYER_ID);
-                            MyComponents.BallState.SetAttached(playerConnectionId);
+                            Assert.IsTrue(PlayerConnectionId != BallState.NO_PLAYER_ID);
+                            MyComponents.BallState.SetAttached(PlayerConnectionId);
                         }
                     }
                 }

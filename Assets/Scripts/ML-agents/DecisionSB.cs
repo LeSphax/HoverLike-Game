@@ -21,11 +21,13 @@ public class DecisionSB : SlideBall.MonoBehaviour, MLAgents.Decision
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            Vector2 goalPosition = new Vector2(vectorObs[10], vectorObs[11]);
-            float angle = Mathf.Atan2(goalPosition[1], goalPosition[0]);
-            actions[6] = Mathf.Cos(angle);
-            actions[7] = Mathf.Sin(angle);
-            actions[8] = goalPosition.magnitude;
+            Vector2 goalPosition = new Vector2(vectorObs[22], vectorObs[23]);
+            LookAt(actions, goalPosition);
+        }
+         if (Input.GetKey(KeyCode.RightShift))
+        {
+            Vector2 goalPosition = new Vector2(vectorObs[9], vectorObs[10]);
+            LookAt(actions, goalPosition);
         }
         if (!Input.GetMouseButtonDown(0))
         {
@@ -34,6 +36,14 @@ public class DecisionSB : SlideBall.MonoBehaviour, MLAgents.Decision
         if (!Input.GetMouseButtonUp(0))
             actions[5] = 0f;
         return actions.ToArray();
+    }
+
+    private static void LookAt(List<float> actions, Vector2 targetPosition)
+    {
+        float angle = Mathf.Atan2(targetPosition[1], targetPosition[0]);
+        actions[6] = Mathf.Cos(angle);
+        actions[7] = Mathf.Sin(angle);
+        actions[8] = targetPosition.magnitude;
     }
 
     public List<float> MakeMemory(List<float> vectorObs, List<Texture2D> visualObs, float reward, bool done, List<float> memory)

@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using Byn.Net;
+using UnityEngine;
 
 //Apply an effect using parameters given by the corresponding abilityTargeting.
 public abstract class AbilityEffect : SlideBall.MonoBehaviour
 {
+    public ConnectionId PlayerId;
+
     public virtual void ApplyOnTarget(params object[] parameters)
     {
         if (!NetworkingState.IsServer)

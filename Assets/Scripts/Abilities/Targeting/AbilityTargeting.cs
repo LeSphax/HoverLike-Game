@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using Byn.Net;
 
 public delegate void CastOnTarget(bool cancelled, params object[] parameters);
 
@@ -7,6 +6,7 @@ public delegate void CastOnTarget(bool cancelled, params object[] parameters);
 //For example, choosing the target of a pass or the area to cast a spell on.
 public abstract class AbilityTargeting : SlideBall.MonoBehaviour
 {
+    public ConnectionId PlayerId;
 
     public static bool IsTargeting;
 

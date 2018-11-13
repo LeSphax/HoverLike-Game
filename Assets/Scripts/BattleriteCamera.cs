@@ -8,7 +8,7 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     {
         get
         {
-            return (DownVisionLength + UpVisionLength)/2;
+            return (DownVisionLength + UpVisionLength) / 2;
         }
     }
 
@@ -16,7 +16,7 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     {
         get
         {
-            return 90 - Camera.main.transform.eulerAngles.x;
+            return 90 - mCamera.transform.eulerAngles.x;
         }
     }
 
@@ -24,7 +24,7 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     {
         get
         {
-            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 + VerticalAngle));
+            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (mCamera.fieldOfView / 2 + VerticalAngle));
         }
     }
 
@@ -32,16 +32,16 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     {
         get
         {
-            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 - VerticalAngle));
+            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (mCamera.fieldOfView / 2 - VerticalAngle));
         }
     }
 
-    private static float HorizontalFOV
+    private float HorizontalFOV
     {
         get
         {
-            var radAngle = Camera.main.fieldOfView * Mathf.Deg2Rad;
-            var radHFOV = 2 * Mathf.Atan(Mathf.Tan(radAngle / 2) * Camera.main.aspect);
+            var radAngle = mCamera.fieldOfView * Mathf.Deg2Rad;
+            var radHFOV = 2 * Mathf.Atan(Mathf.Tan(radAngle / 2) * mCamera.aspect);
             var horizontalFOV = Mathf.Rad2Deg * radHFOV;
             return horizontalFOV;
         }
@@ -51,7 +51,7 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     {
         get
         {
-            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (HorizontalFOV/2));
+            return transform.position.y * Mathf.Tan(Mathf.Deg2Rad * (HorizontalFOV / 2));
         }
     }
 
@@ -67,12 +67,19 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     public float yMaxLimit;
     public Vector3 offset;
 
+    private Camera mCamera;
+
     private Vector3 BasePosition
     {
         get
         {
-            if (MyComponents.MyPlayer != null && MyComponents.MyPlayer.controller != null)
-                return startPosition + Vector3.forward * MyComponents.MyPlayer.controller.transform.position.z + Vector3.right * MyComponents.MyPlayer.controller.transform.position.x + offset;
+            Player myPlayer = MyComponents.MyPlayer;
+            if (myPlayer != null && myPlayer.controller != null)
+                return new Vector3(
+                    startPosition.x + offset.x + myPlayer.controller.transform.position.x,
+                    startPosition.y + offset.y,
+                    startPosition.z + offset.z + myPlayer.controller.transform.position.z
+                );
             else
                 return transform.localPosition;
         }
@@ -86,6 +93,10 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
         previousBasePosition = transform.localPosition;
     }
 
+    private void Start(){
+        mCamera = Camera.main;
+    }
+
     public Vector3 ClampPosition(Vector3 initialPosition)
     {
         return new Vector3(
@@ -96,13 +107,13 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
 
     private float GetHalfVisionLength(float fov, float angleOffset)
     {
-        return transform.position.y * (Mathf.Tan(Mathf.Deg2Rad * (fov / 2 - angleOffset)) + Mathf.Tan(Mathf.Deg2Rad * (Camera.main.fieldOfView / 2 + angleOffset))) /2;
+        return transform.position.y * (Mathf.Tan(Mathf.Deg2Rad * (fov / 2 - angleOffset)) + Mathf.Tan(Mathf.Deg2Rad * (mCamera.fieldOfView / 2 + angleOffset))) / 2;
     }
 
     private void Update()
     {
         //Update target camera position on Update as it depends on events and the result of the previous FixedUpdate
-        if (Camera.main != null && Camera.main.enabled)
+        if (mCamera != null && mCamera.enabled)
         {
             Vector3 previousPosition = transform.position;
             Vector2 mouseProportion = GetMouseProportion();
@@ -117,7 +128,7 @@ public class BattleriteCamera : SlideBall.MonoBehaviour
     //Position the camera on FixedUpdate to avoid jittery effect when it is out of sync with the player position updates
     public void PositionCamera()
     {
-        if (Camera.main != null && Camera.main.enabled)
+        if (mCamera != null && mCamera.enabled)
         {
             transform.position = transform.position + BasePosition - previousBasePosition;
 

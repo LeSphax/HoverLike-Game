@@ -54,7 +54,7 @@ public class PlayersSynchronisation : ANetworkView
     public void SendSynchronisation(short syncId)
     {
         Assert.IsFalse(syncId == INVALID_SYNC_ID);
-        ConnectionId connectionId = MyComponents.Players.myPlayerId;
+        ConnectionId connectionId = MyComponents.Players.MyPlayerId;
         if (!NetworkingState.IsServer)
         {
             byte[] syncIdData = BitConverter.GetBytes(syncId);

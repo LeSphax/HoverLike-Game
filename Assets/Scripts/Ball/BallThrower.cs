@@ -24,7 +24,7 @@ public class BallThrower : SlideBall.MonoBehaviour
     void ChangeBallPosition()
     {
         MyComponents.BallState.DetachBall();
-        MyComponents.BallState.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        MyComponents.BallState.Rigidbody.velocity = Vector3.zero;
         MyComponents.BallState.transform.position = Functions.GetRandomPointInCube(gameObject);
         float timeToWait = Random.Range(timeToWaitBeforeThrow, timeToWaitBeforeThrowMax);
         Invoke("ThrowBall", timeToWait);

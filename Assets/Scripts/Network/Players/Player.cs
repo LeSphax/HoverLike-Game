@@ -100,7 +100,7 @@ namespace PlayerManagement
             set
             {
                 nickname = value;
-                if (id == myComponents.Players.myPlayerId)
+                if (id == myComponents.Players.MyPlayerId)
                     flagsChanged |= PlayerFlags.NICKNAME;
                 NotifyNicknameChanged();
             }
@@ -130,7 +130,7 @@ namespace PlayerManagement
             set
             {
                 sceneId = value;
-                if (id == myComponents.Players.myPlayerId)
+                if (id == myComponents.Players.MyPlayerId)
                     flagsChanged |= PlayerFlags.SCENEID;
                 eventNotifier.changedAttributes.Add(PlayerFlags.SCENEID);
             }
@@ -163,7 +163,7 @@ namespace PlayerManagement
             set
             {
                 playAsGoalie = value;
-                if (id == myComponents.Players.myPlayerId)
+                if (id == myComponents.Players.MyPlayerId)
                     flagsChanged |= PlayerFlags.PLAY_AS_GOALIE;
                 eventNotifier.changedAttributes.Add(PlayerFlags.PLAY_AS_GOALIE);
             }
@@ -222,7 +222,7 @@ namespace PlayerManagement
             eventNotifier.changedAttributes.Add(PlayerFlags.DESTROYED);
         }
 
-        public bool IsMyPlayer { get { return id == myComponents.Players.myPlayerId; } }
+        public bool IsMyPlayer { get { return id == myComponents.Players.MyPlayerId; } }
 
         public Player(ConnectionId id, MyComponents myComponents)
         {

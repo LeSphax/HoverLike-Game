@@ -7,7 +7,7 @@ public class TeleportEffect : AbilityEffect
 
     public override void ApplyOnTarget(params object[] parameters)
     {
-        MyComponents.MyPlayer.controller.View.RPC("Teleport", RPCTargets.Server);
+        MyComponents.Players.players[PlayerId].controller.View.RPC("Teleport", RPCTargets.Server);
     }
 }
 
@@ -19,7 +19,7 @@ public class TeleportPersistentEffect : PersistentEffect
     {
         duration = TimeBeforeTeleportation;
         manager.controller.StopMoving();
-        manager.controller.GetComponent<Rigidbody>().isKinematic = true;
+        manager.controller.mRigidbody.isKinematic = true;
     }
 
     protected override void Apply(float dt)
@@ -30,6 +30,6 @@ public class TeleportPersistentEffect : PersistentEffect
     public override void StopEffect()
     {
         manager.transform.position = manager.controller.Player.SpawningPoint;
-        manager.controller.GetComponent<Rigidbody>().isKinematic = false;
+        manager.controller.mRigidbody.isKinematic = false;
     }
 }

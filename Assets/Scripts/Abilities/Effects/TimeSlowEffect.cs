@@ -9,7 +9,7 @@ public class TimeSlowEffect : AbilityEffect
     public override void ApplyOnTarget(params object[] parameters)
     {
         Vector3 epicenter = (Vector3)parameters[0];
-       MyComponents.MyPlayer.controller.View.RPC("TimeSlow", RPCTargets.Server, epicenter);
+       MyComponents.Players.players[PlayerId].controller.View.RPC("TimeSlow", RPCTargets.Server, epicenter);
     }
 
 

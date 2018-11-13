@@ -10,11 +10,6 @@ public class AbilityWithIcon : Ability
     protected override void Awake()
     {
         base.Awake();
-        CreateToolTip();
-
-        CooldownOverlay = Instantiate(ResourcesGetter.CooldownPrefab, transform, false).GetComponent<Image>();
-        //
-        DisabledOverlay = Instantiate(ResourcesGetter.DisabledPrefab, transform, false);
     }
 
     private void CreateToolTip()
@@ -36,20 +31,43 @@ public class AbilityWithIcon : Ability
 
     void Start()
     {
-        CooldownOverlay.fillAmount = 0;
+        //We only show the abilities UI for the players we control
+        if (PlayerId == MyComponents.MyPlayer.id)
+        {
+            CreateToolTip();
+
+            CooldownOverlay = Instantiate(ResourcesGetter.CooldownPrefab, transform, false).GetComponent<Image>();
+            //
+            DisabledOverlay = Instantiate(ResourcesGetter.DisabledPrefab, transform, false);
+            if (isEnabled)
+            {
+                DisabledOverlay.SetActive(false);
+            }
+
+            CooldownOverlay.fillAmount = 0;
+
+        } else {
+            GetComponent<Image>().enabled = false;
+        }
     }
 
     protected override void UpdateUI()
     {
-        CooldownOverlay.fillAmount = currentCooldown / CooldownDuration;
+        if (CooldownOverlay != null)
+        {
+            CooldownOverlay.fillAmount = currentCooldown / CooldownDuration;
+        }
     }
 
     protected override void EnableAbility(bool enable)
     {
         base.EnableAbility(enable);
-        if (enable)
-            DisabledOverlay.SetActive(false);
-        else
-            DisabledOverlay.SetActive(true);
+        if (DisabledOverlay != null)
+        {
+            if (enable)
+                DisabledOverlay.SetActive(false);
+            else
+                DisabledOverlay.SetActive(true);
+        }
     }
 }

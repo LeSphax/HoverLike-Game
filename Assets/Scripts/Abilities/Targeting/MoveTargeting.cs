@@ -1,14 +1,10 @@
-﻿using PlayerManagement;
-using UnityEngine;
-
-public class MoveTargeting : AbilityTargeting
+﻿public class MoveTargeting : AbilityTargeting
 {
     public override void ChooseTarget(CastOnTarget callback)
     {
-        if  (MyComponents.MyPlayer != null)
+        if  (MyComponents.Players.players[PlayerId] != null)
         {
-            
-            callback.Invoke(true, MyComponents.MyPlayer.controller, MyComponents.MyPlayer.InputManager.GetInputDirection());
+            callback.Invoke(true, MyComponents.Players.players[PlayerId].controller, MyComponents.Players.players[PlayerId].InputManager.GetInputDirection());
         }
     }
 }

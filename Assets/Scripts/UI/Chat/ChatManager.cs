@@ -18,7 +18,7 @@ public class ChatManager : SlideBall.NetworkMonoBehaviour
             targets = RPCTargets.All;
         else
             targets = RPCTargets.Team;
-        View.RPC("ReceiveMessage", targets, content,MyComponents.Players.myPlayerId, sendToAll);
+        View.RPC("ReceiveMessage", targets, content,MyComponents.Players.MyPlayerId, sendToAll);
     }
 
     [MyRPC]
