@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class InputManager : SlideBall.MonoBehaviour
 {
+    List<string> keysUp = new List<string>();
+    List<string> keysDown = new List<string>();
     List<KeyCode> keysPressed = new List<KeyCode>();
     readonly List<int> mouseButtonsDown = new List<int>();
     readonly List<int> mouseButtonsUp = new List<int>();
@@ -40,6 +42,8 @@ public class InputManager : SlideBall.MonoBehaviour
 
     private void Update()
     {
+        keysUp.Clear();
+        keysDown.Clear();
         keysPressed.Clear();
         mouseButtonsDown.Clear();
         mouseButtonsUp.Clear();
@@ -50,6 +54,17 @@ public class InputManager : SlideBall.MonoBehaviour
         keysPressed.Add(key);
     }
 
+    public void SetKeyDown(string key)
+    {
+        keysDown.Add(key);
+    }
+
+    
+    public void SetKeyUp(string key)
+    {
+        keysUp.Add(key);
+    }
+
 
     public bool GetKeyDown(KeyCode key)
     {
@@ -58,7 +73,7 @@ public class InputManager : SlideBall.MonoBehaviour
 
     public bool GetKeyDown(string key)
     {
-        return Input.GetKeyDown(key);
+        return Input.GetKeyDown(key) || keysDown.Contains(key);
     }
 
     public bool GetKey(KeyCode key)
@@ -79,7 +94,7 @@ public class InputManager : SlideBall.MonoBehaviour
 
     public bool GetKeyUp(string key)
     {
-        return Input.GetKeyUp(key);
+        return Input.GetKeyUp(key) || keysUp.Contains(key);
     }
 
     public void SetMouseButtonDown(int button)
@@ -89,7 +104,7 @@ public class InputManager : SlideBall.MonoBehaviour
 
     public bool GetMouseButtonDown(int button)
     {
-        return mouseButtonsDown.Contains(button) ||  Input.GetMouseButtonDown(button);
+        return mouseButtonsDown.Contains(button) || Input.GetMouseButtonDown(button);
     }
 
     public bool GetMouseButton(int button)
@@ -127,10 +142,18 @@ public class InputManager : SlideBall.MonoBehaviour
     {
         if (mouseLocalPosition != null)
         {
-            //Debug.Log(mouseLocalPosition.Value);
             return mouseLocalPosition.Value;
         }
         return MyComponents.transform.InverseTransformPoint(Functions.GetMouseWorldPosition());
+    }
+
+    public Vector3 GetMouseWorldPosition()
+    {
+        if (mouseLocalPosition != null)
+        {
+            return MyComponents.transform.TransformPoint(mouseLocalPosition.Value);
+        }
+        return Functions.GetMouseWorldPosition();
     }
 
 }

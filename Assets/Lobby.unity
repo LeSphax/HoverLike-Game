@@ -1609,6 +1609,7 @@ MonoBehaviour:
   numberFramesLatency: 3
   playAsGoalieInitialValue: 0
   noCooldowns: 1
+  cooldownReduction: 0
 --- !u!1 &339845194
 GameObject:
   m_ObjectHideFlags: 0
@@ -5311,7 +5312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60ba5bd6a0428ee468143da901d79659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewId: 8
+  viewId: 4
   observedComponents: []
   update: 1
 --- !u!222 &927280760

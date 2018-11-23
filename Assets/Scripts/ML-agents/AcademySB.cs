@@ -66,6 +66,7 @@ public class AcademySB : Academy
         randomGoals = resetParameters["randomGoals"] == 1;
         goalSize = resetParameters["goalSize"];
         TwoPlayers = resetParameters["twoPlayers"] == 1;
+        EditorVariables.CooldownReduction = resetParameters["cooldownReduction"];
 
         StringBuilder builder = new StringBuilder();
         builder.AppendLine("Academy reset " + mode);

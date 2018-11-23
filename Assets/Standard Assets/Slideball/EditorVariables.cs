@@ -79,6 +79,10 @@ public class EditorVariables : MonoBehaviour
     public bool noCooldowns;
     public static bool NoCooldowns;
 
+    public float cooldownReduction;
+    public static float CooldownReduction;
+
+
     private void Awake()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -92,6 +96,7 @@ public class EditorVariables : MonoBehaviour
         //serverURL = Server.HEROKU;
         playAsGoalieInitialValue = false;
         NoCooldowns = false;
+        CooldownReduction = 0;
 #else
         StartGameImmediately = startGameImmediately;
         JoinRoomImmediately = joinRoomImmediately;
@@ -103,6 +108,7 @@ public class EditorVariables : MonoBehaviour
         serverURL = server;
         PlayAsGoalieInitialValue = playAsGoalieInitialValue;
         NoCooldowns = noCooldowns;
+        CooldownReduction = cooldownReduction;
 #if !UNITY_EDITOR
         string commandLineOptions = System.Environment.CommandLine;
         if (commandLineOptions.Contains("-servermode"))

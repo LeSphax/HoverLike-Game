@@ -2995,7 +2995,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 5, z: 1}
+  m_Size: {x: 1, y: 5, z: 1.1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65162276088047922
 BoxCollider:
@@ -3043,7 +3043,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 5, z: 1}
+  m_Size: {x: 1.1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65517889332281250
 BoxCollider:
@@ -3091,7 +3091,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 5, z: 1}
+  m_Size: {x: 1.1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65705326097095746
 BoxCollider:
@@ -3127,7 +3127,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 5, z: 1}
+  m_Size: {x: 1, y: 5, z: 1.1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65899023177893426
 BoxCollider:
@@ -3671,8 +3671,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 850922beff1157c40951e9c12cd9a104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerId:
-    id: -1
 --- !u!114 &114405403904153754
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3885,8 +3883,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewId: 3
-  myPlayerId:
-    id: 0
 --- !u!114 &114768470191389630
 MonoBehaviour:
   m_ObjectHideFlags: 1

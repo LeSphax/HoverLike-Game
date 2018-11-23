@@ -25,6 +25,9 @@ public class RecordVideos : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_EDITOR
+        IntervalInAcademySteps = -1;
+#endif
         if (IntervalInAcademySteps < DurationInAcademySteps)
         {
             Debug.LogError("The duration of a video should be smaller than the interval");

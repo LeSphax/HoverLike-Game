@@ -223,7 +223,7 @@ public class Ability : SlideBall.MonoBehaviour
 
     public void SetOnCooldown()
     {
-        currentCooldown = CooldownDuration;
+        currentCooldown = CooldownDuration * (1 - EditorVariables.CooldownReduction);
         state = State.LOADING;
     }
 

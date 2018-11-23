@@ -26,7 +26,7 @@ public class TrainingRoom : SlideBall.MonoBehaviour
 
     public void Reset()
     {
-        float zPos = AcademySB.maxZ + 10;
+        float zPos = Mathf.Max(AcademySB.maxZ + 10, 155);
         float xPos = AcademySB.maxX + 10;
         bottom.transform.localPosition = new Vector3(0f, 1f, zPos);
         top.transform.localPosition = new Vector3(0f, 1f, -zPos);

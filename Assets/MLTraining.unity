@@ -159,7 +159,7 @@ MonoBehaviour:
     - key: maxX
       value: 70
     - key: maxZ
-      value: 120
+      value: 190
     - key: mode
       value: 2
     - key: randomGoals
@@ -167,7 +167,9 @@ MonoBehaviour:
     - key: goalSize
       value: 100
     - key: twoPlayers
-      value: 1
+      value: 0
+    - key: cooldownReduction
+      value: 0.9
 --- !u!4 &15415640
 Transform:
   m_ObjectHideFlags: 0
@@ -259,23 +261,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 37.9, y: 90, z: 0}
---- !u!114 &372869099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
-  m_Name: (Clone)(Clone)
-  m_EditorClassIdentifier: 
-  broadcast: 1
-  keyContinuousPlayerActions: []
-  axisContinuousPlayerActions: []
-  discretePlayerActions: []
-  brain: {fileID: 1372329868}
---- !u!114 &547528123
+--- !u!114 &79634566
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -284,11 +270,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 943466ab374444748a364f9d6c3e2fe2, type: 3}
-  m_Name: (Clone)(Clone)
+  m_Name: (Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   broadcast: 1
   brain: {fileID: 1372329868}
---- !u!114 &751376507
+--- !u!114 &268500883
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -296,9 +282,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
-  m_Name: (Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
+  broadcast: 1
+  graphModel: {fileID: 0}
+  graphScope: 
+  graphPlaceholders: []
+  BatchSizePlaceholderName: batch_size
+  VectorObservationPlacholderName: vector_observation
+  RecurrentInPlaceholderName: recurrent_in
+  RecurrentOutPlaceholderName: recurrent_out
+  VisualObservationPlaceholderName: []
+  ActionPlaceholderName: action
+  PreviousActionPlaceholderName: prev_action
+  brain: {fileID: 0}
+--- !u!114 &597435850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e9bda8f3cf1492fa74926a530f6f70, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  broadcast: 1
+  keyContinuousPlayerActions: []
+  axisContinuousPlayerActions: []
+  discretePlayerActions: []
   brain: {fileID: 1372329868}
 --- !u!1 &888730270
 GameObject:
@@ -340,6 +353,7 @@ MonoBehaviour:
   numberFramesLatency: 0
   playAsGoalieInitialValue: 0
   noCooldowns: 0
+  cooldownReduction: 0
 --- !u!114 &888730273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,7 +478,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &1016108483
+--- !u!114 &1017972732
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -472,21 +486,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b23992c8eb17439887f5e944bf04a40, type: 3}
-  m_Name: (Clone)(Clone)
+  m_Script: {fileID: 11500000, guid: 35813a1be64e144f887d7d5f15b963fa, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
-  broadcast: 1
-  graphModel: {fileID: 0}
-  graphScope: 
-  graphPlaceholders: []
-  BatchSizePlaceholderName: batch_size
-  VectorObservationPlacholderName: vector_observation
-  RecurrentInPlaceholderName: recurrent_in
-  RecurrentOutPlaceholderName: recurrent_out
-  VisualObservationPlaceholderName: []
-  ActionPlaceholderName: action
-  PreviousActionPlaceholderName: prev_action
-  brain: {fileID: 0}
+  brain: {fileID: 1372329868}
 --- !u!1 &1238495274
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,9 +709,10 @@ MonoBehaviour:
   brainParameters:
     vectorObservationSize: 63
     numStackedVectorObservations: 1
-    vectorActionSize: 09000000
+    vectorActionSize: 0a000000
     cameraResolutions: []
     vectorActionDescriptions:
+    - 
     - 
     - 
     - 
@@ -721,11 +725,11 @@ MonoBehaviour:
     vectorActionSpaceType: 1
   brainType: 1
   CoreBrains:
-  - {fileID: 372869099}
-  - {fileID: 547528123}
-  - {fileID: 751376507}
-  - {fileID: 1016108483}
-  instanceID: 10406
+  - {fileID: 597435850}
+  - {fileID: 79634566}
+  - {fileID: 1017972732}
+  - {fileID: 268500883}
+  instanceID: 10400
 --- !u!114 &1372329869
 MonoBehaviour:
   m_ObjectHideFlags: 0

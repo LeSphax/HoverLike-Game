@@ -8,6 +8,8 @@ public delegate void MatchChange(bool started);
 
 public class GameState : SlideBall.NetworkMonoBehaviour, IGameInit
 {
+
+    public const float playerOriginalYPosition = 4.4f;
     bool started;
 
     public event EmptyEventHandler AllObjectsCreated;
@@ -71,7 +73,7 @@ public class GameState : SlideBall.NetworkMonoBehaviour, IGameInit
 
     public static GameObject InstantiatePlayer(NetworkViewsManagement viewsManagement, ConnectionId id)
     {
-        return viewsManagement.Instantiate("MyPlayer", new Vector3(0, 4.4f, 0), Quaternion.identity, id);
+        return viewsManagement.Instantiate("MyPlayer", new Vector3(0, playerOriginalYPosition, 0), Quaternion.identity, id);
     }
 
     public void InitGame()

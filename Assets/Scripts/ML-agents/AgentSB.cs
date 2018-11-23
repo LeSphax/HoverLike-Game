@@ -56,7 +56,6 @@ public class AgentSB : Agent
 
     private void AcademyReset()
     {
-        Debug.Log("Reset Academy " + AcademySB.TwoPlayers);
         if (AcademySB.TwoPlayers)
         {
             gameObject.SetActive(true);
@@ -87,8 +86,9 @@ public class AgentSB : Agent
         else
         {
             Debug.LogError("Should always hit something ");
-            distance = 0;
-            return 0;
+            distance = -1;
+            resetPlayer = true;
+            return -1;
         }
     }
 
@@ -175,7 +175,8 @@ public class AgentSB : Agent
         }
         float distance = vectorAction[8] * PositionNormalization;
         mPlayer.controller.inputManager.SetMouseLocalPosition(new Vector3(transform.localPosition.x, 0, transform.localPosition.z) + new Vector3(vectorAction[6], 0, vectorAction[7]) * distance);
-
+        if (vectorAction[9] >= threshold)
+            mPlayer.controller.inputManager.SetKeyDown(UserSettings.KeyForInputCheck(0));
         switch (AcademySB.mode)
         {
             case AcademySB.Mode.PICK_UP:
@@ -203,7 +204,7 @@ public class AgentSB : Agent
                 Monitor.Log("Reward", GetReward());
                 Monitor.Log("CumulativeReward", GetCumulativeReward());
             }
-            Debug.Log(builder.ToString());
+           // Debug.Log(builder.ToString());
         }
     }
 
@@ -270,6 +271,9 @@ public class AgentSB : Agent
         float maxX = AcademySB.maxX;
         float maxZ = AcademySB.maxZ;
 
+        float centerMaxX = AcademySB.HasGoals ? maxX - 30 : maxX;
+        float centerMaxZ = AcademySB.HasGoals ? maxZ - 30 : maxZ;
+
         float[] distanceFromGoals = null;
 
         if (resetPlayer)
@@ -278,7 +282,7 @@ public class AgentSB : Agent
 
             while (playerPosition == null || AcademySB.HasGoals && (distanceFromGoals[0] < 30 || distanceFromGoals[1] < 30))
             {
-                playerPosition = new Vector3(UnityEngine.Random.Range(-maxX, maxX), transform.localPosition.y, UnityEngine.Random.Range(-maxZ, maxZ));
+                playerPosition = new Vector3(UnityEngine.Random.Range(-centerMaxX, centerMaxX), GameState.playerOriginalYPosition, UnityEngine.Random.Range(-centerMaxZ, centerMaxZ));
                 distanceFromGoals = new float[] { Vector3.Distance(mGoals[0].transform.localPosition, playerPosition.Value), Vector3.Distance(mGoals[1].transform.localPosition, playerPosition.Value) };
             }
             transform.localPosition = playerPosition.Value;
@@ -292,9 +296,7 @@ public class AgentSB : Agent
 
         while (ballPosition == null || distanceFromPlayer < 7)
         {
-            float ballMaxX = AcademySB.HasGoals ? maxX - 30 : maxX;
-            float ballMaxZ = AcademySB.HasGoals ? maxZ - 30 : maxZ;
-            ballPosition = new Vector3(UnityEngine.Random.Range(-ballMaxX, ballMaxX), MyComponents.BallState.transform.localPosition.y, UnityEngine.Random.Range(-ballMaxZ, ballMaxZ));
+            ballPosition = new Vector3(UnityEngine.Random.Range(-centerMaxX, centerMaxX), MyComponents.BallState.transform.localPosition.y, UnityEngine.Random.Range(-centerMaxZ, centerMaxZ));
             distanceFromGoals = new float[] { Vector3.Distance(mGoals[0].transform.localPosition, ballPosition.Value), Vector3.Distance(mGoals[1].transform.localPosition, ballPosition.Value) };
             distanceFromPlayer = Vector3.Distance(transform.localPosition, ballPosition.Value);
         }

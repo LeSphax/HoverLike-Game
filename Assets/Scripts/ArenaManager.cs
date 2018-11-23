@@ -18,6 +18,8 @@ public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
 
         if (AllObjectsCreated != null)
             AllObjectsCreated.Invoke();
+
+            UserSettings.Volume = 0;
     }
 
     private void CreatePlayer(ConnectionId id, string nickname, Team team, bool isMyPlayer = false)
