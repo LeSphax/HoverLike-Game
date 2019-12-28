@@ -16,7 +16,7 @@ public class ClientTimeStrategy : TimeStrategy
 
     internal override byte[] CreatePacket()
     {
-        return new ClientTimePacket(Time.realtimeSinceStartup, latency).Serialize();
+        return new ClientTimePacket(Time.time, latency).Serialize();
     }
 
     internal override bool IsSendingPackets()
@@ -33,9 +33,9 @@ public class ClientTimeStrategy : TimeStrategy
         }
         Assert.IsTrue(id == otherId, "SenderId should always be the same but it was " + otherId + " instead");
         ServerTimePacket packet = ServerTimePacket.Deserialize(data);
-        latency = (Time.realtimeSinceStartup - packet.timeReceived) * 1000;
+        latency = (Time.time - packet.timeReceived) * 1000;
         networkTime = packet.networkTime;
-        lastNetworkUpdate = Time.realtimeSinceStartup;
+        lastNetworkUpdate = Time.time;
         management.SetLatency(id, latency);
     }
 
@@ -53,7 +53,7 @@ public class ClientTimeStrategy : TimeStrategy
 
     internal override float GetNetworkTimeInSeconds()
     {
-        return networkTime + Time.realtimeSinceStartup - lastNetworkUpdate;
+        return networkTime + Time.time - lastNetworkUpdate;
     }
 
 }

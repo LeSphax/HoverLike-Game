@@ -73,7 +73,7 @@ public class Ability : SlideBall.MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
 #if UNITY_EDITOR
         if (Trace)
@@ -126,7 +126,7 @@ public class Ability : SlideBall.MonoBehaviour
                 if (currentCooldown == 0)
                 {
                     state = State.READY;
-                    Update();
+                    FixedUpdate();
                 }
                 else if (Input.FirstActivation())
                 {

@@ -38,7 +38,7 @@ public class NetworkViewsManagement : SlideBall.NetworkMonoBehaviour
         PartialReset();
     }
 
-    protected void Update()
+    protected void FixedUpdate()
     {
         if (NetworkingState.IsServer)
         {

@@ -22,7 +22,7 @@ namespace UnityStandardAssets.Utility
         }
 
 
-        private void Update()
+        private void FixedUpdate()
         {
             // measure average frames per second
             m_FpsAccumulator++;

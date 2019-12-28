@@ -85,6 +85,7 @@ GameObject:
   - component: {fileID: 114970209014607778}
   - component: {fileID: 114195939102380400}
   - component: {fileID: 114730105153119760}
+  - component: {fileID: 114860385287460958}
   m_Layer: 8
   m_Name: MyPlayer
   m_TagString: Player
@@ -369,14 +370,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 147f69699e2633e41a1f7513f13a00f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerConnectionId:
-    id: 0
   billboard: {fileID: 114000012876469586}
   inputManager: {fileID: 0}
   targetManager: {fileID: 0}
   movementManager: {fileID: 0}
   ballController: {fileID: 0}
   abilitiesManager: {fileID: 0}
+  abilitiesFactory: {fileID: 0}
+  mRigidbody: {fileID: 0}
   animator: {fileID: 0}
 --- !u!114 &114000011032488808
 MonoBehaviour:
@@ -389,8 +390,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7d0735e32dbf649bf6d94a85367d23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerConnectionId:
-    id: 0
 --- !u!114 &114000011071036182
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -565,11 +564,16 @@ MonoBehaviour:
   brain: {fileID: 0}
   agentParameters:
     agentCameras: []
+    agentRenderTextures: []
     maxStep: 500
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 1
   agentId: 0
+  room: {fileID: 0}
+  matchState: play
+  learningBrain: {fileID: 11400000, guid: 1525cbb41d4b8b746bb3dfad57905758, type: 2}
+  ghostBrain: {fileID: 11400000, guid: f98ae0b19b5066a41b3670d75d8be8b4, type: 2}
 --- !u!114 &114626820022411550
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -592,6 +596,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b827145656b0104a95f466aa71f2414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114860385287460958
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012256620792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50f710d360a49461cad67ff5e6bcefe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  record: 0
+  demonstrationName: 
 --- !u!114 &114970209014607778
 MonoBehaviour:
   m_ObjectHideFlags: 1

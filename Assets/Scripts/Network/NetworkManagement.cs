@@ -209,7 +209,7 @@ public class NetworkManagement : ANetworkManagement
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         //check if the network was created
         if (mNetwork != null)

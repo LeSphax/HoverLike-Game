@@ -50,9 +50,9 @@ public class Scoreboard : SlideBall.NetworkMonoBehaviour
     {
         if (NetworkingState.IsServer)
         {
-            if (Time.realtimeSinceStartup - timeLastGoal > 1)
+            if (Time.time - timeLastGoal > 1)
             {
-                timeLastGoal = Time.realtimeSinceStartup;
+                timeLastGoal = Time.time;
                 scores[teamNumber] += 1;
                 scoreboard.GetNetworkView().RPC("UpdateScoreBoard", RPCTargets.All, scores, true);
                 return true;

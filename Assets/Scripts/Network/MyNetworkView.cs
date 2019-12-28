@@ -44,31 +44,20 @@ public class MyNetworkView : ANetworkView
         return rpcManager.TryGetRPCName(methodId, out name);
     }
 
-
-    //It is pointless to send the state several times per frame (See how FixedUpdate works). So we send it only once per frame after all the FixedUpdates are done.
-    //This is called first in the update execution order
-    private void Update()
-    {
-        if (update)
-            foreach (ObservedComponent component in observedComponents)
-            {
-                component.PreparePacket();
-                if(!isMine)
-                {
-                    component.SimulationUpdate();
-                }
-            }
-    }
-
     //We need to update the simulation on the server at a fixed rate
     void FixedUpdate()
     {
         if (update)
             foreach (ObservedComponent component in observedComponents)
             {
+                component.PreparePacket();
                 if (isMine)
                 {
                     component.OwnerUpdate();
+                }
+                if (!isMine)
+                {
+                    component.SimulationUpdate();
                 }
             }
     }

@@ -40,7 +40,7 @@ public class InputManager : SlideBall.MonoBehaviour
         return GetKeyUp(keycode) && part == currentPart;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         keysUp.Clear();
         keysDown.Clear();

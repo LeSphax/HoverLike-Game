@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
 {
+    public TrainingRoom trainingRoom;
+
     public event EmptyEventHandler AllObjectsCreated;
 
     void Start()
@@ -33,6 +35,7 @@ public class ArenaManager : SlideBall.MonoBehaviour, IGameInit
         player.SceneId = Scenes.currentSceneId;
         player.team = team;
         player.controller.ResetPlayer();
+        player.controller.GetComponent<AgentSB>().room = trainingRoom;
     }
 
     private void InitPlayer(ConnectionId playerId)

@@ -43,9 +43,11 @@ public class ShootTargeting : AbilityTargeting
         if (MyComponents.Players.players[PlayerId].InputManager.GetKey(UserSettings.KeyForInputCheck(6), GUIPart.ABILITY))
         {
             curving = true;
-            bezier.controlPoints[0] = MyComponents.Players.players[PlayerId].controller.transform.localPosition;
-            bezier.controlPoints[2] = MyComponents.Players.players[PlayerId].InputManager.GetMouseLocalPosition();
         }
+        bezier.controlPoints[0] = MyComponents.Players.players[PlayerId].controller.transform.localPosition;
+        bezier.controlPoints[1] = MyComponents.Players.players[PlayerId].InputManager.GetMouseLocalPosition();
+        bezier.controlPoints[2] = MyComponents.Players.players[PlayerId].InputManager.GetMouseLocalPosition();
+
         ShowPowerOnCurve();
     }
 

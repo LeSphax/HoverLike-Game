@@ -74,6 +74,7 @@ namespace AbilitiesManagement
         {
             if (CanUseAbility())
             {
+
                 lastDirection = direction;
                 Vector3 previousRotation = controller.transform.rotation.eulerAngles;
                 transform.LookAt(position);
